@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 11 September 2024 at 9:28:00 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 September 2024 at 10:44:27 pm'!
 'Description '!
-!provides: 'Darwin' 1 54!
+!provides: 'Darwin' 1 58!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -546,6 +546,10 @@ hourOverlap: aModuleAssignment
 hours
 	^(hour to: hour + duration - 1) asSet! !
 
+!ModuleAssignment methodsFor: 'as yet unclassified' stamp: 'DF 9/14/2024 22:32:53'!
+identity: aNumber 
+^ aNumber! !
+
 !ModuleAssignment methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 09:39:01'!
 lecturer
 	^lecturer! !
@@ -671,3 +675,72 @@ buildMorphicWindow
 		self addMorph: g ].
 	
 ! !
+
+!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/14/2024 18:14:08'!
+maxgap: aBlock
+
+	| intervals b e |
+	
+	intervals := self collect:[:each | aBlock value: each ].
+	
+	intervals ifEmpty: [^0].
+	
+	intervals sort:[:x :y | x first <= y first ].
+	
+	b := 1.
+	e := 1.	
+		
+	"invariant: b .. e -1 is the maximal gap upto interval i "
+	
+	1 to: intervals size - 1 do:[ :i | | j k |
+		j := intervals at: i :: last.
+		k := intervals at:i + 1 :: first.
+		j < k ifTrue:[
+			(k - j) > (e - b) ifTrue:[e := k . b := j ] ] ].
+	
+	^ e - b
+				
+
+	! !
+
+!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/14/2024 18:20:38'!
+mingap: aBlock
+
+	| intervals b e |
+	
+	intervals := self collect:[:each | aBlock value: each ].
+	
+	intervals ifEmpty: [^ SmallInteger maxVal].
+	
+	intervals sort:[:x :y | x first <= y first ].
+	
+	b := 0.
+	e := SmallInteger maxVal.	
+		
+	"invariant: b .. e -1 is the minimal gap upto interval i "
+	
+	1 to: intervals size - 1 do:[ :i | | j k |
+		j := intervals at: i :: last.
+		k := intervals at:i + 1 :: first.
+		j <= k ifTrue:[
+			(k - j) < (e - b) ifTrue:[e := k . b := j ] ] ].
+	
+	^ e - b
+				
+
+	! !
+
+!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/14/2024 15:23:50'!
+overlap: aBlock
+
+	| intervals result |
+	
+	intervals := self collect:[:each | aBlock value: each ].
+	
+	result := OrderedCollection new.
+	
+	1 to: intervals size do:[:i |
+		i+1 to: intervals size do:[:j |
+			result add: ((intervals at: i) intersection: (intervals at:j)) size ] ].
+	
+	^result sum: [:each | each] ifEmpty:0! !
