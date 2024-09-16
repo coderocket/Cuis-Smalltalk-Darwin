@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 September 2024 at 10:44:27 pm'!
+'From Cuis7.1 [latest update: #6676] on 15 September 2024 at 8:58:37 pm'!
 'Description '!
-!provides: 'Darwin' 1 58!
+!provides: 'Darwin' 1 59!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -12,6 +12,16 @@ Object subclass: #CollegePlan
 	category: 'Darwin'!
 !classDefinition: 'CollegePlan class' category: #Darwin!
 CollegePlan class
+	instanceVariableNames: ''!
+
+!classDefinition: #DemoGene category: #Darwin!
+Object subclass: #DemoGene
+	instanceVariableNames: 'room duration'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'DemoGene class' category: #Darwin!
+DemoGene class
 	instanceVariableNames: ''!
 
 !classDefinition: #Ecology category: #Darwin!
@@ -136,6 +146,26 @@ numberOfLecturers
 !CollegePlan class methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 09:42:57'!
 numberOfRooms
 	^2! !
+
+!DemoGene methodsFor: 'as yet unclassified' stamp: 'DF 9/15/2024 19:36:02'!
+duration
+	^duration! !
+
+!DemoGene methodsFor: 'as yet unclassified' stamp: 'DF 9/15/2024 19:37:31'!
+mutate
+
+	room := (1 to: 5) atRandom.
+	
+	duration := DemoGene duration: room.! !
+
+!DemoGene methodsFor: 'as yet unclassified' stamp: 'DF 9/15/2024 19:35:59'!
+room
+	^room! !
+
+!DemoGene class methodsFor: 'as yet unclassified' stamp: 'DF 9/15/2024 19:36:42'!
+duration: anInteger
+
+	^ (1 to: 10) atRandom! !
 
 !Ecology methodsFor: 'as yet unclassified' stamp: 'DF 9/9/2024 21:58:02'!
 best
