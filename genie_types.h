@@ -3,9 +3,9 @@
 #include "interval.h"
 #include "generated_constants.h"
 
-typedef std::array<int, GENE_SIZE> gene_t;
+typedef std::array<GENE_TYPE, GENE_SIZE> gene_t;
 
 struct chromosome_t {
 	gene_t gene[CHROMOSOME_SIZE];
-	int fitness;
+	GENE_TYPE fitness;
 };

@@ -12,6 +12,8 @@ const int POPULATION_SIZE = 100; // number individuals (chromosomes)
 const int CHROMOSOME_SIZE = 100; // number of genes in a chromosome 
 const int GENE_SIZE = 1; 
 
+#define GENE_TYPE int
+
 #if 0
 const int CHROMOSOME_SIZE = 5; // number of genes in a chromosome 
 const int GENE_SIZE = 5; 
