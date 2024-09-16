@@ -1,3 +1,3 @@
 
-void mutate(double mp) ;
+void mutate(int b, int e, double mp) ;
 

@@ -1,3 +1,3 @@
 
-void calculate_fitness();
+void calculate_fitness(int b, int e);
 

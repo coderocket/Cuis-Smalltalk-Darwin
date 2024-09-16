@@ -1,7 +1,7 @@
 
 CXX = g++-14
 
-o = fitness.cc genie.cc mutate.cc
+o = fitness.o genie.o mutate.o
 
 genie : $(o) 
 	$(CXX) -g $(o) -o $@
@@ -14,3 +14,9 @@ mutate.cc : genie_types.h interval.h generated_constants.h
 
 %.o: %.cc
 	$(CXX) -c -g $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm $o genie
+

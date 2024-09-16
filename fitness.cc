@@ -7,7 +7,7 @@
 
 using namespace std;
 
-extern chromosome_t chromosome[];
+extern chromosome_t* fit[];
 
 class compare_by {
 private:
@@ -69,11 +69,11 @@ int sum(gene_t** b, gene_t** e, int index) {
 	return result;
 }
 
-void calculate_fitness() {
+void calculate_fitness(int b, int e) {
 
-	for(int i = 0 ; i < POPULATION_SIZE; i++) {
+	for(int i = b ; i < e; i++) {
 
-		chromosome[i].fitness = 0;
+		fit[i]->fitness = 0;
 
 #include "generated_fitness.cc"
 
