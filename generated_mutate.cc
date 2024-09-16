@@ -10,6 +10,6 @@
 #endif 
 	/* end generated */
 
-	if (random() % 100 < 10)
+	if (random() % 100 < 5)
 		a_gene[0] = 1 - a_gene[0];
 
