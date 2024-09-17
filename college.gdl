@@ -1,4 +1,18 @@
-Gene College
+
+Parameters
+
+epochs: 			10 
+generations: 100 
+threads: 			1
+
+population: 			100
+genes: 			3
+offspring: 			40
+parents: 			20
+
+mutationp : 			2
+
+Gene 
 
 room : 			1..100
 day : 			1 .. 6
@@ -8,9 +22,9 @@ module : 			module (locus)
 lecturer : 			lecturer (module)
 duration :     duration (module)
 
-Parameters
+Functions
 
-hours
+hour
 
 # day           hour
 
@@ -49,27 +63,27 @@ Rules
 
 # a lecturer must not teach more than six hours on the same day
  
-group by (day, lecturer) sum(duration) - 6 max 0
+group by (day, lecturer) sum(duration) - 6 max 0 ;
 
 # gap between lectures on the same day for the same lecturer should not exceed 3 hours
 
-group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0
+group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
 
 # lectures on the same day for the same lecturer should be separated by at least 1 hour 
 
-group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0
+group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
 
 # lectures cannot be assigned to the same room on the same day and hours
 
-group by (day, room) overlap(hour .. hour + duration)
+group by (day, room) overlap(hour .. hour + duration) ;
 
 # lectures cannot be assigned to the same lecturer on the same day and hours
 
-group by (day, lecturer) overlap(hour .. hour + duration)
+group by (day, lecturer) overlap(hour .. hour + duration) ;
 
 # lectures must not be held on wednesday at 1pm
-
-#day = 4 and hour = 13 
+ 
+(day = 4) * (hour <= 13) *(13 <= hour + duration);
 
 
 

@@ -2,12 +2,12 @@
 /* begin generated */
 
 const int N_EPOCH = 10;
-const int N_GEN = 100;
-const int N_THREAD = 1;
+const int N_GEN = 30;
+const int N_THREAD = 4;
 const double MUTATION_PROBABILITY = 0.02 ;
-const int N_OFFSPRING = 500 ; // must be even
-const int N_PARENT = 30 ;
-const int POPULATION_SIZE = 1000; // number individuals (chromosomes)
+const int N_OFFSPRING = 16000 ; // must be even
+const int N_PARENT = 200 ;
+const int POPULATION_SIZE = 20000; // number individuals (chromosomes)
 
 const int CHROMOSOME_SIZE = 100; // number of genes in a chromosome 
 const int GENE_SIZE = 1; 

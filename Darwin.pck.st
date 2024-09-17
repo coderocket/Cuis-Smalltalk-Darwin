@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 15 September 2024 at 8:58:37 pm'!
+'From Cuis7.1 [latest update: #6676] on 17 September 2024 at 8:48:18 pm'!
 'Description '!
-!provides: 'Darwin' 1 59!
+!provides: 'Darwin' 1 71!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -32,6 +32,16 @@ Object subclass: #Ecology
 	category: 'Darwin'!
 !classDefinition: 'Ecology class' category: #Darwin!
 Ecology class
+	instanceVariableNames: ''!
+
+!classDefinition: #GenieCompiler category: #Darwin!
+Object subclass: #GenieCompiler
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'GenieCompiler class' category: #Darwin!
+GenieCompiler class
 	instanceVariableNames: ''!
 
 !classDefinition: #GridModel category: #Darwin!
@@ -254,6 +264,115 @@ worst
 !Ecology methodsFor: 'as yet unclassified' stamp: 'DF 9/9/2024 20:38:19'!
 worstk: anInteger
 	worstk := anInteger ! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 14:07:45'!
+compileExprRule: aString
+
+	^'fit[i]->fitness -= sum(fit[i]->gene, fit[i]->gene+CHROMOSOME_SIZE, [](gene_t* each) \{ return {1}; \});' format:{ aString }.
+	! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 20:46:55'!
+compileGroupByRuleKeys: anOrderedCollection expr: aString
+
+	| aStream |
+	
+	aStream := WriteStream on: ''.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each asUppercase ] separatedBy:[ aStream nextPutAll: ', ' ].
+	
+	^ '\{ int keys[] = \{{1}\}; 
+
+fit[i]->fitness -= group_by(fit[i], keys,{2},[](gene_t** b, gene_t** e) 
+	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString }! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 20:30:19'!
+compileParameters: names values: values
+
+	| aStream |
+	
+	aStream := WriteStream on:''.
+	
+	1 to: names size do:[:i | aStream nextPutAll: 'const int GENIE_' ; nextPutAll: (names at:i) ; nextPutAll: ' = ' ; nextPutAll: (values at:i) ; nextPutAll:';' ; nextPut: Character lf.  ].
+	
+	^aStream contents! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 14:37:06'!
+compilePrimitiveCallName: aString expr: anotherString
+
+	^ '{1}(b,e,[](gene_t* each) \{ return {2}; \});' format:{aString . anotherString } 
+	! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 19:35:17'!
+compileSchema: anOrderedCollection
+
+	| aStream i |
+	
+	aStream := WriteStream on:''.
+	
+	i := 0.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: 'const int ' ; nextPutAll: each ; nextPutAll: ' = ' ; nextPutAll: ('{1};' format: { i} ) ; nextPut: Character lf. i := i + 1. ].
+	
+	aStream nextPutAll: ('const int GENE_SIZE = {1};' format: {i}) ; nextPut:Character lf.
+	
+	^aStream contents! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 18:57:23'!
+compileTable: anOrderedCollection name: aString
+
+	| aStream |
+	
+	aStream := WriteStream on:''.
+	
+	aStream nextPutAll: 'int ' ; nextPutAll: aString ; nextPutAll: '(int arg) {'; nextPut: Character lf.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each ] separatedBy:[ aStream nextPut: Character lf].
+	
+	aStream nextPut: Character lf.
+	
+	aStream nextPutAll: 'throw invalid_argument();'; nextPut: Character lf; nextPutAll:'}'; nextPut: Character lf.
+	
+	^aStream contents ! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 18:58:51'!
+compileTuple: anOrderedCollection range: aString
+
+	| aStream |
+	
+	aStream := WriteStream on: ''.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return ({2}).at_random(); \}' format:{ each . aString }) ] separatedBy:[ aStream nextPut: Character lf].
+
+	^aStream contents! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 18:27:01'!
+compileTuple: anOrderedCollection seq: anotherCollection
+
+	| aStream |
+	
+	aStream := WriteStream on: ''.
+	
+	anotherCollection size = 1 
+		ifTrue:[			
+			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return {2}; \}' format:{ each .  anotherCollection first }) ] separatedBy:[ aStream nextPut: Character lf] ] 
+		ifFalse:[
+			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ vector<int> v(\{{2}\}); return v[rand() % v.size()]; \}' format:{ each .  anotherCollection fold:[:acc :x | acc , ' , ' , x ] }) ] separatedBy:[ aStream nextPut: Character lf] ].
+
+	^aStream contents! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 18:30:22'!
+compileTupleRange: aString seq: anOrderedCollection
+
+	^anOrderedCollection size = 1 
+		ifTrue:[	'if ({1}.includes({2})) \{ return ({2}; \}' format:{ aString . anOrderedCollection first }]
+		ifFalse:['if ({1}.includes({2})) \{ vector<int> v(\{{2}\}); return v[rand() % v.size()]; \}' format:{ aString .  anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 18:56:00'!
+compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
+
+	^anOrderedCollection size = 1 
+		ifTrue:[	'if ({1}<= arg && arg < {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
+		ifFalse:['if ({1}<= arg && arg < {2}) \{ vector<int> v(\{{3}\}); return v[rand() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:08:56'!
 at: row at: column

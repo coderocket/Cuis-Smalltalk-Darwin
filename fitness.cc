@@ -60,26 +60,26 @@ int group_by(chromosome_t* c, int keys[], int n_keys, int (*f)(gene_t** ,gene_t*
 	return result;
 }
 
-int sum(gene_t** b, gene_t** e, int index) {
+int sum(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
 
 	int result = 0;
 
 	while(b != e) {
-		result += (**b)[index];
+		result += f(*b);
 		b++;
 	}
 
 	return result;
 }
 
-int overlap(gene_t** b, gene_t** e, int i_begin, int i_end) {
+int overlap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 
 	int result = 0;
 
 	while(b != e) {
 		gene_t** p = b+1;
 		while(p != e) {
-			result += interval_t((**b)[i_begin], (**b)[i_end]).intersect(interval_t((**p)[i_begin], (**p)[i_end])).length();
+			result += f(*b).intersect(f(*p)).length();
 			p++;
 		}
 		b++;
@@ -89,13 +89,13 @@ int overlap(gene_t** b, gene_t** e, int i_begin, int i_end) {
 
 }
 
-int maxgap(gene_t** b, gene_t** e, int i_begin, int i_end) {
+int maxgap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) { 
 
 	vector<interval_t> interval;
 	interval.reserve(e-b); 
 
 	while(b !=e ) {
-		interval.push_back(interval_t((**b)[i_begin], (**b)[i_end]));	
+		interval.push_back(f(*b));
 		b++;
 	}
 
@@ -111,13 +111,13 @@ int maxgap(gene_t** b, gene_t** e, int i_begin, int i_end) {
 	return maxgap;
 }
 
-int mingap(gene_t** b, gene_t** e, int i_begin, int i_end) {
+int mingap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 
 	vector<interval_t> interval;
 	interval.reserve(e-b); 
 
 	while(b !=e ) {
-		interval.push_back(interval_t((**b)[i_begin], (**b)[i_end]));	
+		interval.push_back(f(*b));
 		b++;
 	}
 
