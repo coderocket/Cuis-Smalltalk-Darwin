@@ -1,0 +1,253 @@
+tokens
+
+".." Gene Parameters Functions Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";"
+
+
+patterns
+
+#[[:print:]]+:isNewLine: { nextTerminal }
+[[:space:]]+					{ nextTerminal }
+[[:alpha:]]+					name
+[0-9]+					number
+\* 					multiply
+"<=|>=|<|>|!="					compop
+"="					equal
+
+rules
+
+%topic main
+
+S 'x' : P 'p' G 'g' Fun 'f' R 'r'
+
+	{ params @ x = code @ p }
+
+	{ schema @ x = code @ g }
+
+	{ functions @ x = code @ f }
+
+	{ fitness @ x = code @ r }
+	;
+
+
+%topic structure
+
+G 'x' : Gene Component + 'c' 
+
+	{ code @ x = GenieCompiler compileSchema: var@c } 
+
+	;
+
+Component 'x' : name 'n' ":" Value 'v'
+	
+	{ code @ x = 'a_gene[{1}] = {2};'	 format: { n value asString asUppercase . code @ v } } 
+
+	{ var @ x = n value asString asUppercase }
+
+	{ val @ x = code @ v }
+
+	;
+
+Value 'x' : 
+
+	number 'n'
+
+	{ code @ x = n value asString }
+
+	| Range 'r'
+
+	{ code @ x = 'interval_t({1} , {2}).at_random()' format: { b@r . e@r } }
+
+	| Function 'f'
+
+	{ code @ x = '{1}({2})' format: { (n@f)  . e@f } };
+
+Range 'x' : number 'b' ".." number  'e'	
+
+	{ b@x = b value  }
+
+	{ e@x = e value  }
+
+	{ code @ x = '(interval_t({1},{2}))' format: { b value . e value } }
+
+	;
+
+Function 'x' : name 'n' "(" name 'e' ")"
+
+	{ n @ x = n value }
+
+	{ e @ x = 'a_gene[{1}]' format: {e value asString asUppercase } }
+
+	;
+
+%topic fitness
+
+R 'x' : Rules Rule + 'r'
+
+	{ code @ x = (code @ r) fold:[:acc :each | acc , String lfString , each ] }
+
+	;
+
+Rule 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
+	 
+	{ code @ x = GenieCompiler compileGroupByRuleKeys: names @ ns expr: value @ e}
+ 
+	| Expr 'e' ";"
+
+	{ code @ x = GenieCompiler compileExprRule: value @ e  }
+
+	;
+
+Expr 'x' : Expr 'left' max Term 'right'  
+
+	{ value @ x = '(max(({1}),({2})))' format:{ value @ left . value @ right }  }
+
+	| Compare 'c'
+
+	{ value @ x = value @ c }
+
+	;
+
+Compare 'x' : Compare 'left' compop 'op' Term 'right' 
+
+	{ value @ x = '(({1}) {2} ({3}))' format: { value @ left . (op value asString) . value @ right } }
+
+	| Compare 'left' equal Term 'right' 
+
+	{ value @ x = '(({1}) == ({2}))' format: { value @ left . value @ right } }
+
+	| Term 't'
+
+	{ value @ x = value @ t }
+
+	;
+
+Term 'x' : Term 'left' "+" Factor 'right'
+
+	{ value @ x = '(({1}) + ({2}))' format:{ value @ left . value @ right } }
+
+	| Term 'left' "-" Factor 'right'
+	
+	{ value @ x = '(({1}) - ({2}))' format:{ value @ left . value @ right } }
+
+	| Factor 'y'  
+
+	{ value @ x = value @ y }
+	;
+
+Factor 'x' : Primitive 'p'
+
+	{ value @ x = value @ p }
+
+	| Factor 'left' multiply Primitive 'right'
+
+	{ value @ x = '(({1}) * ({2}))' format:  { value @ left . value @ right }  }
+
+	;
+
+Primitive 'x' : number 'n' 
+
+	 { value@x = n value asString }
+
+	| name 'n' "(" E 'e' ")" 
+
+	{ value @ x = GenieCompiler compilePrimitiveCallName: n value expr: value @ e }
+
+	| name 'n' 
+
+	{ value @ x = '(*each)[{1}]' format: { n value asString asUppercase } } 
+
+	| "(" Compare 'c' ")" 
+
+	{ value @ x = value @ c }
+
+	;
+
+E 'x' : E 'left' ".." T 'right'
+
+	{ value @ x = 'interval_t({1}), ({2})' format: { value @ left . value @ right } }
+
+	| T 't'
+
+	{ value @ x = value @ t };
+
+T 'x' : T 'left' "+" F 'right'
+
+	{ value @ x = '({1}) + ({2})' format: { value @ left . value @ right } }
+
+	| F 'f'
+
+	{ value @ x = value @ f }
+	;
+
+F 'x' : name 'n'
+
+	{ value @ x = '(*each)[{1}]' format:{ n value asString asUppercase } }
+
+	| number 'n'
+	
+	{ value @ x = n value }
+
+	;
+
+Names 'x' : name 'n' 
+
+	{ names @ x = { n value asString } }
+
+	| Names 'xs' "," name 'n'  
+
+	{ names @ x = (names @ xs) , { n value asString } }
+
+	;
+
+%topic functions
+
+Fun 'x' : Functions Table + 't' 
+
+	{ code @ x = code @ t fold:[:acc :each | acc, String lfString, each] }
+
+	;
+
+Table 'x' : name 'n' Tuple + 't' 
+
+	{ code @ x =  GenieCompiler compileTable: v@t name: n value asString }
+	
+	;
+
+Tuple 'x' : Range 'r' Seq 's'
+	
+	{ v @ x = GenieCompiler compileTupleRangeBegin: b@r end:e@r seq: v@s }
+
+	;
+
+Tuple 'x' : Seq 'left' Seq 'right'
+	 
+	{ v @ x = GenieCompiler compileTuple: v@left seq: v@right }
+
+;
+
+Tuple 'x' : Seq 'seq' Range 'r'
+
+	{ v @ x = GenieCompiler compileTuple: v@seq range: code@r }
+
+	;
+
+Seq 'x' : 
+
+	number 'n'
+	
+	{ v @ x = { n value asString } }
+
+	| Seq 'seq' "," number 'n'
+	
+	{ v @ x = (v @ seq) , { n value asString } }
+
+	;
+
+
+%topic parameters
+
+P 'x' : Parameters Component + 'c' 
+
+	{ code @ x = GenieCompiler compileParameters: var @ c values: val @ c }
+
+	;
