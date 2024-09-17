@@ -1,0 +1,3 @@
+
+int exprand(int);
+

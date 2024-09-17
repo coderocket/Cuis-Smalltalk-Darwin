@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <thread>
 #include "genie_types.h"
 
 using namespace std;
@@ -72,12 +73,24 @@ int sum(gene_t** b, gene_t** e, int index) {
 
 void calculate_fitness(int b, int e) {
 
-	for(int i = b ; i < e; i++) {
+	thread t[N_THREAD];
 
-		fit[i]->fitness = 0;
+	for(int k = 0 ; k < N_THREAD; k++) {
+
+		t[k] = thread([b,e,k]() {
+			for(int i = b+k ; i < e; i+=N_THREAD) {
+
+				fit[i]->fitness = 0;
 
 #include "generated_fitness.cc"
 
+			} 
+		});
 	}
+
+	for(int k = 0; k < N_THREAD; k++) {
+		t[k].join();
+	}
+
 }
 
