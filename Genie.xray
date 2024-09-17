@@ -25,6 +25,8 @@ S 'x' : P 'p' G 'g' Fun 'f' R 'r'
 
 	{ functions @ x = code @ f }
 
+	{ mutate @ x = mutate @ g }
+
 	{ fitness @ x = code @ r }
 	;
 
@@ -35,6 +37,7 @@ G 'x' : Gene Component + 'c'
 
 	{ code @ x = GenieCompiler compileSchema: var@c } 
 
+	{ mutate @ x = code @ c fold:[:acc :each | acc , String lfString, each ] }
 	;
 
 Component 'x' : name 'n' ":" Value 'v'

@@ -1,10 +1,11 @@
 
 CXX = g++
+FLAGS = -O2
 
 o = fitness.o genie.o mutate.o breed.o exprand.o
 
 genie : $o 
-	$(CXX) -g $(o) -o $@
+	$(CXX) $(FLAGS) $o -o $@
 
 fitness.o : generated_fitness.cc generated_constants.h genie_types.h interval.h
 
@@ -20,7 +21,7 @@ test_exprand : test_exprand.o exprand.o
 test_exprand.cc : generated_constants.h exprand.h
 
 %.o: %.cc
-	$(CXX) -c -g $< -o $@
+	$(CXX) -c $(FLAGS) $< -o $@
 
 .PHONY: clean
 
