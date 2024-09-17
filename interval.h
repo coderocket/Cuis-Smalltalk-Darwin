@@ -10,5 +10,12 @@ struct interval_t {
 		return begin + rand() % (end - begin + 1);
 	}
 
+	interval_t intersect(interval_t an_interval) {
+		
+		return interval_t(std::max(begin, an_interval.begin), std::min(end, an_interval.end));
+	}
+
+	int length() { return end - begin; }
+
 };
 
