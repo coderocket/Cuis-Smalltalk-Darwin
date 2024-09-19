@@ -1,3 +1,3 @@
 
-void mutate(int b, int e, double mp) ;
+void mutate(chromosome_t* b, chromosome_t* e, double mp) ;
 

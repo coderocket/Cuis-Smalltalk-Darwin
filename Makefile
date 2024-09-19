@@ -1,8 +1,8 @@
 
 CXX = g++
-FLAGS = -O2
+FLAGS = -g
 
-o = fitness.o genie.o mutate.o breed.o exprand.o
+o = fitness.o genie.o mutate.o breed.o exprand.o crossover.o
 
 genie : $o 
 	$(CXX) $(FLAGS) $o -o $@
@@ -13,7 +13,9 @@ genie.o : genie_types.h interval.h generated_constants.h breed.h
 
 mutate.o : genie_types.h interval.h generated_constants.h generated_mutate.cc
 
-breed.o : genie_types.h generated_constants.h interval.h breed.h exprand.h
+breed.o : genie_types.h generated_constants.h interval.h breed.h exprand.h crossover.h
+
+crossover.o : genie_types.h generated_constants.h
 
 test_exprand : test_exprand.o exprand.o
 	$(CXX) -g test_exprand.o exprand.o -o $@

@@ -4,9 +4,11 @@
 #include <functional>
 #include <iostream>
 
+#include "generated_constants.h"
+#include "genie_types.h"
+
 using namespace std;
 
-#include "genie_types.h"
 
 extern chromosome_t* fit[];
 
@@ -16,15 +18,16 @@ void mutate(gene_t& a_gene) {
 
 }
 
-void mutate(int b, int e, double mp) {
+void mutate(chromosome_t* b, chromosome_t* e, double mp) {
 
 	double p = rand();
 
-	for(int i = b ; i < e; i++) {
+	while (b != e) {
 		if (p / RAND_MAX < mp)
 			for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
-				mutate(fit[i]->gene[j]);
+				mutate(b->gene[j]);
 			}
+		b++;
 	}
 }
 

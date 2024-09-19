@@ -6,11 +6,13 @@
 #include <functional>
 #include <iostream>
 #include <thread>
+#include "generated_constants.h"
 #include "genie_types.h"
+#include "interval.h"
 
 using namespace std;
 
-extern chromosome_t* fit[];
+extern chromosome_t* current;
 
 class compare_by {
 private:
@@ -133,25 +135,24 @@ int mingap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 	return mingap;
 }
 
-void calculate_fitness(int b, int e) {
+void calculate_fitness(chromosome_t* b, chromosome_t* e) {
 
-	thread t[N_THREAD];
+extern int total_fitness;
 
-	for(int k = 0 ; k < N_THREAD; k++) {
+	total_fitness = 0;
 
-		t[k] = thread([b,e,k]() {
-			for(int i = b+k ; i < e; i+=N_THREAD) {
+	while(b != e) {
 
-				fit[i]->fitness = 0;
+		b->fitness = 0;
 
 #include "generated_fitness.cc"
 
-			} 
-		});
+		total_fitness += b->fitness;
+
+		++b;
 	}
 
-	for(int k = 0; k < N_THREAD; k++) {
-		t[k].join();
-	}
+	if (total_fitness <= 0) throw runtime_error("fitness too law, aborting.");
+
 }
 

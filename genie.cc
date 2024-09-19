@@ -3,82 +3,83 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <array>
+#include "generated_constants.h"
+#include "genie_types.h"
 #include "fitness.h"
 #include "mutate.h"
 #include "breed.h"
 
-using namespace std;
+chromosome_t population[2][POPULATION_SIZE + POPULATION_SIZE/4];
+chromosome_t* current;
+chromosome_t* next;
 
-#include "genie_types.h"
+int actual_population_size = POPULATION_SIZE;
 
-chromosome_t chromosome[POPULATION_SIZE+N_OFFSPRING];
-chromosome_t* fit[POPULATION_SIZE+N_OFFSPRING];
+int total_fitness = 0;
+
+using std::max;
+using std::min;
+using std::cout;
+using std::endl;
+using std::swap;
 
 void setup() {
 
-	for(int i = 0; i < POPULATION_SIZE+N_OFFSPRING;i++) {
-		fit[i] = &chromosome[i];
-	}
+	current = population[0];
+	next = population[1];
 
-	mutate(0, POPULATION_SIZE+N_OFFSPRING, 1.0);
+	mutate(current, current+actual_population_size, 1.0);
 
 }
 
-void sort_by_fitness() {
-	sort(fit, fit+POPULATION_SIZE+N_OFFSPRING, [](chromosome_t* p, chromosome_t* q) { return p->fitness > q->fitness; });
-}
+void report(chromosome_t* b, chromosome_t* e) {
 
-		
-void report() {
+	cout << "population size = " << e-b << " " ;
+
+	chromosome_t* p = max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
+
+	chromosome_t* q = min(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
+
+	cout << " max = " << (p)->fitness << " min = " << (q)->fitness << " ";
 
 #if 0
-	for(int i = 0; i < POPULATION_SIZE+N_OFFSPRING; i++) {
-		cout << fit[i]->fitness << ": ";
+	for(int i = 0 ; i < e-b; i++) {
 		for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
 			for(int k = 0; k < GENE_SIZE; k++) {
-				cout << fit[i]->gene[j][k] << " ";
+				cout << (b+i)->gene[j][k] << " ";
 			}
-			cout << "|";
+			cout << "";
 		}
-		cout << endl;
+		cout << " f = " << (b+i)->fitness << endl;
 	}
 #endif
-
-	chromosome_t** p = max(fit+0, fit+POPULATION_SIZE, [](chromosome_t** p, chromosome_t** q) { return (*p)->fitness < (*q)->fitness; });
-
-	chromosome_t** q = max(fit+0, fit+POPULATION_SIZE, [](chromosome_t** p, chromosome_t** q) { return (*p)->fitness > (*q)->fitness; });
-
-	cout << (*p)->fitness << " " << (*q)->fitness << endl;
-
-	for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
-		for(int k = 0; k < GENE_SIZE; k++) {
-			cout << (*p)->gene[j][k] << " ";
-		}
-		cout << "";
-	}
+	cout << total_fitness / actual_population_size;
+	cout << endl;
 }
 
 int main() {
 
 	setup();
 
-	calculate_fitness(0, POPULATION_SIZE+N_OFFSPRING);
+	calculate_fitness(current, current + actual_population_size);
 
-	sort_by_fitness();
+	report(current, current + actual_population_size);
 
 	for(int i = 0; i < N_EPOCH;i++) {
 
 		for(int j = 0; j < N_GEN; j++) {
 
-			breed();
+			int next_population_size = breed(current, current + actual_population_size, next);
 
-			mutate(POPULATION_SIZE, POPULATION_SIZE+N_OFFSPRING, MUTATION_PROBABILITY);
+			mutate(next, next + next_population_size, MUTATION_PROBABILITY);
 
-			calculate_fitness(POPULATION_SIZE, POPULATION_SIZE+N_OFFSPRING);
+			calculate_fitness(next, next + next_population_size);
 
-			sort_by_fitness();
+			swap(next, current);
+			actual_population_size = next_population_size;
 		}
-		report();
+		report(current, current + actual_population_size);
 		cout << endl;
 	}
 	return 0;

@@ -5,31 +5,61 @@
 #include <functional>
 #include <iostream>
 
+#include "generated_constants.h"
+#include "genie_types.h"
+#include "crossover.h"
+
 using namespace std;
 
-#include "genie_types.h"
-#include "exprand.h"
+extern int total_fitness;
+extern int actual_population_size;
 
-extern chromosome_t* fit[POPULATION_SIZE+N_OFFSPRING];
+int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
-void breed() {
+	int next_population_size = 0;
 
-	for(int i = POPULATION_SIZE; i < POPULATION_SIZE + N_OFFSPRING / 2 ; i+=2) {
-		int parent_p = exprand(N_PARENT); //interval_t(0, N_PARENT).at_random();
-		int parent_q = exprand(N_PARENT); // interval_t(0, N_PARENT).at_random();
+	chromosome_t* p = b;
 
-		// first offspring gets lower half of p and upper half of q
+	while(p != e) {
 
-		copy(fit[parent_p]->gene, fit[parent_p]->gene+CHROMOSOME_SIZE/2, fit[i]->gene);
-		copy(fit[parent_q]->gene+CHROMOSOME_SIZE/2, fit[parent_q]->gene+CHROMOSOME_SIZE, fit[i]->gene+CHROMOSOME_SIZE/2);
-
-		// second offspring get upper half of p and lower half of q
-
-		copy(fit[parent_q]->gene, fit[parent_q]->gene+CHROMOSOME_SIZE/2, fit[i+1]->gene);
-		copy(fit[parent_p]->gene+CHROMOSOME_SIZE/2, fit[parent_p]->gene+CHROMOSOME_SIZE, fit[i+1]->gene+CHROMOSOME_SIZE/2);
-
+		p->num_offspring = (((double)p->fitness)/total_fitness)*POPULATION_SIZE;
+		++p;
 	}
 
+	p = b;
+
+	while(p != e) {
+
+		while ((int)p->num_offspring >=1 && next_population_size < POPULATION_SIZE/14) {
+
+			chromosome_t* partner = b + (rand() % actual_population_size);
+			// look for an above average partner
+
+			while(partner->fitness < (double)total_fitness/actual_population_size)
+				partner = b + (rand() % actual_population_size);
+
+			cross_over(p, partner, out);
+
+			out += 1;
+			p->num_offspring -= 1;
+			next_population_size += 1;
+		}
+
+		if ((double)rand() / RAND_MAX < p->num_offspring && next_population_size < POPULATION_SIZE + POPULATION_SIZE /4) {
+			chromosome_t* partner = b + (rand() % actual_population_size);
+			while(partner->fitness < (double)total_fitness/actual_population_size)
+				partner = b + (rand() % actual_population_size);
+
+			cross_over(p, partner, out);
+
+			++out;
+			p->num_offspring -= 1;
+			++next_population_size;
+		}
+
+		++p;
+	}
+
+	return next_population_size;
 }
-		
 
