@@ -3,8 +3,8 @@
 
 /* begin generated */
 
-const int N_EPOCH = 2;
-const int N_GEN = 100;
+const int N_EPOCH = 10;
+const int N_GEN = 20;
 const int N_THREAD = 1;
 const double MUTATION_PROBABILITY = 0.01 ;
 const int POPULATION_SIZE = 1000; // number of individuals (chromosomes)
