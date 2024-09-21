@@ -17,6 +17,8 @@ chromosome_t* next;
 
 int actual_population_size = POPULATION_SIZE;
 
+int next_population_size = 0;
+
 int total_fitness = 0;
 
 void setup() {
@@ -26,6 +28,15 @@ void setup() {
 
 	mutate(current, current+actual_population_size, 1.0);
 
+}
+
+void produce_next_generation() {
+
+	next_population_size = breed(current, current + actual_population_size, next);
+
+	mutate(next, next + next_population_size, MUTATION_PROBABILITY);
+
+	calculate_fitness(next, next + next_population_size);
 }
 
 int main() {
@@ -39,13 +50,7 @@ int main() {
 	for(int i = 0; i < N_EPOCH;i++) {
 
 		for(int j = 0; j < N_GEN; j++) {
-
-			int next_population_size = breed(current, current + actual_population_size, next);
-
-			mutate(next, next + next_population_size, MUTATION_PROBABILITY);
-
-			calculate_fitness(next, next + next_population_size);
-
+			produce_next_generation();
 			std::swap(next, current);
 			actual_population_size = next_population_size;
 		}
