@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <array>
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 
 const double maxlog = -log(1-((POPULATION_SIZE-1.0)/POPULATION_SIZE));

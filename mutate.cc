@@ -4,7 +4,7 @@
 #include <functional>
 #include <iostream>
 
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 
 using namespace std;

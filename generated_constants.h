@@ -3,14 +3,16 @@
 
 /* begin generated */
 
-const int N_EPOCH = 10;
-const int N_GEN = 20;
-const int N_THREAD = 1;
-const double MUTATION_PROBABILITY = 0.01 ;
-const int POPULATION_SIZE = 1000; // number of individuals (chromosomes)
+const int GENIE_EPOCHS 		= 10;
+const int GENIE_GENERATIONS 	= 20;
+const int GENIE_THREADS 	= 1;
+const int GENIE_POPULATION 	= 1000;
+const int GENIE_GENES 		= 100;
+const int GENIE_MUTATIONP 	= 1;
 
-const int CHROMOSOME_SIZE = 100; // number of genes in a chromosome 
-const int GENE_SIZE = 1; 
+const int GENIE_BIT = 0;
+
+const int GENIE_GENE_SIZE 	= 1;
 
 /* end generated */
 

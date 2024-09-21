@@ -7,6 +7,6 @@
 		}
 
 		b->fitness = one_count;
-
+		
 		/* end generated */
 

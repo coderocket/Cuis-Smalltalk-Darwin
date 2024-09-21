@@ -4,7 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <array>
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 #include "fitness.h"
 #include "mutate.h"
@@ -32,11 +32,14 @@ void setup() {
 
 void produce_next_generation() {
 
+	calculate_num_offspring(current, current + actual_population_size);
+
 	next_population_size = breed(current, current + actual_population_size, next);
 
 	mutate(next, next + next_population_size, MUTATION_PROBABILITY);
 
 	calculate_fitness(next, next + next_population_size);
+
 }
 
 int main() {

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <array>
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 
 extern int actual_population_size; 

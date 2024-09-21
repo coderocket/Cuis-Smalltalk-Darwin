@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <cassert>
 #include <algorithm>
 #include <iostream>
@@ -13,7 +14,7 @@ void work(int id) {
 
 	assert(id > 0);
 
-	chrono::milliseconds t(10 + (rand() % 2000));
+	chrono::milliseconds t(5000 + (rand() % 10));
 
 	this_thread::sleep_for(t);
 
@@ -29,6 +30,7 @@ void work(int id) {
 
 int main()
 {
+	cout << "PID = " << getpid() << endl;
 
 	thread t[N];
 

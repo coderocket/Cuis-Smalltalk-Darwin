@@ -6,7 +6,7 @@
 #include <functional>
 #include <iostream>
 #include <thread>
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 #include "interval.h"
 
@@ -133,6 +133,16 @@ int mingap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 	}
 
 	return mingap;
+}
+
+void calculate_num_offspring(chromosome_t* b, chromosome_t* e) {
+
+extern int total_fitness;
+
+	while(b != e) {
+		b->num_offspring = (((double)b->fitness)/total_fitness)*POPULATION_SIZE;
+		++b;
+	}
 }
 
 void calculate_fitness(chromosome_t* b, chromosome_t* e) {

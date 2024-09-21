@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <array>
 #include <algorithm>
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 #include "interval.h"
 

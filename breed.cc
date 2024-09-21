@@ -5,7 +5,7 @@
 #include <functional>
 #include <iostream>
 
-#include "generated_constants.h"
+#include "genie_constants.h"
 #include "genie_types.h"
 #include "crossover.h"
 
@@ -22,21 +22,20 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 	while(p != e) {
 
-		p->num_offspring = (((double)p->fitness)/total_fitness)*POPULATION_SIZE;
-		++p;
-	}
-
-	p = b;
-
-	while(p != e) {
-
 		while ((int)p->num_offspring >=1 && next_population_size < POPULATION_SIZE + POPULATION_SIZE / 4) {
 
 			chromosome_t* partner = b + (rand() % actual_population_size);
 			// look for an above average partner
 
-			while(partner->fitness < (double)total_fitness/actual_population_size)
+			int n_attempts = 0;
+
+			while(partner->fitness < (double)total_fitness/actual_population_size && n_attempts < 10*actual_population_size) {
 				partner = b + (rand() % actual_population_size);
+				++n_attempts;
+			}
+
+			if (n_attempts == 10*actual_population_size)
+				throw runtime_error("could not find a partner with a fitness above the average fitness, aborting.");
 
 			cross_over(p, partner, out);
 
