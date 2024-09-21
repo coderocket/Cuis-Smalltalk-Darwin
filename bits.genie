@@ -1,0 +1,20 @@
+
+Parameters
+
+epochs: 10 
+generations : 20 
+threads : 			1
+
+population: 			1000
+genes: 			100
+
+mutationp: 			1
+
+Gene
+
+bit: 			0..1
+
+Rules
+
+bit;
+

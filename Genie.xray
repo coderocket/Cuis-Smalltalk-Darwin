@@ -17,6 +17,17 @@ rules
 
 %topic main
 
+S 'x' : P 'p' G 'g' R 'r'
+
+	{ params @ x = code @ p }
+
+	{ schema @ x = code @ g }
+
+	{ mutate @ x = mutate @ g }
+
+	{ fitness @ x = code @ r }
+	;
+
 S 'x' : P 'p' G 'g' Fun 'f' R 'r'
 
 	{ params @ x = code @ p }
@@ -40,14 +51,19 @@ G 'x' : Gene Component + 'c'
 	{ mutate @ x = code @ c fold:[:acc :each | acc , String lfString, each ] }
 	;
 
-Component 'x' : name 'n' ":" Value 'v'
+Component 'x' : Name 'n' ":" Value 'v'
 	
-	{ code @ x = 'a_gene[{1}] = {2};'	 format: { n value asString asUppercase . code @ v } } 
+	{ code @ x = 'a_gene[{1}] = {2};'	 format: { value @ n  . code @ v } } 
 
-	{ var @ x = n value asString asUppercase }
+	{ var @ x =  value @ n }
 
 	{ val @ x = code @ v }
 
+	;
+
+Name 'x' : name 'n'
+
+	{ value @ x = GenieCompiler compileName: n value asString }
 	;
 
 Value 'x' : 
@@ -74,11 +90,11 @@ Range 'x' : number 'b' ".." number  'e'
 
 	;
 
-Function 'x' : name 'n' "(" name 'e' ")"
+Function 'x' : name 'n' "(" Name 'e' ")"
 
-	{ n @ x = n value }
+	{ n @ x = GenieCompiler compileFunctionName: n value asString }
 
-	{ e @ x = 'a_gene[{1}]' format: {e value asString asUppercase } }
+	{ e @ x = 'a_gene[{1}]' format: { value @ e  } }
 
 	;
 
@@ -157,7 +173,7 @@ Primitive 'x' : number 'n'
 
 	| name 'n' 
 
-	{ value @ x = '(*each)[{1}]' format: { n value asString asUppercase } } 
+	{ value @ x = '(*each)[{1}]' format: { GenieCompiler compileName: n value asString  } } 
 
 	| "(" Compare 'c' ")" 
 
@@ -167,7 +183,7 @@ Primitive 'x' : number 'n'
 
 E 'x' : E 'left' ".." T 'right'
 
-	{ value @ x = 'interval_t({1}), ({2})' format: { value @ left . value @ right } }
+	{ value @ x = 'interval_t({1}, {2})' format: { value @ left . value @ right } }
 
 	| T 't'
 
@@ -182,9 +198,9 @@ T 'x' : T 'left' "+" F 'right'
 	{ value @ x = value @ f }
 	;
 
-F 'x' : name 'n'
+F 'x' : Name 'n'
 
-	{ value @ x = '(*each)[{1}]' format:{ n value asString asUppercase } }
+	{ value @ x = '(*each)[{1}]' format:{ value @ n } }
 
 	| number 'n'
 	
@@ -192,13 +208,13 @@ F 'x' : name 'n'
 
 	;
 
-Names 'x' : name 'n' 
+Names 'x' : Name 'n' 
 
-	{ names @ x = { n value asString } }
+	{ names @ x = { value @ n  } }
 
-	| Names 'xs' "," name 'n'  
+	| Names 'xs' "," Name 'n'  
 
-	{ names @ x = (names @ xs) , { n value asString } }
+	{ names @ x = (names @ xs) , { value @ n } }
 
 	;
 
