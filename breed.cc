@@ -30,7 +30,7 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 	while(p != e) {
 
-		while ((int)p->num_offspring >=1 && next_population_size < POPULATION_SIZE/14) {
+		while ((int)p->num_offspring >=1 && next_population_size < POPULATION_SIZE + POPULATION_SIZE / 4) {
 
 			chromosome_t* partner = b + (rand() % actual_population_size);
 			// look for an above average partner
