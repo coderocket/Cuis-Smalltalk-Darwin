@@ -1,29 +1,18 @@
 
-/* begin generated */
-
-const int N_EPOCH = 10;
-const int N_GEN = 100;
-const int N_THREAD = 1;
-const double MUTATION_PROBABILITY = 0.02 ;
-const int N_OFFSPRING = 500 ; // must be even
-const int N_PARENT = 30 ;
-const int POPULATION_SIZE = 1000; // number individuals (chromosomes)
-
-const int CHROMOSOME_SIZE = 100; // number of genes in a chromosome 
-const int GENE_SIZE = 1; 
-
 #define GENE_TYPE int
 
-#if 0
-const int CHROMOSOME_SIZE = 5; // number of genes in a chromosome 
-const int GENE_SIZE = 5; 
+/* begin generated */
 
-const int ROOM = 0;
-const int DAY = 1;
-const int HOUR = 2;
-const int DURATION = 3;
-const int TEACHER = 4;
-#endif 
+const int GENIE_EPOCHS 		= 10;
+const int GENIE_GENERATIONS 	= 20;
+const int GENIE_THREADS 	= 1;
+const int GENIE_POPULATION 	= 1000;
+const int GENIE_GENES 		= 100;
+const int GENIE_MUTATIONP 	= 1;
+
+const int GENIE_BIT = 0;
+
+const int GENIE_GENE_SIZE 	= 1;
 
 /* end generated */
 

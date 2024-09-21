@@ -62,7 +62,19 @@ int group_by(chromosome_t* c, int keys[], int n_keys, int (*f)(gene_t** ,gene_t*
 	return result;
 }
 
-int sum(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
+int sum(gene_t* b, gene_t* e, int (*f)(const gene_t*)) {
+
+	int result = 0;
+
+	while(b != e) {
+		result += f(b);
+		b++;
+	}
+
+	return result;
+}
+
+int genie_sum(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
 
 	int result = 0;
 
@@ -74,7 +86,7 @@ int sum(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
 	return result;
 }
 
-int overlap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
+int genie_overlap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 
 	int result = 0;
 
@@ -91,7 +103,7 @@ int overlap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 
 }
 
-int maxgap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) { 
+int genie_maxgap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) { 
 
 	vector<interval_t> interval;
 	interval.reserve(e-b); 
@@ -113,7 +125,7 @@ int maxgap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 	return maxgap;
 }
 
-int mingap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
+int genie_mingap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {
 
 	vector<interval_t> interval;
 	interval.reserve(e-b); 

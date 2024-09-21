@@ -1,12 +1,12 @@
 
 		/* begin generated */
 
-		int zero_count = 0;
+		int one_count = 0;
 		for(int j = 0; j < CHROMOSOME_SIZE; j++) {
-			if (fit[i]->gene[j][0] == 0) zero_count++;
+			if (b->gene[j][0] == 1) one_count++;
 		}
 
-		fit[i]->fitness -= zero_count;
-
+		b->fitness = one_count;
+		
 		/* end generated */
 

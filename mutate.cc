@@ -3,14 +3,15 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <sstream>
 
 #include "genie_constants.h"
 #include "genie_types.h"
+#include "interval.h"
 
 using namespace std;
 
-
-extern chromosome_t* fit[];
+#include "generated_tables.h"
 
 void mutate(gene_t& a_gene) {
 
