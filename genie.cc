@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <fstream>
 #include <array>
 #include "genie_constants.h"
 #include "genie_types.h"
@@ -11,6 +12,9 @@
 #include "breed.h"
 #include "invert.h"
 #include "report.h"
+
+using std::fstream;
+using std::max;
 
 chromosome_t population[2][POPULATION_SIZE + POPULATION_SIZE/4];
 chromosome_t* current;
@@ -29,7 +33,7 @@ void setup() {
 
 	for(int i = 0 ; i < actual_population_size;i++) {
 		for(int j = 0 ; j < CHROMOSOME_SIZE; j++) {
-			current[i].gene[j][GENIE_LOCUS] = j;
+			current[i].gene[j][GENIE_LOCUS] = j + 1;
 		}
 	}
 
@@ -50,6 +54,12 @@ void produce_next_generation() {
 
 }
 
+chromosome_t* find_fittest_chromosome(chromosome_t* b, chromosome_t* e) {
+
+	return max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
+
+}
+
 int main() {
 
 	setup();
@@ -67,6 +77,15 @@ int main() {
 		}
 		report(current, current + actual_population_size);
 	}
+
+	chromosome_t* solution = find_fittest_chromosome(current, current+actual_population_size);
+
+	fstream file("solution.json", std::ios::out);
+
+	json_write_solution(solution, file);
+
+	file.close();
+
 	return 0;
 }
 
