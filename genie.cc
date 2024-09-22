@@ -9,6 +9,7 @@
 #include "fitness.h"
 #include "mutate.h"
 #include "breed.h"
+#include "invert.h"
 #include "report.h"
 
 chromosome_t population[2][POPULATION_SIZE + POPULATION_SIZE/4];
@@ -42,6 +43,7 @@ void produce_next_generation() {
 
 	next_population_size = breed(current, current + actual_population_size, next);
 
+	invert(next, next + next_population_size, INVERSION_PROBABILITY);
 	mutate(next, next + next_population_size, MUTATION_PROBABILITY);
 
 	calculate_fitness(next, next + next_population_size);

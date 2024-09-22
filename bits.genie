@@ -8,7 +8,8 @@ threads : 			1
 population: 			1000
 genes: 			100
 
-mutationp: 			1
+mutationp: 			1.0e-3
+inversionp: 			1.0e-2
 
 Gene
 
@@ -16,5 +17,5 @@ bit: 			0..1
 
 Rules
 
-bit;
+bonus bit;
 
