@@ -26,6 +26,12 @@ void setup() {
 	current = population[0];
 	next = population[1];
 
+	for(int i = 0 ; i < actual_population_size;i++) {
+		for(int j = 0 ; j < CHROMOSOME_SIZE; j++) {
+			current[i].gene[j][GENIE_LOCUS] = j;
+		}
+	}
+
 	mutate(current, current+actual_population_size, 1.0);
 
 }
