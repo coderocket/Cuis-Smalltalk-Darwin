@@ -15,7 +15,7 @@ using namespace std;
 
 void mutate(gene_t& a_gene, double p) {
 
-	double t = ((double)rand()) / RAND_MAX;
+	double t = ((double)random()) / RAND_MAX;
 
 	if (t < p) {
 #include "generated_mutate.cc"

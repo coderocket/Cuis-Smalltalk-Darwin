@@ -7,7 +7,7 @@ struct interval_t {
 	interval_t(int b, int e) : begin(b) , end(e) {}
 
 	int at_random() {
-		return begin + rand() % (end - begin + 1);
+		return begin + random() % (end - begin + 1);
 	}
 
 	interval_t intersect(interval_t an_interval) {

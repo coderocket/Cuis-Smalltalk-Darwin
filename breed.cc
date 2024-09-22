@@ -24,13 +24,13 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 		while ((int)p->num_offspring >=1 && next_population_size < POPULATION_SIZE + POPULATION_SIZE / 4) {
 
-			chromosome_t* partner = b + (rand() % actual_population_size);
+			chromosome_t* partner = b + (random() % actual_population_size);
 			// look for an above average partner
 
 			int n_attempts = 0;
 
 			while(partner->fitness < (double)total_fitness/actual_population_size && n_attempts < 10*actual_population_size) {
-				partner = b + (rand() % actual_population_size);
+				partner = b + (random() % actual_population_size);
 				++n_attempts;
 			}
 
@@ -44,10 +44,10 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 			next_population_size += 1;
 		}
 
-		if ((double)rand() / RAND_MAX < p->num_offspring && next_population_size < POPULATION_SIZE + POPULATION_SIZE /4) {
-			chromosome_t* partner = b + (rand() % actual_population_size);
+		if ((double)random() / RAND_MAX < p->num_offspring && next_population_size < POPULATION_SIZE + POPULATION_SIZE /4) {
+			chromosome_t* partner = b + (random() % actual_population_size);
 			while(partner->fitness < (double)total_fitness/actual_population_size)
-				partner = b + (rand() % actual_population_size);
+				partner = b + (random() % actual_population_size);
 
 			cross_over(p, partner, out);
 

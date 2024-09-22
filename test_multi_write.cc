@@ -14,7 +14,7 @@ void work(int id) {
 
 	assert(id > 0);
 
-	chrono::milliseconds t(5000 + (rand() % 10));
+	chrono::milliseconds t(5000 + (random() % 10));
 
 	this_thread::sleep_for(t);
 
@@ -26,6 +26,7 @@ void work(int id) {
 		assert(k < N);
 		b[k] = id;
 	}
+	assert(b[k] == id);
 }
 
 int main()
