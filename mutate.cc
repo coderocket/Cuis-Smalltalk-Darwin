@@ -13,21 +13,22 @@ using namespace std;
 
 #include "generated_tables.h"
 
-void mutate(gene_t& a_gene) {
+void mutate(gene_t& a_gene, double p) {
 
+	double t = ((double)rand()) / RAND_MAX;
+
+	if (t < p) {
 #include "generated_mutate.cc"
+	}
 
 }
 
 void mutate(chromosome_t* b, chromosome_t* e, double mp) {
 
-	double p = rand();
-
 	while (b != e) {
-		if (p / RAND_MAX < mp)
-			for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
-				mutate(b->gene[j]);
-			}
+		for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
+			mutate(b->gene[j], mp);
+		}
 		b++;
 	}
 }
