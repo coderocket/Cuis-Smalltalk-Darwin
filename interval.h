@@ -15,7 +15,7 @@ struct interval_t {
 		return interval_t(std::max(begin, an_interval.begin), std::min(end, an_interval.end));
 	}
 
-	int length() { return end - begin; }
+	int length() { return std::max(end - begin,0); }
 
 };
 
