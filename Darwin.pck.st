@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 September 2024 at 11:30:23 pm'!
+'From Cuis7.1 [latest update: #6676] on 22 September 2024 at 3:22:59 pm'!
 'Description '!
-!provides: 'Darwin' 1 76!
+!provides: 'Darwin' 1 78!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -265,10 +265,10 @@ worst
 worstk: anInteger
 	worstk := anInteger ! !
 
-!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/21/2024 22:47:44'!
-compileExprRule: aString
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/22/2024 15:20:27'!
+compileExprRule: aString kind: anInteger
 
-	^'b->fitness += sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ return {1}; \});' format:{ aString }.
+	^'b->fitness {1}= sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ return {2}; \});' format:{ (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
 	! !
 
 !GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/21/2024 21:24:32'!
@@ -276,8 +276,8 @@ compileFunctionName: aString
 
 	^'genie_', aString ! !
 
-!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/21/2024 22:01:05'!
-compileGroupByRuleKeys: anOrderedCollection expr: aString
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/22/2024 15:20:53'!
+compileGroupByRuleKeys: anOrderedCollection expr: aString kind: anInteger
 
 	| aStream |
 	
@@ -287,8 +287,8 @@ compileGroupByRuleKeys: anOrderedCollection expr: aString
 	
 	^ '\{ int keys[] = \{{1}\}; 
 
-b->fitness += group_by(b, keys,{2},[](gene_t** b, gene_t** e) 
-	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString }! !
+b->fitness {4}= group_by(b, keys,{2},[](gene_t** b, gene_t** e) 
+	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
 !GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/21/2024 21:20:44'!
 compileName: aString

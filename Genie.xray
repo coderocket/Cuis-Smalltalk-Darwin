@@ -1,6 +1,6 @@
 tokens
 
-".." Gene Parameters Functions Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";"
+".." Gene Parameters Functions Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" bonus penalty
 
 
 patterns
@@ -113,13 +113,26 @@ R 'x' : Rules Rule + 'r'
 
 	;
 
-Rule 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
+Rule 'x' : bonus Aggr 'a' 
+
+	{ kind @ a = 1 }
+
+	{ code @ x = code @ a }
+
+	| penalty Aggr 'a'
+
+	{ kind @ a = -1 }
+
+	{ code @ x = code @ a }
+;
+
+Aggr 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
 	 
-	{ code @ x = GenieCompiler compileGroupByRuleKeys: names @ ns expr: value @ e}
+	{ code @ x = GenieCompiler compileGroupByRuleKeys: names @ ns expr: value @ e kind: kind @ x }
  
 	| Expr 'e' ";"
 
-	{ code @ x = GenieCompiler compileExprRule: value @ e  }
+	{ code @ x = GenieCompiler compileExprRule: value @ e kind: kind @ x }
 
 	;
 
