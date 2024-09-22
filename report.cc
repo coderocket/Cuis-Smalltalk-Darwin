@@ -46,26 +46,43 @@ void report(chromosome_t* b, chromosome_t* e) {
 		cout << history[i] << '\n';
 	}
 	cout << "e" << endl;
+}
 
-#if 0
-	cout << "population size = " << e-b << " " ;
+void report_solution(chromosome_t* c) {
 
-	chromosome_t* p = max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
-
-	chromosome_t* q = min(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
-
-	cout << " max = " << (p)->fitness << " min = " << (q)->fitness << " ";
-
-	cout << total_fitness / actual_population_size << endl;
+	cout << " fitness = " << (c)->fitness << endl ;
 
 	for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
+		cout << "(" << c->gene[j][GENIE_LOCUS] << ", ";
 		for(int k = 0; k < GENE_SIZE; k++) {
-			cout << (p)->gene[j][k] << " ";
+			cout << (c)->gene[j][k] << " ";
 		}
-		cout << "";
+		cout << ")|";
 	}
 
 	cout << endl;
-#endif
+
 }
 
+void json_write_solution(chromosome_t* c, ostream& out) {
+
+	out << "[" << '\n';
+
+	for(int j = 0 ; j < CHROMOSOME_SIZE ;j++) {
+		out << "[" << c->gene[j][GENIE_LOCUS] << ", ";
+		out << "[";
+		int k;
+		for(k=0; k < GENE_SIZE - 1; k++) {
+			out << (c)->gene[j][k] << ",";
+		}
+		out << c->gene[j][k];
+
+		out << "] ]";
+
+		if (j < CHROMOSOME_SIZE - 1)
+			out << ", ";
+	}
+
+	out << "]" << endl;
+
+}
