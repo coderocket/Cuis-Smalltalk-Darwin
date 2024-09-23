@@ -1,5 +1,5 @@
 
-CXX = g++
+CXX = $(PLATFORM_CPLUSPLUS_COMPILER)
 FLAGS = -g 
 
 o = fitness.o genie.o mutate.o breed.o exprand.o crossover.o report.o invert.o
