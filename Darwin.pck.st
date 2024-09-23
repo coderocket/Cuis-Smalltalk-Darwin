@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 22 September 2024 at 3:22:59 pm'!
+'From Cuis7.1 [latest update: #6668] on 23 September 2024 at 6:14:42 pm'!
 'Description '!
-!provides: 'Darwin' 1 78!
+!provides: 'Darwin' 1 91!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -62,6 +62,36 @@ GridModel subclass: #CollegeAssignmentGridModel
 	category: 'Darwin'!
 !classDefinition: 'CollegeAssignmentGridModel class' category: #Darwin!
 CollegeAssignmentGridModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerBrowserModel category: #Darwin!
+GridModel subclass: #LecturerBrowserModel
+	instanceVariableNames: 'selection lecturers indices'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'LecturerBrowserModel class' category: #Darwin!
+LecturerBrowserModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #PluggableGridBrowserModel category: #Darwin!
+GridModel subclass: #PluggableGridBrowserModel
+	instanceVariableNames: 'selection dictionary indices topic'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'PluggableGridBrowserModel class' category: #Darwin!
+PluggableGridBrowserModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #RoomBrowserModel category: #Darwin!
+GridModel subclass: #RoomBrowserModel
+	instanceVariableNames: 'rooms selection'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'RoomBrowserModel class' category: #Darwin!
+RoomBrowserModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #Individual category: #Darwin!
@@ -377,12 +407,12 @@ compileTupleRange: aString seq: anOrderedCollection
 		ifTrue:[	'if ({1}.includes({2})) \{ return ({2}; \}' format:{ aString . anOrderedCollection first }]
 		ifFalse:['if ({1}.includes({2})) \{ vector<int> v(\{{2}\}); return v[rand() % v.size()]; \}' format:{ aString .  anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
-!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/17/2024 18:56:00'!
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 12:27:25'!
 compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
 
 	^anOrderedCollection size = 1 
-		ifTrue:[	'if ({1}<= arg && arg < {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
-		ifFalse:['if ({1}<= arg && arg < {2}) \{ vector<int> v(\{{3}\}); return v[rand() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
+		ifTrue:[	'if ({1}<= arg && arg <= {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
+		ifFalse:['if ({1}<= arg && arg <= {2}) \{ vector<int> v(\{{3}\}); return v[rand() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
 !GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/21/2024 23:20:54'!
 generateCode: anASTNode
@@ -430,6 +460,11 @@ nRows
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:32:07'!
 title
 	^'Title'! !
+
+!GridModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 12:54:40'!
+rows: nrows cols: ncols data: aDictionary
+
+	! !
 
 !CollegeAssignmentGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:13:16'!
 at: row at: col
@@ -490,6 +525,298 @@ room: anInteger
 !CollegeAssignmentGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:32:26'!
 title
 	^'Room ', room asString! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:46:42'!
+at: row at: col
+
+	| index |
+	
+	selection = 0 ifTrue:[^''].
+	
+	index := indices at: selection.
+	
+	^ (lecturers at: index) at: (row @ col) ifAbsent:[''] :: asString! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:46:06'!
+fromJson: aJson
+
+	| days hours template |
+	
+	template := Dictionary new.
+	
+	days := (1 to:6) collect: [:i | 1@(i+1) -> i asString ] :: asDictionary.
+	
+	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
+	
+	template addAll: days ; addAll: hours.
+	
+	lecturers := Dictionary new.
+
+	aJson do:[:eachInstance | | tuple lecturer |
+		
+		tuple := eachInstance at:2.
+		
+		lecturer := tuple at: 6.
+
+		lecturers at:lecturer put: template copy ]. "prepare a dictionary for each room"
+	
+	aJson do:[:eachInstance | | tuple room day hour module lecturer duration |
+		
+		tuple := eachInstance at:2.
+		
+		room := tuple at: 1.
+		day := tuple at: 2.
+		hour := tuple at: 3.
+		module := tuple at: 5.
+		lecturer := tuple at:6.
+		duration := tuple at:7.
+		
+		(0 to: duration - 1) do:[:i | lecturers at:lecturer :: at: (hour + i + 1@ day + 1) put: { module . room } asString ] ].
+
+	indices := lecturers keys sort.! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
+initialize
+
+	selection := 1! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:46:20'!
+lecturers
+	^indices collect:[:each | 'Lecturer {1}' format:{each}]! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
+nCols
+	^6! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
+nRows
+	^24! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
+select: anIndex
+	selection := anIndex.
+	
+	self changed: #select:! !
+
+!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
+selection
+	^selection ! !
+
+!LecturerBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:50:57'!
+morph: aJson
+
+	| aCollegeSolution aListMorph |
+	
+	aCollegeSolution := self new.
+	
+	aCollegeSolution fromJson: aJson.
+
+	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #lecturers indexGetter: #selection indexSetter: #select:.
+
+	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: 'Lecturer Browser' :: openInWorld 
+
+! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:49:10'!
+at: row at: col
+
+	| index |
+	
+	selection = 0 ifTrue:[^''].
+	
+	index := indices at: selection.
+	
+	^ (dictionary at: index) at: (row @ col) ifAbsent:[''] :: asString! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 17:08:15'!
+fromJson: aJson forKey: keyIndex
+
+	| days hours template legend |
+	
+	legend := Dictionary new.
+	
+	legend at: 1 put: 'R' ; at: 5 put: 'M'; at: 6 put: 'L'.
+	
+	template := Dictionary new.
+	
+	days := (1 to:6) collect: [:i | 1@(i+1) -> i asString ] :: asDictionary.
+	
+	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
+	
+	template addAll: days ; addAll: hours.
+	
+	dictionary := Dictionary new.
+
+	aJson do:[:eachInstance | | tuple key |
+		
+		tuple := eachInstance at:2.
+		
+		key := tuple at: keyIndex.
+
+		dictionary at:key put: template copy ]. "prepare a dictionary for each key"
+	
+	aJson do:[:eachInstance | | tuple day hour duration key ii aStream |
+		
+		tuple := eachInstance at:2.
+		
+		" always used "
+				
+		day := tuple at: 2.
+		hour := tuple at: 3.
+		duration := tuple at:7.
+		
+		" used as keys 
+		
+		room := tuple at: 1.
+		module := tuple at: 5.
+		lecturer := tuple at:6. "
+		
+		key := tuple at: keyIndex.
+	
+		ii := { 1 . 5 . 6 } asOrderedCollection remove: keyIndex ; yourself.
+		
+		aStream := WriteStream on:''.
+		
+		ii do:[:j | aStream nextPutAll: (legend at: j); nextPutAll: (tuple at: j) asString ] separatedBy:[ aStream nextPutAll:';'].
+		
+		(0 to: duration - 1) do:[:i | dictionary at: key :: at: (hour + i + 1@ day + 1) put: (aStream contents)  ] ].
+
+	indices := dictionary keys sort.! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:12:00'!
+initialize
+
+	selection := 1.
+	
+	topic := 'No Topic'.! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
+nCols
+	^6! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
+nRows
+	^24! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
+select: anIndex
+	selection := anIndex.
+	
+	self changed: #select:! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
+selection
+	^selection ! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:11:34'!
+topic: aString
+	topic := aString! !
+
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:11:46'!
+topics
+	^indices collect:[:each | '{1} {2}' format:{topic . each}]! !
+
+!PluggableGridBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:13:22'!
+morph: aJson key: keyIndex topic: aString
+
+	| aCollegeSolution aListMorph |
+	
+	aCollegeSolution := self new.
+	
+	aCollegeSolution topic: aString; fromJson: aJson forKey: keyIndex.
+
+	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #topics indexGetter: #selection indexSetter: #select:.
+
+	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Browser' format:{aString}) :: openInWorld 
+
+! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 13:55:45'!
+at: row at: col
+
+	selection = 0 ifTrue:[^''].
+	
+	^ (rooms at: selection) at: (row @ col) ifAbsent:[''] :: asString! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:49:41'!
+fromJson: aJson
+
+	| days hours template |
+	
+	template := Dictionary new.
+	
+	days := (1 to:6) collect: [:i | 1@(i+1) -> i asString ] :: asDictionary.
+	
+	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
+	
+	template addAll: days ; addAll: hours.
+	
+	rooms := Dictionary new.
+
+	aJson do:[:eachInstance | | tuple room |
+		
+		tuple := eachInstance at:2.
+		
+		room := tuple at: 1.
+
+		rooms at:room put: template copy ]. "prepare a dictionary for each room"
+	
+	aJson do:[:eachInstance | | tuple room day hour module lecturer duration |
+		
+		tuple := eachInstance at:2.
+		
+		room := tuple at: 1.
+		day := tuple at: 2.
+		hour := tuple at: 3.
+		module := tuple at: 5.
+		lecturer := tuple at:6.
+		duration := tuple at:7.
+		
+		(0 to: duration - 1) do:[:i | rooms at:room :: at: (hour + i + 1@ day + 1) put: { module . lecturer } asString ] ].
+
+	! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:02'!
+initialize
+
+	selection := 1! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 13:53:21'!
+nCols
+	^6! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 13:53:18'!
+nRows
+	^24! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:35:37'!
+rooms
+	^rooms keys sort collect:[:each | 'Room {1}' format:{each}]! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:34:36'!
+select: anIndex
+	selection := anIndex.
+	
+	self changed: #select:! !
+
+!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:34:09'!
+selection
+	^selection ! !
+
+!RoomBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:50:53'!
+morph: aJson
+
+	| aCollegeSolution aListMorph |
+	
+	aCollegeSolution := self new.
+	
+	aCollegeSolution fromJson: aJson.
+
+	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #rooms indexGetter: #selection indexSetter: #select:.
+
+	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: 'Room Browser' :: openInWorld 
+
+! !
 
 !Individual methodsFor: 'individual interface' stamp: 'DF 9/9/2024 20:50:43'!
 breedWith: anIndividual
@@ -840,6 +1167,11 @@ initialize
 !GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:03:02'!
 margin: aNumber
 	margin := aNumber ! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:36:32'!
+update: aSymbol
+
+	self redrawNeeded ! !
 
 !CollegeAssignmentExplorer methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 21:20:30'!
 buildMorphicWindow
