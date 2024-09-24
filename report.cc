@@ -1,7 +1,9 @@
+#include <unistd.h>
 #include <sys/time.h>
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <array>
 #include <vector>
@@ -21,7 +23,7 @@ using std::endl;
 
 vector<string> history;
 
-void report(chromosome_t* b, chromosome_t* e) {
+void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	chromosome_t* p = max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
 
@@ -42,10 +44,12 @@ void report(chromosome_t* b, chromosome_t* e) {
 	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness; 
 	history.push_back(stream.str());
 
+	fstream pipe("fifo", ios::out);
+	
 	for(int i = 0;i < history.size();i++) {
-		cout << history[i] << '\n';
+		pipe << history[i] << '\n';
 	}
-	cout << "e" << endl;
+	pipe << flush;
 }
 
 void report_solution(chromosome_t* c) {

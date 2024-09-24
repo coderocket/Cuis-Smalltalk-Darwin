@@ -66,7 +66,7 @@ int main() {
 
 	calculate_fitness(current, current + actual_population_size);
 
-	report(current, current + actual_population_size);
+	report_progress(current, current + actual_population_size);
 
 	for(int i = 0; i < N_EPOCH;i++) {
 
@@ -75,7 +75,7 @@ int main() {
 			std::swap(next, current);
 			actual_population_size = next_population_size;
 		}
-		report(current, current + actual_population_size);
+		report_progress(current, current + actual_population_size);
 	}
 
 	chromosome_t* solution = find_fittest_chromosome(current, current+actual_population_size);

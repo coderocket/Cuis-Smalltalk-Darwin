@@ -4,5 +4,5 @@ set timefmt "%H:%M:%S"
 set format x "%.3S"
 set border lc rgbcolor "#888888"
 while (1) {
-plot 'fifo' using 1:2 notitle
+	plot 'fifo' using 1:2 notitle
 }
