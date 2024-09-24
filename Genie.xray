@@ -5,22 +5,24 @@ tokens
 
 patterns
 
-#[[:print:]]+:isNewLine: { nextTerminal }
-[[:space:]]+					{ nextTerminal }
-[[:alpha:]]+					name
-"[0-9]+\.[0-9]+(e-[0-9]+)?" 					float
-[0-9]+					number
-\* 					multiply
-"<=|>=|<|>|!="					compop
-"="					equal
+#[[:print:]]+:isNewLine: 								{ nextTerminal }
+[[:space:]]+								{ nextTerminal }
+[[:alpha:]]+								name
+"[0-9]+\.[0-9]+(e-[0-9]+)?" 								float
+[0-9]+								number
+\* 								multiply
+"<=|>=|<|>|!="								compop
+"="								equal
 
 rules
 
 %topic main
 
-S 'x' : P 'p' G 'g' R 'r'
+Start 'x' : Params 'p' Schema 'g' Fitness 'r'
 
 	{ params @ x = code @ p }
+
+	{ tables @ g = Set new }
 
 	{ schema @ x = code @ g }
 
@@ -29,9 +31,11 @@ S 'x' : P 'p' G 'g' R 'r'
 	{ fitness @ x = code @ r }
 	;
 
-S 'x' : P 'p' G 'g' Fun 'f' R 'r'
+Start 'x' : Params 'p' Schema 'g' Fun 'f' Fitness 'r'
 
 	{ params @ x = code @ p }
+
+	{ tables @ g = (tables @ f) asSet }
 
 	{ schema @ x = code @ g }
 
@@ -39,32 +43,42 @@ S 'x' : P 'p' G 'g' Fun 'f' R 'r'
 
 	{ mutate @ x = mutate @ g }
 
+	{ attrs @ r = attrs @ g }
+
 	{ fitness @ x = code @ r }
 	;
 
 
 %topic structure
 
-G 'x' : Gene Component + 'c' 
+Schema 'x' : Gene Component + 'c' 
 
-	{ code @ x = GenieCompiler compileSchema: var@c } 
+	{ code @ x = GenieCompiler compileSchema: attr @ c } 
 
 	{ mutate @ x = code @ c fold:[:acc :each | acc , String lfString, each ] }
+
+	{ attrs @ x = (raw @ c) asSet }
+
 	;
 
 Component 'x' : Name 'n' ":" Value 'v'
 	
 	{ code @ x = 'a_gene[{1}] = {2};'	 format: { value @ n  . code @ v } } 
 
-	{ var @ x =  value @ n }
+	{ attr @ x =  value @ n }
 
 	{ val @ x = code @ v }
+
+	{ raw @ x =  raw @ n }
 
 	;
 
 Name 'x' : name 'n'
 
 	{ value @ x = GenieCompiler compileName: n value asString }
+
+	{ raw @ x = n value asString }
+
 	;
 
 Value 'x' : 
@@ -99,7 +113,7 @@ Range 'x' : number 'b' ".." number  'e'
 
 Function 'x' : name 'n' "(" Name 'e' ")"
 
-	{ n @ x = GenieCompiler compileFunctionName: n value asString }
+	{ n @ x = GenieCompiler compileSchemaFunctionName: n value asString inTables: tables @ x }
 
 	{ e @ x = 'a_gene[{1}]' format: { value @ e  } }
 
@@ -107,7 +121,7 @@ Function 'x' : name 'n' "(" Name 'e' ")"
 
 %topic fitness
 
-R 'x' : Rules Rule + 'r'
+Fitness 'x' : Rules Rule + 'r'
 
 	{ code @ x = (code @ r) fold:[:acc :each | acc , String lfString , each ] }
 
@@ -128,11 +142,11 @@ Rule 'x' : bonus Aggr 'a'
 
 Aggr 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
 	 
-	{ code @ x = GenieCompiler compileGroupByRuleKeys: names @ ns expr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler compileRuleGroupByKeys: names @ ns expr: value @ e kind: kind @ x }
  
 	| Expr 'e' ";"
 
-	{ code @ x = GenieCompiler compileExprRule: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler compileRuleExpr: value @ e kind: kind @ x }
 
 	;
 
@@ -189,11 +203,11 @@ Primitive 'x' : number 'n'
 
 	| name 'n' "(" E 'e' ")" 
 
-	{ value @ x = GenieCompiler compilePrimitiveCallName: n value expr: value @ e }
+	{ value @ x = GenieCompiler compileRulePrimitiveCallName: n value expr: value @ e }
 
 	| name 'n' 
 
-	{ value @ x = '(*each)[{1}]' format: { GenieCompiler compileName: n value asString  } } 
+	{ value @ x = '(*each)[{1}]' format: { GenieCompiler compileRuleName: n value asString isMemberIn: attrs @ x } } 
 
 	| "(" Compare 'c' ")" 
 
@@ -207,7 +221,9 @@ E 'x' : E 'left' ".." T 'right'
 
 	| T 't'
 
-	{ value @ x = value @ t };
+	{ value @ x = value @ t }
+
+	;
 
 T 'x' : T 'left' "+" F 'right'
 
@@ -216,11 +232,12 @@ T 'x' : T 'left' "+" F 'right'
 	| F 'f'
 
 	{ value @ x = value @ f }
+
 	;
 
 F 'x' : Name 'n'
 
-	{ value @ x = '(*each)[{1}]' format:{ value @ n } }
+	{ value @ x = GenieCompiler compileRuleVariable: raw @ n in: attrs @ x }
 
 	| number 'n'
 	
@@ -244,12 +261,15 @@ Fun 'x' : Functions Table + 't'
 
 	{ code @ x = code @ t fold:[:acc :each | acc, String lfString, each] }
 
+	{ tables @ x = (table @ t) }
+
 	;
 
 Table 'x' : name 'n' Tuple + 't' 
 
 	{ code @ x =  GenieCompiler compileTable: v@t name: n value asString }
 	
+	{ table @ x = { n value asString } }
 	;
 
 Tuple 'x' : Range 'r' Seq 's'
@@ -285,8 +305,8 @@ Seq 'x' :
 
 %topic parameters
 
-P 'x' : Parameters Component + 'c' 
+Params 'x' : Parameters Component + 'c' 
 
-	{ code @ x = GenieCompiler compileParameters: var @ c values: val @ c }
+	{ code @ x = GenieCompiler compileParameters: attr @ c values: val @ c }
 
 	;
