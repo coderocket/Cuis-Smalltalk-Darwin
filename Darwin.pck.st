@@ -1,12 +1,12 @@
-'From Cuis7.1 [latest update: #6676] on 24 September 2024 at 9:40:44 pm'!
+'From Cuis7.1 [latest update: #6676] on 24 September 2024 at 10:45:40 pm'!
 'Description '!
-!provides: 'Darwin' 1 97!
+!provides: 'Darwin' 1 100!
 SystemOrganization addCategory: #Darwin!
 
 
 !classDefinition: #GenieCompiler category: #Darwin!
 Object subclass: #GenieCompiler
-	instanceVariableNames: ''
+	instanceVariableNames: 'codePath defaults validFunctions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -24,16 +24,6 @@ Object subclass: #GridModel
 GridModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #LecturerBrowserModel category: #Darwin!
-GridModel subclass: #LecturerBrowserModel
-	instanceVariableNames: 'selection lecturers indices'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Darwin'!
-!classDefinition: 'LecturerBrowserModel class' category: #Darwin!
-LecturerBrowserModel class
-	instanceVariableNames: ''!
-
 !classDefinition: #PluggableGridBrowserModel category: #Darwin!
 GridModel subclass: #PluggableGridBrowserModel
 	instanceVariableNames: 'selection dictionary indices topic'
@@ -42,16 +32,6 @@ GridModel subclass: #PluggableGridBrowserModel
 	category: 'Darwin'!
 !classDefinition: 'PluggableGridBrowserModel class' category: #Darwin!
 PluggableGridBrowserModel class
-	instanceVariableNames: ''!
-
-!classDefinition: #RoomBrowserModel category: #Darwin!
-GridModel subclass: #RoomBrowserModel
-	instanceVariableNames: 'rooms selection'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Darwin'!
-!classDefinition: 'RoomBrowserModel class' category: #Darwin!
-RoomBrowserModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #GenieUndefinedSymbolException category: #Darwin!
@@ -75,13 +55,57 @@ GridMorph class
 	instanceVariableNames: ''!
 
 
-!GenieCompiler class methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 21:35:14'!
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:23:03'!
+compileName: aString
+
+	^'GENIE_', aString asUppercase! !
+
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:23:55'!
+compileSchema: anOrderedCollection
+
+	| aStream i |
+	
+	aStream := WriteStream on:''.
+	
+	i := 0.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: 'const int ' ; nextPutAll: each ; nextPutAll: ' = ' ; nextPutAll: ('{1};' format: { i} ) ; nextPut: Character lf. i := i + 1. ].
+	
+	aStream nextPutAll: ('const int GENIE_GENE_SIZE = {1};' format: {i}) ; nextPut:Character lf.
+	
+	^aStream contents! !
+
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:24:02'!
+compileSchemaFunctionName: aString inTables: aSet
+
+	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText: 'Undefined function: ', aString ; signal ].
+
+	^'genie_', aString ! !
+
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 9/24/2024 22:26:16'!
+compileParameters: names values: values
+
+	| aStream params |
+
+	names includes: 'GENIE_GENES' :: ifFalse:[self error: 'genes is not defined'].
+
+	params := defaults copy.
+	
+	1 to: names size do:[:i | params at: (names at:i) put: (values at:i) ].		
+	
+	aStream := WriteStream on:''.
+	
+	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const int ' ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value ; nextPutAll:';' ; nextPut: Character lf.  ].
+	
+	^aStream contents! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:13'!
 compileRuleExpr: aString kind: anInteger
 
 	^'b->fitness {1}= sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ return {2}; \});' format:{ (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
 	! !
 
-!GenieCompiler class methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 21:35:40'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:19'!
 compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
 
 	| aStream  |
@@ -95,7 +119,7 @@ compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
 b->fitness {4}= group_by(b, keys,{2},[](gene_t** b, gene_t** e) 
 	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
-!GenieCompiler class methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 21:36:23'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:27'!
 compileRuleName: aString isMemberIn: aSet
 
 	aSet includes: aString :: ifFalse:[
@@ -104,26 +128,22 @@ compileRuleName: aString isMemberIn: aSet
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler class methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 21:36:05'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:26:59'!
 compileRulePrimitiveCallName: aString expr: anotherString
 
-	| validFunctions |
-	
-	validFunctions := { 'sum' . 'overlap' . 'maxgap' . 'mingap' }.
-	
 	validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString ; signal].
 
 	^ 'genie_{1}(b,e,[](const gene_t* each) \{ return {2}; \})' format:{aString . anotherString } 
 	! !
 
-!GenieCompiler class methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 21:30:35'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:49'!
 compileRuleVariable: aString in: aSet
 
 	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined attribute ', aString ; signal].
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
 
-!GenieCompiler class methodsFor: 'compiling tables' stamp: 'DF 9/21/2024 23:30:18'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:24:06'!
 compileTable: anOrderedCollection name: aString
 
 	| aStream |
@@ -140,7 +160,7 @@ compileTable: anOrderedCollection name: aString
 	
 	^aStream contents ! !
 
-!GenieCompiler class methodsFor: 'compiling tables' stamp: 'DF 9/17/2024 18:58:51'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:24:11'!
 compileTuple: anOrderedCollection range: aString
 
 	| aStream |
@@ -151,7 +171,7 @@ compileTuple: anOrderedCollection range: aString
 
 	^aStream contents! !
 
-!GenieCompiler class methodsFor: 'compiling tables' stamp: 'DF 9/17/2024 18:27:01'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:27:37'!
 compileTuple: anOrderedCollection seq: anotherCollection
 
 	| aStream |
@@ -162,71 +182,36 @@ compileTuple: anOrderedCollection seq: anotherCollection
 		ifTrue:[			
 			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return {2}; \}' format:{ each .  anotherCollection first }) ] separatedBy:[ aStream nextPut: Character lf] ] 
 		ifFalse:[
-			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ vector<int> v(\{{2}\}); return v[rand() % v.size()]; \}' format:{ each .  anotherCollection fold:[:acc :x | acc , ' , ' , x ] }) ] separatedBy:[ aStream nextPut: Character lf] ].
+			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ vector<int> v(\{{2}\}); return v[random() % v.size()]; \}' format:{ each .  anotherCollection fold:[:acc :x | acc , ' , ' , x ] }) ] separatedBy:[ aStream nextPut: Character lf] ].
 
 	^aStream contents! !
 
-!GenieCompiler class methodsFor: 'compiling tables' stamp: 'DF 9/17/2024 18:30:22'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:27:46'!
 compileTupleRange: aString seq: anOrderedCollection
 
 	^anOrderedCollection size = 1 
 		ifTrue:[	'if ({1}.includes({2})) \{ return ({2}; \}' format:{ aString . anOrderedCollection first }]
-		ifFalse:['if ({1}.includes({2})) \{ vector<int> v(\{{2}\}); return v[rand() % v.size()]; \}' format:{ aString .  anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
+		ifFalse:['if ({1}.includes({2})) \{ vector<int> v(\{{2}\}); return v[random() % v.size()]; \}' format:{ aString .  anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
-!GenieCompiler class methodsFor: 'compiling tables' stamp: 'DF 9/23/2024 12:27:25'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:27:51'!
 compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
 
 	^anOrderedCollection size = 1 
 		ifTrue:[	'if ({1}<= arg && arg <= {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
-		ifFalse:['if ({1}<= arg && arg <= {2}) \{ vector<int> v(\{{3}\}); return v[rand() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
+		ifFalse:['if ({1}<= arg && arg <= {2}) \{ vector<int> v(\{{3}\}); return v[random() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
-!GenieCompiler class methodsFor: 'compiling schema' stamp: 'DF 9/21/2024 21:20:44'!
-compileName: aString
+!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/24/2024 22:28:44'!
+initialize
 
-	^'GENIE_', aString asUppercase! !
-
-!GenieCompiler class methodsFor: 'compiling schema' stamp: 'DF 9/21/2024 19:14:41'!
-compileSchema: anOrderedCollection
-
-	| aStream i |
-	
-	aStream := WriteStream on:''.
-	
-	i := 0.
-	
-	anOrderedCollection do:[:each | aStream nextPutAll: 'const int ' ; nextPutAll: each ; nextPutAll: ' = ' ; nextPutAll: ('{1};' format: { i} ) ; nextPut: Character lf. i := i + 1. ].
-	
-	aStream nextPutAll: ('const int GENIE_GENE_SIZE = {1};' format: {i}) ; nextPut:Character lf.
-	
-	^aStream contents! !
-
-!GenieCompiler class methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 21:39:20'!
-compileSchemaFunctionName: aString inTables: aSet
-
-	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText: 'Undefined function: ', aString ; signal ].
-
-	^'genie_', aString ! !
-
-!GenieCompiler class methodsFor: 'compiling parameters' stamp: 'DF 9/24/2024 20:09:07'!
-compileParameters: names values: values
-
-	| aStream defaults params |
-
-	names includes: 'GENIE_GENES' :: ifFalse:[self error: 'genes is not defined'].
+	codePath := './'.
 
 	defaults := { 'GENIE_EPOCHS' -> '15' . 'GENIE_GENERATIONS' -> '100'. 'GENIE_THREADS' -> '1'. 'GENIE_MUTATIONP' -> '1e-3' . 'GENIE_INVERSIONP' -> '1e-2' . 'GENIE_POPULATION' -> '1000'  } asDictionary.
+	
+	validFunctions := { 'sum' . 'overlap' . 'maxgap' . 'mingap' }.
 
-	params := defaults.
-	
-	1 to: names size do:[:i | params at: (names at:i) put: (values at:i) ].		
-	
-	aStream := WriteStream on:''.
-	
-	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const int ' ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value ; nextPutAll:';' ; nextPut: Character lf.  ].
-	
-	^aStream contents! !
+! !
 
-!GenieCompiler class methodsFor: 'generating code' stamp: 'DF 9/21/2024 23:20:54'!
+!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:24:30'!
 generateCode: anASTNode
 
 	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode).
@@ -235,25 +220,29 @@ generateCode: anASTNode
 	self generateFitness: #fitness @ anASTNode.
 ! !
 
-!GenieCompiler class methodsFor: 'generating code' stamp: 'DF 9/21/2024 22:56:04'!
+!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:23'!
 generateConstants: aString
 
-	'./generated_constants.h' fileContents: aString.! !
+	codePath asDirectoryEntry // 'generated_constants.h' fileContents: aString.! !
 
-!GenieCompiler class methodsFor: 'generating code' stamp: 'DF 9/21/2024 21:13:08'!
+!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:38'!
 generateFitness: aString
 
-	'./generated_fitness.cc' fileContents: aString.! !
+	codePath asDirectoryEntry // 'generated_fitness.cc' fileContents: aString.! !
 
-!GenieCompiler class methodsFor: 'generating code' stamp: 'DF 9/21/2024 21:12:27'!
+!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:44'!
 generateMutate: aString
 
-	'./generated_mutate.cc' fileContents: aString.! !
+	codePath asDirectoryEntry // 'generated_mutate.cc' fileContents: aString.! !
 
-!GenieCompiler class methodsFor: 'generating code' stamp: 'DF 9/21/2024 23:17:01'!
+!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:50'!
 generateTables: aString
 
-	'./generated_tables.h' fileContents: aString.! !
+	codePath asDirectoryEntry // 'generated_tables.h' fileContents: aString.! !
+
+!GenieCompiler methodsFor: 'as yet unclassified' stamp: 'DF 9/24/2024 22:28:29'!
+codePath: aString
+	codePath := aString! !
 
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:08:56'!
 at: row at: column
@@ -278,97 +267,6 @@ rows: nrows cols: ncols data: aDictionary
 
 	! !
 
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:46:42'!
-at: row at: col
-
-	| index |
-	
-	selection = 0 ifTrue:[^''].
-	
-	index := indices at: selection.
-	
-	^ (lecturers at: index) at: (row @ col) ifAbsent:[''] :: asString! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:46:06'!
-fromJson: aJson
-
-	| days hours template |
-	
-	template := Dictionary new.
-	
-	days := (1 to:6) collect: [:i | 1@(i+1) -> i asString ] :: asDictionary.
-	
-	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
-	
-	template addAll: days ; addAll: hours.
-	
-	lecturers := Dictionary new.
-
-	aJson do:[:eachInstance | | tuple lecturer |
-		
-		tuple := eachInstance at:2.
-		
-		lecturer := tuple at: 6.
-
-		lecturers at:lecturer put: template copy ]. "prepare a dictionary for each room"
-	
-	aJson do:[:eachInstance | | tuple room day hour module lecturer duration |
-		
-		tuple := eachInstance at:2.
-		
-		room := tuple at: 1.
-		day := tuple at: 2.
-		hour := tuple at: 3.
-		module := tuple at: 5.
-		lecturer := tuple at:6.
-		duration := tuple at:7.
-		
-		(0 to: duration - 1) do:[:i | lecturers at:lecturer :: at: (hour + i + 1@ day + 1) put: { module . room } asString ] ].
-
-	indices := lecturers keys sort.! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
-initialize
-
-	selection := 1! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:46:20'!
-lecturers
-	^indices collect:[:each | 'Lecturer {1}' format:{each}]! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
-nCols
-	^6! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
-nRows
-	^24! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
-select: anIndex
-	selection := anIndex.
-	
-	self changed: #select:! !
-
-!LecturerBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:22'!
-selection
-	^selection ! !
-
-!LecturerBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:50:57'!
-morph: aJson
-
-	| aCollegeSolution aListMorph |
-	
-	aCollegeSolution := self new.
-	
-	aCollegeSolution fromJson: aJson.
-
-	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #lecturers indexGetter: #selection indexSetter: #select:.
-
-	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: 'Lecturer Browser' :: openInWorld 
-
-! !
-
 !PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:49:10'!
 at: row at: col
 
@@ -380,14 +278,14 @@ at: row at: col
 	
 	^ (dictionary at: index) at: (row @ col) ifAbsent:[''] :: asString! !
 
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 17:08:15'!
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/24/2024 22:44:01'!
 fromJson: aJson forKey: keyIndex
 
 	| days hours template legend |
 	
 	legend := Dictionary new.
 	
-	legend at: 1 put: 'R' ; at: 5 put: 'M'; at: 6 put: 'L'.
+	legend at: 1 put: 'R' ; at: 4 put: 'M'; at: 5 put: 'L'.
 	
 	template := Dictionary new.
 	
@@ -415,17 +313,17 @@ fromJson: aJson forKey: keyIndex
 				
 		day := tuple at: 2.
 		hour := tuple at: 3.
-		duration := tuple at:7.
+		duration := tuple at:6.
 		
 		" used as keys 
 		
 		room := tuple at: 1.
-		module := tuple at: 5.
-		lecturer := tuple at:6. "
+		module := tuple at: 4.
+		lecturer := tuple at:5. "
 		
 		key := tuple at: keyIndex.
 	
-		ii := { 1 . 5 . 6 } asOrderedCollection remove: keyIndex ; yourself.
+		ii := { 1 . 4 . 5 } asOrderedCollection remove: keyIndex ; yourself.
 		
 		aStream := WriteStream on:''.
 		
@@ -480,93 +378,6 @@ morph: aJson key: keyIndex topic: aString
 	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #topics indexGetter: #selection indexSetter: #select:.
 
 	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Browser' format:{aString}) :: openInWorld 
-
-! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 13:55:45'!
-at: row at: col
-
-	selection = 0 ifTrue:[^''].
-	
-	^ (rooms at: selection) at: (row @ col) ifAbsent:[''] :: asString! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:49:41'!
-fromJson: aJson
-
-	| days hours template |
-	
-	template := Dictionary new.
-	
-	days := (1 to:6) collect: [:i | 1@(i+1) -> i asString ] :: asDictionary.
-	
-	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
-	
-	template addAll: days ; addAll: hours.
-	
-	rooms := Dictionary new.
-
-	aJson do:[:eachInstance | | tuple room |
-		
-		tuple := eachInstance at:2.
-		
-		room := tuple at: 1.
-
-		rooms at:room put: template copy ]. "prepare a dictionary for each room"
-	
-	aJson do:[:eachInstance | | tuple room day hour module lecturer duration |
-		
-		tuple := eachInstance at:2.
-		
-		room := tuple at: 1.
-		day := tuple at: 2.
-		hour := tuple at: 3.
-		module := tuple at: 5.
-		lecturer := tuple at:6.
-		duration := tuple at:7.
-		
-		(0 to: duration - 1) do:[:i | rooms at:room :: at: (hour + i + 1@ day + 1) put: { module . lecturer } asString ] ].
-
-	! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:46:02'!
-initialize
-
-	selection := 1! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 13:53:21'!
-nCols
-	^6! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 13:53:18'!
-nRows
-	^24! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:35:37'!
-rooms
-	^rooms keys sort collect:[:each | 'Room {1}' format:{each}]! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:34:36'!
-select: anIndex
-	selection := anIndex.
-	
-	self changed: #select:! !
-
-!RoomBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:34:09'!
-selection
-	^selection ! !
-
-!RoomBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:50:53'!
-morph: aJson
-
-	| aCollegeSolution aListMorph |
-	
-	aCollegeSolution := self new.
-	
-	aCollegeSolution fromJson: aJson.
-
-	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #rooms indexGetter: #selection indexSetter: #select:.
-
-	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: 'Room Browser' :: openInWorld 
 
 ! !
 
