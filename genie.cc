@@ -51,7 +51,7 @@ void store_image() {
 
 	int image_header[] = { /* two magic numbers */ IMAGE_MAGIC[0], IMAGE_MAGIC[1] , /* version number */ 1, /* population size */ 0 , /* chromosome size */ 0 , /* gene size */ 0  };
 
-	int fd = open(image_filename, O_RDWR | O_CREAT);
+	int fd = open(image_filename, O_RDWR | O_CREAT, 0600);
 
 	if (fd == -1) {
 		perror("could not open image file");
@@ -139,17 +139,16 @@ void setup() {
 	if (do_load_image) {
 		load_image();
 	}
-
-	next = population[1];
-
-	for(int i = 0 ; i < actual_population_size;i++) {
-		for(int j = 0 ; j < CHROMOSOME_SIZE; j++) {
-			current[i].gene[j][GENIE_LOCUS] = j + 1;
+	else {
+		for(int i = 0 ; i < actual_population_size;i++) {
+			for(int j = 0 ; j < CHROMOSOME_SIZE; j++) {
+				current[i].gene[j][GENIE_LOCUS] = j + 1;
+			}
 		}
+		mutate(current, current+actual_population_size, 1.0);
 	}
 
-	mutate(current, current+actual_population_size, 1.0);
-
+	next = population[1];
 }
 
 void produce_next_generation() {
