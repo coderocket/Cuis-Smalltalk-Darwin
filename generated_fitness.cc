@@ -1,1 +1,0 @@
-b->fitness += sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) { return  ( *each ) [ GENIE_BIT ] ; });
