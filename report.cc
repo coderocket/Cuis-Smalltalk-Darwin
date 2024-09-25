@@ -1,18 +1,23 @@
+#include <unistd.h>
 #include <sys/time.h>
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <array>
 #include <vector>
+#include <string>
 #include "genie_constants.h"
 #include "genie_types.h"
 
-extern int actual_population_size; 
-
-extern int total_fitness; 
-
 using namespace std;
+
+extern bool use_fifo;
+extern string fifo_name;
+
+extern int actual_population_size; 
+extern int total_fitness; 
 
 using std::max;
 using std::min;
@@ -21,7 +26,7 @@ using std::endl;
 
 vector<string> history;
 
-void report(chromosome_t* b, chromosome_t* e) {
+void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	chromosome_t* p = max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
 
@@ -40,12 +45,21 @@ void report(chromosome_t* b, chromosome_t* e) {
 	stringstream stream;
 
 	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness; 
-	history.push_back(stream.str());
 
-	for(int i = 0;i < history.size();i++) {
-		cout << history[i] << '\n';
+	if (use_fifo) {
+		history.push_back(stream.str());
+
+		fstream pipe(fifo_name, ios::out);	
+
+		for(int i = 0;i < history.size();i++) {
+			pipe << history[i] << '\n';
+		}
+		pipe << flush;
+	} 
+	else {
+		cout << stream.str() << endl;
 	}
-	cout << "e" << endl;
+
 }
 
 void report_solution(chromosome_t* c) {

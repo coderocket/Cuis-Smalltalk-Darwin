@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <array>
 #include "genie_constants.h"
 #include "genie_types.h"
@@ -15,6 +16,12 @@
 
 using std::fstream;
 using std::max;
+using std::string;
+using std::cout;
+using std::endl;
+
+bool use_fifo = false;
+string fifo_name = "fifo";
 
 chromosome_t population[2][POPULATION_SIZE + POPULATION_SIZE/4];
 chromosome_t* current;
@@ -60,13 +67,39 @@ chromosome_t* find_fittest_chromosome(chromosome_t* b, chromosome_t* e) {
 
 }
 
-int main() {
+int main(int argc, char** argv) {
+
+	use_fifo = false;
+
+	if (argc >=2) {
+		if (string(argv[1]) == "-h") {
+			cout << "Usage: genie [-file filename]" << endl;
+			exit(1);
+		}
+		if (string(argv[1]) == "-file") {
+			if (argc == 2) 
+				use_fifo = true;
+			else if(argc > 3) {
+				cout << "Usage: genie [-fifo fifo]" << endl;
+				exit(1);
+			} else {
+				assert(argc == 3);
+
+				use_fifo = true;
+				fifo_name = string(argv[2]);
+			}
+		} 
+		else {
+			cout << "Usage: genie [-file filename]" << endl;
+			exit(1);
+		}
+	}
 
 	setup();
 
 	calculate_fitness(current, current + actual_population_size);
 
-	report(current, current + actual_population_size);
+	report_progress(current, current + actual_population_size);
 
 	for(int i = 0; i < N_EPOCH;i++) {
 
@@ -75,7 +108,7 @@ int main() {
 			std::swap(next, current);
 			actual_population_size = next_population_size;
 		}
-		report(current, current + actual_population_size);
+		report_progress(current, current + actual_population_size);
 	}
 
 	chromosome_t* solution = find_fittest_chromosome(current, current+actual_population_size);

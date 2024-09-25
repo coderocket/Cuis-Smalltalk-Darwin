@@ -1,21 +1,18 @@
 
 /* begin generated */
 
-const int N_EPOCH = 15;
-const int N_GEN = 1000;
+const int GENIE_EPOCHS = 15;
+const int GENIE_GENERATIONS = 100;
+const int GENIE_THREADS = 1;
 
-const double MUTATION_PROBABILITY = 0.02 ;
-const int N_OFFSPRING = 40 ; // must be even
-const int N_PARENT = 20 ;
-const int POPULATION_SIZE = 100; // number individuals (chromosomes)
+const double GENIE_MUTATIONP = 1e-3 ;
+const double GENIE_INVERSIONP = 1e-2 ;
+const int GENIE_POPULATION = 1000; // number individuals (chromosomes)
 
-const int CHROMOSOME_SIZE = 10; // number of genes in a chromosome 
-const int GENE_SIZE = 2; 
+const int GENIE_GENES = 32; // number of genes in a chromosome 
+const int GENIE_GENE_SIZE = 1; 
 
-#define GENE_TYPE double
-
-const int X = 0;
-const int Y = 1;
+const int BIT = 0;
 
 /* end generated */
 
