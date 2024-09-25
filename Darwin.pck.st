@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6668] on 25 September 2024 at 10:15:38 am'!
+'From Cuis7.1 [latest update: #6668] on 25 September 2024 at 5:00:07 pm'!
 'Description '!
-!provides: 'Darwin' 1 101!
+!provides: 'Darwin' 1 104!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -36,7 +36,7 @@ GridModel class
 
 !classDefinition: #PluggableGridBrowserModel category: #Darwin!
 GridModel subclass: #PluggableGridBrowserModel
-	instanceVariableNames: 'selection dictionary indices topic'
+	instanceVariableNames: 'selection dictionary indices topic template'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -65,11 +65,7 @@ GridMorph class
 	instanceVariableNames: ''!
 
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:54:26'!
-codePath: aString
-	codePath := aString! !
-
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:28'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:28'!
 generateCode: anASTNode
 
 	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode).
@@ -78,25 +74,36 @@ generateCode: anASTNode
 	self generateFitness: #fitness @ anASTNode.
 ! !
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:36'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:36'!
 generateConstants: aString
 
 	codePath asDirectoryEntry // 'generated_constants.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:44'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:44'!
 generateFitness: aString
 
 	codePath asDirectoryEntry // 'generated_fitness.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:53'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:53'!
 generateMutate: aString
 
 	codePath asDirectoryEntry // 'generated_mutate.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:59'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:59'!
 generateTables: aString
 
 	codePath asDirectoryEntry // 'generated_tables.h' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:54:26'!
+codePath: aString
+	codePath := aString! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 14:06:30'!
+getSolutionKeys: anASTNode
+
+	^(#attrs @ anASTNode).
+	
+	! !
 
 !GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:54:13'!
 initialize
@@ -301,14 +308,14 @@ at: row at: col
 	
 	^ (dictionary at: index) at: (row @ col) ifAbsent:[''] :: asString! !
 
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/24/2024 22:44:01'!
-fromJson: aJson forKey: keyIndex
+!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 14:01:31'!
+initialize
 
-	| days hours template legend |
+	| days hours |
 	
-	legend := Dictionary new.
+	selection := 1.
 	
-	legend at: 1 put: 'R' ; at: 4 put: 'M'; at: 5 put: 'L'.
+	topic := 'No Topic'.
 	
 	template := Dictionary new.
 	
@@ -317,51 +324,7 @@ fromJson: aJson forKey: keyIndex
 	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
 	
 	template addAll: days ; addAll: hours.
-	
-	dictionary := Dictionary new.
-
-	aJson do:[:eachInstance | | tuple key |
-		
-		tuple := eachInstance at:2.
-		
-		key := tuple at: keyIndex.
-
-		dictionary at:key put: template copy ]. "prepare a dictionary for each key"
-	
-	aJson do:[:eachInstance | | tuple day hour duration key ii aStream |
-		
-		tuple := eachInstance at:2.
-		
-		" always used "
-				
-		day := tuple at: 2.
-		hour := tuple at: 3.
-		duration := tuple at:6.
-		
-		" used as keys 
-		
-		room := tuple at: 1.
-		module := tuple at: 4.
-		lecturer := tuple at:5. "
-		
-		key := tuple at: keyIndex.
-	
-		ii := { 1 . 4 . 5 } asOrderedCollection remove: keyIndex ; yourself.
-		
-		aStream := WriteStream on:''.
-		
-		ii do:[:j | aStream nextPutAll: (legend at: j); nextPutAll: (tuple at: j) asString ] separatedBy:[ aStream nextPutAll:';'].
-		
-		(0 to: duration - 1) do:[:i | dictionary at: key :: at: (hour + i + 1@ day + 1) put: (aStream contents)  ] ].
-
-	indices := dictionary keys sort.! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:12:00'!
-initialize
-
-	selection := 1.
-	
-	topic := 'No Topic'.! !
+! !
 
 !PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
 nCols
@@ -389,14 +352,14 @@ topic: aString
 topics
 	^indices collect:[:each | '{1} {2}' format:{topic . each}]! !
 
-!PluggableGridBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:13:22'!
+!PluggableGridBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 14:01:24'!
 morph: aJson key: keyIndex topic: aString
 
 	| aCollegeSolution aListMorph |
 	
 	aCollegeSolution := self new.
 	
-	aCollegeSolution topic: aString; fromJson: aJson forKey: keyIndex.
+	"aCollegeSolution topic: aString; fromJson: aJson forKey: keyIndex."
 
 	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #topics indexGetter: #selection indexSetter: #select:.
 
@@ -487,71 +450,24 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/14/2024 18:14:08'!
-maxgap: aBlock
+!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/25/2024 13:58:54'!
+toDictionaryUsing: keys
 
-	| intervals b e |
+	| result |
 	
-	intervals := self collect:[:each | aBlock value: each ].
+	result := Dictionary new.
 	
-	intervals ifEmpty: [^0].
+	1 to: self size do:[:index | result at: (keys at:index) put: (self at:index) ].
 	
-	intervals sort:[:x :y | x first <= y first ].
-	
-	b := 1.
-	e := 1.	
-		
-	"invariant: b .. e -1 is the maximal gap upto interval i "
-	
-	1 to: intervals size - 1 do:[ :i | | j k |
-		j := intervals at: i :: last.
-		k := intervals at:i + 1 :: first.
-		j < k ifTrue:[
-			(k - j) > (e - b) ifTrue:[e := k . b := j ] ] ].
-	
-	^ e - b
-				
+	^result! !
 
-	! !
+!Dictionary methodsFor: '*Darwin' stamp: 'DF 9/25/2024 17:00:04'!
+project: keys
 
-!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/14/2024 18:20:38'!
-mingap: aBlock
-
-	| intervals b e |
+	| result |
 	
-	intervals := self collect:[:each | aBlock value: each ].
+	result := self class new.
 	
-	intervals ifEmpty: [^ SmallInteger maxVal].
+	self keysAndValuesDo: [:key :value | keys includes: key :: ifTrue:[ result at:key put: value ] ].
 	
-	intervals sort:[:x :y | x first <= y first ].
-	
-	b := 0.
-	e := SmallInteger maxVal.	
-		
-	"invariant: b .. e -1 is the minimal gap upto interval i "
-	
-	1 to: intervals size - 1 do:[ :i | | j k |
-		j := intervals at: i :: last.
-		k := intervals at:i + 1 :: first.
-		j <= k ifTrue:[
-			(k - j) < (e - b) ifTrue:[e := k . b := j ] ] ].
-	
-	^ e - b
-				
-
-	! !
-
-!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/14/2024 15:23:50'!
-overlap: aBlock
-
-	| intervals result |
-	
-	intervals := self collect:[:each | aBlock value: each ].
-	
-	result := OrderedCollection new.
-	
-	1 to: intervals size do:[:i |
-		i+1 to: intervals size do:[:j |
-			result add: ((intervals at: i) intersection: (intervals at:j)) size ] ].
-	
-	^result sum: [:each | each] ifEmpty:0! !
+	^result! !
