@@ -1,13 +1,23 @@
-'From Cuis7.1 [latest update: #6676] on 24 September 2024 at 10:45:40 pm'!
+'From Cuis7.1 [latest update: #6668] on 25 September 2024 at 10:15:38 am'!
 'Description '!
-!provides: 'Darwin' 1 100!
+!provides: 'Darwin' 1 101!
 SystemOrganization addCategory: #Darwin!
 
 
+!classDefinition: #GenieCodeGenerator category: #Darwin!
+Object subclass: #GenieCodeGenerator
+	instanceVariableNames: 'codePath'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'GenieCodeGenerator class' category: #Darwin!
+GenieCodeGenerator class
+	instanceVariableNames: ''!
+
 !classDefinition: #GenieCompiler category: #Darwin!
 Object subclass: #GenieCompiler
-	instanceVariableNames: 'codePath defaults validFunctions'
-	classVariableNames: ''
+	instanceVariableNames: 'defaults validFunctions'
+	classVariableNames: 'Instance'
 	poolDictionaries: ''
 	category: 'Darwin'!
 !classDefinition: 'GenieCompiler class' category: #Darwin!
@@ -54,6 +64,47 @@ PluggableMorph subclass: #GridMorph
 GridMorph class
 	instanceVariableNames: ''!
 
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:54:26'!
+codePath: aString
+	codePath := aString! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:28'!
+generateCode: anASTNode
+
+	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode).
+	self generateTables: #functions @ anASTNode.
+	self generateMutate: #mutate @ anASTNode.
+	self generateFitness: #fitness @ anASTNode.
+! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:36'!
+generateConstants: aString
+
+	codePath asDirectoryEntry // 'generated_constants.h' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:44'!
+generateFitness: aString
+
+	codePath asDirectoryEntry // 'generated_fitness.cc' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:53'!
+generateMutate: aString
+
+	codePath asDirectoryEntry // 'generated_mutate.cc' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:53:59'!
+generateTables: aString
+
+	codePath asDirectoryEntry // 'generated_tables.h' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:54:13'!
+initialize
+
+	codePath := './'.
+
+
+! !
 
 !GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:23:03'!
 compileName: aString
@@ -200,10 +251,8 @@ compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
 		ifTrue:[	'if ({1}<= arg && arg <= {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
 		ifFalse:['if ({1}<= arg && arg <= {2}) \{ vector<int> v(\{{3}\}); return v[random() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
-!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/24/2024 22:28:44'!
+!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/25/2024 09:55:09'!
 initialize
-
-	codePath := './'.
 
 	defaults := { 'GENIE_EPOCHS' -> '15' . 'GENIE_GENERATIONS' -> '100'. 'GENIE_THREADS' -> '1'. 'GENIE_MUTATIONP' -> '1e-3' . 'GENIE_INVERSIONP' -> '1e-2' . 'GENIE_POPULATION' -> '1000'  } asDictionary.
 	
@@ -211,38 +260,12 @@ initialize
 
 ! !
 
-!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:24:30'!
-generateCode: anASTNode
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 10:13:02'!
+instance
 
-	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode).
-	self generateTables: #functions @ anASTNode.
-	self generateMutate: #mutate @ anASTNode.
-	self generateFitness: #fitness @ anASTNode.
-! !
-
-!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:23'!
-generateConstants: aString
-
-	codePath asDirectoryEntry // 'generated_constants.h' fileContents: aString.! !
-
-!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:38'!
-generateFitness: aString
-
-	codePath asDirectoryEntry // 'generated_fitness.cc' fileContents: aString.! !
-
-!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:44'!
-generateMutate: aString
-
-	codePath asDirectoryEntry // 'generated_mutate.cc' fileContents: aString.! !
-
-!GenieCompiler methodsFor: 'generating code' stamp: 'DF 9/24/2024 22:30:50'!
-generateTables: aString
-
-	codePath asDirectoryEntry // 'generated_tables.h' fileContents: aString.! !
-
-!GenieCompiler methodsFor: 'as yet unclassified' stamp: 'DF 9/24/2024 22:28:29'!
-codePath: aString
-	codePath := aString! !
+	Instance ifNil:[Instance := self new].
+	
+	^Instance! !
 
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:08:56'!
 at: row at: column

@@ -53,7 +53,7 @@ Start 'x' : Params 'p' Schema 'g' Fun 'f' Fitness 'r'
 
 Schema 'x' : Gene Component + 'c' 
 
-	{ code @ x = GenieCompiler compileSchema: attr @ c } 
+	{ code @ x = GenieCompiler instance compileSchema: attr @ c } 
 
 	{ mutate @ x = code @ c fold:[:acc :each | acc , String lfString, each ] }
 
@@ -75,7 +75,7 @@ Component 'x' : Name 'n' ":" Value 'v'
 
 Name 'x' : name 'n'
 
-	{ value @ x = GenieCompiler compileName: n value asString }
+	{ value @ x = GenieCompiler instance compileName: n value asString }
 
 	{ raw @ x = n value asString }
 
@@ -113,7 +113,7 @@ Range 'x' : number 'b' ".." number  'e'
 
 Function 'x' : name 'n' "(" Name 'e' ")"
 
-	{ n @ x = GenieCompiler compileSchemaFunctionName: n value asString inTables: tables @ x }
+	{ n @ x = GenieCompiler instance compileSchemaFunctionName: n value asString inTables: tables @ x }
 
 	{ e @ x = 'a_gene[{1}]' format: { value @ e  } }
 
@@ -142,11 +142,11 @@ Rule 'x' : bonus Aggr 'a'
 
 Aggr 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
 	 
-	{ code @ x = GenieCompiler compileRuleGroupByKeys: names @ ns expr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: names @ ns expr: value @ e kind: kind @ x }
  
 	| Expr 'e' ";"
 
-	{ code @ x = GenieCompiler compileRuleExpr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x }
 
 	;
 
@@ -203,11 +203,11 @@ Primitive 'x' : number 'n'
 
 	| name 'n' "(" E 'e' ")" 
 
-	{ value @ x = GenieCompiler compileRulePrimitiveCallName: n value expr: value @ e }
+	{ value @ x = GenieCompiler instance compileRulePrimitiveCallName: n value expr: value @ e }
 
 	| name 'n' 
 
-	{ value @ x = '(*each)[{1}]' format: { GenieCompiler compileRuleName: n value asString isMemberIn: attrs @ x } } 
+	{ value @ x = '(*each)[{1}]' format: { GenieCompiler instance compileRuleName: n value asString isMemberIn: attrs @ x } } 
 
 	| "(" Compare 'c' ")" 
 
@@ -237,7 +237,7 @@ T 'x' : T 'left' "+" F 'right'
 
 F 'x' : Name 'n'
 
-	{ value @ x = GenieCompiler compileRuleVariable: raw @ n in: attrs @ x }
+	{ value @ x = GenieCompiler instance compileRuleVariable: raw @ n in: attrs @ x }
 
 	| number 'n'
 	
@@ -267,26 +267,26 @@ Fun 'x' : Functions Table + 't'
 
 Table 'x' : name 'n' Tuple + 't' 
 
-	{ code @ x =  GenieCompiler compileTable: v@t name: n value asString }
+	{ code @ x =  GenieCompiler instance compileTable: v@t name: n value asString }
 	
 	{ table @ x = { n value asString } }
 	;
 
 Tuple 'x' : Range 'r' Seq 's'
 	
-	{ v @ x = GenieCompiler compileTupleRangeBegin: b@r end:e@r seq: v@s }
+	{ v @ x = GenieCompiler instance compileTupleRangeBegin: b@r end:e@r seq: v@s }
 
 	;
 
 Tuple 'x' : Seq 'left' Seq 'right'
 	 
-	{ v @ x = GenieCompiler compileTuple: v@left seq: v@right }
+	{ v @ x = GenieCompiler instance compileTuple: v@left seq: v@right }
 
 ;
 
 Tuple 'x' : Seq 'seq' Range 'r'
 
-	{ v @ x = GenieCompiler compileTuple: v@seq range: code@r }
+	{ v @ x = GenieCompiler instance compileTuple: v@seq range: code@r }
 
 	;
 
@@ -307,6 +307,6 @@ Seq 'x' :
 
 Params 'x' : Parameters Component + 'c' 
 
-	{ code @ x = GenieCompiler compileParameters: attr @ c values: val @ c }
+	{ code @ x = GenieCompiler instance compileParameters: attr @ c values: val @ c }
 
 	;
