@@ -20,6 +20,8 @@ rules
 
 Start 'x' : Params 'p' Schema 'g' Fitness 'r'
 
+	{ attrs @ x = attrs @ g }
+
 	{ params @ x = code @ p }
 
 	{ tables @ g = Set new }
@@ -32,6 +34,8 @@ Start 'x' : Params 'p' Schema 'g' Fitness 'r'
 	;
 
 Start 'x' : Params 'p' Schema 'g' Fun 'f' Fitness 'r'
+
+	{ attrs @ x = attrs @ g }
 
 	{ params @ x = code @ p }
 
@@ -57,7 +61,7 @@ Schema 'x' : Gene Component + 'c'
 
 	{ mutate @ x = code @ c fold:[:acc :each | acc , String lfString, each ] }
 
-	{ attrs @ x = (raw @ c) asSet }
+	{ attrs @ x = (raw @ c) }
 
 	;
 

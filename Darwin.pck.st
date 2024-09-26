@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6668] on 25 September 2024 at 5:00:07 pm'!
+'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 3:17:55 pm'!
 'Description '!
-!provides: 'Darwin' 1 104!
+!provides: 'Darwin' 1 112!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -34,16 +34,6 @@ Object subclass: #GridModel
 GridModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #PluggableGridBrowserModel category: #Darwin!
-GridModel subclass: #PluggableGridBrowserModel
-	instanceVariableNames: 'selection dictionary indices topic template'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Darwin'!
-!classDefinition: 'PluggableGridBrowserModel class' category: #Darwin!
-PluggableGridBrowserModel class
-	instanceVariableNames: ''!
-
 !classDefinition: #GenieUndefinedSymbolException category: #Darwin!
 Exception subclass: #GenieUndefinedSymbolException
 	instanceVariableNames: ''
@@ -56,7 +46,7 @@ GenieUndefinedSymbolException class
 
 !classDefinition: #GridMorph category: #Darwin!
 PluggableMorph subclass: #GridMorph
-	instanceVariableNames: 'margin nRows nCols gridH gridW origin'
+	instanceVariableNames: 'margin nRows nCols gridH gridW origin rowHeaders colHeaders'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -279,6 +269,13 @@ at: row at: column
 
 	^ row @ column :: asString! !
 
+!GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:28:33'!
+columnsHeader
+
+	^(1 to: self nCols) collect:[:i | '{1}' format:{i} ]
+	
+	! !
+
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:57:56'!
 nCols
 	^3! !
@@ -288,89 +285,26 @@ nRows
 	^4
 	! !
 
-!GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:32:07'!
-title
-	^'Title'! !
+!GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 13:06:20'!
+rowsHeader
+
+	^(1 to: self nRows) collect:[:i | '{1}' format:{i-1} ]
+	
+	! !
 
 !GridModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 12:54:40'!
 rows: nrows cols: ncols data: aDictionary
 
 	! !
 
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:49:10'!
-at: row at: col
-
-	| index |
-	
-	selection = 0 ifTrue:[^''].
-	
-	index := indices at: selection.
-	
-	^ (dictionary at: index) at: (row @ col) ifAbsent:[''] :: asString! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 14:01:31'!
-initialize
-
-	| days hours |
-	
-	selection := 1.
-	
-	topic := 'No Topic'.
-	
-	template := Dictionary new.
-	
-	days := (1 to:6) collect: [:i | 1@(i+1) -> i asString ] :: asDictionary.
-	
-	hours := (1 to:23) collect: [:i | (i+1)@1 -> i asString ] :: asDictionary.
-	
-	template addAll: days ; addAll: hours.
-! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
-nCols
-	^6! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
-nRows
-	^24! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
-select: anIndex
-	selection := anIndex.
-	
-	self changed: #select:! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 16:48:35'!
-selection
-	^selection ! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:11:34'!
-topic: aString
-	topic := aString! !
-
-!PluggableGridBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:11:46'!
-topics
-	^indices collect:[:each | '{1} {2}' format:{topic . each}]! !
-
-!PluggableGridBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 14:01:24'!
-morph: aJson key: keyIndex topic: aString
-
-	| aCollegeSolution aListMorph |
-	
-	aCollegeSolution := self new.
-	
-	"aCollegeSolution topic: aString; fromJson: aJson forKey: keyIndex."
-
-	aListMorph := PluggableListMorph withModel: aCollegeSolution listGetter: #topics indexGetter: #selection indexSetter: #select:.
-
-	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeSolution)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Browser' format:{aString}) :: openInWorld 
-
-! !
-
 !GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 9/24/2024 20:10:58'!
 defaultAction
 
 	UnhandledError signalForException: self! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:36:40'!
+columnHeaders: aBoolean
+	colHeaders := aBoolean! !
 
 !GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:27:57'!
 drawGridOn: aCanvas
@@ -391,41 +325,107 @@ drawGridOn: aCanvas
 	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:27:15'!
-drawModelOn: aCanvas
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 13:01:06'!
+drawModelColumnHeadersOn: aCanvas
 
+	| colh dw delta font |
+	
+	font := FontFamily defaultFamilyAndPointSize.
+	
+	colHeaders ifFalse:[^self].
+
+	dw := gridW / nCols.
+	
+	delta := rowHeaders ifTrue: [dw@0] ifFalse:[0@0].
+	
+	colh := model columnsHeader.
+	
+	0 to: colh size - 1 do:[:col| | p str strlen |
+		
+		p := origin + delta + ((col*dw) @ 0 ).
+		
+		str := (colh at: col + 1).
+		
+		strlen := font widthOfString: str.
+		
+		aCanvas drawString: str at: p + (((dw - strlen) / 2) @ 0) font: font color: Color black  ].
+	
+			 ! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:17:39'!
+drawModelDataOn: aCanvas
+
+	| aFont dataOrigin dw dh |
+	
+	aFont := FontFamily defaultFamilyAndPointSize.
+	
+	dw := gridW / nCols.
+	dh := gridH / nRows.
+	
+	dataOrigin := origin.
+	
+	colHeaders ifTrue:[dataOrigin := dataOrigin + (0@dh)].
+	rowHeaders ifTrue:[dataOrigin := dataOrigin + (dw@0)].
+	
 	0 to: nRows - 1 do:[:row | 
 
 		0 to: nCols - 1 do:[:col | | p t  | 
 		
-			p := origin + (((col * (gridW / nCols)) @ (row * (gridH / nRows) ) )).
+			p := dataOrigin + (((col * (dw)) @ (row * (dh) ) )).
 		
-			t := model at: row + 1 at: col + 1.
+			t := model at: row at: col + 1.
 		
-		aCanvas drawString: t at: p font: FontFamily defaultFamilyAndPointSize color: Color black  ] ].
+		aCanvas drawString: t at: p font: aFont color: Color black  ] ].
 	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:33:30'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:35:20'!
+drawModelHeadersOn: aCanvas
+
+	self drawModelColumnHeadersOn: aCanvas ; drawModelRowHeadersOn: aCanvas.			 ! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:32:47'!
+drawModelOn: aCanvas
+
+	self drawModelHeadersOn: aCanvas ; drawModelDataOn: aCanvas	
+			 ! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:55:56'!
+drawModelRowHeadersOn: aCanvas
+
+	| rowh dh delta |
+
+	rowHeaders ifFalse:[^self].
+	
+	dh := gridH/nRows.
+
+	delta := colHeaders ifTrue:[0@dh] ifFalse:[0@0].
+	
+	delta := delta - (0 @ (FontFamily defaultFamilyAndPointSize lineSpacing / 2)).
+	
+	rowh := model rowsHeader.
+	
+	0 to: rowh size - 1 do:[:row | | p |
+		
+		p := origin + delta + (0 @ (row * dh) ).
+		
+		aCanvas drawString: (rowh at: row + 1) at: p font: FontFamily defaultFamilyAndPointSize color: Color black  ].
+	
+			 ! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 13:02:56'!
 drawOn: aCanvas
 
-	| fontHeight title |
+	nRows := model ifNil:[1] ifNotNil:[model nRows].
+	colHeaders ifTrue:[nRows := nRows + 1].
 	
-	nRows := model ifNil:[1] ifNotNil:[model nRows]. 
 	nCols := model ifNil:[1] ifNotNil:[model nCols].
+	rowHeaders ifTrue:[nCols := nCols + 1].
 		
 	gridH := self localBounds insetBy:margin :: height.
 	gridW := self localBounds insetBy:margin :: width.
-	
-	fontHeight := FontFamily defaultFamilyAndPointSize lineSpacing.
-	
-	gridH := gridH - fontHeight.
 
-	origin := margin / 2 @ (fontHeight + (margin /  2) ).
-
-	title := model ifNil:['Title'] ifNotNil:[model title].
-	
-	aCanvas drawString: title at: (margin / 2) @ (margin / 2) font: FontFamily defaultFamilyAndPointSize color: Color black.
+	origin := (margin / 2) @ ( (margin /  2) ).
 	
 	self drawGridOn: aCanvas.
 	
@@ -433,17 +433,25 @@ drawOn: aCanvas
 		self drawModelOn: aCanvas
 	].! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 17:32:59'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:36:54'!
 initialize
 	
 	super initialize .
 	
 	margin := 4.
+	
+	rowHeaders := true.
+	
+	colHeaders := true.
 ! !
 
 !GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:03:02'!
 margin: aNumber
 	margin := aNumber ! !
+
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:36:32'!
+rowHeaders: aBoolean
+	rowHeaders := aBoolean! !
 
 !GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 15:36:32'!
 update: aSymbol
