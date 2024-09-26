@@ -1,13 +1,13 @@
 tokens
 
-".." Gene Parameters Functions Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" bonus penalty
+".." Gene Parameters Functions Rules "(" ")" ":" "," group by "+" "-"  max "(" ")" ";" table bonus penalty for in
 
 
 patterns
 
 #[[:print:]]+:isNewLine: 								{ nextTerminal }
 [[:space:]]+								{ nextTerminal }
-[[:alpha:]]+								name
+[[:alpha:]_]+								name
 "[0-9]+\.[0-9]+(e-[0-9]+)?" 								float
 [0-9]+								number
 \* 								multiply
@@ -24,7 +24,11 @@ Start 'x' : Params 'p' Schema 'g' Fitness 'r'
 
 	{ params @ x = code @ p }
 
-	{ tables @ g = Set new }
+	{ fnames @ g = Set new }
+
+	{ functions @ x = Set new }
+
+	{ tables @ x = Set new }
 
 	{ schema @ x = code @ g }
 
@@ -39,17 +43,22 @@ Start 'x' : Params 'p' Schema 'g' Fun 'f' Fitness 'r'
 
 	{ params @ x = code @ p }
 
-	{ tables @ g = (tables @ f) asSet }
+	{ fnames @ g = (fnames @ f) asSet }
 
 	{ schema @ x = code @ g }
 
 	{ functions @ x = code @ f }
 
+	{ tables @ x = tables @ f }
+
 	{ mutate @ x = mutate @ g }
 
 	{ attrs @ r = attrs @ g }
 
+	{ tnames @ r = tnames @ f }
+
 	{ fitness @ x = code @ r }
+
 	;
 
 
@@ -117,7 +126,7 @@ Range 'x' : number 'b' ".." number  'e'
 
 Function 'x' : name 'n' "(" Name 'e' ")"
 
-	{ n @ x = GenieCompiler instance compileSchemaFunctionName: n value asString inTables: tables @ x }
+	{ n @ x = GenieCompiler instance compileSchemaFunctionName: n value asString inTables: fnames @ x }
 
 	{ e @ x = 'a_gene[{1}]' format: { value @ e  } }
 
@@ -131,23 +140,28 @@ Fitness 'x' : Rules Rule + 'r'
 
 	;
 
-Rule 'x' : bonus Aggr 'a' 
+Rule 'x' : bonus Group 'a' 
 
 	{ kind @ a = 1 }
 
 	{ code @ x = code @ a }
 
-	| penalty Aggr 'a'
+	| penalty Group 'a'
 
 	{ kind @ a = -1 }
 
 	{ code @ x = code @ a }
 ;
 
-Aggr 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
+Group 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
 	 
 	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: names @ ns expr: value @ e kind: kind @ x }
+
+	| for name 'index' in name 'tab' "(" name 'key1' "," name 'key2' ")" E 'e' ";"
  
+	{ code @ x = GenieCompiler instance compileTableExpr: tab index: index key: key1 key: key2 expr: value @ e kind: kind @ x }
+	{ locals @ e = { index value asString } asSet }
+
 	| Expr 'e' ";"
 
 	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x }
@@ -207,6 +221,8 @@ Primitive 'x' : number 'n'
 
 	| name 'n' "(" E 'e' ")" 
 
+	{ locals @ e = Set new }
+
 	{ value @ x = GenieCompiler instance compileRulePrimitiveCallName: n value expr: value @ e }
 
 	| name 'n' 
@@ -241,11 +257,21 @@ T 'x' : T 'left' "+" F 'right'
 
 F 'x' : Name 'n'
 
-	{ value @ x = GenieCompiler instance compileRuleVariable: raw @ n in: attrs @ x }
+	{ value @ x = GenieCompiler instance compileRuleVariable: raw @ n attrs: (attrs @ x) locals: (locals @ x)  }
+
+	| Name 'n' "(" Es 'e' ")" 
+
+	{ value @ x = GenieCompiler instance compileRuleInnerCall: raw @ n args: value @ e}
 
 	| number 'n'
 	
 	{ value @ x = n value }
+
+	;
+
+Es 'x' : E 'e' 
+	
+	| Es 'list' "," E 'e'
 
 	;
 
@@ -263,17 +289,21 @@ Names 'x' : Name 'n'
 
 Fun 'x' : Functions Table + 't' 
 
-	{ code @ x = code @ t fold:[:acc :each | acc, String lfString, each] }
+	{ code @ x = code @ t reduce:[:u :v | u, String lfString, v] }
 
-	{ tables @ x = (table @ t) }
+	{ fnames @ x = fname @ t }
 
+	{ tables @ x = table @ t reduce:[:u :v | u, String lfString, v] }
+
+	{ tnames @ x = tname @ t }
 	;
 
 Table 'x' : name 'n' Tuple + 't' 
 
 	{ code @ x =  GenieCompiler instance compileTable: v@t name: n value asString }
 	
-	{ table @ x = { n value asString } }
+	{ fname @ x = { n value asString } }
+
 	;
 
 Tuple 'x' : Range 'r' Seq 's'
@@ -293,6 +323,20 @@ Tuple 'x' : Seq 'seq' Range 'r'
 	{ v @ x = GenieCompiler instance compileTuple: v@seq range: code@r }
 
 	;
+
+Table 'x' : table name 'n' Triple + 't'  
+
+	{ table @ x =  GenieCompiler instance compileTripleTable: v@t name: n value asString }
+	
+	{ tname @ x = { n value asString } }
+	
+	;
+
+Triple 'x' : number 'a1' number 'a2' Range 'y'
+
+	{ v @ x = GenieCompiler instance compileTriple: a1 value and: a2 value range: code@y }
+
+	 ;
 
 Seq 'x' : 
 

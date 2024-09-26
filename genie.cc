@@ -38,8 +38,6 @@ int next_population_size = 0;
 
 int total_fitness = 0;
 
-bool do_load_image = true;
-
 const int IMAGE_MAGIC[] = {7247, 6361};
  
 int IMAGE_VERSION_INDEX 	= 2;
@@ -79,7 +77,7 @@ void store_image() {
 	close(fd);
 }
 
-void load_image() {
+int load_image() {
 
 	int image_header[] = { /* two magic numbers */ 0 , 0 , /* version number */ 1, /* population size */ 0 , /* chromosome size */ 0 , /* gene size */ 0  };
 
@@ -87,7 +85,7 @@ void load_image() {
 
 	if (errno == ENOENT) {
 		cerr << "image file does not exist" << endl;
-		return;
+		return -1;
 	}
 
 	if (fd == -1) {
@@ -129,17 +127,19 @@ void load_image() {
 	}
 
 	close(fd);
+
 	cerr << "image loaded." << endl;
+
+	return 1;
 }
 
 void setup() {
 
 	current = population[0];
 
-	if (do_load_image) {
-		load_image();
-	}
-	else {
+	int result = load_image();
+
+	if (result == -1) {
 		for(int i = 0 ; i < actual_population_size;i++) {
 			for(int j = 0 ; j < CHROMOSOME_SIZE; j++) {
 				current[i].gene[j][GENIE_LOCUS] = j + 1;

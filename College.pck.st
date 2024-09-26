@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 3:40:02 pm'!
+'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 11:48:28 pm'!
 'Description '!
-!provides: 'College' 1 0!
+!provides: 'College' 1 3!
 SystemOrganization addCategory: #College!
 
 
@@ -114,7 +114,7 @@ assign: aSolution
 
 		self assignInstance: (instances at: (each at:1)) to: (each at:2) ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 22:49:54'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 23:45:16'!
 assignInstance: aModuleInstance to: aGene
 
 	| room day hour module lecturer duration  |
@@ -123,15 +123,15 @@ assignInstance: aModuleInstance to: aGene
 	
 	hour := aGene at:3.
 	
-	duration := aGene at:6.
+	duration := aGene at:7.
 
 	aModuleInstance day: day ; hour: hour.
 	
 	room := rooms at: (aGene at:1).
 	
-	module := modules at: (aGene at:4).
+	module := modules at: (aGene at:5).
 	
-	lecturer := lecturers at: (aGene at:5).
+	lecturer := lecturers at: (aGene at:6).
 	
 	aModuleInstance room: room. room addInstance: aModuleInstance.
 	
@@ -158,12 +158,12 @@ initialize
 moduleAt: anInteger
 	^ modules at: anInteger ! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 22:47:49'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:49:50'!
 example
 
 	"self example"
 	
-	| aCollege |
+	| aCollege aReadStream aSolution |
 	
 	aCollege := College new.
 	
@@ -188,7 +188,18 @@ example
 	{ { 1 . 'alice' } . { 2 . 'bob' } . { 3 . 'jane' } . { 4 . 'jack' } } do:[:each |
 		aCollege addLecturer: (Lecturer new id: (each at:1) ; description: (each at:2) ;yourself) ].
 
-	^aCollege 
+	aReadStream := ReadStream on: ('/home/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry fileContents).
+
+	aSolution := Json readFrom: aReadStream.
+
+	aCollege assign: aSolution.
+
+	PluggableCollegeGridModel college: aCollege topic: #rooms format:[:each | '{1}:{2}' format:{ each lecturer description . each module description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #lecturers format:[:each | '{1}:{2}' format:{ each module description . each room description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #modules format:[:each | '{1}:{2}' format:{ each lecturer description . each room description } ].
+
 	
 	
 	! !
@@ -305,14 +316,14 @@ college: aCollege
 format: aBlock
 	format := aBlock! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:58:57'!
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:51:08'!
 initialize
 	
 	selection := 0.
 
 	indices := #(0).
 		
-	topic := 'No Topic'.
+	topic := nil.
 	
 	college := nil.
 
@@ -383,7 +394,7 @@ nCols
 nRows
 	^24! !
 
-!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:59:16'!
+!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:44:57'!
 college: aCollege topic: aSymbol format: aBlock
 
 	| aCollegeModel aListMorph |
@@ -394,6 +405,6 @@ college: aCollege topic: aSymbol format: aBlock
 	
 	aListMorph := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #selection indexSetter: #select:.
 
-	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeModel)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Browser' format:{aSymbol}) :: openInWorld 
+	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeModel)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Time Table' format:{aSymbol asString capitalized}) :: openInWorld 
 
 ! !

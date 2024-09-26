@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 3:17:55 pm'!
+'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 11:48:26 pm'!
 'Description '!
-!provides: 'Darwin' 1 112!
+!provides: 'Darwin' 1 124!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -55,11 +55,12 @@ GridMorph class
 	instanceVariableNames: ''!
 
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:28'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/26/2024 19:48:30'!
 generateCode: anASTNode
 
 	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode).
-	self generateTables: #functions @ anASTNode.
+	self generateFunctions: #functions @ anASTNode.
+	self generateTables: #tables @ anASTNode.
 	self generateMutate: #mutate @ anASTNode.
 	self generateFitness: #fitness @ anASTNode.
 ! !
@@ -73,6 +74,11 @@ generateConstants: aString
 generateFitness: aString
 
 	codePath asDirectoryEntry // 'generated_fitness.cc' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/26/2024 19:48:14'!
+generateFunctions: aString
+
+	codePath asDirectoryEntry // 'generated_functions.h' fileContents: aString.! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:53'!
 generateMutate: aString
@@ -167,6 +173,17 @@ compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
 b->fitness {4}= group_by(b, keys,{2},[](gene_t** b, gene_t** e) 
 	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 18:09:18'!
+compileRuleInnerCall: aString args: anOrderedCollection
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on: ''.
+	
+	anOrderedCollection do:[:each | aWriteStream nextPutAll: each ] separatedBy:[ aWriteStream nextPutAll: ', '].
+	
+	^'genie_{1}({2})' format: { aString . aWriteStream contents }! !
+
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:27'!
 compileRuleName: aString isMemberIn: aSet
 
@@ -176,20 +193,51 @@ compileRuleName: aString isMemberIn: aSet
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:26:59'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 17:39:36'!
 compileRulePrimitiveCallName: aString expr: anotherString
 
-	validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString ; signal].
+	validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString asString ; signal].
 
 	^ 'genie_{1}(b,e,[](const gene_t* each) \{ return {2}; \})' format:{aString . anotherString } 
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:49'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 22:38:09'!
+compileRuleVariable: aString attrs: attrsSet locals: localsSet
+
+	localsSet includes: aString :: ifTrue:[^ aString ].
+	
+	attrsSet includes: aString :: ifTrue:[^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }].
+	
+	GenieUndefinedSymbolException new messageText:'Undefined variable ', aString ; signal.
+	
+	! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 22:31:43'!
 compileRuleVariable: aString in: aSet
 
 	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined attribute ', aString ; signal].
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 23:34:31'!
+compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger
+
+^ 'b->fitness {6}= sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ 
+	return genie_table_iterate(genie_{1}, (*each)[GENIE_{2}], (*each)[GENIE_{3}], [each](const interval_t& {4}) \{ return {5} \; \}); \});' format: { tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 21:55:12'!
+compileTableExpr: aString keys: anOrderedCollection expr: exprString
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on: ''.
+	
+	anOrderedCollection do:[:each | aWriteStream nextPutAll: ('(*each)[{1}]'format: {each}) ] separatedBy: [aWriteStream nextPutAll: ', '].
+
+^ 
+
+'b->fitness += sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ 
+	genie_table_iterate({1}, {2}, [](const interval_t& interval) \{ return {3} \; \});' format: { aString . aWriteStream contents . exprString }! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:24:06'!
 compileTable: anOrderedCollection name: aString
@@ -206,6 +254,31 @@ compileTable: anOrderedCollection name: aString
 	
 	aStream nextPutAll: '{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_' ; nextPutAll: aString ; nextPutAll:'" ; throw invalid_argument(err_msg.str()); }'; nextPut: Character lf; nextPutAll:'}'; nextPut: Character lf.
 	
+	^aStream contents ! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/26/2024 19:25:06'!
+compileTriple: arg1 and: arg2 range: aString
+
+	^' \{ \{ {1} , {2} \} , {3} \}' format:{ arg1 . arg2 . aString }
+! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/26/2024 19:33:54'!
+compileTripleTable: anOrderedCollection name: aString
+
+	| aStream |
+	
+	aStream := WriteStream on:''.
+
+	aStream nextPutAll: ('std::multimap< std::array<int, 2>, interval_t> genie_{1} \{
+' format: { aString }).
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each ] separatedBy:[ aStream nextPutAll: ',
+'].
+	
+	aStream nextPutAll: '
+};
+'.
+		
 	^aStream contents ! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:24:11'!
@@ -248,12 +321,12 @@ compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
 		ifTrue:[	'if ({1}<= arg && arg <= {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
 		ifFalse:['if ({1}<= arg && arg <= {2}) \{ vector<int> v(\{{3}\}); return v[random() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
-!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/25/2024 09:55:09'!
+!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/26/2024 21:30:28'!
 initialize
 
 	defaults := { 'GENIE_EPOCHS' -> '15' . 'GENIE_GENERATIONS' -> '100'. 'GENIE_THREADS' -> '1'. 'GENIE_MUTATIONP' -> '1e-3' . 'GENIE_INVERSIONP' -> '1e-2' . 'GENIE_POPULATION' -> '1000'  } asDictionary.
 	
-	validFunctions := { 'sum' . 'overlap' . 'maxgap' . 'mingap' }.
+	validFunctions := { 'sum' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' }.
 
 ! !
 

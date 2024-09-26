@@ -4,6 +4,7 @@
 #include <cassert>
 #include <algorithm>
 #include <functional>
+#include <map>
 #include <iostream>
 #include <thread>
 #include "genie_constants.h"
@@ -24,6 +25,8 @@ public:
 		return (*x)[i] < (*y)[i];
 	}
 };
+
+#include "generated_tables.h"
 
 int next(int j, gene_t* p[], int keys[], int n_keys) {
 
@@ -84,6 +87,23 @@ int genie_sum(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
 	}
 
 	return result;
+}
+
+template<typename F>
+int genie_table_iterate(const multimap<array<int, 2>, interval_t> & table, int key1, int key2, F f) {
+	int sum = 0;
+	auto b = table.lower_bound({key1, key2});
+	auto e = table.upper_bound({key1, key2});
+	while (b!=e) {
+		sum += f(b->second);
+		++b;
+	}
+
+	return sum;
+}
+
+int genie_intersect(interval_t x, interval_t y) { 
+	return x.intersect(y).length();
 }
 
 int genie_overlap(gene_t** b, gene_t** e, interval_t (*f)(const gene_t*)) {

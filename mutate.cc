@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#include "generated_tables.h"
+#include "generated_functions.h"
 
 void mutate(gene_t& a_gene, double p) {
 
