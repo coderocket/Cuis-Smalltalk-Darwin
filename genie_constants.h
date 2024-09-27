@@ -11,6 +11,7 @@ const double INVERSION_PROBABILITY = GENIE_INVERSIONP;
 const int GENIE_LOCUS		= GENIE_GENE_SIZE;
 const int GENE_SIZE 		= GENIE_GENE_SIZE + 1; 
 
+const int GENIE_SEED = 5;
 
 #define GENE_TYPE int
 

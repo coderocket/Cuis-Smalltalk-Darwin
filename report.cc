@@ -29,6 +29,7 @@ vector<string> history;
 void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	chromosome_t* p = max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
+	chromosome_t* q = min(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
 
 	timeval now;
 	gettimeofday(&now, 0);
@@ -44,7 +45,7 @@ void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	stringstream stream;
 
-	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness; 
+	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness; 
 
 	if (use_fifo) {
 		history.push_back(stream.str());

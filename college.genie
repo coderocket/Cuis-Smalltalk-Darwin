@@ -2,21 +2,21 @@
 Parameters
 
 epochs: 			10 
-generations: 100 
+generations: 50 
 threads: 			1
 
-population: 			100
-genes: 			4
+population: 			15000
+genes: 			30
 
 mutationp :			1.0e-3
 inversionp :			1.0e-2
 
 Gene 
 
-room : 			1..2
-day : 			1 .. 2
+room : 			1..3
+day : 			1 .. 5
 hour : 			hour(day)
-campus : 			campus(room) 
+frame : 			frame (locus)
 module : 			module (locus)
 lecturer : 			lecturer (module)
 duration :     duration (module)
@@ -27,11 +27,11 @@ hour
 
 # day           hour
 
-1                  8 .. 13
-2                  8 .. 13
-3                  8 .. 22
-4                  8 .. 22
-5                  8 .. 22
+1                  8 .. 17
+2                  8 .. 17
+3                  8 .. 17
+4                  8 .. 17
+5                  8 .. 17
 6                  8 .. 13
 
 campus
@@ -41,57 +41,97 @@ campus
 1..50 			1
 51..100 			2
 
+frame
+
+# locus         frame
+
+1 .. 5			1 			
+6 .. 10			2
+11 .. 15			3
+15 .. 20			4
+21 .. 25			5
+26 .. 30			6
+
 module
 
 # locus         module
 
 1 			1
-2 			1
-3 			2
-4 			2
-5 			2
+2 			2
+3 			3
+4 			4
+5 			5
+6 			1
+7 			2
+8 			3
+9 			4
+10 			5
+11 			1
+12 			2
+13 			3
+14 			4
+15 			5
+16 			1
+17 			2
+18 			3
+19 			4
+20 			5
+21 			1
+22 			2
+23 			3
+24 			4
+25 			5
+26 			1
+27 			2
+28 			3
+29 			4
+30 			5
 
 duration
 
 # module    duration
+
 1 			2
-2			3
+2			2
+3			3
+4			3
+5			5
 
 lecturer 
 
 # module     suitable lecturers
 
-1  			1,3
-2 			1,3
+1  			1 .. 5
+2 			1 .. 5
+3			1 .. 5
+4			1 .. 5
+5			1 .. 5
 
 table timetable
 
 # lecturer    day        cordoned hours
-	
-1			1		9 .. 11 
-1			1		17 .. 23
-1			2		17 .. 23		
 
+1			1		8 .. 17
+	
 Rules
 
 bonus 10 ;
 
 # a lecturer must not teach on days and hours that they have cordoned
 
-penalty for interval in timetable(lecturer, day) 
-	intersect(interval, hour .. hour + duration) ;
+# penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hour + duration) ;
 
-# a lecturer must not teach more than 4 hours on the same day
+# a lecturer must not teach more than 5 hours on the same day
  
-penalty group by (day, lecturer) sum(duration) - 4 max 0 ;
+penalty group by (day, lecturer) sum(duration) - 5 max 0 ;
 
 # gap between lectures on the same day for the same lecturer should not exceed 3 hours
 
-penalty group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
+# penalty group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
 
 # lectures on the same day for the same lecturer should be separated by at least 1 hour 
 
-penalty group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
+# penalty group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
 
 # lectures cannot be assigned to the same room on the same day and hours
 
@@ -104,3 +144,15 @@ penalty group by (day, lecturer) overlap(hour .. hour + duration) ;
 # lectures must not be held on wednesday at 1pm
  
 penalty (day = 4) * (hour <= 13) *(13 <= hour + duration);
+
+# lectures must end by 17
+
+penalty hour + duration - 17 max 0 ;
+
+# lectures cannot be assigned to the same group on the same day and hours
+
+penalty group by (day, frame) overlap(hour .. hour + duration) ;
+
+# lectures on the same day for the same frame should be separated by at least 1 hour 
+
+penalty group by (day, frame) 1 - mingap(hour .. hour + duration) max 0 ;
