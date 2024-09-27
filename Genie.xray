@@ -1,6 +1,6 @@
 tokens
 
-".." Gene Parameters Functions Rules "(" ")" ":" "," group by "+" "-"  max "(" ")" ";" table bonus penalty for in
+".." Gene Parameters Functions Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in
 
 
 patterns

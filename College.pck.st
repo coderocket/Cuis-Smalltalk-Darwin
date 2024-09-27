@@ -1,12 +1,12 @@
-'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 11:48:28 pm'!
+'From Cuis7.1 [latest update: #6676] on 27 September 2024 at 1:46:47 pm'!
 'Description '!
-!provides: 'College' 1 3!
+!provides: 'College' 1 8!
 SystemOrganization addCategory: #College!
 
 
 !classDefinition: #College category: #College!
 Object subclass: #College
-	instanceVariableNames: 'modules rooms lecturers instances'
+	instanceVariableNames: 'modules rooms lecturers frames instances'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -22,6 +22,16 @@ Object subclass: #CollegeTopic
 	category: 'College'!
 !classDefinition: 'CollegeTopic class' category: #College!
 CollegeTopic class
+	instanceVariableNames: ''!
+
+!classDefinition: #Frame category: #College!
+CollegeTopic subclass: #Frame
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'Frame class' category: #College!
+Frame class
 	instanceVariableNames: ''!
 
 !classDefinition: #Lecturer category: #College!
@@ -56,7 +66,7 @@ Room class
 
 !classDefinition: #ModuleInstance category: #College!
 Object subclass: #ModuleInstance
-	instanceVariableNames: 'id day hour module room lecturer'
+	instanceVariableNames: 'id day hour frame module room lecturer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -75,6 +85,10 @@ PluggableCollegeGridModel class
 	instanceVariableNames: ''!
 
 
+!College methodsFor: 'accessing' stamp: 'DF 9/27/2024 11:26:24'!
+frames
+	^frames! !
+
 !College methodsFor: 'accessing' stamp: 'DF 9/26/2024 14:23:27'!
 lecturers
 	^lecturers! !
@@ -86,6 +100,10 @@ modules
 !College methodsFor: 'accessing' stamp: 'DF 9/26/2024 14:23:16'!
 rooms
 	^rooms! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:13:24'!
+addFrame: aFrame
+	frames at: aFrame id put: aFrame! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:36:26'!
 addInstance: aModuleInstance
@@ -114,10 +132,10 @@ assign: aSolution
 
 		self assignInstance: (instances at: (each at:1)) to: (each at:2) ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 23:45:16'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 12:29:28'!
 assignInstance: aModuleInstance to: aGene
 
-	| room day hour module lecturer duration  |
+	| room day hour frame module lecturer duration  |
 	
 	day := aGene at:2.
 	
@@ -128,7 +146,9 @@ assignInstance: aModuleInstance to: aGene
 	aModuleInstance day: day ; hour: hour.
 	
 	room := rooms at: (aGene at:1).
-	
+
+	frame := frames at: (aGene at:4).
+		
 	module := modules at: (aGene at:5).
 	
 	lecturer := lecturers at: (aGene at:6).
@@ -141,9 +161,14 @@ assignInstance: aModuleInstance to: aGene
 	
 	aModuleInstance lecturer: lecturer. lecturer addInstance: aModuleInstance.
 	
+	self assert: frame = aModuleInstance frame.
 	! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:36:02'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:24:13'!
+frameAt: anInteger
+	^ frames at: anInteger ! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:13:34'!
 initialize
 
 	modules := Dictionary new.
@@ -151,6 +176,8 @@ initialize
 	rooms := Dictionary new.
 	
 	lecturers := Dictionary new.
+
+	frames := Dictionary new.
 	
 	instances := Dictionary new.! !
 
@@ -158,36 +185,84 @@ initialize
 moduleAt: anInteger
 	^ modules at: anInteger ! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:49:50'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 12:26:16'!
 example
 
 	"self example"
 	
-	| aCollege aReadStream aSolution |
+"
+
+The college teaches 6 groups (frames), each studies 5 modules.
+
+2 modules are 2 hours each
+2 modules are 3 hours each
+1 module is hours each
+
+each group studies 2*2 + 2*3 + 5 = 15 hours a week
+
+therefore there are 6*5 = 30 module instances.
+
+total hours required are  6 * 15 = 90 hours
+
+The college has 3 rooms.
+
+A working day is 9 hours long (8-17), there are 5 working days for a total of 45 available hours
+
+With 3 rooms this gives a total capacity of 3*45 = 135 hours per week.
+
+The college employs 5 lecturers
+
+a lecturer cannot work more than 20 hours a week
+
+"
+
+	| aCollege instanceIndex "aReadStream aSolution" |
 	
 	aCollege := College new.
 	
 	" rooms: { id description } "
 	
-	{ { 1 . 'apple' } . { 2 . 'banana'} . { 3 . 'orange' } . { 4 . 'mango' } . { 5 . 'peach' } } do:[:each | 
+	{ { 1 . 'apple' } . { 2 . 'banana'} . { 3 . 'orange' }  } do:[:each | 
 		aCollege addRoom: (Room new id: (each at:1) ; description: (each at:2) ;yourself) ].
 	
 	" modules: { id . description . duration } "
 	
-	{ { 1 . 'plumbing' . 2 } . { 2 . 'carpentry' . 3  } . { 3 . 'sewing' . 3 } . { 4 . 'faming' . 5 } }  do:[:each | 
+	{ { 1 . 'plumbing' . 2 } . { 2 . 'carpentry' . 2  } . { 3 . 'sewing' . 3 } . { 4 . 'farming' . 3  } . { 5 . 'computing' . 5 } }  do:[:each | 
 		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
 
-	" module instances { id . module id } "
+	" frames. "
 	
-	{ { 1 . 1 } . { 2 . 1  } . { 3 . 2 } . { 4 . 2 } }  do:[:each | 
+	{ { 1 . 'group 1' } . { 2 . 'group 2' } . { 3 . 'group 3' } . { 4 . 'group 4' }. { 5 . 'group 5' } . { 6 . 'group 6' } } do:[:each | 
+		aCollege addFrame: (Frame new id:( each at:1) ; description: (each at:2) ; yourself) ].
 	
-		aCollege addInstance: (ModuleInstance new id: (each at:1) ; module: (aCollege moduleAt: (each at:2)) ; yourself) ].
+	" module instances { id . module id . frame id } "
+	
+	instanceIndex := 1.
+	
+	1 to: 6 do:[:frameIndex |
+		1 to: 5 do:[:moduleIndex | | instance module frame |
+	
+		module := aCollege moduleAt: moduleIndex.
+		
+		frame := aCollege frameAt: frameIndex.
+		
+		instance := (ModuleInstance new id: instanceIndex ; module: module ; frame: frame ; yourself).
+		
+		module addInstance: instance.
+		
+		frame addInstance: instance.
+		
+		aCollege addInstance: instance.
+		
+		instanceIndex := instanceIndex + 1 ] ].
 	
 	" lecturers: { id description } "
 	
-	{ { 1 . 'alice' } . { 2 . 'bob' } . { 3 . 'jane' } . { 4 . 'jack' } } do:[:each |
+	{ { 1 . 'Alice' } . { 2 . 'Bob' } . { 3 . 'Hausdorff' } . { 4 . 'Dirac' } . { 5 . 'Hume' } } do:[:each |
 		aCollege addLecturer: (Lecturer new id: (each at:1) ; description: (each at:2) ;yourself) ].
-
+	
+	^aCollege
+"
 	aReadStream := ReadStream on: ('/home/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry fileContents).
 
 	aSolution := Json readFrom: aReadStream.
@@ -198,7 +273,7 @@ example
 
 	PluggableCollegeGridModel college: aCollege topic: #lecturers format:[:each | '{1}:{2}' format:{ each module description . each room description } ].
 
-	PluggableCollegeGridModel college: aCollege topic: #modules format:[:each | '{1}:{2}' format:{ each lecturer description . each room description } ].
+	PluggableCollegeGridModel college: aCollege topic: #modules format:[:each | '{1}:{2}' format:{ each lecturer description . each room description } ]."
 
 	
 	
@@ -264,6 +339,14 @@ day: anInteger
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:38:42'!
 duration
 	^module duration! !
+
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:22:22'!
+frame
+	^frame! !
+
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:22:17'!
+frame: anInteger
+	frame := anInteger ! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:08:16'!
 hour

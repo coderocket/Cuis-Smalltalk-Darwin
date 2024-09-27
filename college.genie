@@ -1,8 +1,7 @@
-
 Parameters
 
-epochs: 			10 
-generations: 50 
+epochs: 			20 
+generations: 20 
 threads: 			1
 
 population: 			15000
@@ -127,11 +126,19 @@ penalty group by (day, lecturer) sum(duration) - 5 max 0 ;
 
 # gap between lectures on the same day for the same lecturer should not exceed 3 hours
 
-# penalty group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
+penalty group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
 
 # lectures on the same day for the same lecturer should be separated by at least 1 hour 
 
-# penalty group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
+penalty group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
+
+# gap between lectures on the same day for the same frame should not exceed 3 hours
+
+penalty group by (day, frame) maxgap(hour .. hour + duration) - 3 max 0 ;
+
+# each frame must have one free day
+ 
+penalty group by (frame) count(day) - 4 max 0 ;
 
 # lectures cannot be assigned to the same room on the same day and hours
 
