@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <set>
 #include <iostream>
 #include <thread>
 #include "genie_constants.h"
@@ -34,7 +35,7 @@ int next(int j, gene_t* p[], int keys[], int n_keys) {
 
 	while (j < CHROMOSOME_SIZE && i == n_keys) {
 		i = 0;
-		while (i < 2 && j+1 < CHROMOSOME_SIZE && (*(p[j+1]))[keys[i]] == (*(p[j]))[keys[i]]) i++; 
+		while (i < n_keys && j+1 < CHROMOSOME_SIZE && (*(p[j+1]))[keys[i]] == (*(p[j]))[keys[i]]) i++; 
 		j++;
 	}
 
@@ -87,6 +88,18 @@ int genie_sum(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
 	}
 
 	return result;
+}
+
+int genie_count(gene_t** b, gene_t** e, int (*f)(const gene_t*)) {
+	
+	std::set<int> a_set;
+
+	while(b != e) {
+		a_set.insert(f(*b));
+		b++;
+	}
+
+	return a_set.size();
 }
 
 template<typename F>
