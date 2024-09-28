@@ -1,6 +1,6 @@
 
 CXX = $(PLATFORM_CPLUSPLUS_COMPILER)
-FLAGS = -O2
+FLAGS =  -O2
 
 o = fitness.o genie.o mutate.o breed.o exprand.o crossover.o report.o invert.o
 
