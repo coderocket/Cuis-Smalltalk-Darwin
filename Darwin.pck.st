@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 26 September 2024 at 11:48:26 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 3:53:31 pm'!
 'Description '!
-!provides: 'Darwin' 1 124!
+!provides: 'Darwin' 1 126!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -16,7 +16,7 @@ GenieCodeGenerator class
 
 !classDefinition: #GenieCompiler category: #Darwin!
 Object subclass: #GenieCompiler
-	instanceVariableNames: 'defaults validFunctions'
+	instanceVariableNames: 'defaults validFunctions defaultTypes'
 	classVariableNames: 'Instance'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -136,8 +136,8 @@ compileSchemaFunctionName: aString inTables: aSet
 
 	^'genie_', aString ! !
 
-!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 9/24/2024 22:26:16'!
-compileParameters: names values: values
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 9/28/2024 15:53:12'!
+compileParameters: names values: values types: types
 
 	| aStream params |
 
@@ -145,11 +145,11 @@ compileParameters: names values: values
 
 	params := defaults copy.
 	
-	1 to: names size do:[:i | params at: (names at:i) put: (values at:i) ].		
+	1 to: names size do:[:i | params at: (names at:i) put: { (types at:i) . (values at:i)  } ].		
 	
 	aStream := WriteStream on:''.
 	
-	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const int ' ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value ; nextPutAll:';' ; nextPut: Character lf.  ].
+	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const ' ; nextPutAll: value first ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value second ; nextPutAll:';' ; nextPut: Character lf.  ].
 	
 	^aStream contents! !
 
@@ -321,12 +321,18 @@ compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
 		ifTrue:[	'if ({1}<= arg && arg <= {2}) \{ return {3}; \}' format:{ aString . anotherString. anOrderedCollection first }]
 		ifFalse:['if ({1}<= arg && arg <= {2}) \{ vector<int> v(\{{3}\}); return v[random() % v.size()]; \}' format:{ aString . anotherString . anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
 
-!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/26/2024 21:30:28'!
+!GenieCompiler methodsFor: 'initialization' stamp: 'DF 9/28/2024 15:47:38'!
 initialize
 
-	defaults := { 'GENIE_EPOCHS' -> '15' . 'GENIE_GENERATIONS' -> '100'. 'GENIE_THREADS' -> '1'. 'GENIE_MUTATIONP' -> '1e-3' . 'GENIE_INVERSIONP' -> '1e-2' . 'GENIE_POPULATION' -> '1000'  } asDictionary.
+	defaults := { 
+		'GENIE_EPOCHS' -> 							{ 'int' . '15' } . 
+		'GENIE_GENERATIONS' -> 							{ 'int' . '100'} . 
+		'GENIE_THREADS' -> 							{ 'int' . '1'} . 
+		'GENIE_MUTATIONP' -> 							{ 'double' . '1e-3' }  . 
+		'GENIE_INVERSIONP' -> 							{ 'double' . '1e-2' } . 
+		'GENIE_POPULATION' -> 							{ 'int' . '1000'  } } asDictionary.
 	
-	validFunctions := { 'sum' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' }.
+	validFunctions := { 'sum' . 'count' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' }.
 
 ! !
 

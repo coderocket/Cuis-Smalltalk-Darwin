@@ -7,6 +7,7 @@
 #include <sstream>
 #include <array>
 #include <vector>
+#include <map>
 #include <string>
 #include "genie_constants.h"
 #include "genie_types.h"
@@ -26,10 +27,36 @@ using std::endl;
 
 vector<string> history;
 
+chromosome_t* best(chromosome_t* b, chromosome_t* e) {
+
+	chromosome_t* best = b;
+
+	while(b != e) {
+		if (b->fitness > best->fitness) 
+			best = b;	
+		++b;
+	}
+
+	return best;
+}
+
+chromosome_t* worst(chromosome_t* b, chromosome_t* e) {
+
+	chromosome_t* worst = b;
+
+	while(b != e) {
+		if (b->fitness < worst->fitness) 
+			worst = b;	
+		++b;
+	}
+
+	return worst;
+}
+
 void report_progress(chromosome_t* b, chromosome_t* e) {
 
-	chromosome_t* p = max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
-	chromosome_t* q = min(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
+	chromosome_t* p = best(b, e); 
+	chromosome_t* q = worst(b, e);
 
 	timeval now;
 	gettimeofday(&now, 0);
@@ -76,6 +103,21 @@ void report_solution(chromosome_t* c) {
 	}
 
 	cout << endl;
+
+}
+
+void report_population_histogram(chromosome_t* b, chromosome_t* e) {
+
+	map<int, int> count;
+
+	while (b != e) {
+		++count[b->fitness];
+		++b;
+	}
+
+	for(map<int, int>::iterator p = count.begin(); p != count.end(); ++p) {
+		cout << p->first << " : " << p->second << endl;
+	}
 
 }
 

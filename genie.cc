@@ -166,8 +166,7 @@ void produce_next_generation() {
 
 chromosome_t* find_fittest_chromosome(chromosome_t* b, chromosome_t* e) {
 
-	return max(b, e, [](chromosome_t* x, chromosome_t* y) { return (x)->fitness < (y)->fitness; });
-
+	return best(b, e); 
 }
 
 int main(int argc, char** argv) {
