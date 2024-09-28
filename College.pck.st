@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 27 September 2024 at 1:46:47 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 6:40:03 pm'!
 'Description '!
-!provides: 'College' 1 8!
+!provides: 'College' 1 9!
 SystemOrganization addCategory: #College!
 
 
@@ -185,7 +185,7 @@ initialize
 moduleAt: anInteger
 	^ modules at: anInteger ! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 12:26:16'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/28/2024 18:23:34'!
 example
 
 	"self example"
@@ -196,7 +196,7 @@ The college teaches 6 groups (frames), each studies 5 modules.
 
 2 modules are 2 hours each
 2 modules are 3 hours each
-1 module is hours each
+1 module is 5 hours each
 
 each group studies 2*2 + 2*3 + 5 = 15 hours a week
 
