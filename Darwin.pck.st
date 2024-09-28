@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 3:53:31 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 6:43:15 pm'!
 'Description '!
-!provides: 'Darwin' 1 126!
+!provides: 'Darwin' 1 128!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -431,30 +431,43 @@ drawModelColumnHeadersOn: aCanvas
 	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:17:39'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/28/2024 18:41:34'!
 drawModelDataOn: aCanvas
 
-	| aFont dataOrigin dw dh |
+	| aFont dataOrigin dw dh canvas form nc nr |
 	
 	aFont := FontFamily defaultFamilyAndPointSize.
 	
 	dw := gridW / nCols.
 	dh := gridH / nRows.
+
+	form := Form extent: (dw - 4) @ (dh - 2) depth: Display depth.
+
+	canvas := MorphicCanvas 		onForm: form.
 	
 	dataOrigin := origin.
 	
-	colHeaders ifTrue:[dataOrigin := dataOrigin + (0@dh)].
-	rowHeaders ifTrue:[dataOrigin := dataOrigin + (dw@0)].
+	nc := nCols.
 	
-	0 to: nRows - 1 do:[:row | 
+	colHeaders ifTrue:[dataOrigin := dataOrigin + (0@dh). nc := nc - 1. ].
+	
+	nr := nRows.
+	
+	rowHeaders ifTrue:[dataOrigin := dataOrigin + (dw@0). nr := nr - 1 ].
+	
+	0 to: nr - 1 do:[:row | 
 
-		0 to: nCols - 1 do:[:col | | p t  | 
+		0 to: nc - 1 do:[:col | | p t  | 
 		
 			p := dataOrigin + (((col * (dw)) @ (row * (dh) ) )).
 		
 			t := model at: row at: col + 1.
 		
-		aCanvas drawString: t at: p font: aFont color: Color black  ] ].
+			form fillWhite.
+			
+			canvas drawString: t at: 2@2 font: aFont color: Color black.
+			
+			aCanvas image: form at: (p + (1@1))  ] ].
 	
 			 ! !
 
