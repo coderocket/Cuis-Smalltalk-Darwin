@@ -84,6 +84,7 @@ Component 'x' : Name 'n' ":" Value 'v'
 
 	{ raw @ x =  raw @ n }
 
+	{ type @ x = type @ v }
 	;
 
 Name 'x' : name 'n'
@@ -100,19 +101,28 @@ Value 'x' :
 
 	{ code @ x = n value asString }
 
+	{ type @ x = 'int' }
+
 	|
 
 	float 'n'
 
 	{ code @ x = n value asString }
 
+	{ type @ x = 'double' }
+
 	| Range 'r'
 
 	{ code @ x = 'interval_t({1} , {2}).at_random()' format: { b@r . e@r } }
 
+	{ type @ x = 'interval_t' }
+
 	| Function 'f'
 
-	{ code @ x = '{1}({2})' format: { (n@f)  . e@f } };
+	{ code @ x = '{1}({2})' format: { (n@f)  . e@f } }
+
+	{ type @ x = 'function' }
+	;
 
 Range 'x' : number 'b' ".." number  'e'	
 
@@ -152,7 +162,7 @@ Rule 'x' : bonus Group 'a'
 
 	{ code @ x = code @ a }
 ;
-
+ 
 Group 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
 	 
 	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: names @ ns expr: value @ e kind: kind @ x }
@@ -355,6 +365,6 @@ Seq 'x' :
 
 Params 'x' : Parameters Component + 'c' 
 
-	{ code @ x = GenieCompiler instance compileParameters: attr @ c values: val @ c }
+	{ code @ x = GenieCompiler instance compileParameters: attr @ c values: val @ c types: type @ c }
 
 	;
