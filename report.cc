@@ -1,3 +1,4 @@
+#include <math.h>
 #include <unistd.h>
 #include <sys/time.h>
 #include <cassert>
@@ -106,7 +107,26 @@ void report_solution(chromosome_t* c) {
 
 }
 
-void report_population_histogram(chromosome_t* b, chromosome_t* e) {
+void report_gene_histogram(chromosome_t* b, chromosome_t* e) {
+
+	map<gene_t, int> count;
+
+	while (b!=e) {
+		for(int i = 0; i < CHROMOSOME_SIZE;i++) {
+			++count[b->gene[i]];
+		}
+		++b;
+	}
+
+	cout << count.size() << endl;
+/*
+	for(map<gene_t, int>::iterator p = count.begin(); p != count.end(); ++p) {
+		cout << p->first[GENIE_ROOM] << "," << p->first[GENIE_HOUR] << "," << p->first[GENIE_DAY] << "," << p->first[GENIE_LECTURER] << "," << p->first[GENIE_MODULE] << "," << p->first[GENIE_FRAME] << ":" << p->second << endl;
+	}
+	*/
+}
+
+void report_population_fitness_histogram(chromosome_t* b, chromosome_t* e) {
 
 	map<int, int> count;
 
@@ -118,7 +138,7 @@ void report_population_histogram(chromosome_t* b, chromosome_t* e) {
 	for(map<int, int>::iterator p = count.begin(); p != count.end(); ++p) {
 		cout << p->first << " : " << p->second << endl;
 	}
-
+	
 }
 
 void json_write_solution(chromosome_t* c, ostream& out) {
@@ -142,4 +162,40 @@ void json_write_solution(chromosome_t* c, ostream& out) {
 
 	out << "]" << endl;
 
+}
+
+void report_similarity_score(chromosome_t* b, chromosome_t* e) {
+
+	size_t n = e - b;
+	double similarity_score = 0.0;
+
+	gene_t x[CHROMOSOME_SIZE];
+	gene_t y[CHROMOSOME_SIZE];
+
+	while(b!=e) {
+
+		chromosome_t* p = b+1;
+
+		copy(b->gene, b->gene+CHROMOSOME_SIZE, y);
+		sort(y,y+CHROMOSOME_SIZE, [](const gene_t& u, const gene_t& v) { return u[GENIE_LOCUS] < v[GENIE_LOCUS]; });
+
+		while(p != e) {
+
+			copy(p->gene, p->gene+CHROMOSOME_SIZE, x);
+
+			sort(x,x+CHROMOSOME_SIZE, [](const gene_t& u, const gene_t& v) { return u[GENIE_LOCUS] < v[GENIE_LOCUS]; });
+
+			for(int i = 0 ; i < CHROMOSOME_SIZE; i++) {
+
+				for (int k = 0 ; k < GENE_SIZE; k++) {
+					double delta = x[i][k] - y[i][k];
+					similarity_score += delta*delta;
+				}
+			}
+			++p;
+		}
+		++b;
+	}
+
+	cout << "similarity score is " << sqrt(similarity_score) / n << endl;
 }
