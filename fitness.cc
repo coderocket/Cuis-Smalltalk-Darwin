@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include "genie_constants.h"
 #include "genie_types.h"
