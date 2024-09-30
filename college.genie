@@ -1,13 +1,13 @@
 Parameters
 
-epochs: 			20 
+epochs: 			10 
 generations: 20 
 threads: 			1
 
-population: 			15000
+population: 			3800
 genes: 			30
 
-mutationp :			1.0e-3
+mutationp :			8.0e-4
 inversionp :			1.0e-2
 
 Gene 
