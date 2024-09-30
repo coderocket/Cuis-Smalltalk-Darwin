@@ -1,8 +1,18 @@
-'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 6:43:15 pm'!
+'From Cuis7.1 [latest update: #6709] on 30 September 2024 at 3:55:48 pm'!
 'Description '!
-!provides: 'Darwin' 1 128!
+!provides: 'Darwin' 1 133!
 SystemOrganization addCategory: #Darwin!
 
+
+!classDefinition: #GenieBrowserModel category: #Darwin!
+Object subclass: #GenieBrowserModel
+	instanceVariableNames: 'consoleOutput'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'GenieBrowserModel class' category: #Darwin!
+GenieBrowserModel class
+	instanceVariableNames: ''!
 
 !classDefinition: #GenieCodeGenerator category: #Darwin!
 Object subclass: #GenieCodeGenerator
@@ -54,6 +64,216 @@ PluggableMorph subclass: #GridMorph
 GridMorph class
 	instanceVariableNames: ''!
 
+!classDefinition: #GenieBrowser category: #Darwin!
+SystemWindow subclass: #GenieBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'GenieBrowser class' category: #Darwin!
+GenieBrowser class
+	instanceVariableNames: ''!
+
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:49:13'!
+build
+
+consoleOutput := 'davidf@mjolnir Cuis-Smalltalk-Darwin % make
+g++-14 -c -O2 fitness.cc -o fitness.o
+g++-14 -c -O2 genie.cc -o genie.o
+g++-14 -c -O2 mutate.cc -o mutate.o
+g++-14 -c -O2 breed.cc -o breed.o
+g++-14 -c -O2 exprand.cc -o exprand.o
+g++-14 -c -O2 crossover.cc -o crossover.o
+g++-14 -c -O2 report.cc -o report.o
+g++-14 -c -O2 invert.cc -o invert.o
+g++-14 -O2 fitness.o genie.o mutate.o breed.o exprand.o crossover.o report.o invert.o -o genie'.
+
+self changed: #console! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:55'!
+console
+
+^consoleOutput ! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:44'!
+initialize
+
+	consoleOutput := ''! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:55:26'!
+program
+	^'Parameters
+
+epochs: 			10 
+generations: 20 
+threads: 			1
+
+population: 			3800
+genes: 			30
+
+mutationp :			8.0e-4
+inversionp :			1.0e-2
+
+Gene 
+
+room : 			1..3
+day : 			1 .. 5
+hour : 			hour(day)
+lecturer : 			lecturer (module)
+frame : 			frame (locus)
+module : 			module (locus)
+duration :     duration (module)
+
+Functions
+
+hour
+
+# day           hour
+
+1                  8 .. 17
+2                  8 .. 17
+3                  8 .. 17
+4                  8 .. 17
+5                  8 .. 17
+6                  8 .. 13
+
+campus
+
+# room         campus 
+ 
+1..50 			1
+51..100 			2
+
+frame
+
+# locus         frame
+
+1 .. 5			1 			
+6 .. 10			2
+11 .. 15			3
+15 .. 20			4
+21 .. 25			5
+26 .. 30			6
+
+module
+
+# locus         module
+
+1 			1
+2 			2
+3 			3
+4 			4
+5 			5
+6 			1
+7 			2
+8 			3
+9 			4
+10 			5
+11 			1
+12 			2
+13 			3
+14 			4
+15 			5
+16 			1
+17 			2
+18 			3
+19 			4
+20 			5
+21 			1
+22 			2
+23 			3
+24 			4
+25 			5
+26 			1
+27 			2
+28 			3
+29 			4
+30 			5
+
+duration
+
+# module    duration
+
+1 			2
+2			2
+3			3
+4			3
+5			5
+
+lecturer 
+
+# module     suitable lecturers
+
+1  			1 .. 5
+2 			1 .. 5
+3			1 .. 5
+4			1 .. 5
+5			1 .. 5
+
+table timetable
+
+# lecturer    day        cordoned hours
+
+1			1		8 .. 17
+	
+Rules
+
+bonus 10 ;
+
+# a lecturer must not teach on days and hours that they have cordoned
+
+# penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hour + duration) ;
+
+# a lecturer must not teach more than 5 hours on the same day
+ 
+penalty group by (day, lecturer) sum(duration) - 5 max 0 ;
+
+# gap between lectures on the same day for the same lecturer should not exceed 3 hours
+
+penalty group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
+
+# lectures on the same day for the same lecturer should be separated by at least 1 hour 
+
+penalty group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
+
+# gap between lectures on the same day for the same frame should not exceed 3 hours
+
+penalty group by (day, frame) maxgap(hour .. hour + duration) - 3 max 0 ;
+
+# each frame must have one free day
+ 
+penalty group by (frame) count(day) - 4 max 0 ;
+
+# lectures cannot be assigned to the same room on the same day and hours
+
+penalty group by (day, room) overlap(hour .. hour + duration) ;
+
+# lectures cannot be assigned to the same lecturer on the same day and hours
+
+penalty group by (day, lecturer) overlap(hour .. hour + duration) ;
+
+# lectures must not be held on wednesday at 1pm
+ 
+penalty (day = 4) * (hour <= 13) *(13 <= hour + duration);
+
+# lectures must end by 17
+
+penalty hour + duration - 17 max 0 ;
+
+# lectures cannot be assigned to the same group on the same day and hours
+
+penalty group by (day, frame) overlap(hour .. hour + duration) ;
+
+# lectures on the same day for the same frame should be separated by at least 1 hour 
+
+penalty group by (day, frame) 1 - mingap(hour .. hour + duration) max 0 ;'! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:18'!
+run! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:19'!
+stop! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/26/2024 19:48:30'!
 generateCode: anASTNode
@@ -482,26 +702,29 @@ drawModelOn: aCanvas
 	self drawModelHeadersOn: aCanvas ; drawModelDataOn: aCanvas	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:55:56'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/29/2024 11:53:27'!
 drawModelRowHeadersOn: aCanvas
 
-	| rowh dh delta |
+	| rowh dh delta font |
 
+	font := FontFamily defaultFamilyAndPointSize.
+	
 	rowHeaders ifFalse:[^self].
 	
 	dh := gridH/nRows.
 
 	delta := colHeaders ifTrue:[0@dh] ifFalse:[0@0].
 	
-	delta := delta - (0 @ (FontFamily defaultFamilyAndPointSize lineSpacing / 2)).
+	delta := delta - (0 @ (font ascent / 2)).
 	
 	rowh := model rowsHeader.
 	
 	0 to: rowh size - 1 do:[:row | | p |
 		
 		p := origin + delta + (0 @ (row * dh) ).
-		
-		aCanvas drawString: (rowh at: row + 1) at: p font: FontFamily defaultFamilyAndPointSize color: Color black  ].
+	
+		"aCanvas fillRectangle: (p extent: 2 @ font ascent) color: Color black."
+		aCanvas drawString: (rowh at: row + 1) at: p font: font color: Color black  ].
 	
 			 ! !
 
@@ -550,24 +773,28 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!SequenceableCollection methodsFor: '*Darwin' stamp: 'DF 9/25/2024 13:58:54'!
-toDictionaryUsing: keys
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:54:52'!
+buildMorphicWindow
 
-	| result |
+	| program console buildButton  |
 	
-	result := Dictionary new.
-	
-	1 to: self size do:[:index | result at: (keys at:index) put: (self at:index) ].
-	
-	^result! !
+	program := TextModelMorph
 
-!Dictionary methodsFor: '*Darwin' stamp: 'DF 9/25/2024 17:00:04'!
-project: keys
+			textProvider: model
+			textGetter: #program
+			textSetter: nil
+			selectionGetter: nil :: - (1/2)p | 1p.
+	
+	buildButton := PluggableButtonMorph model: model stateGetter: nil action: #build.
+	buildButton label: 'Build'.
 
-	| result |
+	console :=  TextModelMorph 
+			textProvider: model
+			textGetter: #console
+			textSetter: nil
+			selectionGetter: nil :: - 1p | 1p.
 	
-	result := self class new.
 	
-	self keysAndValuesDo: [:key :value | keys includes: key :: ifTrue:[ result at:key put: value ] ].
-	
-	^result! !
+	self layoutMorph addMorph:
+({ 'college ' . 'bits' . 'bumpy' } morph | 1p - (1/6) p) <+> program <+> ((((buildButton + 'Run' button + 'Stop' button) | 32f) / console) - (1/3)p) 
+! !
