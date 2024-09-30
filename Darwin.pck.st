@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 6:43:15 pm'!
+'From Cuis7.1 [latest update: #6676] on 29 September 2024 at 9:12:23 pm'!
 'Description '!
-!provides: 'Darwin' 1 128!
+!provides: 'Darwin' 1 129!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -482,10 +482,12 @@ drawModelOn: aCanvas
 	self drawModelHeadersOn: aCanvas ; drawModelDataOn: aCanvas	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:55:56'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/29/2024 21:12:13'!
 drawModelRowHeadersOn: aCanvas
 
-	| rowh dh delta |
+	| rowh dh delta font |
+
+	font := FontFamily defaultFamilyAndPointSize.
 
 	rowHeaders ifFalse:[^self].
 	
@@ -493,7 +495,7 @@ drawModelRowHeadersOn: aCanvas
 
 	delta := colHeaders ifTrue:[0@dh] ifFalse:[0@0].
 	
-	delta := delta - (0 @ (FontFamily defaultFamilyAndPointSize lineSpacing / 2)).
+	delta := delta - (0 @ (font ascent / 2)).
 	
 	rowh := model rowsHeader.
 	
@@ -501,7 +503,7 @@ drawModelRowHeadersOn: aCanvas
 		
 		p := origin + delta + (0 @ (row * dh) ).
 		
-		aCanvas drawString: (rowh at: row + 1) at: p font: FontFamily defaultFamilyAndPointSize color: Color black  ].
+		aCanvas drawString: (rowh at: row + 1) at: p font: font color: Color black  ].
 	
 			 ! !
 
