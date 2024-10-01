@@ -1,8 +1,12 @@
+typedef std::array<int, GENIE_SCHEMA_SIZE> instance_t ;
 
-typedef std::array<GENE_TYPE, GENE_SIZE> gene_t;
+struct gene_t {
+	int value;
+	int index;
+};
 
 struct chromosome_t {
 	gene_t gene[CHROMOSOME_SIZE];
-	GENE_TYPE fitness;
+	int fitness;
 	double num_offspring;
 };

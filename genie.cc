@@ -58,7 +58,7 @@ void store_image() {
 
 	image_header[IMAGE_POP_SIZE_INDEX] = actual_population_size;
 	image_header[IMAGE_CHROMO_SIZE_INDEX] = CHROMOSOME_SIZE;
-	image_header[IMAGE_GENE_SIZE_INDEX] = GENE_SIZE;
+	image_header[IMAGE_GENE_SIZE_INDEX] = GENIE_SCHEMA_SIZE;
 
 	size_t count = write(fd, image_header, sizeof(image_header));
 
@@ -106,8 +106,8 @@ int load_image() {
 		exit(1);
 	}
 
-	if (image_header[IMAGE_GENE_SIZE_INDEX] != GENE_SIZE) {
-		cerr << image_filename << " has an incompatible gene size " <<  image_header[IMAGE_GENE_SIZE_INDEX] << " required " << GENE_SIZE << endl;
+	if (image_header[IMAGE_GENE_SIZE_INDEX] != GENIE_SCHEMA_SIZE) {
+		cerr << image_filename << " has an incompatible gene size " <<  image_header[IMAGE_GENE_SIZE_INDEX] << " required " << GENIE_SCHEMA_SIZE << endl;
 		exit(1);
 	}
 
@@ -140,9 +140,9 @@ void setup() {
 	int result = load_image();
 
 	if (result == -1) {
-		for(int i = 0 ; i < actual_population_size;i++) {
-			for(int j = 0 ; j < CHROMOSOME_SIZE; j++) {
-				current[i].gene[j][GENIE_LOCUS] = j + 1;
+		for(int i =0; i < POPULATION_SIZE; i++) {
+			for(int j = 0; j < CHROMOSOME_SIZE; j++) {
+				current[i].gene[j].index = j;
 			}
 		}
 		mutate(current, current+actual_population_size, 1.0);

@@ -10,6 +10,10 @@ struct interval_t {
 		return begin + random() % (end - begin + 1);
 	}
 
+	bool contains(int x) {
+		return begin <= x && x <= end;
+	}
+
 	interval_t intersect(interval_t an_interval) {
 		
 		return interval_t(std::max(begin, an_interval.begin), std::min(end, an_interval.end));

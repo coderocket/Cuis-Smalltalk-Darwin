@@ -12,6 +12,7 @@
 #include <string>
 #include "genie_constants.h"
 #include "genie_types.h"
+#include "chromosome_to_instance.h"
 
 using namespace std;
 
@@ -94,21 +95,10 @@ void report_progress(chromosome_t* b, chromosome_t* e) {
 void report_solution(chromosome_t* c) {
 
 	cout << " fitness = " << (c)->fitness << endl ;
-
-	for(int j = 0 ; j < CHROMOSOME_SIZE;j++) {
-		cout << "(" << c->gene[j][GENIE_LOCUS] << ", ";
-		for(int k = 0; k < GENE_SIZE; k++) {
-			cout << (c)->gene[j][k] << " ";
-		}
-		cout << ")|";
-	}
-
-	cout << endl;
-
 }
 
 void report_gene_histogram(chromosome_t* b, chromosome_t* e) {
-
+/*
 	map<gene_t, int> count;
 
 	while (b!=e) {
@@ -119,11 +109,7 @@ void report_gene_histogram(chromosome_t* b, chromosome_t* e) {
 	}
 
 	cout << count.size() << endl;
-/*
-	for(map<gene_t, int>::iterator p = count.begin(); p != count.end(); ++p) {
-		cout << p->first[GENIE_ROOM] << "," << p->first[GENIE_HOUR] << "," << p->first[GENIE_DAY] << "," << p->first[GENIE_LECTURER] << "," << p->first[GENIE_MODULE] << "," << p->first[GENIE_FRAME] << ":" << p->second << endl;
-	}
-	*/
+*/
 }
 
 void report_population_fitness_histogram(chromosome_t* b, chromosome_t* e) {
@@ -143,29 +129,32 @@ void report_population_fitness_histogram(chromosome_t* b, chromosome_t* e) {
 
 void json_write_solution(chromosome_t* c, ostream& out) {
 
+	instance_t an_instance[GENIE_N_INSTANCES];
+
+	chromosome_to_instance(c, an_instance);
+
 	out << "[" << '\n';
 
-	for(int j = 0 ; j < CHROMOSOME_SIZE ;j++) {
-		out << "[" << c->gene[j][GENIE_LOCUS] << ", ";
+	for(int j = 0 ; j < GENIE_N_INSTANCES ;j++) {
+		out << "[" << j << ", ";
 		out << "[";
 		int k;
-		for(k=0; k < GENE_SIZE - 1; k++) {
-			out << (c)->gene[j][k] << ",";
+		for(k=0; k < GENIE_SCHEMA_SIZE - 1; k++) {
+			out << an_instance[j][k] << ",";
 		}
-		out << c->gene[j][k];
+		out << an_instance[j][k];
 
 		out << "] ]";
 
-		if (j < CHROMOSOME_SIZE - 1)
+		if (j < GENIE_N_INSTANCES - 1)
 			out << ", ";
 	}
 
 	out << "]" << endl;
-
 }
 
 void report_similarity_score(chromosome_t* b, chromosome_t* e) {
-
+/*
 	size_t n = e - b;
 	double similarity_score = 0.0;
 
@@ -198,4 +187,5 @@ void report_similarity_score(chromosome_t* b, chromosome_t* e) {
 	}
 
 	cout << "similarity score is " << sqrt(similarity_score) / n << endl;
+*/
 }

@@ -8,19 +8,18 @@
 #include "genie_constants.h"
 #include "genie_types.h"
 #include "interval.h"
+#include "generated_attribute_layout.h"
 
 using namespace std;
 
-#include "generated_functions.h"
-
 void mutate(gene_t& a_gene, double p) {
 
-	double t = ((double)random()) / RAND_MAX;
+	double t = ((double) random()) / RAND_MAX ; 
 
 	if (t < p) {
-#include "generated_mutate.cc"
+		int attribute_index = a_gene.index % GENIE_SCHEMA_SIZE;
+		a_gene.value =  attribute_interval[attribute_index].at_random ( ) ;
 	}
-
 }
 
 void mutate(chromosome_t* b, chromosome_t* e, double mp) {
