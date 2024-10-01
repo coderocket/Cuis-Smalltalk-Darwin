@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 28 September 2024 at 6:40:03 pm'!
+'From Cuis7.1 [latest update: #6676] on 30 September 2024 at 8:51:16 pm'!
 'Description '!
-!provides: 'College' 1 9!
+!provides: 'College' 1 10!
 SystemOrganization addCategory: #College!
 
 
@@ -213,6 +213,133 @@ With 3 rooms this gives a total capacity of 3*45 = 135 hours per week.
 The college employs 5 lecturers
 
 a lecturer cannot work more than 20 hours a week
+
+"
+
+	| aCollege instanceIndex "aReadStream aSolution" |
+	
+	aCollege := College new.
+	
+	" rooms: { id description } "
+	
+	{ { 1 . 'apple' } . { 2 . 'banana'} . { 3 . 'orange' }  } do:[:each | 
+		aCollege addRoom: (Room new id: (each at:1) ; description: (each at:2) ;yourself) ].
+	
+	" modules: { id . description . duration } "
+	
+	{ { 1 . 'plumbing' . 2 } . { 2 . 'carpentry' . 2  } . { 3 . 'sewing' . 3 } . { 4 . 'farming' . 3  } . { 5 . 'computing' . 5 } }  do:[:each | 
+		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
+
+	" frames. "
+	
+	{ { 1 . 'group 1' } . { 2 . 'group 2' } . { 3 . 'group 3' } . { 4 . 'group 4' }. { 5 . 'group 5' } . { 6 . 'group 6' } } do:[:each | 
+		aCollege addFrame: (Frame new id:( each at:1) ; description: (each at:2) ; yourself) ].
+	
+	" module instances { id . module id . frame id } "
+	
+	instanceIndex := 1.
+	
+	1 to: 6 do:[:frameIndex |
+		1 to: 5 do:[:moduleIndex | | instance module frame |
+	
+		module := aCollege moduleAt: moduleIndex.
+		
+		frame := aCollege frameAt: frameIndex.
+		
+		instance := (ModuleInstance new id: instanceIndex ; module: module ; frame: frame ; yourself).
+		
+		module addInstance: instance.
+		
+		frame addInstance: instance.
+		
+		aCollege addInstance: instance.
+		
+		instanceIndex := instanceIndex + 1 ] ].
+	
+	" lecturers: { id description } "
+	
+	{ { 1 . 'Alice' } . { 2 . 'Bob' } . { 3 . 'Hausdorff' } . { 4 . 'Dirac' } . { 5 . 'Hume' } } do:[:each |
+		aCollege addLecturer: (Lecturer new id: (each at:1) ; description: (each at:2) ;yourself) ].
+	
+	^aCollege
+"
+	aReadStream := ReadStream on: ('/home/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry fileContents).
+
+	aSolution := Json readFrom: aReadStream.
+
+	aCollege assign: aSolution.
+
+	PluggableCollegeGridModel college: aCollege topic: #rooms format:[:each | '{1}:{2}' format:{ each lecturer description . each module description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #lecturers format:[:each | '{1}:{2}' format:{ each module description . each room description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #modules format:[:each | '{1}:{2}' format:{ each lecturer description . each room description } ]."
+
+	
+	
+	! !
+
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/29/2024 22:18:47'!
+example2
+
+	"self example2"
+	
+"
+
+The college teaches 2 groups (frames) each year, for a total of 6 frames.
+
+Each group consists of 50 students, thus the college teaches 50*6 = 300 students
+
+First year students study the following courses:
+
+1 1 calculus 3hr
+1 2 statistics 2hr
+1 3 ethics 3hr
+1 4 swimming 2hr
+1 5 rethoric 3hr
+1 6 chess 2hr
+1 7 chemistry 3hr
+1 8 poetry 2hr
+
+Second year students study
+
+2 1 astronomy 3hr
+2 2 algorithms 2hr
+2 3 physics 3hr
+2 4 history 2hr
+2 5 music 3hr
+2 6 logic 2hr
+2 7 literature 3hr
+2 8 genetics 2hr
+
+Third year students study
+
+3 1 farming
+3 2 plumbing
+3 3 carpentry
+3 4 fishing
+3 5 sewing
+3 6 baking
+3 7 cooking
+3 8 brewing
+
+therefore there are 2*24 = 48 module instances.
+
+each group studies 20 hours a week. 
+
+total hours required are  48 * 20 = 960 hours
+
+The college has 24 rooms.
+
+A working day is 9 hours long (8-17), there are 5 working days for a total of 45 available hours
+
+With 3 rooms this gives a total capacity of 24*45 = 1080 hours per week.
+
+The college employs 40 lecturers
+
+a lecturer cannot work more than 30 hours a week
+
+Thus the lecturers can teach at most 40*30 = 1200 hours a week
 
 "
 
