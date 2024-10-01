@@ -1,24 +1,25 @@
+
 Parameters
 
-epochs: 			10 
+epochs: 			20 
 generations: 20 
 threads: 			1
 
-population: 			3800
-genes: 			30
+population: 			1200
+instances: 			30
 
-mutationp :			8.0e-4
-inversionp :			1.0e-2
+mutationp :			1.5e-3
+inversionp :			2.0e-1
 
-Gene 
+Schema 
 
-room : 			1..3
+room : 			1 .. 3
 day : 			1 .. 5
-hour : 			hour(day)
-frame : 			frame (locus)
-module : 			module (locus)
-lecturer : 			lecturer (module)
-duration :     duration (module)
+hour : 			8 .. 17
+lecturer : 			1 .. 5
+frame : 			1 .. 6
+module : 			1 .. 5
+duration :    			2 .. 5
 
 Functions
 
@@ -32,14 +33,7 @@ hour
 4                  8 .. 17
 5                  8 .. 17
 6                  8 .. 13
-
-campus
-
-# room         campus 
  
-1..50 			1
-51..100 			2
-
 frame
 
 # locus         frame
@@ -114,7 +108,13 @@ table timetable
 	
 Rules
 
-bonus 10 ;
+bonus 20 ;
+
+penalty hour !in hour(day) ;
+penalty frame != frame(locus);
+penalty lecturer !in lecturer(module);
+penalty module != module(frame);
+penalty duration != duration(module);
 
 # a lecturer must not teach on days and hours that they have cordoned
 

@@ -8,7 +8,7 @@
 #include "genie_constants.h"
 #include "genie_types.h"
 #include "interval.h"
-#include "generated_attribute_layout.h"
+#include "attribute_layout.h"
 
 using namespace std;
 

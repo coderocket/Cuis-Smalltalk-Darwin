@@ -2,7 +2,7 @@
 CXX = $(PLATFORM_CPLUSPLUS_COMPILER)
 FLAGS =  -O2
 
-o = fitness.o genie.o mutate.o breed.o exprand.o crossover.o report.o invert.o
+o = fitness.o genie.o mutate.o breed.o crossover.o report.o invert.o attribute_layout.o 
 
 genie : $o 
 	$(CXX) $(FLAGS) $o -o $@
@@ -11,11 +11,13 @@ fitness.o : generated_fitness.cc genie_constants.h genie_types.h interval.h
 
 genie.o : genie_types.h interval.h genie_constants.h breed.h invert.h
 
-mutate.o : genie_types.h interval.h genie_constants.h generated_mutate.cc
+mutate.o : genie_types.h interval.h genie_constants.h 
 
 breed.o : genie_types.h genie_constants.h interval.h breed.h exprand.h crossover.h
 
 invert.o : genie_types.h genie_constants.h 
+
+attribute_layout.o : generated_attribute_layout.h interval.h
 
 genie_constants.h : generated_constants.h
 	touch genie_constants.h
@@ -35,5 +37,5 @@ test_exprand.cc : genie_constants.h exprand.h
 .PHONY: clean
 
 clean:
-	rm $o genie
+	rm *.o genie
 

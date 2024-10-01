@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 30 September 2024 at 3:55:48 pm'!
+'From Cuis7.1 [latest update: #6676] on 1 October 2024 at 5:51:58 pm'!
 'Description '!
-!provides: 'Darwin' 1 133!
+!provides: 'Darwin' 1 137!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -300,10 +300,10 @@ generateFunctions: aString
 
 	codePath asDirectoryEntry // 'generated_functions.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:53'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/1/2024 17:51:55'!
 generateMutate: aString
 
-	codePath asDirectoryEntry // 'generated_mutate.cc' fileContents: aString.! !
+	codePath asDirectoryEntry // 'generated_attribute_layout.h' fileContents: aString.! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:59'!
 generateTables: aString
@@ -334,7 +334,7 @@ compileName: aString
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:23:55'!
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/1/2024 17:37:17'!
 compileSchema: anOrderedCollection
 
 	| aStream i |
@@ -345,7 +345,7 @@ compileSchema: anOrderedCollection
 	
 	anOrderedCollection do:[:each | aStream nextPutAll: 'const int ' ; nextPutAll: each ; nextPutAll: ' = ' ; nextPutAll: ('{1};' format: { i} ) ; nextPut: Character lf. i := i + 1. ].
 	
-	aStream nextPutAll: ('const int GENIE_GENE_SIZE = {1};' format: {i}) ; nextPut:Character lf.
+	aStream nextPutAll: ('const int GENIE_SCHEMA_SIZE = {1};' format: {i}) ; nextPut:Character lf.
 	
 	^aStream contents! !
 
@@ -356,12 +356,12 @@ compileSchemaFunctionName: aString inTables: aSet
 
 	^'genie_', aString ! !
 
-!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 9/28/2024 15:53:12'!
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/1/2024 17:30:08'!
 compileParameters: names values: values types: types
 
 	| aStream params |
 
-	names includes: 'GENIE_GENES' :: ifFalse:[self error: 'genes is not defined'].
+	names includes: 'GENIE_INSTANCES' :: ifFalse:[self error: 'genes is not defined'].
 
 	params := defaults copy.
 	
@@ -413,20 +413,31 @@ compileRuleName: aString isMemberIn: aSet
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 17:39:36'!
-compileRulePrimitiveCallName: aString expr: anotherString
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/30/2024 22:35:24'!
+compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 
-	validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString asString ; signal].
+	^ anInteger = 1 
+		ifTrue:[
+	
+		validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString asString ; signal].
 
-	^ 'genie_{1}(b,e,[](const gene_t* each) \{ return {2}; \})' format:{aString . anotherString } 
+	'genie_{1}(b,e,[](const gene_t* each) \{ return {2}; \})' format:{aString . anotherString } ]
+
+		ifFalse:[
+			'genie_{1}({2})' format:{aString . anotherString } ]
+			
+
+
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 22:38:09'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/30/2024 22:12:34'!
 compileRuleVariable: aString attrs: attrsSet locals: localsSet
 
 	localsSet includes: aString :: ifTrue:[^ aString ].
 	
 	attrsSet includes: aString :: ifTrue:[^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }].
+	
+	aString = 'locus' ifTrue:[^'(*each)[GENIE_LOCUS]' ].
 	
 	GenieUndefinedSymbolException new messageText:'Undefined variable ', aString ; signal.
 	
@@ -459,14 +470,18 @@ compileTableExpr: aString keys: anOrderedCollection expr: exprString
 'b->fitness += sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ 
 	genie_table_iterate({1}, {2}, [](const interval_t& interval) \{ return {3} \; \});' format: { aString . aWriteStream contents . exprString }! !
 
-!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:24:06'!
-compileTable: anOrderedCollection name: aString
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 08:12:32'!
+compileFunction: anOrderedCollection name: aString type: aCollection
 
-	| aStream |
+	| aStream cppType |
+	
+	aCollection asSet size = 1 ifFalse:[self error: ('function {1} returns multiple types' format: {aString})].
+	
+	cppType := aCollection first.
 	
 	aStream := WriteStream on:''.
 	
-	aStream nextPutAll: 'int genie_' ; nextPutAll: aString ; nextPutAll: '(int arg) {'; nextPut: Character lf.
+	aStream nextPutAll: ('{1} genie_{2}(int arg) \{' format:{ cppType . aString }) ; nextPut: Character lf.
 	
 	anOrderedCollection do:[:each | aStream nextPutAll: each ] separatedBy:[ aStream nextPut: Character lf].
 	
@@ -501,18 +516,18 @@ compileTripleTable: anOrderedCollection name: aString
 		
 	^aStream contents ! !
 
-!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:24:11'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 07:50:23'!
 compileTuple: anOrderedCollection range: aString
 
 	| aStream |
 	
 	aStream := WriteStream on: ''.
 	
-	anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return ({2}).at_random(); \}' format:{ each . aString }) ] separatedBy:[ aStream nextPut: Character lf].
+	anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return ({2}); \}' format:{ each . aString }) ] separatedBy:[ aStream nextPut: Character lf].
 
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:27:37'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 08:01:29'!
 compileTuple: anOrderedCollection seq: anotherCollection
 
 	| aStream |
@@ -523,7 +538,7 @@ compileTuple: anOrderedCollection seq: anotherCollection
 		ifTrue:[			
 			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return {2}; \}' format:{ each .  anotherCollection first }) ] separatedBy:[ aStream nextPut: Character lf] ] 
 		ifFalse:[
-			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ vector<int> v(\{{2}\}); return v[random() % v.size()]; \}' format:{ each .  anotherCollection fold:[:acc :x | acc , ' , ' , x ] }) ] separatedBy:[ aStream nextPut: Character lf] ].
+			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return vector<int> (\{{2}\});  \}' format:{ each .  anotherCollection fold:[:acc :x | acc , ' , ' , x ] }) ] separatedBy:[ aStream nextPut: Character lf] ].
 
 	^aStream contents! !
 
@@ -556,12 +571,41 @@ initialize
 
 ! !
 
+!GenieCompiler methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 17:47:20'!
+compileAttributeLayout: anOrderedCollection
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on:''.
+	
+	anOrderedCollection do:[:each | aWriteStream nextPutAll: each] separatedBy:[ aWriteStream nextPutAll: ',
+' ].
+
+	^ aWriteStream contents! !
+
+!GenieCompiler methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 17:45:09'!
+compileMutateName: aString value: anotherString
+	^'{2} // {1}
+' format: { aString . anotherString }! !
+
 !GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 10:13:02'!
 instance
 
 	Instance ifNil:[Instance := self new].
 	
 	^Instance! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 08:05:20'!
+numberType
+	^'int'! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 08:05:35'!
+rangeType
+	^'interval_t'! !
+
+!GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 08:05:29'!
+seqType
+	^'vector<int>'! !
 
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/10/2024 16:08:56'!
 at: row at: column
@@ -702,7 +746,6 @@ drawModelOn: aCanvas
 	self drawModelHeadersOn: aCanvas ; drawModelDataOn: aCanvas	
 			 ! !
 
-<<<<<<< HEAD
 !GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/29/2024 21:12:13'!
 drawModelRowHeadersOn: aCanvas
 
@@ -725,7 +768,6 @@ drawModelRowHeadersOn: aCanvas
 		p := origin + delta + (0 @ (row * dh) ).
 	
 		"aCanvas fillRectangle: (p extent: 2 @ font ascent) color: Color black."
->>>>>>> 859b8bf4ee5de39d96848b5cb9b1db5352b6a9a9
 		aCanvas drawString: (rowh at: row + 1) at: p font: font color: Color black  ].
 	
 			 ! !
