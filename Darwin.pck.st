@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 1 October 2024 at 5:51:58 pm'!
+'From Cuis7.1 [latest update: #6676] on 1 October 2024 at 6:14:56 pm'!
 'Description '!
-!provides: 'Darwin' 1 137!
+!provides: 'Darwin' 1 140!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -373,13 +373,13 @@ compileParameters: names values: values types: types
 	
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:13'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:26'!
 compileRuleExpr: aString kind: anInteger
 
-	^'b->fitness {1}= sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ return {2}; \});' format:{ (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
+	^'b->fitness {1}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {2}; \});' format:{ (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:19'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:05:51'!
 compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
 
 	| aStream  |
@@ -390,7 +390,7 @@ compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
 	
 	^ '\{ int keys[] = \{{1}\}; 
 
-b->fitness {4}= group_by(b, keys,{2},[](gene_t** b, gene_t** e) 
+b->fitness {4}= group_by(an_instance, keys,{2},[](instance_t** b, instance_t** e) 
 	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 18:09:18'!
@@ -413,7 +413,7 @@ compileRuleName: aString isMemberIn: aSet
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/30/2024 22:35:24'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:05:57'!
 compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 
 	^ anInteger = 1 
@@ -421,7 +421,7 @@ compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 	
 		validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString asString ; signal].
 
-	'genie_{1}(b,e,[](const gene_t* each) \{ return {2}; \})' format:{aString . anotherString } ]
+	'genie_{1}(b,e,[](const instance_t* each) \{ return {2}; \})' format:{aString . anotherString } ]
 
 		ifFalse:[
 			'genie_{1}({2})' format:{aString . anotherString } ]
@@ -450,13 +450,13 @@ compileRuleVariable: aString in: aSet
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 23:34:31'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:43'!
 compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger
 
-^ 'b->fitness {6}= sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ 
+^ 'b->fitness {6}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
 	return genie_table_iterate(genie_{1}, (*each)[GENIE_{2}], (*each)[GENIE_{3}], [each](const interval_t& {4}) \{ return {5} \; \}); \});' format: { tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 21:55:12'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:47'!
 compileTableExpr: aString keys: anOrderedCollection expr: exprString
 
 	| aWriteStream |
@@ -467,7 +467,7 @@ compileTableExpr: aString keys: anOrderedCollection expr: exprString
 
 ^ 
 
-'b->fitness += sum(b->gene, b->gene+CHROMOSOME_SIZE, [](const gene_t* each) \{ 
+'b->fitness += sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
 	genie_table_iterate({1}, {2}, [](const interval_t& interval) \{ return {3} \; \});' format: { aString . aWriteStream contents . exprString }! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 08:12:32'!
