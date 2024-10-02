@@ -12,9 +12,9 @@ using namespace std;
 void mutate_attribute(instance_t& an_instance, int index) {
 	switch(index) {
 #include "generated_attribute_layout.h"
+	default:
+		stringstream err_msg; err_msg << "unexpected index: " << index << " to function: " << "attribute_interval" ; 
+		throw invalid_argument(err_msg.str()); 
 	}
-
-	stringstream err_msg; err_msg << "unexpected index: " << index << " to function: " << "attribute_interval" ; 
-	throw invalid_argument(err_msg.str()); 
 }
 

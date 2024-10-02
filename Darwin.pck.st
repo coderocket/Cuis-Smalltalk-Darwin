@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 2 October 2024 at 4:56:27 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 October 2024 at 5:33:42 pm'!
 'Description '!
-!provides: 'Darwin' 1 144!
+!provides: 'Darwin' 1 145!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -379,7 +379,7 @@ compileSchemaFunctionName: aString inTables: aSet
 
 	^'genie_', aString ! !
 
-!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/2/2024 16:22:52'!
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/2/2024 17:26:46'!
 compileKeyConstants: keys offset: anInteger
 
 	| aStream i |
@@ -392,7 +392,7 @@ compileKeyConstants: keys offset: anInteger
 ' format: {self compileName: each . i }). i := i + 1 ].
 
 	aStream nextPutAll: ('const int 	GENIE_KEY_SIZE = {1};
-' format:{ i}).
+' format:{ i - anInteger }).
 
 	^aStream contents! !
 

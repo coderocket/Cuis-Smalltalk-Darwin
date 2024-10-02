@@ -49,6 +49,7 @@ extern int total_fitness;
 	while(b != e) {
 
 		chromosome_to_instance(b, an_instance);	
+		compute_instance_keys(an_instance);
 
 		b->fitness = 0;
 
