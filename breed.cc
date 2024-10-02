@@ -15,21 +15,21 @@ extern int total_fitness;
 extern int actual_population_size;
 
 chromosome_t* match(chromosome_t* b) {
-
 	chromosome_t* partner = b + (random() % actual_population_size);
 
+/*
 	// look for an above average partner
 
 	int n_attempts = 0;
 
-	while(partner->fitness < (double)total_fitness/actual_population_size && n_attempts < 10*actual_population_size) {
+	while(partner->fitness <= (double)total_fitness/actual_population_size && n_attempts < 10*actual_population_size) {
 		partner = b + (random() % actual_population_size);
 		++n_attempts;
 	}
 
 	if (n_attempts == 10*actual_population_size)
 		throw runtime_error("could not find a partner with a fitness above the average fitness, aborting.");
-
+*/
 	return partner;
 }
 

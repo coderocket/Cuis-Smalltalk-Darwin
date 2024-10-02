@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 30 September 2024 at 8:51:16 pm'!
+'From Cuis7.1 [latest update: #6676] on 1 October 2024 at 6:54:17 pm'!
 'Description '!
-!provides: 'College' 1 10!
+!provides: 'College' 1 12!
 SystemOrganization addCategory: #College!
 
 
@@ -125,33 +125,33 @@ addRoom: aRoom
 
 	rooms at: aRoom id put: aRoom.! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 22:45:49'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 18:19:36'!
 assign: aSolution  
 
 	aSolution do:[:each | 
 
-		self assignInstance: (instances at: (each at:1)) to: (each at:2) ]! !
+		self assignInstance: (instances at: (each at:1) + 1) to: (each at:2) ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 12:29:28'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 18:54:05'!
 assignInstance: aModuleInstance to: aGene
 
 	| room day hour frame module lecturer duration  |
+
+	room := rooms at: (aGene at:1).
 	
 	day := aGene at:2.
 	
 	hour := aGene at:3.
+
+	lecturer := lecturers at: (aGene at:4).
+
+	frame := frames at: (aGene at:5).
+	
+	module := modules at: (aGene at:6).
 	
 	duration := aGene at:7.
-
-	aModuleInstance day: day ; hour: hour.
 	
-	room := rooms at: (aGene at:1).
-
-	frame := frames at: (aGene at:4).
-		
-	module := modules at: (aGene at:5).
-	
-	lecturer := lecturers at: (aGene at:6).
+	aModuleInstance day: day ; hour: hour.		
 	
 	aModuleInstance room: room. room addInstance: aModuleInstance.
 	
@@ -161,7 +161,8 @@ assignInstance: aModuleInstance to: aGene
 	
 	aModuleInstance lecturer: lecturer. lecturer addInstance: aModuleInstance.
 	
-	self assert: frame = aModuleInstance frame.
+	aModuleInstance frame: frame. frame addInstance: aModuleInstance 
+
 	! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:24:13'!
@@ -185,7 +186,7 @@ initialize
 moduleAt: anInteger
 	^ modules at: anInteger ! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/28/2024 18:23:34'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 18:53:04'!
 example
 
 	"self example"
@@ -239,22 +240,13 @@ a lecturer cannot work more than 20 hours a week
 	
 	instanceIndex := 1.
 	
-	1 to: 6 do:[:frameIndex |
-		1 to: 5 do:[:moduleIndex | | instance module frame |
-	
-		module := aCollege moduleAt: moduleIndex.
+	6*5 timesRepeat:[ | instance |
 		
-		frame := aCollege frameAt: frameIndex.
-		
-		instance := (ModuleInstance new id: instanceIndex ; module: module ; frame: frame ; yourself).
-		
-		module addInstance: instance.
-		
-		frame addInstance: instance.
+		instance := (ModuleInstance new id: instanceIndex ; yourself).
 		
 		aCollege addInstance: instance.
 		
-		instanceIndex := instanceIndex + 1 ] ].
+		instanceIndex := instanceIndex + 1 ].
 	
 	" lecturers: { id description } "
 	

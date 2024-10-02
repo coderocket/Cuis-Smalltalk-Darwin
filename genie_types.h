@@ -1,4 +1,4 @@
-typedef std::array<int, GENIE_SCHEMA_SIZE> instance_t ;
+typedef std::array<int, INSTANCE_SIZE> instance_t ;
 
 struct gene_t {
 	int value;

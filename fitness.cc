@@ -12,11 +12,11 @@
 #include "genie_types.h"
 #include "interval.h"
 #include "fitness_library.h"
+#include "chromo.h"
 
 using namespace std;
 
 #include "generated_functions.h"
-
 #include "fitness_library.cc"
 
 void calculate_num_offspring(chromosome_t* b, chromosome_t* e) {
@@ -29,13 +29,12 @@ extern int total_fitness;
 	}
 }
 
-void chromosome_to_instance(const chromosome_t* c, instance_t* out) {
+void compute_instance_keys(instance_t* b) {
 
-	const gene_t* b = c->gene;
-	const gene_t* e = c->gene+CHROMOSOME_SIZE;
-	while (b != e) {
-		out[b->index / GENIE_SCHEMA_SIZE][b->index % GENIE_SCHEMA_SIZE] = b->value;
-		++b;
+	for(int i = 0; i < GENIE_N_INSTANCES;i++) {
+		instance_t& an_instance = b[i];
+		an_instance[GENIE_ID] = i;
+#include "generated_keys.cc"
 	}
 }
 

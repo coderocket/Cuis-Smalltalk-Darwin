@@ -1,6 +1,6 @@
 tokens
 
-".." Schema Parameters Functions Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in
+".." Schema Parameters Functions Keys Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in
 
 
 patterns
@@ -19,13 +19,11 @@ rules
 
 %topic main
 
-Start 'x' : Params 'p' Structure 'g' Fun 'f' Fitness 'r'
-
-	{ attrs @ x = attrs @ g }
+Start 'x' : Params 'p' Structure 'g' Fun 'f' RuleKeys 'k' Fitness 'r'
 
 	{ params @ x = code @ p }
 
-	{ fnames @ g = (fnames @ f) asSet }
+	{ fnames @ x = (fnames @ f) asSet }
 
 	{ schema @ x = code @ g }
 
@@ -35,11 +33,21 @@ Start 'x' : Params 'p' Structure 'g' Fun 'f' Fitness 'r'
 
 	{ mutate @ x = mutate @ g }
 
-	{ attrs @ r = (attrs @ g) }
+	{ attrs @ r = (attrs @ g), (keys @ k) }
 
 	{ tnames @ r = tnames @ f }
 
 	{ fitness @ x = code @ r }
+
+	{ keycode @ x = keycode @ k }
+
+	{ keyconsts @ x = GenieCompiler instance compileKeyConstants: keys @ k offset: (attrs @ g) size }
+
+	{ keys @ p = keys @ k }
+
+	{ attrs @ p = attrs @ g }
+
+	{ fdecl @ x = (fdecl @ f) reduce:[:u :v | u,v ] }
 
 	;
 
@@ -56,26 +64,18 @@ Structure 'x' : Schema Component + 'c'
 
 	;
 
-Component 'x' : Name 'n' ":" Value 'v'
+Component 'x' : name 'n' ":" Value 'v'
 	
-	{ code @ x = GenieCompiler instance compileMutateName: value @ n  value: code @ v } 
+	{ code @ x = GenieCompiler instance compileMutateName: n value asString value: code @ v } 
 
-	{ attr @ x =  value @ n }
+	{ attr @ x =  GenieCompiler instance compileName: n value asString }
 
 	{ val @ x = code @ v }
 
-	{ raw @ x =  raw @ n }
+	{ raw @ x =  n value asString }
 
 	{ type @ x = type @ v }
-	
-	;
-
-Name 'x' : name 'n'
-
-	{ value @ x = GenieCompiler instance compileName: n value asString }
-
-	{ raw @ x = n value asString }
-
+	 
 	;
 
 Value 'x' : 
@@ -96,9 +96,13 @@ Value 'x' :
 
 	| Range 'r'
 
-	{ code @ x = 'interval_t({1} , {2})' format: { b@r . e@r } }
+	{ code @ x = 'interval_t({1} , {2}).at_random()' format: { b@r . e@r } }
 
 	{ type @ x = 'interval_t' }
+
+	| Function 'f'
+
+	{ code @ x = (code @ f), '.at_random()' }
 
 	;
 
@@ -112,15 +116,49 @@ Range 'x' : number 'b' ".." number  'e'
 
 	;
 
-Function 'x' : name 'n' "(" Name 'e' ")"
+Function 'x' : name 'fn' "(" Argument 'e' ")"
 
-	{ n @ x = GenieCompiler instance compileSchemaFunctionName: n value asString inTables: fnames @ x }
+	{ n @ x = GenieCompiler instance compileSchemaFunctionName: fn value asString inTables: fnames @ x }
 
-	{ e @ x = 'a_gene[{1}]' format: { value @ e  } }
+	{ key @ x = key @ e }
+
+	{ code @ x = '{1}({2})' format:{ n @ x . code @ e } }
 
 	;
 
+Argument 'x' : name 'n'
+	
+	{ value @ x = n value asString }
+
+	{ key @ x = 	GenieCompiler instance compileName: n value asString }
+
+	{ code @ x = 'an_instance[{1}]' format:{key @ x } }
+
+	| Function 'f' 
+
+	{ key @ x = '{1}({2})' format: { n @ f . key @ f } }
+
+	{ code @ x = (code @ f) }
+	
+	;
+
 %topic fitness
+
+RuleKeys 'x' : Keys Key + 'k' 
+
+	{ keys @ x = keys @ k }
+
+	{ keycode @ x = code @ k fold:[:u :v | u, String lfString, v ] }
+
+	;
+
+Key 'x' : name 'kn' ":" Function 'f' 
+
+	{ keys @ x = { kn value asString } }
+
+	{ code @ x = GenieCompiler instance compileKey: kn value asString value: code@f  }
+
+	;
 
 Fitness 'x' : Rules Rule + 'r'
 
@@ -141,9 +179,9 @@ Rule 'x' : bonus Group 'a'
 	{ code @ x = code @ a }
 ;
  
-Group 'x' : group by "(" Names 'ns' ")" Expr 'e'  ";"
+Group 'x' : group by "(" Arguments 'a' ")" Expr 'e'  ";"
 	 
-	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: names @ ns expr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: keys @ a expr: value @ e kind: kind @ x }
 
 	{ group @ e = 1 }
 
@@ -172,11 +210,11 @@ Expr 'x' : Expr 'left' max Term 'right'
 
 Compare 'x' : Compare 'left' compop 'op' Term 'right' 
 
-	{ value @ x = '(({1}) {2} ({3}))' format: { value @ left . (op value asString) . value @ right } }
+	{ value @ x = '(int)(({1}) {2} ({3}))' format: { value @ left . (op value asString) . value @ right } }
 
 	| Compare 'left' equal Term 'right' 
 
-	{ value @ x = '(({1}) == ({2}))' format: { value @ left . value @ right } }
+	{ value @ x = '(int)(({1}) == ({2}))' format: { value @ left . value @ right } }
 
 	| Compare 'left' notin Term 'right' 
 
@@ -251,13 +289,13 @@ T 'x' : T 'left' "+" F 'right'
 
 	;
 
-F 'x' : Name 'n'
+F 'x' : name 'n'
 
-	{ value @ x = GenieCompiler instance compileRuleVariable: raw @ n attrs: (attrs @ x) locals: (locals @ x)  }
+	{ value @ x = GenieCompiler instance compileRuleVariable: n value asString attrs: (attrs @ x) locals: (locals @ x)  }
 
-	| Name 'n' "(" Es 'e' ")" 
+	| name 'n' "(" Es 'e' ")" 
 
-	{ value @ x = GenieCompiler instance compileRuleInnerCall: raw @ n args: value @ e}
+	{ value @ x = GenieCompiler instance compileRuleInnerCall: n value asString args: value @ e}
 
 	| number 'n'
 	
@@ -271,13 +309,13 @@ Es 'x' : E 'e'
 
 	;
 
-Names 'x' : Name 'n' 
+Arguments 'x' : Argument 'a' 
 
-	{ names @ x = { value @ n  } }
+	{ keys @ x = { key @ a  } }
 
-	| Names 'xs' "," Name 'n'  
+	| Arguments 'xs' "," Argument 'a'  
 
-	{ names @ x = (names @ xs) , { value @ n } }
+	{ keys @ x = (keys @ xs) , { key @ a } }
 
 	;
 
@@ -289,6 +327,8 @@ Fun 'x' : Functions Table + 't'
 
 	{ fnames @ x = fname @ t }
 
+	{ fdecl @ x = fdecl @ t }
+
 	{ tables @ x = table @ t reduce:[:u :v | u, String lfString, v] }
 
 	{ tnames @ x = tname @ t }
@@ -299,6 +339,8 @@ Table 'x' : name 'n' Tuple + 't'
 	{ code @ x =  GenieCompiler instance compileFunction: v@t name: n value asString type: type @ t }
 	
 	{ fname @ x = { n value asString } }
+
+	{ fdecl @ x = GenieCompiler instance compileFunctionDeclaration: n value asString type: type @ t }
 
 	;
 
@@ -361,6 +403,6 @@ Seq 'x' :
 
 Params 'x' : Parameters Component + 'c' 
 
-	{ code @ x = GenieCompiler instance compileParameters: attr @ c values: val @ c types: type @ c }
+	{ code @ x = GenieCompiler instance compileParameters: attr @ c values: val @ c types: type @ c  }
 
 	;

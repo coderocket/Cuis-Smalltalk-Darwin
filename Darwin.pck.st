@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 1 October 2024 at 6:14:56 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 October 2024 at 4:56:27 pm'!
 'Description '!
-!provides: 'Darwin' 1 140!
+!provides: 'Darwin' 1 144!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -275,14 +275,16 @@ run! !
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:19'!
 stop! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/26/2024 19:48:30'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/2/2024 16:56:23'!
 generateCode: anASTNode
 
-	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode).
+	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode), (#keyconsts @ anASTNode).
 	self generateFunctions: #functions @ anASTNode.
+	self generateFunctionDecls: #fdecl @ anASTNode.
 	self generateTables: #tables @ anASTNode.
 	self generateMutate: #mutate @ anASTNode.
 	self generateFitness: #fitness @ anASTNode.
+	self generateKeys: #keycode @ anASTNode.
 ! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/25/2024 09:53:36'!
@@ -295,10 +297,20 @@ generateFitness: aString
 
 	codePath asDirectoryEntry // 'generated_fitness.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 9/26/2024 19:48:14'!
-generateFunctions: aString
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/2/2024 16:56:00'!
+generateFunctionDecls: aString
 
 	codePath asDirectoryEntry // 'generated_functions.h' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/2/2024 16:49:25'!
+generateFunctions: aString
+
+	codePath asDirectoryEntry // 'generated_functions.cc' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/2/2024 15:07:38'!
+generateKeys: aString
+
+	codePath asDirectoryEntry // 'generated_keys.cc' fileContents: aString.! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/1/2024 17:51:55'!
 generateMutate: aString
@@ -314,13 +326,6 @@ generateTables: aString
 codePath: aString
 	codePath := aString! !
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 14:06:30'!
-getSolutionKeys: anASTNode
-
-	^(#attrs @ anASTNode).
-	
-	! !
-
 !GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 09:54:13'!
 initialize
 
@@ -328,6 +333,24 @@ initialize
 
 
 ! !
+
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/2/2024 12:32:39'!
+compileAttributeLayout: anOrderedCollection
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on:''.
+	
+	anOrderedCollection do:[:each | aWriteStream nextPutAll: each] separatedBy:[ aWriteStream nextPutAll: '
+' ].
+
+	^ aWriteStream contents! !
+
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/2/2024 16:28:26'!
+compileMutateName: aString value: anotherString
+	^'case {1}:
+	an_instance[{1}] = {2}; break;
+' format: { self compileName: aString . anotherString }! !
 
 !GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:23:03'!
 compileName: aString
@@ -356,9 +379,25 @@ compileSchemaFunctionName: aString inTables: aSet
 
 	^'genie_', aString ! !
 
-!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/1/2024 17:30:08'!
-compileParameters: names values: values types: types
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/2/2024 16:22:52'!
+compileKeyConstants: keys offset: anInteger
 
+	| aStream i |
+	
+	aStream := WriteStream on:''.
+	
+	i := anInteger .
+	
+	keys do: [:each | aStream nextPutAll: ('const int {1} = {2};
+' format: {self compileName: each . i }). i := i + 1 ].
+
+	aStream nextPutAll: ('const int 	GENIE_KEY_SIZE = {1};
+' format:{ i}).
+
+	^aStream contents! !
+
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/2/2024 16:16:49'!
+compileParameters: names values: values types: types 
 	| aStream params |
 
 	names includes: 'GENIE_INSTANCES' :: ifFalse:[self error: 'genes is not defined'].
@@ -372,6 +411,11 @@ compileParameters: names values: values types: types
 	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const ' ; nextPutAll: value first ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value second ; nextPutAll:';' ; nextPut: Character lf.  ].
 	
 	^aStream contents! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/2/2024 15:04:36'!
+compileKey: aString value: anotherString
+
+	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:26'!
 compileRuleExpr: aString kind: anInteger
@@ -430,14 +474,14 @@ compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/30/2024 22:12:34'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/2/2024 10:57:24'!
 compileRuleVariable: aString attrs: attrsSet locals: localsSet
 
 	localsSet includes: aString :: ifTrue:[^ aString ].
 	
 	attrsSet includes: aString :: ifTrue:[^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }].
 	
-	aString = 'locus' ifTrue:[^'(*each)[GENIE_LOCUS]' ].
+	aString = 'id' ifTrue:[^'(*each)[GENIE_SCHEMA_SIZE]' ].
 	
 	GenieUndefinedSymbolException new messageText:'Undefined variable ', aString ; signal.
 	
@@ -488,6 +532,42 @@ compileFunction: anOrderedCollection name: aString type: aCollection
 	aStream nextPut: Character lf.
 	
 	aStream nextPutAll: '{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_' ; nextPutAll: aString ; nextPutAll:'" ; throw invalid_argument(err_msg.str()); }'; nextPut: Character lf; nextPutAll:'}'; nextPut: Character lf.
+	
+	^aStream contents ! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/2/2024 16:50:13'!
+compileFunctionDeclaration: anOrderedCollection name: aString type: aCollection
+
+	| aStream cppType |
+	
+	aCollection asSet size = 1 ifFalse:[self error: ('function {1} returns multiple types' format: {aString})].
+	
+	cppType := aCollection first.
+	
+	aStream := WriteStream on:''.
+	
+	aStream nextPutAll: ('{1} genie_{2}(int arg) \{' format:{ cppType . aString }) ; nextPut: Character lf.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each ] separatedBy:[ aStream nextPut: Character lf].
+	
+	aStream nextPut: Character lf.
+	
+	aStream nextPutAll: '{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_' ; nextPutAll: aString ; nextPutAll:'" ; throw invalid_argument(err_msg.str()); }'; nextPut: Character lf; nextPutAll:'}'; nextPut: Character lf.
+	
+	^aStream contents ! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/2/2024 16:51:25'!
+compileFunctionDeclaration: aString type: aCollection
+
+	| aStream cppType |
+	
+	aCollection asSet size = 1 ifFalse:[self error: ('function {1} returns multiple types' format: {aString})].
+	
+	cppType := aCollection first.
+	
+	aStream := WriteStream on:''.
+	
+	aStream nextPutAll: ('{1} genie_{2}(int arg);' format:{ cppType . aString }) ; nextPut: Character lf.
 	
 	^aStream contents ! !
 
@@ -570,23 +650,6 @@ initialize
 	validFunctions := { 'sum' . 'count' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' }.
 
 ! !
-
-!GenieCompiler methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 17:47:20'!
-compileAttributeLayout: anOrderedCollection
-
-	| aWriteStream |
-	
-	aWriteStream := WriteStream on:''.
-	
-	anOrderedCollection do:[:each | aWriteStream nextPutAll: each] separatedBy:[ aWriteStream nextPutAll: ',
-' ].
-
-	^ aWriteStream contents! !
-
-!GenieCompiler methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 17:45:09'!
-compileMutateName: aString value: anotherString
-	^'{2} // {1}
-' format: { aString . anotherString }! !
 
 !GenieCompiler class methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 10:13:02'!
 instance
