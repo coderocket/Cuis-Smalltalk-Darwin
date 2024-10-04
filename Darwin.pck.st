@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 4 October 2024 at 12:03:27 am'!
+'From Cuis7.1 [latest update: #6676] on 4 October 2024 at 12:29:30 pm'!
 'Description '!
-!provides: 'Darwin' 1 159!
+!provides: 'Darwin' 1 164!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -185,7 +185,21 @@ program: aText
 	
 	^true! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:59:38'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:27:01'!
+reset
+
+	| workingDirectory |
+	
+	self assert: (genieProcess isNil or:[genieProcess isRunning not]).
+	
+	workingDirectory := codeGenerator codePath.
+
+	workingDirectory asDirectoryEntry // 'population.gimage' :: delete.
+	
+	consoleOutput := 'deleted population.gimage file'. self changed: #console.
+	! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:10:14'!
 run
 
 	| workingDirectory fifoName commandName model aReadStream result |
@@ -193,7 +207,7 @@ run
 	
 	fifoName := 'run.fifo'.
 	
-	commandName := 'cd {1}  && ./genie -file 2> {2}' format: { workingDirectory . fifoName }.
+	commandName := 'cd {1}  && exec ./genie -file 2> {2}' format: { workingDirectory . fifoName }.
 	
 	consoleOutput := ''. self changed:#console. 
 
@@ -211,6 +225,8 @@ run
 		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
 
 	aReadStream disableReadBuffering .
+	
+	OSProcess accessor setNonBlocking: aReadStream fileID.
 
 	[ | bytes |
 		
@@ -230,8 +246,25 @@ run
 	aReadStream close. ] fork
 ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:19'!
-stop! !
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:14:29'!
+stop
+
+	| model |
+	
+	genieProcess ifNil:[^self].
+	
+	genieProcess  terminate.
+	
+	consoleOutput := 'Stoping ... '. self changed: #console.
+	
+	model := self.
+	
+	[
+		[genieProcess isRunning ] whileTrue:[ Processor yield ]. 
+		
+		consoleOutput := consoleOutput , ' stopped.'. 
+		
+		model changed: #console ] fork.! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:36:37'!
 wd: aString
@@ -847,10 +880,10 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:49:35'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:24:36'!
 buildMorphicWindow
 
-	| program console  compileButton buildButton runButton |
+	| program console  compileButton buildButton runButton stopButton resetButton |
 	
 	program := TextModelMorph
 
@@ -868,6 +901,12 @@ buildMorphicWindow
 	runButton := PluggableButtonMorph model: model stateGetter: nil action: #run.
 	runButton label: 'Run'.
 
+	stopButton := PluggableButtonMorph model: model stateGetter: nil action: #stop.
+	stopButton label: 'Stop'.
+
+	resetButton := PluggableButtonMorph model: model stateGetter: nil action: #reset.
+	resetButton label: 'Reset'.
+
 	console :=  TextModelMorph 
 			textProvider: model
 			textGetter: #console
@@ -876,5 +915,5 @@ buildMorphicWindow
 	
 	
 	self layoutMorph addMorph:
-({ 'college ' . 'bits' . 'bumpy' } morph | 1p - (1/6) p) <+> program <+> ((((compileButton + buildButton + runButton "+ 'Stop' button") | 32f) / console) - (1/3)p) 
+({ 'college ' . 'bits' . 'bumpy' } morph | 1p - (1/6) p) <+> program <+> ((((compileButton - 1p + (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
 ! !
