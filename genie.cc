@@ -24,7 +24,7 @@ using std::endl;
 using std::cerr;
 
 bool use_fifo = false;
-string fifo_name = "fifo";
+string fifo_name = "gnuplot.fifo";
 
 const char* image_filename = "population.gimage";
 
