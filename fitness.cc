@@ -29,15 +29,6 @@ extern int total_fitness;
 	}
 }
 
-void compute_instance_keys(instance_t* b) {
-
-	for(int i = 0; i < GENIE_N_INSTANCES;i++) {
-		instance_t& an_instance = b[i];
-		an_instance[GENIE_ID] = i;
-#include "generated_keys.cc"
-	}
-}
-
 void calculate_fitness(chromosome_t* b, chromosome_t* e) {
 
 extern int total_fitness;

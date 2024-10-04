@@ -12,7 +12,7 @@
 #include <string>
 #include "genie_constants.h"
 #include "genie_types.h"
-#include "chromosome_to_instance.h"
+#include "chromo.h"
 
 using namespace std;
 
@@ -133,13 +133,15 @@ void json_write_solution(chromosome_t* c, ostream& out) {
 
 	chromosome_to_instance(c, an_instance);
 
+	compute_instance_keys(an_instance);
+
 	out << "[" << '\n';
 
 	for(int j = 0 ; j < GENIE_N_INSTANCES ;j++) {
 		out << "[" << j << ", ";
 		out << "[";
 		int k;
-		for(k=0; k < GENIE_SCHEMA_SIZE - 1; k++) {
+		for(k=0; k < INSTANCE_SIZE - 1; k++) {
 			out << an_instance[j][k] << ",";
 		}
 		out << an_instance[j][k];

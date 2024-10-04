@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <array>
+#include "interval.h"
 #include "genie_constants.h"
 #include "genie_types.h"
+#include "generated_functions.h"
 
 void chromosome_to_instance(const chromosome_t* c, instance_t* out) {
 
@@ -22,6 +24,16 @@ void instance_to_chromosome(const instance_t* b, chromosome_t* out) {
 		int attr = out->gene[i].index % GENIE_SCHEMA_SIZE;
 		assert(index < GENIE_N_INSTANCES);
 		out->gene[i].value = b[index][attr];
+	}
+}
+
+
+void compute_instance_keys(instance_t* b) {
+
+	for(int i = 0; i < GENIE_N_INSTANCES;i++) {
+		instance_t& an_instance = b[i];
+		an_instance[GENIE_ID] = i;
+#include "generated_keys.cc"
 	}
 }
 

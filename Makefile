@@ -28,12 +28,7 @@ crossover.o : genie_types.h genie_constants.h
 
 chromo.o : chromo.h
 
-report.o : report.h genie_types.h genie_constants.h
-
-test_exprand : test_exprand.o exprand.o
-	$(CXX) -g test_exprand.o exprand.o -o $@
-
-test_exprand.cc : genie_constants.h exprand.h
+report.o : report.h genie_types.h genie_constants.h chromo.h
 
 %.o: %.cc
 	$(CXX) -c $(FLAGS) $< -o $@
