@@ -1,6 +1,10 @@
-'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 6:27:16 pm'!
+'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 7:25:28 pm'!
 'Description '!
-!provides: 'Darwin' 1 170!
+!provides: 'Darwin' 1 174!
+!requires: 'LayoutAlgebra' 1 10 nil!
+!requires: 'Regex-Core' 1 9 nil!
+!requires: 'Xray' 1 26 nil!
+!requires: 'OSProcess' 1 36 nil!
 SystemOrganization addCategory: #Darwin!
 
 
@@ -91,26 +95,28 @@ addProgram
 build
 	self make! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:47:35'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:34:38'!
 compile
 
 	[ | outcome |
 		
+		consoleOutput := 'Compilation failed.'.
+		
 		programText removeAttributes: { TextColor red . TextBackgroundColor yellow } from: 1 to: programText size.
 		outcome := parser parse: programText.
-		ast := outcome first second.
 		outcome second 
 			ifNotEmpty:[programText addAttribute: TextColor red from: outcome second first start + 1 to: programText size ].
 		outcome second 
 			ifEmpty:[
+				ast := outcome first second.
 				self generate.
-				consoleOutput := 'Compilation successful.'. self changed:#console. 			]
+				consoleOutput := 'Compilation successful.'. 	]
 	]
 	on: XraySyntaxError do:[:anXraySyntaxError | 
 		
 		programText addAttribute: TextColor red from: anXraySyntaxError position + 1 to: programText size ].
 	
-	self changed: #program.
+	self changed: #program ; changed:#console. 		
 ! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:55'!
@@ -118,11 +124,11 @@ console
 
 ^consoleOutput ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:26:01'!
-fileOut
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:29:16'!
+fileOutProgram
 
 	| aString aFileEntry |
-	
+		
 	programIndex ifNil:[^self].
 	
 	programIndex = 0 ifTrue:[^self].
@@ -203,9 +209,9 @@ make
 	aReadStream close. ] fork
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:17:04'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:22:52'!
 program
-	^programText! !
+	^ 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color blue  ]  ! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:21:18'!
 program: aText
