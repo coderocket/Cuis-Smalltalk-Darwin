@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 7:25:28 pm'!
+'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 10:00:31 pm'!
 'Description '!
-!provides: 'Darwin' 1 174!
+!provides: 'Darwin' 1 180!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -10,7 +10,7 @@ SystemOrganization addCategory: #Darwin!
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName'
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection'
 	classVariableNames: 'Programs'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -50,13 +50,13 @@ GridModel class
 
 !classDefinition: #GenieUndefinedSymbolException category: #Darwin!
 Exception subclass: #GenieUndefinedSymbolException
-	instanceVariableNames: ''
+	instanceVariableNames: 'start end'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Darwin'!
 !classDefinition: 'GenieUndefinedSymbolException class' category: #Darwin!
 GenieUndefinedSymbolException class
-	instanceVariableNames: ''!
+	instanceVariableNames: 'start'!
 
 !classDefinition: #GridMorph category: #Darwin!
 PluggableMorph subclass: #GridMorph
@@ -95,10 +95,12 @@ addProgram
 build
 	self make! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:34:38'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:32:55'!
 compile
 
 	[ | outcome |
+		
+		selection := 0 to: 0.
 		
 		consoleOutput := 'Compilation failed.'.
 		
@@ -114,7 +116,14 @@ compile
 	]
 	on: XraySyntaxError do:[:anXraySyntaxError | 
 		
-		programText addAttribute: TextColor red from: anXraySyntaxError position + 1 to: programText size ].
+		programText addAttribute: TextColor red from: anXraySyntaxError position + 1 to: programText size ]
+	
+	on: GenieUndefinedSymbolException do:[:aGenieUndefinedSymbolException |
+		
+		selection := aGenieUndefinedSymbolException start to: aGenieUndefinedSymbolException end. 
+		
+		programText addAttribute: TextColor red from: aGenieUndefinedSymbolException start to: aGenieUndefinedSymbolException end.
+		consoleOutput := aGenieUndefinedSymbolException messageText 		].
 	
 	self changed: #program ; changed:#console. 		
 ! !
@@ -147,7 +156,7 @@ generate
 	
 	codeGenerator generateCode: ast! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:19:47'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:28:46'!
 initialize
 
 	consoleOutput := ''.
@@ -161,7 +170,8 @@ initialize
 	codeGenerator := GenieCodeGenerator new.
 
 	programIndex := 0.
-! !
+
+	selection := 0 to:0.! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:54:19'!
 make
@@ -209,14 +219,16 @@ make
 	aReadStream close. ] fork
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:22:52'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:48:35'!
 program
-	^ 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color blue  ]  ! !
+	^ programText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:21:18'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:59:42'!
 program: aText
 
-	programText := aText.
+	programText := 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
+	
+	programText := '#:^isLineSeparator:*:isLineSeparator:' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
 	
 	Programs at: programName put: programText.
 	
@@ -321,6 +333,10 @@ selectProgram: anInteger
 	
 	self changed: #program! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:28:31'!
+selectProgramText
+	^ selection! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:15:56'!
 selectedProgram
 
@@ -357,10 +373,10 @@ stop
 		
 		model changed: #console ] fork.! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:36:37'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:14:57'!
 wd: aString
 	
-	codeGenerator codePath: aString.! !
+	codeGenerator codePath: aString asDirectoryEntry.! !
 
 !GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:04:10'!
 initialize
@@ -455,6 +471,18 @@ compileName: aString
 
 	^'GENIE_', aString asUppercase! !
 
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/6/2024 21:14:08'!
+compileName: aTerminal env: aCollection
+
+	| aString |
+	
+	aString := aTerminal value asString.
+
+	aString = 'id' or: [aCollection includes: aString] :: ifFalse:[
+		GenieUndefinedSymbolException new messageText: 'Undefined attribute: ', aString ; start: aTerminal start; end: aTerminal end; signal ]. 
+	
+	^'GENIE_', aString asUppercase! !
+
 !GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/1/2024 17:37:17'!
 compileSchema: anOrderedCollection
 
@@ -470,10 +498,14 @@ compileSchema: anOrderedCollection
 	
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 9/24/2024 22:24:02'!
-compileSchemaFunctionName: aString inTables: aSet
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/6/2024 20:26:48'!
+compileSchemaFunctionName: aTerminal inTables: aSet
 
-	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText: 'Undefined function: ', aString ; signal ].
+	| aString |
+	
+	aString := aTerminal value asString.
+	
+	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText: 'Undefined function: ', aString ; start: aTerminal start; end: aTerminal end; signal ].
 
 	^'genie_', aString ! !
 
@@ -572,16 +604,20 @@ compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/2/2024 10:57:24'!
-compileRuleVariable: aString attrs: attrsSet locals: localsSet
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/6/2024 20:08:44'!
+compileRuleVariable: aTerminal attrs: attrsSet locals: localsSet
 
+	| aString |
+	
+	aString := aTerminal value asString.
+	
 	localsSet includes: aString :: ifTrue:[^ aString ].
 	
 	attrsSet includes: aString :: ifTrue:[^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }].
 	
 	aString = 'id' ifTrue:[^'(*each)[GENIE_SCHEMA_SIZE]' ].
 	
-	GenieUndefinedSymbolException new messageText:'Undefined variable ', aString ; signal.
+	GenieUndefinedSymbolException new messageText:'Undefined variable ', aString ; start: aTerminal start; end: aTerminal end; signal.
 	
 	! !
 
@@ -806,6 +842,22 @@ defaultAction
 
 	UnhandledError signalForException: self! !
 
+!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:29'!
+end
+	^end! !
+
+!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:21'!
+end: anInteger
+	end := anInteger ! !
+
+!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:27'!
+start
+	^start! !
+
+!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:11'!
+start: anInteger
+	start := anInteger! !
+
 !GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:36:40'!
 columnHeaders: aBoolean
 	colHeaders := aBoolean! !
@@ -978,7 +1030,7 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:18:33'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:25:28'!
 buildMorphicWindow
 
 	| programs program console  compileButton buildButton runButton stopButton resetButton |
@@ -990,7 +1042,7 @@ buildMorphicWindow
 			textProvider: model
 			textGetter: #program
 			textSetter: #program:
-			selectionGetter: nil :: - (1/2)p | 1p.
+			selectionGetter: #selectProgramText :: - (1/2)p | 1p.
 	
 	compileButton := PluggableButtonMorph model: model stateGetter: nil action: #compile.
 	compileButton label: 'Compile'.
