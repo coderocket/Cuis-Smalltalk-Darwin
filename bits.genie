@@ -1,21 +1,31 @@
 
-Parameters
+Parameters 
 
-epochs: 10 
-generations : 20 
-threads : 			1
+epochs: 			15 
+generations: 20  
+threads: 			1
 
-population: 			1000
-genes: 			100
+population: 			900 
+instances: 			100
+ 
+mutationp :			1.0e-5
+inversionp :			2.0e-1
+ 
+Schema 
+ 
+bit : 			0 .. 1
 
-mutationp: 			1.0e-3
-inversionp: 			1.0e-2
+Functions
 
-Gene
+dummy
 
-bit: 			0..1
+0                  0
+1			1
+
+Keys 
+ 
+a : dummy(bit)
 
 Rules
 
-bonus bit;
-
+bonus bit = 1;
