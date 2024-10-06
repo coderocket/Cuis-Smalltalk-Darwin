@@ -1,13 +1,13 @@
-'From Cuis7.1 [latest update: #6676] on 4 October 2024 at 12:29:30 pm'!
+'From Cuis7.1 [latest update: #6676] on 4 October 2024 at 9:55:22 pm'!
 'Description '!
-!provides: 'Darwin' 1 164!
+!provides: 'Darwin' 1 166!
 SystemOrganization addCategory: #Darwin!
 
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess'
-	classVariableNames: ''
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName'
+	classVariableNames: 'Programs'
 	poolDictionaries: ''
 	category: 'Darwin'!
 !classDefinition: 'GenieBrowserModel class' category: #Darwin!
@@ -75,6 +75,18 @@ GenieBrowser class
 	instanceVariableNames: ''!
 
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:11:43'!
+addProgram
+
+	StringRequestMorph 
+		request: 'New program name'
+		initialAnswer: ''
+		verifying: [:aString |
+			aString notEmpty and:[ (Programs includesKey: aString) not ] ] 
+		do: [ :aString | 
+				Programs at: aString put:'Empty for now'.
+				self changed: #programs ]! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:47:11'!
 build
 	self make! !
@@ -113,7 +125,7 @@ generate
 	
 	codeGenerator generateCode: ast! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:37:00'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:16:06'!
 initialize
 
 	consoleOutput := ''.
@@ -126,7 +138,9 @@ initialize
 	
 	codeGenerator := GenieCodeGenerator new.
 
-	codeGenerator codePath: './'.! !
+	codeGenerator codePath: './'.
+	
+	programIndex := 0.! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:54:19'!
 make
@@ -178,12 +192,39 @@ make
 program
 	^programText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:22:25'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:21:18'!
 program: aText
 
 	programText := aText.
 	
+	Programs at: programName put: programText.
+	
 	^true! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:12:22'!
+programs
+	^ Programs keys sort ! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:45:03'!
+renameProgram
+
+	programIndex ifNil:[^self].
+	
+	programIndex = 0 ifTrue:[^self].
+	
+	StringRequestMorph 
+		request: 'Rename program'
+		initialAnswer: programName
+		verifying: [:aString |
+			aString notEmpty and:[ (Programs includesKey: aString) not ] ] 
+		do: [ :aString | 
+				Programs removeKey: programName.
+				Programs at: aString put: programText.
+				programName := aString.
+				
+				programIndex := Programs keys sort findBinaryIndex: [:arg | arg <programName ifTrue:[1] ifFalse:[ arg > programName ifTrue:[-1] ifFalse:[0] ]].
+				
+				self changed: #programs ]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:27:01'!
 reset
@@ -246,6 +287,24 @@ run
 	aReadStream close. ] fork
 ! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:20:56'!
+selectProgram: anInteger
+
+	programIndex := anInteger.
+	
+	anInteger = 0 ifTrue:[^self].
+	
+	programName := Programs keys sort at: programIndex.
+	
+	programText := Programs at: programName.
+	
+	self changed: #program! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:15:56'!
+selectedProgram
+
+	^programIndex! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:14:29'!
 stop
 
@@ -270,6 +329,13 @@ stop
 wd: aString
 	
 	codeGenerator codePath: aString.! !
+
+!GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:04:10'!
+initialize
+
+	"self initialize"
+	
+	Programs := Dictionary new.! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/2/2024 16:56:23'!
 generateCode: anASTNode
@@ -880,10 +946,12 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:24:36'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:18:33'!
 buildMorphicWindow
 
-	| program console  compileButton buildButton runButton stopButton resetButton |
+	| programs program console  compileButton buildButton runButton stopButton resetButton |
+	
+	programs := PluggableListMorph withModel: model listGetter: #programs indexGetter: #selectedProgram indexSetter: #selectProgram: :: menuNshortcutsKey: #programsMenuSpec.
 	
 	program := TextModelMorph
 
@@ -915,5 +983,19 @@ buildMorphicWindow
 	
 	
 	self layoutMorph addMorph:
-({ 'college ' . 'bits' . 'bumpy' } morph | 1p - (1/6) p) <+> program <+> ((((compileButton - 1p + (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
+(programs | 1p - (1/6) p) <+> program <+> ((((compileButton - 1p + (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
 ! !
+
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:09:02'!
+programsMenuSpec
+
+	^# (
+		#(0 		'Genie Programs' 					false)
+		
+		#(10 		'add program... (a)'			 $a model addProgram nil 'add a new program')
+		#(20 		'rename ... (r)' $r model renameProgram nil 'rename the selected program')
+		#(30 		'remove'  nil model removeProgram nil 'remove the selected program')
+		#(40 		'-----')
+		#(50 		'file out (f)' $f model fileOutProgram nil 'write the program to an external file')
+	)! !
+GenieBrowserModel initialize!
