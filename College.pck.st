@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 1 October 2024 at 6:54:17 pm'!
+'From Cuis7.1 [latest update: #6676] on 4 October 2024 at 10:43:00 pm'!
 'Description '!
-!provides: 'College' 1 12!
+!provides: 'College' 1 15!
 SystemOrganization addCategory: #College!
 
 
@@ -132,7 +132,7 @@ assign: aSolution
 
 		self assignInstance: (instances at: (each at:1) + 1) to: (each at:2) ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 18:54:05'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 22:42:20'!
 assignInstance: aModuleInstance to: aGene
 
 	| room day hour frame module lecturer duration  |
@@ -145,10 +145,10 @@ assignInstance: aModuleInstance to: aGene
 
 	lecturer := lecturers at: (aGene at:4).
 
-	frame := frames at: (aGene at:5).
-	
-	module := modules at: (aGene at:6).
-	
+	module := modules at: (aGene at:5).
+
+	frame := frames at: (aGene at:6).
+		
 	duration := aGene at:7.
 	
 	aModuleInstance day: day ; hour: hour.		
@@ -271,7 +271,7 @@ a lecturer cannot work more than 20 hours a week
 	
 	! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 9/29/2024 22:18:47'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:57:08'!
 example2
 
 	"self example2"
@@ -306,26 +306,71 @@ Second year students study
 
 Third year students study
 
-3 1 farming
-3 2 plumbing
-3 3 carpentry
-3 4 fishing
-3 5 sewing
-3 6 baking
-3 7 cooking
-3 8 brewing
+3 1 farming 3 hr
+3 2 plumbing 2 hr
+3 3 carpentry 3 hr
+3 4 fishing 2 hr
+3 5 sewing 3 hr
+3 6 baking 2 hr
+3 7 cooking 3 hr
+3 8 brewing 2 hr
 
 therefore there are 2*24 = 48 module instances.
+
+The modules are divided into disciplines
+
+math
+
+calculus 
+statistics 
+algorithms 
+logic 
+chess
+
+science
+
+chemistry 
+astronomy 
+physics 
+genetics 
+
+humanities
+
+ethics 
+rethoric 
+poetry 
+history 
+music
+literature 
+
+skills
+
+swimming 
+farming 
+plumbing 
+carpentry 
+fishing
+sewing 
+baking 
+cooking 
+brewing 
 
 each group studies 20 hours a week. 
 
 total hours required are  48 * 20 = 960 hours
 
-The college has 24 rooms.
+The college has 24 rooms. The rooms are located in three separate floors.
+
+rooms 		floor
+
+1..8 		1
+9..16 		2
+17..24 		3
 
 A working day is 9 hours long (8-17), there are 5 working days for a total of 45 available hours
 
-With 3 rooms this gives a total capacity of 24*45 = 1080 hours per week.
+With 24 rooms this gives a total capacity of 24*45 = 1080 hours per week.
+
 
 The college employs 40 lecturers
 
