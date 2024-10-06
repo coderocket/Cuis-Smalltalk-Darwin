@@ -47,6 +47,8 @@ Start 'x' : Params 'p' Structure 'g' Fun 'f' RuleKeys 'k' Fitness 'r'
 
 	{ attrs @ p = attrs @ g }
 
+	{ attrs @ k = attrs @ g }
+
 	{ fdecl @ x = (fdecl @ f) reduce:[:u :v | u,v ] }
 
 	;
@@ -118,7 +120,7 @@ Range 'x' : number 'b' ".." number  'e'
 
 Function 'x' : name 'fn' "(" Argument 'e' ")"
 
-	{ n @ x = GenieCompiler instance compileSchemaFunctionName: fn value asString inTables: fnames @ x }
+	{ n @ x = GenieCompiler instance compileSchemaFunctionName: fn inTables: fnames @ x }
 
 	{ key @ x = key @ e }
 
@@ -130,7 +132,7 @@ Argument 'x' : name 'n'
 	
 	{ value @ x = n value asString }
 
-	{ key @ x = 	GenieCompiler instance compileName: n value asString }
+	{ key @ x = 	GenieCompiler instance compileName: n env: attrs @ x }
 
 	{ code @ x = 'an_instance[{1}]' format:{key @ x } }
 
@@ -144,11 +146,29 @@ Argument 'x' : name 'n'
 
 %topic fitness
 
-RuleKeys 'x' : Keys Key + 'k' 
+RuleKeys 'x' : Keys KeyList 'k' 
 
 	{ keys @ x = keys @ k }
 
 	{ keycode @ x = code @ k fold:[:u :v | u, String lfString, v ] }
+
+	;
+
+KeyList 'x' : Key 'k'
+
+	{ keys @ x = keys @ k } 
+
+	{ code @ x = { code @ k } }
+
+	;
+
+KeyList 'x' : KeyList 'list' Key 'k'
+
+	{ keys @ x = keys @ list , (keys @ k) } 
+
+	{ code @ x = code @ list , { code @ k } }
+
+	{ attrs @ k = attrs @ x , (keys @ list) }
 
 	;
 
@@ -291,7 +311,7 @@ T 'x' : T 'left' "+" F 'right'
 
 F 'x' : name 'n'
 
-	{ value @ x = GenieCompiler instance compileRuleVariable: n value asString attrs: (attrs @ x) locals: (locals @ x)  }
+	{ value @ x = GenieCompiler instance compileRuleVariable: n attrs: (attrs @ x) locals: (locals @ x)  }
 
 	| name 'n' "(" Es 'e' ")" 
 
@@ -329,8 +349,8 @@ Fun 'x' : Functions Table + 't'
 
 	{ fdecl @ x = fdecl @ t }
 
-	{ tables @ x = table @ t reduce:[:u :v | u, String lfString, v] }
-
+	{ tables @ x = (table @ t) isEmpty ifTrue:[{}] ifFalse:[ table@ t reduce:[:u :v | u, String lfString, v] ] }
+ 
 	{ tnames @ x = tname @ t }
 	;
 

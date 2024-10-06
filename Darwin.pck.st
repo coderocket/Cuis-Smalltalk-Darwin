@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 10:00:31 pm'!
+'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 10:58:22 pm'!
 'Description '!
-!provides: 'Darwin' 1 180!
+!provides: 'Darwin' 1 181!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -79,7 +79,7 @@ GenieBrowser class
 	instanceVariableNames: ''!
 
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:11:43'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 22:17:50'!
 addProgram
 
 	StringRequestMorph 
@@ -89,7 +89,7 @@ addProgram
 			aString notEmpty and:[ (Programs includesKey: aString) not ] ] 
 		do: [ :aString | 
 				Programs at: aString put:'Empty for now'.
-				self changed: #programs ]! !
+				self changed: #programs ; changed: #program ]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:47:11'!
 build
@@ -223,11 +223,11 @@ make
 program
 	^ programText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:59:42'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 22:36:44'!
 program: aText
 
 	programText := 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
-	
+		
 	programText := '#:^isLineSeparator:*:isLineSeparator:' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
 	
 	Programs at: programName put: programText.
