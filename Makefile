@@ -10,13 +10,18 @@ genie : $o
 %.o: %.cc
 	$(CXX) -c $(FLAGS) $< -o $@
 
-.PHONY: clean depend
+.PHONY: clean depend prepare
 
 clean:
 	rm *.o genie
 
 depend:
 	makedepend *.cc -f dependencies
+
+prepare:
+	mkfifo make.fifo
+	mkfifo run.fifo
+	mkfifo gnuplot.fifo
 
 include dependencies
 
