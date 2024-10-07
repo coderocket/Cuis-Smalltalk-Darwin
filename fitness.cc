@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <algorithm>
+#include <numeric>
 #include <map>
 #include <set>
 #include <vector>
@@ -23,11 +24,12 @@ void calculate_num_offspring(chromosome_t* b, chromosome_t* e) {
 
 extern int total_fitness;
 
-	while(b != e) {
-		b->num_offspring = (((double)b->fitness)/total_fitness)*POPULATION_SIZE;
-		++b;
-	}
+	for_each(b, e, [](chromosome_t& cc) {
+		cc.num_offspring = (((double)cc.fitness)/total_fitness)*POPULATION_SIZE;
+	});
 }
+
+int fitness_array[POPULATION_SIZE + POPULATION_SIZE/4];
 
 void calculate_fitness(chromosome_t* b, chromosome_t* e) {
 
@@ -35,9 +37,11 @@ extern int total_fitness;
 
 	total_fitness = 0;
 
-	instance_t an_instance[GENIE_N_INSTANCES];
+	for_each(b, e, [](chromosome_t& cc) {
 
-	while(b != e) {
+		instance_t an_instance[GENIE_N_INSTANCES];
+
+		chromosome_t* b = &cc;
 
 		chromosome_to_instance(b, an_instance);	
 		compute_instance_keys(an_instance);
@@ -46,10 +50,12 @@ extern int total_fitness;
 
 #include "generated_fitness.cc"
 
-		total_fitness += b->fitness;
 
-		++b;
-	}
+	});
+
+	transform(b, e, fitness_array, [] (const chromosome_t& cc) { return cc.fitness; });
+
+	total_fitness = accumulate(fitness_array, fitness_array + (e-b), 0);
 
 	if (total_fitness <= 0) throw runtime_error("fitness too law, aborting.");
 
