@@ -171,7 +171,7 @@ chromosome_t* find_fittest_chromosome(chromosome_t* b, chromosome_t* e) {
 
 int main(int argc, char** argv) {
 
-	srandom(GENIE_SEED);
+	srandom(random());
 
 	use_fifo = false;
 
