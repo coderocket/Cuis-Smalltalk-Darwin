@@ -4,14 +4,12 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <array>
 #include "genie_constants.h"
 #include "genie_types.h"
 
 using std::fstream;
 using std::max;
-using std::string;
 using std::cout;
 using std::endl;
 using std::cerr;
