@@ -1,5 +1,4 @@
 #include <unistd.h>
-#include <fcntl.h>
 #include <cstdlib>
 #include <cassert>
 #include <algorithm>
@@ -18,12 +17,12 @@
 #include "image.h"
 #include "setup.h"
 
-using std::fstream;
 using std::max;
 using std::string;
 using std::cout;
 using std::endl;
 using std::cerr;
+using std::fstream;
 
 bool use_fifo = false;
 string fifo_name = "gnuplot.fifo";
