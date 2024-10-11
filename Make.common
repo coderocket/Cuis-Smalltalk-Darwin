@@ -4,10 +4,10 @@ CXX = $(PLATFORM_CPLUSPLUS_COMPILER)
 o = fitness.o genie.o mutate.o breed.o crossover.o report.o invert.o attribute_layout.o chromo.o genie_functions.o image.o setup.o
 
 genie : $o 
-	$(CXX) $(FLAGS) $o -o $@
+	$(CXX) $(FLAGS) $(^F) -o $@
 
 %.o: %.cc
-	$(CXX) -c $(FLAGS) $< -o $@
+	$(CXX) -c $(FLAGS) $< -o $(@F)
 
 .PHONY: clean depend prepare
 
@@ -15,7 +15,7 @@ clean:
 	rm *.o genie
 
 depend:
-	makedepend *.cc -f dependencies
+	makedepend $(SRC)/*.cc -f dependencies
 
 prepare:
 	mkfifo make.fifo

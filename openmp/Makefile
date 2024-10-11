@@ -1,5 +1,8 @@
 
-VPATH = ../
+SRC = ../src
+
+VPATH = $(SRC)
+
 FLAGS = -O2 -fopenmp -D_GLIBCXX_PARALLEL
 
 include ../Make.common

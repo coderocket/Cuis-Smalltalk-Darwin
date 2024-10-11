@@ -32,13 +32,12 @@ void mutate(chromosome_t* b, chromosome_t* e, double mp) {
 
 	instance_t an_instance[GENIE_N_INSTANCES];
 
-	while (b != e) {
+	for(; b != e ; ++b) {
 		chromosome_to_instance(b, an_instance);
 
 		mutate_instance(an_instance, an_instance + GENIE_N_INSTANCES, mp);
 
 		instance_to_chromosome(an_instance, b);
-		++b; 
 	}
 }
 
