@@ -1,0 +1,162 @@
+
+Parameters
+
+epochs: 			15 
+generations: 20 
+threads: 			1
+
+population: 			800
+instances: 			30
+
+mutationp :			2.0e-3
+inversionp :			2.0e-1
+
+Schema 
+ 
+room : 			1 .. 3
+day : 			1 .. 5
+hour : 			hour(day)
+lecturer : 			lecturer(module(id))
+
+Functions
+
+hour
+
+# day           hour
+
+1                  8 .. 17
+2                  8 .. 17
+3                  8 .. 17
+4                  8 .. 17
+5                  8 .. 17
+6                  8 .. 13
+
+duration
+
+# module    duration
+
+1 			2
+2			2 
+3			3
+4			3
+5			5
+
+lecturer 
+
+# module     suitable lecturers
+
+1  			1 .. 5
+2 			1 .. 5
+3			1 .. 5
+4			1 .. 5
+5			1 .. 5
+
+frame
+
+# id              frame
+
+0 .. 4			1 			
+5 .. 9			2
+10 .. 14			3
+15 .. 19			4
+20 .. 24			5
+25 .. 29			6
+
+module
+
+# id              module
+
+0 			1
+1 			2
+2 			3
+3 			4
+4 			5
+5 			1
+6 			2
+7 			3
+8 			4
+9 			5
+10 			1
+11 			2
+12 			3
+13 			4
+14 			5
+15 			1
+16 			2
+17 			3
+18 			4
+19 			5
+20 			1
+21 			2
+22 			3
+23 			4
+24 			5
+25 			1
+26 			2
+27 			3
+28 			4
+29 			5
+
+table timetable
+
+# lecturer    day        cordoned hours
+
+1			1		8 .. 17
+	
+Keys
+
+module : module(id)
+frame : frame(id)
+duration : duration(module)
+
+Rules
+
+bonus 10 ;
+
+# a lecturer must not teach on days and hours that they have cordoned
+
+# penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hour + duration) ;
+
+# a lecturer must not teach more than 5 hours on the same day
+ 
+penalty group by (day, lecturer) sum(duration) - 5 max 0 ;
+ 
+# gap between lectures on the same day for the same lecturer should not exceed 3 hours
+
+penalty group by (day, lecturer) maxgap(hour .. hour + duration) - 3 max 0 ;
+
+# lectures on the same day for the same lecturer should be separated by at least 1 hour 
+
+penalty group by (day, lecturer) 1 - mingap(hour .. hour + duration) max 0 ;
+
+# gap between lectures on the same day for the same frame should not exceed 3 hours
+
+penalty group by (day, frame) maxgap(hour .. hour + duration) - 3 max 0 ;
+
+# each frame must have one free day
+ 
+penalty group by (frame) count(day) - 4 max 0 ;
+
+# lectures cannot be assigned to the same room on the same day and hours
+
+penalty group by (day, room) overlap(hour .. hour + duration) ;
+
+# lectures cannot be assigned to the same lecturer on the same day and hours
+
+penalty group by (day, lecturer) overlap(hour .. hour + duration) ;
+
+# lectures must not be held on wednesday at 1pm
+ 
+penalty (day = 4) * (hour <= 13) *(13 <= hour + duration);
+
+# lectures must end by 17
+
+penalty hour + duration - 17 max 0 ;
+
+# lectures cannot be assigned to the same group on the same day and hours
+
+penalty group by (day, frame) overlap(hour .. hour + duration) ;
+
+# lectures on the same day for the same frame should be separated by at least 1 hour 
+
+penalty group by (day, frame) 1 - mingap(hour .. hour + duration) max 0 ;
