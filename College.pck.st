@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 4 October 2024 at 10:43:00 pm'!
+'From Cuis7.1 [latest update: #6676] on 12 October 2024 at 5:24:33 pm'!
 'Description '!
-!provides: 'College' 1 15!
+!provides: 'College' 1 28!
 SystemOrganization addCategory: #College!
 
 
@@ -125,31 +125,31 @@ addRoom: aRoom
 
 	rooms at: aRoom id put: aRoom.! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 18:19:36'!
-assign: aSolution  
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/11/2024 22:44:02'!
+assign: aSolution  by: aDictionary
 
 	aSolution do:[:each | 
 
-		self assignInstance: (instances at: (each at:1) + 1) to: (each at:2) ]! !
+		self assignInstance: (instances at: (each at:1))  to: (each at:2) by: aDictionary ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 22:42:20'!
-assignInstance: aModuleInstance to: aGene
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 14:38:20'!
+assignInstance: aModuleInstance to: aGene by: aDictionary
 
 	| room day hour frame module lecturer duration  |
 
-	room := rooms at: (aGene at:1).
+	room := rooms at: (aGene at: (aDictionary at:#room)) + (6* ((aGene at: (aDictionary at:#floor)) - 1)).
 	
-	day := aGene at:2.
+	day := aGene at:(aDictionary at:#day).
 	
-	hour := aGene at:3.
+	hour := aGene at:(aDictionary at:#hour).
 
-	lecturer := lecturers at: (aGene at:4).
+	lecturer := lecturers at: (aGene at:(aDictionary at:#lecturer)).
 
-	module := modules at: (aGene at:5).
+	module := modules at: (aGene at:(aDictionary at:#module)).
 
-	frame := frames at: (aGene at:6).
+	frame := frames at: (aGene at:(aDictionary at:#frame)).
 		
-	duration := aGene at:7.
+	duration := aGene at:(aDictionary at:#duration).
 	
 	aModuleInstance day: day ; hour: hour.		
 	
@@ -271,16 +271,16 @@ a lecturer cannot work more than 20 hours a week
 	
 	! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:57:08'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:24:05'!
 example2
 
 	"self example2"
 	
 "
 
-The college teaches 2 groups (frames) each year, for a total of 6 frames.
+The college teaches 12 groups (frames) each year, for a total of 36 frames.
 
-Each group consists of 50 students, thus the college teaches 50*6 = 300 students
+Each group consists of 50 students, thus the college teaches 50*36 = 1,800 students
 
 First year students study the following courses:
 
@@ -315,7 +315,7 @@ Third year students study
 3 7 cooking 3 hr
 3 8 brewing 2 hr
 
-therefore there are 2*24 = 48 module instances.
+therefore there are 12*24 = 288 module instances.
 
 The modules are divided into disciplines
 
@@ -357,73 +357,74 @@ brewing
 
 each group studies 20 hours a week. 
 
-total hours required are  48 * 20 = 960 hours
+total hours required are  3 * 12 * 20 = 720 hours
 
-The college has 24 rooms. The rooms are located in three separate floors.
+The college has 32 rooms. The rooms are located in 4 separate floors.
 
 rooms 		floor
 
 1..8 		1
 9..16 		2
-17..24 		3
+17..24  		3
+25..32 		4
 
 A working day is 9 hours long (8-17), there are 5 working days for a total of 45 available hours
 
-With 24 rooms this gives a total capacity of 24*45 = 1080 hours per week.
+With 32 rooms this gives a total capacity of 32*45 = 1440 hours per week.
 
+The college employs 42 lecturers
 
-The college employs 40 lecturers
+a lecturer cannot work more than 24 hours a week
 
-a lecturer cannot work more than 30 hours a week
-
-Thus the lecturers can teach at most 40*30 = 1200 hours a week
+Thus the lecturers can teach at most 42*24 = 1008 hours a week
 
 "
 
-	| aCollege instanceIndex "aReadStream aSolution" |
+	| aCollege  |
 	
 	aCollege := College new.
 	
 	" rooms: { id description } "
 	
-	{ { 1 . 'apple' } . { 2 . 'banana'} . { 3 . 'orange' }  } do:[:each | 
-		aCollege addRoom: (Room new id: (each at:1) ; description: (each at:2) ;yourself) ].
+	0 to:3 do:[:floor | 1 to:8 do:[:num | 
+		aCollege addRoom: (Room new id: floor * 6 + num ; description: ('room {1}.{2}' format:{ floor+1 . num}) ;yourself) ] ].
 	
 	" modules: { id . description . duration } "
 	
-	{ { 1 . 'plumbing' . 2 } . { 2 . 'carpentry' . 2  } . { 3 . 'sewing' . 3 } . { 4 . 'farming' . 3  } . { 5 . 'computing' . 5 } }  do:[:each | 
+	{ { 1 . 'calculus' . 3 } . { 2 . 'statistics' . 2  } . { 3 . 'ethics' . 3 } . { 4 . 'swimming' . 2  } . { 5 . 'rethoric' . 3 } . { 6 . 'chess' . 2 } . { 7 . 'chemistry' . 3 } . { 8 . 'poetry' . 2 } . { 9 . 'astronomy' . 3 } . { 10 . 'algorithms' . 2 } . { 11 . 'physics' . 3 } . { 12 . 'history' . 2 } . { 13 . 'music' . 3 } . { 14 . 'logic' . 2 } . { 15 . 'literature' . 3} . { 16 . 'genetics' . 2 } . { 17 . 'framing' . 3 } . { 18 . 'plumbing' . 2 } . { 19 . 'carpentry' . 3 } . { 20 . 'fishing' . 2 } . { 21 . 'sewing' . 3 } . { 22 . 'baking' . 2 } . { 23 . 'cooking' . 3 } . { 24 . 'brewing' . 2 }  }  do:[:each | 
 		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
 
 	" frames. "
 	
-	{ { 1 . 'group 1' } . { 2 . 'group 2' } . { 3 . 'group 3' } . { 4 . 'group 4' }. { 5 . 'group 5' } . { 6 . 'group 6' } } do:[:each | 
-		aCollege addFrame: (Frame new id:( each at:1) ; description: (each at:2) ; yourself) ].
+	0 to:35 do:[:frameIndex | | year group frame |
+		
+	year := (frameIndex // 12) + 1.
+	group := (frameIndex mod: 12) + 1.
+	
+	frame := Frame new id: frameIndex + 1 ; description: ('Y{1}.{2}' format: { year . group }) ; yourself.
+	
+	aCollege addFrame: frame ].
 	
 	" module instances { id . module id . frame id } "
 	
-	instanceIndex := 1.
-	
-	1 to: 6 do:[:frameIndex |
-		1 to: 5 do:[:moduleIndex | | instance module frame |
-	
-		module := aCollege moduleAt: moduleIndex.
+	0 to:287 do:[:instanceIndex | |instance| 
 		
-		frame := aCollege frameAt: frameIndex.
+		instance := (ModuleInstance new id: instanceIndex ; yourself).
 		
-		instance := (ModuleInstance new id: instanceIndex ; module: module ; frame: frame ; yourself).
+		aCollege addInstance: instance ].
 		
-		module addInstance: instance.
-		
-		frame addInstance: instance.
-		
-		aCollege addInstance: instance.
-		
-		instanceIndex := instanceIndex + 1 ] ].
-	
 	" lecturers: { id description } "
 	
-	{ { 1 . 'Alice' } . { 2 . 'Bob' } . { 3 . 'Hausdorff' } . { 4 . 'Dirac' } . { 5 . 'Hume' } } do:[:each |
-		aCollege addLecturer: (Lecturer new id: (each at:1) ; description: (each at:2) ;yourself) ].
+	{	'Alice' 		. 'Bob' 			. 'Hausdorff' 			. 'Dirac' 			. 'Hume' 			. 'Kant'  		.
+		'Chopin' . 'Hamilton' 					. 'Fermi' 			. 'Prokofiev' 			. 'Russel' 			. 'Jane' 		.
+		'Ada'		. 'Turing'			. 'Church'			. 'Goedel'			. 'Whitehead'		.	 'Decart' .
+		'Bach'		. 'Epstein'			. 'Dijkstra'			. 'Gandalf'			. 'Elrond'			. 'Golda' .
+		'Liebniz'		. 'Spinoza'			. 'Virginia'			. 'Fermat'			. 'Berlioz'			. 'Liskov' .
+		'Dieter'		. 'Gaudi'			. 'Bowie'			. 'Mendeleve'	. 'Pushkin'					. 'Schubert' .
+		'Adam'		. 'Burkhardt' . 'Caneloni' 						.'Darwin' 			.'Eve' 			.'Frankenstien'
+	
+	} withIndexDo: [:each :i |
+		aCollege addLecturer: (Lecturer new id: i ; description: each ;yourself) ].
 	
 	^aCollege
 "
