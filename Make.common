@@ -15,7 +15,7 @@ clean:
 	rm *.o genie
 
 depend:
-	makedepend $(SRC)/*.cc -f dependencies
+	(cd $(SRC) && makedepend *.cc -f -) > dependencies
 
 prepare:
 	mkfifo make.fifo
