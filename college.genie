@@ -421,8 +421,8 @@ bonus 10 ;
 # penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hour + duration) ;
 
 # a lecturer must not teach more than 5 hours on the same day
- 
-#penalty group by (day, lecturer) sum(duration) - 5 max 0 ;
+
+penalty group by (day, lecturer) sum(duration) - 5 max 0 ; 
  
 # gap between lectures on the same day for the same lecturer should not exceed 3 hours 
 
@@ -438,7 +438,7 @@ bonus 10 ;
 
 # each frame must have one free day
  
-#penalty group by (frame) count(day) - 4 max 0 ;
+penalty group by (frame) count(day) - 4 max 0 ;
 
 # lectures cannot be assigned to the same room on the same day and hours
 
