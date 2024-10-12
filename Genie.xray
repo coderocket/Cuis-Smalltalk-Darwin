@@ -5,7 +5,7 @@ tokens
 
 patterns
 
-#[[:print:]]+:isNewLine: 								{ nextTerminal }
+#:^isNewLine:+:isNewLine: 								{ nextTerminal }
 [[:space:]]+								{ nextTerminal }
 [[:alpha:]_]+								name
 "[0-9]+\.[0-9]+(e-[0-9]+)?" 								float
@@ -383,6 +383,14 @@ Tuple 'x' : Seq 'left' Seq 'right'
 Tuple 'x' : Seq 'seq' Range 'r'
 
 	{ v @ x = GenieCompiler instance compileTuple: v@seq range: code@r }
+
+	{ type @ x = GenieCompiler rangeType }
+
+	;
+
+Tuple 'x' : Range 'r1' Range 'r2'
+	
+	{ v @ x = GenieCompiler instance compileTupleRangeBegin: b@r1 end:e@r1 begin: b@r2 end: e@r2 }
 
 	{ type @ x = GenieCompiler rangeType }
 

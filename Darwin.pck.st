@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 6 October 2024 at 10:58:22 pm'!
+'From Cuis7.1 [latest update: #6676] on 12 October 2024 at 7:01:54 pm'!
 'Description '!
-!provides: 'Darwin' 1 181!
+!provides: 'Darwin' 1 189!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -10,7 +10,7 @@ SystemOrganization addCategory: #Darwin!
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection'
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration'
 	classVariableNames: 'Programs'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -95,7 +95,7 @@ addProgram
 build
 	self make! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:32:55'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 13:11:34'!
 compile
 
 	[ | outcome |
@@ -115,6 +115,8 @@ compile
 				consoleOutput := 'Compilation successful.'. 	]
 	]
 	on: XraySyntaxError do:[:anXraySyntaxError | 
+	
+		selection := 	anXraySyntaxError position + 1 to: anXraySyntaxError position.
 		
 		programText addAttribute: TextColor red from: anXraySyntaxError position + 1 to: programText size ]
 	
@@ -156,12 +158,14 @@ generate
 	
 	codeGenerator generateCode: ast! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:28:46'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:34:17'!
 initialize
 
 	consoleOutput := ''.
 	
 	programText := ''.
+	
+	configuration := 'openmp'. "release"
 	
 	parser := Language parserFor: 'Genie'.
 
@@ -173,12 +177,12 @@ initialize
 
 	selection := 0 to:0.! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:54:19'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:28:05'!
 make
 
 	| workingDirectory fifoName commandName aProcess aReadStream model result |
 	
-	workingDirectory := codeGenerator codePath.
+	workingDirectory := codeGenerator codePath / configuration.
 	
 	fifoName := 'make.fifo'.
 	
@@ -216,7 +220,10 @@ make
 		bytes := aReadStream nextBytes:20.
 	].
 
-	aReadStream close. ] fork
+	aReadStream close. 
+	
+	consoleOutput := consoleOutput, '
+Build complete.'. model changed: #console. ] fork
 	! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:48:35'!
@@ -273,7 +280,7 @@ reset
 	consoleOutput := 'deleted population.gimage file'. self changed: #console.
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:10:14'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:28:31'!
 run
 
 	| workingDirectory fifoName commandName model aReadStream result |
@@ -281,7 +288,7 @@ run
 	
 	fifoName := 'run.fifo'.
 	
-	commandName := 'cd {1}  && exec ./genie -file 2> {2}' format: { workingDirectory . fifoName }.
+	commandName := 'cd {1}  && exec ./{2}/genie -file 2> {3}' format: { workingDirectory . configuration . fifoName }.
 	
 	consoleOutput := ''. self changed:#console. 
 
@@ -302,8 +309,10 @@ run
 	
 	OSProcess accessor setNonBlocking: aReadStream fileID.
 
-	[ | bytes |
-		
+	[ | bytes start finish duration |
+	
+	start := Time now.
+	
 	Delay forSeconds: 1 :: wait.
 	
 	bytes := aReadStream nextBytes:20.
@@ -317,7 +326,17 @@ run
 		bytes := aReadStream nextBytes:20.
 	].
 
-	aReadStream close. ] fork
+	aReadStream close. 
+	
+	[genieProcess isRunning ] whileTrue:[
+		Delay forSeconds: 1 :: wait ].
+	
+	finish := Time now.
+	
+	duration := finish - start.
+	
+	consoleOutput := consoleOutput, ('
+Run complete. Execution took {1} hours, {2} minutes, and {3} seconds.' format:{ duration hours . duration minutes . duration seconds}) . model changed: #console. ] fork
 ! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:20:56'!
@@ -397,40 +416,40 @@ generateCode: anASTNode
 	self generateKeys: #keycode @ anASTNode.
 ! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:18:40'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:16'!
 generateConstants: aString
 
-	codePath // 'generated_constants.h' fileContents: aString.! !
+	codePath / 'src' // 'generated_constants.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:18:46'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:26'!
 generateFitness: aString
 
-	codePath  // 'generated_fitness.cc' fileContents: aString.! !
+	codePath  / 'src' // 'generated_fitness.cc' fileContents: aString. ! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:18:50'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:30'!
 generateFunctionDecls: aString
 
-	codePath  // 'generated_functions.h' fileContents: aString.! !
+	codePath  / 'src' // 'generated_functions.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:18:54'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:34'!
 generateFunctions: aString
 
-	codePath  // 'generated_functions.cc' fileContents: aString.! !
+	codePath  / 'src' // 'generated_functions.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:18:59'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:38'!
 generateKeys: aString
 
-	codePath  // 'generated_keys.cc' fileContents: aString.! !
+	codePath / 'src' // 'generated_keys.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:19:04'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:43'!
 generateMutate: aString
 
-	codePath  // 'generated_attribute_layout.h' fileContents: aString.! !
+	codePath / 'src' // 'generated_attribute_layout.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/6/2024 18:19:09'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:47'!
 generateTables: aString
 
-	codePath  // 'generated_tables.h' fileContents: aString.! !
+	codePath / 'src' // 'generated_tables.h' fileContents: aString.! !
 
 !GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:39:07'!
 codePath
@@ -526,7 +545,7 @@ compileKeyConstants: keys offset: anInteger
 
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/2/2024 16:16:49'!
+!GenieCompiler methodsFor: 'compiling parameters' stamp: 'DF 10/11/2024 22:26:11'!
 compileParameters: names values: values types: types 
 	| aStream params |
 
@@ -538,7 +557,7 @@ compileParameters: names values: values types: types
 	
 	aStream := WriteStream on:''.
 	
-	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const ' ; nextPutAll: value first ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value second ; nextPutAll:';' ; nextPut: Character lf.  ].
+	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const ' ; nextPutAll: value first ; nextPutAll: ' '; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value second ; nextPutAll:';' ; nextPut: Character lf.  ].
 	
 	^aStream contents! !
 
@@ -762,6 +781,11 @@ compileTupleRange: aString seq: anOrderedCollection
 	^anOrderedCollection size = 1 
 		ifTrue:[	'if ({1}.includes({2})) \{ return ({2}; \}' format:{ aString . anOrderedCollection first }]
 		ifFalse:['if ({1}.includes({2})) \{ vector<int> v(\{{2}\}); return v[random() % v.size()]; \}' format:{ aString .  anOrderedCollection fold:[:acc :x | acc , ' , ' , x ] } ]! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/11/2024 22:06:09'!
+compileTupleRangeBegin: b1 end: e1 begin: b2 end: e2
+
+		^'if ({1}<= arg && arg <= {2}) \{ return interval_t({3}, {4}); \}' format:{ b1 . e1 . b2 . e2 } ! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/24/2024 22:27:51'!
 compileTupleRangeBegin: aString end: anotherString seq: anOrderedCollection
