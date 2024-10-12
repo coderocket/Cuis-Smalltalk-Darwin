@@ -33,24 +33,49 @@ chromosome_t* match(chromosome_t* b) {
 	return partner;
 }
 
+double next_random(struct random_data* a_random_data) {
+
+	int i;
+
+	random_r(a_random_data, &i);
+
+	return (double)i / RAND_MAX;
+}
 
 int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 	int next_population_size = 0;
 
-	chromosome_t* p = b;
+	#pragma omp parallel shared(next_population_size,out)
+	{
 
-	while(p != e) {
+	struct random_data a_random_data;
 
-		while ( (p->num_offspring >=1 || ((double)random() / RAND_MAX < p->num_offspring)) && next_population_size < POPULATION_SIZE + POPULATION_SIZE / 4) {
+	a_random_data.state = NULL;
+
+	char random_buffer[64];
+
+	initstate_r(random(), random_buffer, 64, &a_random_data);
+
+	chromosome_t* p ;
+	chromosome_t* q ;
+
+	#pragma omp for
+	for(p = b; p != e; ++p) {
+
+		while ( (p->num_offspring >=1 || (next_random(&a_random_data) < p->num_offspring)) && next_population_size < POPULATION_SIZE + POPULATION_SIZE / 4) {
 			chromosome_t* partner = match(b);
-			cross_over(p, partner, out);
+			#pragma omp critical
+			{
+			q = out;
 			++out; 
-			--p->num_offspring;
 			++next_population_size;
+			}
+			cross_over(p, partner, q, &a_random_data);
+			--p->num_offspring;
 		}
 
-		++p;
+	}
 	}
 
 	return next_population_size;

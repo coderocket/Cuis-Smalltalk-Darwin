@@ -41,11 +41,15 @@ bool check_homology(const gene_t* x, const gene_t* y) {
 	return i == CHROMOSOME_SIZE;
 }
 
-void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out) {
+void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out, struct random_data* a_random_data) {
 
 	int pt = interval_t(1, CHROMOSOME_SIZE-1).at_random();
 
-	if (random() % 2 == 0) {
+	int dice;
+
+	random_r(a_random_data, &dice);
+
+	if (dice % 2 == 0) {
 		copy(x, x + pt, out);
 		copy(y+pt, y + CHROMOSOME_SIZE, out+pt);
 
@@ -56,7 +60,7 @@ void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out) {
 	}
 }
 
-void cross_over(chromosome_t* x, chromosome_t* y, chromosome_t* out) {
+void cross_over(chromosome_t* x, chromosome_t* y, chromosome_t* out, struct random_data* a_random_data) {
 
 	if (!check_homology(x->gene, y->gene)) {
 
@@ -64,10 +68,10 @@ void cross_over(chromosome_t* x, chromosome_t* y, chromosome_t* out) {
 
 		rearrange_homologous(x->gene, y->gene, c);
 		assert(check_homology(x->gene, c));
-		cross_over_homologous(c, x->gene, out->gene); 
+		cross_over_homologous(c, x->gene, out->gene, a_random_data); 
 	}
 	else {
-		cross_over_homologous(x->gene, y->gene, out->gene); 
+		cross_over_homologous(x->gene, y->gene, out->gene, a_random_data); 
 	}
 }
 

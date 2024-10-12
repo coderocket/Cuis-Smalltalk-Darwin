@@ -13,12 +13,15 @@
 
 using namespace std;
 
-void mutate_instance(instance_t* b, instance_t* e, double p) {
+void mutate_instance(instance_t* b, instance_t* e, double p, struct random_data* a_random_data) {
 
 	while (b != e) {
 		for (int i = 0; i < GENIE_SCHEMA_SIZE; i++) {
 
-			double t = ((double) random()) / RAND_MAX ; 
+			int r = 0;
+			random_r(a_random_data, &r);
+
+			double t = ((double) r) / RAND_MAX ; 
 
 			if (t < p) {
 				mutate_attribute(*b, i);
@@ -30,14 +33,28 @@ void mutate_instance(instance_t* b, instance_t* e, double p) {
 
 void mutate(chromosome_t* b, chromosome_t* e, double mp) {
 
+	#pragma omp parallel
+	{
 	instance_t an_instance[GENIE_N_INSTANCES];
 
-	for(; b != e ; ++b) {
-		chromosome_to_instance(b, an_instance);
+	struct random_data a_random_data;
 
-		mutate_instance(an_instance, an_instance + GENIE_N_INSTANCES, mp);
+	a_random_data.state = NULL;
 
-		instance_to_chromosome(an_instance, b);
+	char random_buffer[64];
+
+	initstate_r(random(), random_buffer, 64, &a_random_data);
+
+	chromosome_t* p;
+
+	#pragma omp for
+	for(p = b; p != e ; ++p) {
+		chromosome_to_instance(p, an_instance);
+
+		mutate_instance(an_instance, an_instance + GENIE_N_INSTANCES, mp, &a_random_data);
+
+		instance_to_chromosome(an_instance, p);
+	}
 	}
 }
 
