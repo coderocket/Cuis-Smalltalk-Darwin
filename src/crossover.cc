@@ -5,6 +5,7 @@
 #include "genie_constants.h"
 #include "genie_types.h"
 #include "interval.h"
+#include "random_number_generator.h"
 
 using std::copy;
 using std::sort;
@@ -41,13 +42,11 @@ bool check_homology(const gene_t* x, const gene_t* y) {
 	return i == CHROMOSOME_SIZE;
 }
 
-void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out, struct random_data* a_random_data) {
+void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out, random_number_generator& an_rng) {
 
 	int pt = interval_t(1, CHROMOSOME_SIZE-1).at_random();
 
-	int dice;
-
-	random_r(a_random_data, &dice);
+	int dice = an_rng();
 
 	if (dice % 2 == 0) {
 		copy(x, x + pt, out);
@@ -60,7 +59,7 @@ void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out, struct
 	}
 }
 
-void cross_over(chromosome_t* x, chromosome_t* y, chromosome_t* out, struct random_data* a_random_data) {
+void cross_over(chromosome_t* x, chromosome_t* y, chromosome_t* out, random_number_generator& an_rng) {
 
 	if (!check_homology(x->gene, y->gene)) {
 
@@ -68,10 +67,10 @@ void cross_over(chromosome_t* x, chromosome_t* y, chromosome_t* out, struct rand
 
 		rearrange_homologous(x->gene, y->gene, c);
 		assert(check_homology(x->gene, c));
-		cross_over_homologous(c, x->gene, out->gene, a_random_data); 
+		cross_over_homologous(c, x->gene, out->gene, an_rng); 
 	}
 	else {
-		cross_over_homologous(x->gene, y->gene, out->gene, a_random_data); 
+		cross_over_homologous(x->gene, y->gene, out->gene, an_rng); 
 	}
 }
 

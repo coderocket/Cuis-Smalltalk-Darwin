@@ -1,15 +1,16 @@
 #include <cstdlib>
 #include <algorithm>
 #include <array>
+#include "random_number_generator.h"
 #include "genie_constants.h"
 #include "genie_types.h"
 
 using namespace std;
 
-void invert(chromosome_t* c) {
+void invert(chromosome_t* c, random_number_generator& an_rng) {
 
-	int x = random() % (CHROMOSOME_SIZE + 1);
-	int y = random() % (CHROMOSOME_SIZE + 1);
+	int x = an_rng() % (CHROMOSOME_SIZE + 1);
+	int y = an_rng() % (CHROMOSOME_SIZE + 1);
 
 	int b = min(x,y);
 	int e = max(x,y);
@@ -18,11 +19,18 @@ void invert(chromosome_t* c) {
 }
 
 void invert(chromosome_t* b, chromosome_t* e, double p) {
-	while (b != e) {
 
-		if ((double)random() / RAND_MAX < p)
-			invert(b);
+	#pragma omp parallel
+	{
+		random_number_generator an_rng;
 
-		++b;
+		chromosome_t* q;
+
+		#pragma omp for
+		for(q = b; q != e ;++q) {
+
+			if ((double)an_rng() / RAND_MAX < p)
+				invert(q, an_rng);
+		}
 	}
 }

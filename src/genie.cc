@@ -16,6 +16,7 @@
 #include "report.h"
 #include "image.h"
 #include "setup.h"
+#include "report_score.h"
 
 using std::max;
 using std::string;
@@ -111,6 +112,8 @@ int main(int argc, char** argv) {
 	json_write_solution(solution, file);
 
 	file.close();
+
+	report_score(solution);
 
 	store_image(current, current+actual_population_size);
 
