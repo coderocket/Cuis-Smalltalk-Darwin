@@ -1,6 +1,6 @@
 tokens
 
-".." Schema Parameters Functions Keys Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in
+".." Schema Parameters Functions Keys Rules "(" ")"Syntax error -> ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in
 
 
 patterns
@@ -20,6 +20,8 @@ rules
 %topic main
 
 Start 'x' : Params 'p' Structure 'g' Fun 'f' RuleKeys 'k' Fitness 'r'
+
+	{ numrules @ x = 'const int GENIE_N_RULES = {1};' format:{ (length @ r) first } }
 
 	{ params @ x = code @ p }
 
@@ -180,11 +182,32 @@ Key 'x' : name 'kn' ":" Function 'f'
 
 	;
 
-Fitness 'x' : Rules Rule + 'r'
+Fitness 'x' : Rules RuleList 'r'
 
 	{ code @ x = (code @ r) fold:[:acc :each | acc , String lfString , String lfString, each ] }
 
 	;
+
+RuleList 'x' : Rule 'r'
+
+	{ code @ x = { code @ r } }
+
+	{ position @ r = 0 }
+
+	{ length @ x = 1 }
+
+	;
+
+RuleList 'x' : RuleList 'list' Rule 'r'
+
+	{ code @ x = (code @ list) , { code @ r } }
+
+	{ position @ r = length @ list }
+
+	{ length @ x = (length @ list) + 1 }
+
+	;
+
 
 Rule 'x' : bonus Group 'a' 
 
@@ -201,18 +224,18 @@ Rule 'x' : bonus Group 'a'
  
 Group 'x' : group by "(" Arguments 'a' ")" Expr 'e'  ";"
 	 
-	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: keys @ a expr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: keys @ a expr: value @ e kind: kind @ x position: position @ x }
 
 	{ group @ e = 1 }
 
 	| for name 'index' in name 'tab' "(" name 'key1' "," name 'key2' ")" E 'e' ";"
  
-	{ code @ x = GenieCompiler instance compileTableExpr: tab index: index key: key1 key: key2 expr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler instance compileTableExpr: tab index: index key: key1 key: key2 expr: value @ e kind: kind @ x position: position @ x }
 	{ locals @ e = { index value asString } asSet }
 
 	| Expr 'e' ";"
 
-	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x }
+	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x position: position @ x }
 
 	{ group @ e = 0 }
 
