@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 October 2024 at 6:12:25 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 October 2024 at 7:04:21 pm'!
 'Description '!
-!provides: 'Darwin' 1 192!
+!provides: 'Darwin' 1 193!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -234,13 +234,15 @@ Build complete.'. model changed: #console. ] fork
 program
 	^ programText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/13/2024 18:12:06'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/14/2024 19:03:45'!
 program: aText
 
 	aText removeAttributesThat: [:attr | attr isTextColor ].
 	
 	programText := 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
-		
+	
+	programText := 'group by|sum|count|overlap|maxgap|mingap|overlap_with|max' asRegex copy: programText translatingMatchesUsing:[:each | each color: (Color r: 0.380 g: 0.0 b: 0.235) ].
+	
 	programText := '#:^isLineSeparator:*:isLineSeparator:' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
 	
 	Programs at: programName put: programText.
