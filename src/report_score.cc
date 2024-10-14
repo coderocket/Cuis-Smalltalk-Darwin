@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <array>
 #include "genie_constants.h"
 #include "genie_types.h"
@@ -8,7 +9,7 @@
 
 using namespace std;
 
-void report_score(const chromosome_t* cc) {
+void report_score(const chromosome_t* cc, ostream& out) {
 
 	instance_t an_instance[GENIE_N_INSTANCES];
 
@@ -21,8 +22,6 @@ void report_score(const chromosome_t* cc) {
 
 	for(int jj = 0 ; jj < GENIE_N_RULES; ++jj) {
 
-		cout << jj << '\t' << score[jj] << '\n';
+		out << setw(4) << score[jj] << ' ';
 	}
-
-	cout << endl;
 }

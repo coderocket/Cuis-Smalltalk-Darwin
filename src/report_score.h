@@ -1,2 +1,2 @@
 
-void report_score(const chromosome_t* cc); 
+void report_score(const chromosome_t* cc, std::ostream&); 

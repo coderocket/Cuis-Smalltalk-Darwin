@@ -13,6 +13,7 @@
 #include "genie_constants.h"
 #include "genie_types.h"
 #include "chromo.h"
+#include "report_score.h"
 
 using namespace std;
 
@@ -74,7 +75,11 @@ void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	stringstream stream;
 
-	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness; 
+	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness << " \t"; 
+
+	report_score(p, stream);
+
+	stream << endl;
 
 	if (use_fifo) {
 		history.push_back(stream.str());
