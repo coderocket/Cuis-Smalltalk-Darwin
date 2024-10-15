@@ -59,42 +59,36 @@ chromosome_t* worst(chromosome_t* b, chromosome_t* e) {
 void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	chromosome_t* p = best(b, e); 
-	chromosome_t* q = worst(b, e);
-
-	timeval now;
-	gettimeofday(&now, 0);
-
-	tm* today = localtime(&now.tv_sec);
-
-	int hh, mm, ss , ms;
-
-	hh = today->tm_hour;
-	mm = today->tm_min;
-	ss = today->tm_sec;
-	ms = now.tv_usec / 1000;
-
-	stringstream stream;
-
-	stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness << " \t"; 
-
-	report_score(p, stream);
-
-	stream << endl;
 
 	if (use_fifo) {
-		history.push_back(stream.str());
-
-		fstream pipe(fifo_name, ios::out);	
-
-		for(int i = 0;i < history.size();i++) {
-			pipe << history[i] << '\n';
-		}
+		fstream pipe(fifo_name, ios::out);
+		report_score_gnuplot(p, pipe);
 		pipe << flush;
-	} 
-	else {
+	} else {
+		chromosome_t* q = worst(b, e);
+	
+		timeval now;
+		gettimeofday(&now, 0);
+	
+		tm* today = localtime(&now.tv_sec);
+	
+		int hh, mm, ss , ms;
+	
+		hh = today->tm_hour;
+		mm = today->tm_min;
+		ss = today->tm_sec;
+		ms = now.tv_usec / 1000;
+	
+		stringstream stream;
+	
+		stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness << " \t"; 
+	
+		report_score(p, stream);
+	
+		stream << endl;
+
 		cout << stream.str() << endl;
 	}
-
 }
 
 void report_solution(chromosome_t* c) {

@@ -55,6 +55,7 @@ chromosome_t* find_fittest_chromosome(chromosome_t* b, chromosome_t* e) {
 	return best(b, e); 
 }
 
+
 int main(int argc, char** argv) {
 
 	srandom(random());
@@ -70,7 +71,7 @@ int main(int argc, char** argv) {
 			if (argc == 2) 
 				use_fifo = true;
 			else if(argc > 3) {
-				cout << "Usage: genie [-fifo fifo]" << endl;
+				cout << "Usage: genie [-file filename]" << endl;
 				exit(1);
 			} else {
 				assert(argc == 3);
