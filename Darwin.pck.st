@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 12 October 2024 at 7:01:54 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 October 2024 at 7:04:21 pm'!
 'Description '!
-!provides: 'Darwin' 1 189!
+!provides: 'Darwin' 1 193!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -135,6 +135,10 @@ console
 
 ^consoleOutput ! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/13/2024 18:51:47'!
+consoleEnd
+	^ consoleOutput size +1 to: consoleOutput size ! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:29:16'!
 fileOutProgram
 
@@ -230,11 +234,15 @@ Build complete.'. model changed: #console. ] fork
 program
 	^ programText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 22:36:44'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/14/2024 19:03:45'!
 program: aText
 
+	aText removeAttributesThat: [:attr | attr isTextColor ].
+	
 	programText := 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
-		
+	
+	programText := 'group by|sum|count|overlap|maxgap|mingap|overlap_with|max' asRegex copy: programText translatingMatchesUsing:[:each | each color: (Color r: 0.380 g: 0.0 b: 0.235) ].
+	
 	programText := '#:^isLineSeparator:*:isLineSeparator:' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
 	
 	Programs at: programName put: programText.
@@ -404,10 +412,10 @@ initialize
 	
 	Programs := Dictionary new.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/2/2024 16:56:23'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/14/2024 18:11:43'!
 generateCode: anASTNode
 
-	self generateConstants: (#params @ anASTNode) , (#schema @ anASTNode), (#keyconsts @ anASTNode).
+	self generateConstants: (#numrules @ anASTNode), String lfString, (#params @ anASTNode) , (#schema @ anASTNode), (#keyconsts @ anASTNode).
 	self generateFunctions: #functions @ anASTNode.
 	self generateFunctionDecls: #fdecl @ anASTNode.
 	self generateTables: #tables @ anASTNode.
@@ -566,14 +574,15 @@ compileKey: aString value: anotherString
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:26'!
-compileRuleExpr: aString kind: anInteger
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/14/2024 17:55:49'!
+compileRuleExpr: aString kind: anInteger position: anotherInteger
 
-	^'b->fitness {1}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {2}; \});' format:{ (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
+	^'score[{1}] = 0;
+score[{1}] {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:05:51'!
-compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/14/2024 17:27:49'!
+compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger
 
 	| aStream  |
 	
@@ -583,8 +592,9 @@ compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
 	
 	^ '\{ int keys[] = \{{1}\}; 
 
-b->fitness {4}= group_by(an_instance, keys,{2},[](instance_t** b, instance_t** e) 
-	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
+score[{2}] = 0;
+score[{2}] {5}= group_by(an_instance, keys,{3},[](instance_t** b, instance_t** e) 
+	\{ return {4}; \}); \}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 18:09:18'!
 compileRuleInnerCall: aString args: anOrderedCollection
@@ -647,25 +657,12 @@ compileRuleVariable: aString in: aSet
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:43'!
-compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/14/2024 18:02:08'!
+compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger position: anotherInteger
 
-^ 'b->fitness {6}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
-	return genie_table_iterate(genie_{1}, (*each)[GENIE_{2}], (*each)[GENIE_{3}], [each](const interval_t& {4}) \{ return {5} \; \}); \});' format: { tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
-
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:14:47'!
-compileTableExpr: aString keys: anOrderedCollection expr: exprString
-
-	| aWriteStream |
-	
-	aWriteStream := WriteStream on: ''.
-	
-	anOrderedCollection do:[:each | aWriteStream nextPutAll: ('(*each)[{1}]'format: {each}) ] separatedBy: [aWriteStream nextPutAll: ', '].
-
-^ 
-
-'b->fitness += sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
-	genie_table_iterate({1}, {2}, [](const interval_t& interval) \{ return {3} \; \});' format: { aString . aWriteStream contents . exprString }! !
+^ 'score[{1}] = 0;
+score[{1}] {7}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
+	return genie_table_iterate(genie_{2}, (*each)[GENIE_{3}], (*each)[GENIE_{4}], [each](const interval_t& {5}) \{ return {6} \; \}); \});' format: { anotherInteger . tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 08:12:32'!
 compileFunction: anOrderedCollection name: aString type: aCollection
@@ -1054,7 +1051,7 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 21:25:28'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/13/2024 18:52:17'!
 buildMorphicWindow
 
 	| programs program console  compileButton buildButton runButton stopButton resetButton |
@@ -1087,7 +1084,7 @@ buildMorphicWindow
 			textProvider: model
 			textGetter: #console
 			textSetter: nil
-			selectionGetter: nil :: - 1p | 1p.
+			selectionGetter: #consoleEnd :: - 1p | 1p.
 	
 	
 	self layoutMorph addMorph:
