@@ -23,7 +23,7 @@ chromosome_t* match(chromosome_t* b, random_number_generator& an_rng) {
 	int n_attempts = 0;
 
 	while(partner->fitness < (double)total_fitness/actual_population_size && n_attempts < 10*actual_population_size) {
-		partner = b + (an_rng() % actual_population_size);
+		partner = b + (an_rng()  % actual_population_size);
 		++n_attempts;
 	}
 

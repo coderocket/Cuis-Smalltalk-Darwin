@@ -9,8 +9,8 @@ using namespace std;
 
 void invert(chromosome_t* c, random_number_generator& an_rng) {
 
-	int x = an_rng() % (CHROMOSOME_SIZE + 1);
-	int y = an_rng() % (CHROMOSOME_SIZE + 1);
+	random_number_generator::result_type x = an_rng() % (CHROMOSOME_SIZE + 1);
+	random_number_generator::result_type y = an_rng() % (CHROMOSOME_SIZE + 1);
 
 	int b = min(x,y);
 	int e = max(x,y);
@@ -29,7 +29,7 @@ void invert(chromosome_t* b, chromosome_t* e, double p) {
 		#pragma omp for
 		for(q = b; q != e ;++q) {
 
-			if ((double)an_rng() / RAND_MAX < p)
+			if ((double)an_rng() / random_number_generator::max() < p)
 				invert(q, an_rng);
 		}
 	}

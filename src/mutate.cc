@@ -18,9 +18,9 @@ void mutate_instance(instance_t* b, instance_t* e, double p, random_number_gener
 	while (b != e) {
 		for (int i = 0; i < GENIE_SCHEMA_SIZE; i++) {
 
-			int r = an_rng();
+			random_number_generator::result_type r = an_rng();
 
-			double t = ((double) r) / RAND_MAX ; 
+			double t = ((double) r) / random_number_generator::max() /*RAND_MAX*/ ; 
 
 			if (t < p) {
 				mutate_attribute(*b, i);

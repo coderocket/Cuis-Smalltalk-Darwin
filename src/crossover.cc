@@ -44,9 +44,9 @@ bool check_homology(const gene_t* x, const gene_t* y) {
 
 void cross_over_homologous(const gene_t* x, const gene_t* y, gene_t* out, random_number_generator& an_rng) {
 
-	int pt = 1 + (an_rng() % (CHROMOSOME_SIZE - 2)) ; //interval_t(1, CHROMOSOME_SIZE-1).at_random();
+	random_number_generator::result_type pt = 1 + (an_rng() % (CHROMOSOME_SIZE - 2)) ; 
 
-	int dice = an_rng();
+	random_number_generator::result_type dice = an_rng();
 
 	if (dice % 2 == 0) {
 		copy(x, x + pt, out);
