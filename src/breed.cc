@@ -14,21 +14,23 @@ using namespace std;
 extern int total_fitness;
 extern int actual_population_size;
 
+double average_fitness;
+
 chromosome_t* match(chromosome_t* b, random_number_generator& an_rng) {
+
+	int n_attempts = 0;
+	int max_attempts = actual_population_size;
 
 	chromosome_t* partner = b + (an_rng() % actual_population_size);
 
-	// look for an above average partner
-
-	int n_attempts = 0;
-
-	while(partner->fitness < (double)total_fitness/actual_population_size && n_attempts < 10*actual_population_size) {
-		partner = b + (an_rng()  % actual_population_size);
-		++n_attempts;
+	while (partner->fitness <= average_fitness && n_attempts < max_attempts) {
+		partner = b + (an_rng() % actual_population_size);
+ 		++n_attempts;
 	}
 
-	if (n_attempts == 10*actual_population_size)
+	if (n_attempts == max_attempts) {
 		throw runtime_error("could not find a partner with a fitness above the average fitness, aborting.");
+	}
 
 	return partner;
 }
@@ -36,6 +38,8 @@ chromosome_t* match(chromosome_t* b, random_number_generator& an_rng) {
 int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 	int next_population_size = 0;
+
+        average_fitness = (double)total_fitness/actual_population_size; 
 
 	#pragma omp parallel shared(next_population_size,out)
 	{

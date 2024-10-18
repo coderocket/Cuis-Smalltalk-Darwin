@@ -13,6 +13,10 @@
 
 using namespace std;
 
+int genie_tick = 1;
+
+double mutation_decay = 1; 
+
 void mutate_instance(instance_t* b, instance_t* e, double p, random_number_generator& an_rng) {
 
 	while (b != e) {
@@ -20,9 +24,9 @@ void mutate_instance(instance_t* b, instance_t* e, double p, random_number_gener
 
 			random_number_generator::result_type r = an_rng();
 
-			double t = ((double) r) / random_number_generator::max() /*RAND_MAX*/ ; 
+			double t = ((double) r) / random_number_generator::max(); 
 
-			if (t < p) {
+			if (t < p*mutation_decay) {
 				mutate_attribute(*b, i);
 			}
 		}
@@ -32,6 +36,8 @@ void mutate_instance(instance_t* b, instance_t* e, double p, random_number_gener
 
 void mutate(chromosome_t* b, chromosome_t* e, double mp) {
 
+	mutation_decay = pow(genie_tick, -0.125);
+	
 	#pragma omp parallel
 	{
 		instance_t an_instance[GENIE_N_INSTANCES];
@@ -48,5 +54,7 @@ void mutate(chromosome_t* b, chromosome_t* e, double mp) {
 			instance_to_chromosome(an_instance, p);
 		}
 	}
+
+	++genie_tick;
 }
 
