@@ -41,7 +41,7 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
         average_fitness = (double)total_fitness/actual_population_size; 
 
-	#pragma omp parallel shared(next_population_size,out)
+	#pragma omp parallel shared(out) reduction(+:next_population_size)
 	{
 		random_number_generator an_rng;
 
@@ -53,12 +53,9 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 			while ( (p->num_offspring >=1 || ((double)an_rng() < p->num_offspring)) && next_population_size < POPULATION_SIZE + POPULATION_SIZE / 4) {
 				chromosome_t* partner = match(b, an_rng);
-				#pragma omp critical
-				{
-					q = out;
-					++out; 
-					++next_population_size;
-				}
+				#pragma omp atomic capture
+				q = out++;
+				++next_population_size;
 				cross_over(p, partner, q, an_rng);
 				--p->num_offspring;
 			}
