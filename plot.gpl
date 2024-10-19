@@ -5,6 +5,6 @@ set style fill solid 0.2
 set xtic 1
 set yrange [-100:2]
 while (1) {
-	plot 'gnuplot.fifo' using 1:2 with boxes lc rgb "purple" notitle, '' using 1:2:(sprintf("%d",$2)) with labels offset 0,-1 notitle
+	plot 'gnuplot.fifo' using 1:2:(sprintf("%d",$2)) with labels point pt 2 offset 0,-1 notitle
 	
 }
