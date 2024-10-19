@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cmath>
 #include <cassert>
 #include <algorithm>
 #include <functional>

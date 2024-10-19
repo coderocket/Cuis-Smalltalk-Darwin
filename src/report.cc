@@ -9,11 +9,14 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <set>
+#include <numeric>
 #include <string>
 #include "genie_constants.h"
 #include "genie_types.h"
 #include "chromo.h"
-#include "report_score.h"
+#include "interval.h"
+#include "fitness_library.h"
 
 using namespace std;
 
@@ -56,6 +59,43 @@ chromosome_t* worst(chromosome_t* b, chromosome_t* e) {
 	return worst;
 }
 
+void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score) {
+
+	instance_t an_instance[GENIE_N_INSTANCES];
+
+	chromosome_to_instance(cc, an_instance);
+	compute_instance_keys(an_instance);
+
+#include "generated_fitness.cc"
+
+}
+
+void report_score(const chromosome_t* cc, ostream& out) {
+
+	array<int,GENIE_N_RULES> score;
+
+	prepare_score(cc, score);
+
+	for(int jj = 0 ; jj < GENIE_N_RULES; ++jj) {
+
+		out << score[jj] << " ";
+	}
+}
+
+void report_score_gnuplot(const chromosome_t* cc, ostream& out) {
+
+	array<int, GENIE_N_RULES> score;
+
+	prepare_score(cc, score);
+
+	for(int jj = 1 ; jj < GENIE_N_RULES; ++jj) { // don't print the large bonus in the first score array
+
+		out << jj << ' ' << score[jj] << '\n';
+	}
+
+	out << endl;
+}
+
 void report_progress(chromosome_t* b, chromosome_t* e) {
 
 	chromosome_t* p = best(b, e); 
@@ -96,37 +136,7 @@ void report_solution(chromosome_t* c) {
 	cout << " fitness = " << (c)->fitness << endl ;
 }
 
-void report_gene_histogram(chromosome_t* b, chromosome_t* e) {
-/*
-	map<gene_t, int> count;
-
-	while (b!=e) {
-		for(int i = 0; i < CHROMOSOME_SIZE;i++) {
-			++count[b->gene[i]];
-		}
-		++b;
-	}
-
-	cout << count.size() << endl;
-*/
-}
-
-void report_population_fitness_histogram(chromosome_t* b, chromosome_t* e) {
-
-	map<int, int> count;
-
-	while (b != e) {
-		++count[b->fitness];
-		++b;
-	}
-
-	for(map<int, int>::iterator p = count.begin(); p != count.end(); ++p) {
-		cout << p->first << " : " << p->second << endl;
-	}
-	
-}
-
-void json_write_solution(chromosome_t* c, ostream& out) {
+void json_write_solution(const chromosome_t* c, ostream& out) {
 
 	instance_t an_instance[GENIE_N_INSTANCES];
 
@@ -141,7 +151,7 @@ void json_write_solution(chromosome_t* c, ostream& out) {
 		out << "[";
 		int k;
 		for(k=0; k < INSTANCE_SIZE - 1; k++) {
-			out << an_instance[j][k] << ",";
+			out << an_instance[j][k] << ",\n";
 		}
 		out << an_instance[j][k];
 
@@ -154,39 +164,87 @@ void json_write_solution(chromosome_t* c, ostream& out) {
 	out << "]" << endl;
 }
 
-void report_similarity_score(chromosome_t* b, chromosome_t* e) {
-/*
-	size_t n = e - b;
-	double similarity_score = 0.0;
+void json_write_score(const array<int, GENIE_N_RULES>& score, ostream& out) {
 
-	gene_t x[CHROMOSOME_SIZE];
-	gene_t y[CHROMOSOME_SIZE];
+	out << "[";
 
-	while(b!=e) {
+	for(int jj = 0 ; jj < GENIE_N_RULES-1; ++jj) {
 
-		chromosome_t* p = b+1;
-
-		copy(b->gene, b->gene+CHROMOSOME_SIZE, y);
-		sort(y,y+CHROMOSOME_SIZE, [](const gene_t& u, const gene_t& v) { return u[GENIE_LOCUS] < v[GENIE_LOCUS]; });
-
-		while(p != e) {
-
-			copy(p->gene, p->gene+CHROMOSOME_SIZE, x);
-
-			sort(x,x+CHROMOSOME_SIZE, [](const gene_t& u, const gene_t& v) { return u[GENIE_LOCUS] < v[GENIE_LOCUS]; });
-
-			for(int i = 0 ; i < CHROMOSOME_SIZE; i++) {
-
-				for (int k = 0 ; k < GENE_SIZE; k++) {
-					double delta = x[i][k] - y[i][k];
-					similarity_score += delta*delta;
-				}
-			}
-			++p;
-		}
-		++b;
+		if (score[jj] <=0) 
+			out << "[" << jj << "," << score[jj] << "], ";
 	}
 
-	cout << "similarity score is " << sqrt(similarity_score) / n << endl;
-*/
+	if (score[GENIE_N_RULES-1] <=0)
+		out << "[" << GENIE_N_RULES-1 << "," << score[GENIE_N_RULES-1] << "]";
+	out << "]";
+}
+
+struct genie_solution_t {
+	array<int, GENIE_N_RULES> score;
+	const chromosome_t* cc;
+};
+
+bool operator<(const genie_solution_t& x, const genie_solution_t& y) {
+	return accumulate(x.score.begin(), x.score.end(), 0) > accumulate(y.score.begin(), y.score.end(),0);
+}
+
+void json_write_solution_and_score(const genie_solution_t& q, ostream& out) {
+
+	out << "{";
+	out << "\n\"score\"" << ":"; 
+	json_write_score(q.score, out);
+	out << ",\n\"solution\"" << ":";
+	json_write_solution(q.cc, out);
+	out << "}";
+}
+
+void json_write_best_unique_solutions(chromosome_t* b, chromosome_t* e, size_t k, ostream& out) {
+
+
+	set< genie_solution_t > solutions;
+
+	for(const chromosome_t* p = b; p != e; ++p) {
+
+		genie_solution_t s;
+		s.cc = p;
+		prepare_score(p, s.score);
+		solutions.insert(s);
+	}
+
+	size_t end = min(k, solutions.size());
+
+	set<genie_solution_t>::const_iterator q = solutions.begin(); 
+
+	size_t index = 0;
+
+	out << "\"solutions\"" << ":" << "[";
+
+	while (index < end - 1) {
+
+		json_write_solution_and_score(*q, out);
+		out << ",\n";
+		++q;
+		++index;
+	}
+	json_write_solution_and_score(*q, out);
+
+	out << "]\n";
+}
+
+void json_write_header(ostream& out) {
+
+	out << "\"problem\"" << ":" << "\"" << GENIE_PROBLEM_NAME << "\"";
+}
+
+void json_write_footer(ostream& out) {
+	out << "\n";
+}
+
+void json_write_results(chromosome_t* b, chromosome_t* e, size_t k, ostream& out) {
+	out << "{\n";
+	json_write_header(out);
+	out << ",\n";
+	json_write_best_unique_solutions(b, e, k, out);
+	json_write_footer(out);
+	out << "}" << endl;
 }

@@ -50,12 +50,6 @@ void produce_next_generation() {
 
 }
 
-chromosome_t* find_fittest_chromosome(chromosome_t* b, chromosome_t* e) {
-
-	return best(b, e); 
-}
-
-
 int main(int argc, char** argv) {
 
 	use_fifo = false;
@@ -103,15 +97,14 @@ int main(int argc, char** argv) {
 		report_progress(current, current + actual_population_size);
 	}
 
-	chromosome_t* solution = find_fittest_chromosome(current, current+actual_population_size);
+	fstream file("solutions.json", std::ios::out);
 
-	fstream file("solution.json", std::ios::out);
-
-	json_write_solution(solution, file);
+	json_write_results(current, current + actual_population_size , 10, file);
 
 	file.close();
 
 	store_image(current, current+actual_population_size);
+
 
 	return 0;
 }

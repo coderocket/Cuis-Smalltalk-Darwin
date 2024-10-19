@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 October 2024 at 7:04:21 pm'!
+'From Cuis7.1 [latest update: #6676] on 19 October 2024 at 6:13:41 pm'!
 'Description '!
-!provides: 'Darwin' 1 193!
+!provides: 'Darwin' 1 196!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -95,9 +95,11 @@ addProgram
 build
 	self make! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 13:11:34'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/19/2024 17:45:50'!
 compile
 
+	programIndex = 0 ifTrue:[consoleOutput := 'No program selected.'. self changed: #console. ^self].
+	
 	[ | outcome |
 		
 		selection := 0 to: 0.
@@ -155,12 +157,12 @@ fileOutProgram
 	aFileEntry fileContents: programText asString.
 ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:35:12'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/19/2024 17:49:28'!
 generate
 
 	self assert: ast notNil.
 	
-	codeGenerator generateCode: ast! !
+	codeGenerator generateCode: ast programName: programName ! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:34:17'!
 initialize
@@ -253,11 +255,9 @@ program: aText
 programs
 	^ Programs keys sort ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:45:03'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/19/2024 17:45:46'!
 renameProgram
 
-	programIndex ifNil:[^self].
-	
 	programIndex = 0 ifTrue:[^self].
 	
 	StringRequestMorph 
@@ -412,10 +412,15 @@ initialize
 	
 	Programs := Dictionary new.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/14/2024 18:11:43'!
-generateCode: anASTNode
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/19/2024 17:52:16'!
+generateCode: anASTNode programName: aString
 
-	self generateConstants: (#numrules @ anASTNode), String lfString, (#params @ anASTNode) , (#schema @ anASTNode), (#keyconsts @ anASTNode).
+	| programName |
+	
+	programName := 'const char GENIE_PROBLEM_NAME[]="{1}";
+' format: { aString }.
+
+	self generateConstants: programName, (#numrules @ anASTNode), String lfString, (#params @ anASTNode) , (#schema @ anASTNode), (#keyconsts @ anASTNode).
 	self generateFunctions: #functions @ anASTNode.
 	self generateFunctionDecls: #fdecl @ anASTNode.
 	self generateTables: #tables @ anASTNode.
