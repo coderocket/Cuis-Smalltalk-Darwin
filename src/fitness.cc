@@ -48,6 +48,7 @@ extern int total_fitness;
 
 		b->fitness = 0;
 
+	int rule_location[GENIE_N_RULES];
 	int score[GENIE_N_RULES];
 #include "generated_fitness.cc"
 for(int jj = 0 ; jj < GENIE_N_RULES; jj++) 

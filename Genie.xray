@@ -209,33 +209,38 @@ RuleList 'x' : RuleList 'list' Rule 'r'
 	;
 
 
-Rule 'x' : bonus Group 'a' 
+Rule 'x' : bonus 'keyword' Group 'a' 
 
 	{ kind @ a = 1 }
 
+	{ location @ a = keyword }
+
 	{ code @ x = code @ a }
 
-	| penalty Group 'a'
+
+	| penalty 'keyword' Group 'a'
 
 	{ kind @ a = -1 }
+
+	{ location @ a = keyword }
 
 	{ code @ x = code @ a }
 ;
  
 Group 'x' : group by "(" Arguments 'a' ")" Expr 'e'  ";"
 	 
-	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: keys @ a expr: value @ e kind: kind @ x position: position @ x }
+	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: keys @ a expr: value @ e kind: kind @ x position: position @ x location: location @ x }
 
 	{ group @ e = 1 }
 
 	| for name 'index' in name 'tab' "(" name 'key1' "," name 'key2' ")" E 'e' ";"
  
-	{ code @ x = GenieCompiler instance compileTableExpr: tab index: index key: key1 key: key2 expr: value @ e kind: kind @ x position: position @ x }
+	{ code @ x = GenieCompiler instance compileTableExpr: tab index: index key: key1 key: key2 expr: value @ e kind: kind @ x position: position @ x location: location @ x }
 	{ locals @ e = { index value asString } asSet }
 
 	| Expr 'e' ";"
 
-	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x position: position @ x }
+	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x position: position @ x location: location @ x }
 
 	{ group @ e = 0 }
 

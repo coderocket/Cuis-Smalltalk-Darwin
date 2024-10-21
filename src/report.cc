@@ -59,7 +59,7 @@ chromosome_t* worst(chromosome_t* b, chromosome_t* e) {
 	return worst;
 }
 
-void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score) {
+void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score, array<int, GENIE_N_RULES>& rule_location) {
 
 	instance_t an_instance[GENIE_N_INSTANCES];
 
@@ -72,9 +72,10 @@ void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score) {
 
 void report_score(const chromosome_t* cc, ostream& out) {
 
+	array<int,GENIE_N_RULES> rule_location;
 	array<int,GENIE_N_RULES> score;
 
-	prepare_score(cc, score);
+	prepare_score(cc, score, rule_location);
 
 	for(int jj = 0 ; jj < GENIE_N_RULES; ++jj) {
 
@@ -84,9 +85,10 @@ void report_score(const chromosome_t* cc, ostream& out) {
 
 void report_score_gnuplot(const chromosome_t* cc, ostream& out) {
 
+	array<int,GENIE_N_RULES> rule_location;
 	array<int, GENIE_N_RULES> score;
 
-	prepare_score(cc, score);
+	prepare_score(cc, score, rule_location);
 
 	for(int jj = 1 ; jj < GENIE_N_RULES; ++jj) { // don't print the large bonus in the first score array
 
@@ -164,23 +166,24 @@ void json_write_solution(const chromosome_t* c, ostream& out) {
 	out << "]" << endl;
 }
 
-void json_write_score(const array<int, GENIE_N_RULES>& score, ostream& out) {
+void json_write_score(const array<int, GENIE_N_RULES>& score, const array<int, GENIE_N_RULES>& rule_location, ostream& out) {
 
 	out << "[";
 
 	for(int jj = 0 ; jj < GENIE_N_RULES-1; ++jj) {
 
 		if (score[jj] <=0) 
-			out << "[" << jj << "," << score[jj] << "], ";
+			out << "[" << jj << "," << rule_location[jj] << "," << score[jj] << "], ";
 	}
 
 	if (score[GENIE_N_RULES-1] <=0)
-		out << "[" << GENIE_N_RULES-1 << "," << score[GENIE_N_RULES-1] << "]";
+		out << "[" << GENIE_N_RULES-1 << "," << rule_location[GENIE_N_RULES-1] << "," << score[GENIE_N_RULES-1] << "]";
 	out << "]";
 }
 
 struct genie_solution_t {
 	array<int, GENIE_N_RULES> score;
+	array<int, GENIE_N_RULES> rule_location;
 	const chromosome_t* cc;
 };
 
@@ -192,7 +195,7 @@ void json_write_solution_and_score(const genie_solution_t& q, ostream& out) {
 
 	out << "{";
 	out << "\n\"score\"" << ":"; 
-	json_write_score(q.score, out);
+	json_write_score(q.score, q.rule_location, out);
 	out << ",\n\"solution\"" << ":";
 	json_write_solution(q.cc, out);
 	out << "}";
@@ -207,7 +210,7 @@ void json_write_best_unique_solutions(chromosome_t* b, chromosome_t* e, size_t k
 
 		genie_solution_t s;
 		s.cc = p;
-		prepare_score(p, s.score);
+		prepare_score(p, s.score, s.rule_location);
 		solutions.insert(s);
 	}
 

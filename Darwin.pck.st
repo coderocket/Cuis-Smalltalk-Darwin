@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 19 October 2024 at 6:13:41 pm'!
+'From Cuis7.1 [latest update: #6676] on 21 October 2024 at 10:35:41 pm'!
 'Description '!
-!provides: 'Darwin' 1 196!
+!provides: 'Darwin' 1 223!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -10,7 +10,7 @@ SystemOrganization addCategory: #Darwin!
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration'
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration solutions selectedSolution'
 	classVariableNames: 'Programs'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -76,6 +76,16 @@ SystemWindow subclass: #GenieBrowser
 	category: 'Darwin'!
 !classDefinition: 'GenieBrowser class' category: #Darwin!
 GenieBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #GenieSolutionBrowser category: #Darwin!
+SystemWindow subclass: #GenieSolutionBrowser
+	instanceVariableNames: 'scores program'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'GenieSolutionBrowser class' category: #Darwin!
+GenieSolutionBrowser class
 	instanceVariableNames: ''!
 
 
@@ -164,7 +174,7 @@ generate
 	
 	codeGenerator generateCode: ast programName: programName ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:34:17'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:42:37'!
 initialize
 
 	consoleOutput := ''.
@@ -181,7 +191,33 @@ initialize
 
 	programIndex := 0.
 
-	selection := 0 to:0.! !
+	selection := 0 to:0.
+	
+	selectedSolution := 0.! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:15:22'!
+load
+
+	| aFileEntry aReadStream json problemName |
+
+	aFileEntry := codeGenerator codePath // 'solutions.json'.
+
+	aFileEntry exists ifFalse:[
+			consoleOutput := 'Cannot load. Solution file {1} does not exit.' format:{ 'solutions.json' }. self changed:#console . ^self ].		
+		
+	aReadStream := ReadStream on: aFileEntry fileContents.
+
+	json := Json readFrom: aReadStream.
+
+	problemName := json at:'problem' ifAbsent:[			consoleOutput := 'Cannot load. Json file {1} is not a genie solution.' format:{ 'solutions.json' }. self changed:#console . ^self ].
+	
+	problemName = programName 
+		ifFalse:[
+			consoleOutput := 'Cannot load. Solution {1} does not fit problem {2}.' format:{ problemName . programName}. self changed:#console . ^self ].
+		
+	solutions := json at: 'solutions'.
+	
+	consoleOutput := 'Solution loaded.'. self changed:#console ; changed: #solutions.! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:28:05'!
 make
@@ -231,6 +267,14 @@ make
 	consoleOutput := consoleOutput, '
 Build complete.'. model changed: #console. ] fork
 	! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:43:23'!
+penalties
+	"answer penalties of selected solution"
+	
+	selectedSolution = 0 ifTrue:[^{}].
+	
+	^solutions at: selectedSolution :: at: 'score'! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:48:35'!
 program
@@ -364,10 +408,31 @@ selectProgram: anInteger
 selectProgramText
 	^ selection! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:50:15'!
+selectSolution: anIndex
+
+	selectedSolution := anIndex.
+
+	self changed: #selectSolution: ! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:15:56'!
 selectedProgram
 
 	^programIndex! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:18:37'!
+selectedSolution
+	
+	selectedSolution ifNil:[^0].
+	
+	^selectedSolution ! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 22:14:29'!
+selection: anInterval
+
+	selection := anInterval.
+	
+	self changed: #selectProgramText! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:21:40'!
 setWorkingDirectory
@@ -379,6 +444,13 @@ setWorkingDirectory
 			aString notEmpty and:[ aString asDirectoryEntry isDirectory] ] 
 		do: [ :aString | 
 			codeGenerator codePath: aString asDirectoryEntry ]! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 21:32:12'!
+solutions
+
+	solutions ifNil:[^{}].
+	
+	^solutions collect:[:each | each at: 'score' :: collect:[:pair | pair at:3 ] :: sum ]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:14:29'!
 stop
@@ -579,27 +651,30 @@ compileKey: aString value: anotherString
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/14/2024 17:55:49'!
-compileRuleExpr: aString kind: anInteger position: anotherInteger
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:10:34'!
+compileRuleExpr: aString kind: anInteger position: anotherInteger location: aToken
 
-	^'score[{1}] = 0;
-score[{1}] {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
+	^'
+rule_location[{1}] = {4};
+score[{1}] = 0;
+score[{1}] {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString . aToken start }.
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/14/2024 17:27:49'!
-compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:08:54'!
+compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
 
 	| aStream  |
-	
+
 	aStream := WriteStream on: ''. 
 	
 	anOrderedCollection do:[:each | aStream nextPutAll: each asUppercase ] separatedBy:[ aStream nextPutAll: ', ' ].
 	
 	^ '\{ int keys[] = \{{1}\}; 
 
+rule_location[{2}] = {6};
 score[{2}] = 0;
 score[{2}] {5}= group_by(an_instance, keys,{3},[](instance_t** b, instance_t** e) 
-	\{ return {4}; \}); \}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
+	\{ return {4}; \}); \}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 18:09:18'!
 compileRuleInnerCall: aString args: anOrderedCollection
@@ -662,12 +737,13 @@ compileRuleVariable: aString in: aSet
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/14/2024 18:02:08'!
-compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger position: anotherInteger
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:11:17'!
+compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger position: anotherInteger location: aToken
 
-^ 'score[{1}] = 0;
+^ 'rule_location[{1}] = {7};
+score[{1}] = 0;
 score[{1}] {7}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
-	return genie_table_iterate(genie_{2}, (*each)[GENIE_{3}], (*each)[GENIE_{4}], [each](const interval_t& {5}) \{ return {6} \; \}); \});' format: { anotherInteger . tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }! !
+	return genie_table_iterate(genie_{2}, (*each)[GENIE_{3}], (*each)[GENIE_{4}], [each](const interval_t& {5}) \{ return {6} \; \}); \});' format: { anotherInteger . tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start }! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 08:12:32'!
 compileFunction: anOrderedCollection name: aString type: aCollection
@@ -1109,4 +1185,113 @@ programsMenuSpec
 		#(50 		'file out (f)' $f model fileOutProgram nil 'write the program to an external file')
 		#(60 'set working directory ... (w)' $f model setWorkingDirectory nil 'set the directory into which programs will file out')
 	)! !
+
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:47:23'!
+buildMorphicWindow
+
+	| programs scoresScroller solutions |
+	
+	programs := PluggableListMorph withModel: model listGetter: #programs indexGetter: #selectedProgram indexSetter: #selectProgram: :: menuNshortcutsKey: #programsMenuSpec.
+	
+	scores := BoxedMorph new borderWidth:0 ; color: Color transparent ; yourself.
+
+	scoresScroller := PluggableScrollPane new scroller: scores ; hideScrollBarsIndefinitely ; yourself.
+
+	program := TextModelMorph
+
+			textProvider: model
+			textGetter: #program
+			textSetter: nil
+			selectionGetter: #selectProgramText.
+
+	program disableEditing.
+	
+	program when: #vScrollBarValue: evaluate:[:value | scoresScroller vScrollBarValue: value  ].
+
+	scoresScroller when: #vScrollBarValue: evaluate:[:value | program vScrollBarValue: value. program verticalScrollBar scrollValue: program scrollerOffset y / program vLeftoverScrollRange ].
+
+	solutions := PluggableListMorph withModel: model listGetter: #solutions indexGetter: #selectedSolution indexSetter: #selectSolution:. ":: menuNshortcutsKey: #programsMenuSpec."
+	
+	model addDependent: self. 
+		
+	self layoutMorph addMorph:
+ (solutions | 1p -(1/3)p) <+> (scoresScroller | 1p - 48 f) + (program - (1/2)p | 1p) <+> (programs | 1p - (1/6) p) .
+
+		
+! !
+
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 22:02:06'!
+calculateRulePositions
+
+	| penalties hh tt ti ii yy xx n font ww result |
+
+	penalties := model penalties. 
+	
+	"each element in penalties is a 3-tuple [index text-location score]"
+	
+	font := FontFamily defaultFamilyAndPointSize.
+	hh := font lineSpacing.
+	ww := program morphWidth.
+	tt := model program.		
+	n := penalties size.
+
+	" only these change during the algorithm's execution "
+	
+	ti := 1.
+	ii := 1.
+	yy := hh.
+	xx := 0.
+	result := OrderedCollection new.
+	
+	[ii <=  n] whileTrue:[
+		[ti < (penalties at:ii :: at:2) ] whileTrue:[
+			xx := xx + (font widthOf: (tt at:ti)).
+			xx > ww or: (tt at:ti) isNewLine :: ifTrue:[
+				xx := 0.
+				yy := yy + hh ].
+			ti := ti + 1]	.
+		result add: { yy . penalties at: ii :: at:3 }.
+		ii := ii + 1 ].
+	
+	^result! !
+
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 11:29:40'!
+someSubmorphPositionOrExtentChanged
+
+	program ifNil:[^self].
+	
+	program isLayoutNeeded ifTrue:[
+		scores morphExtent: scores morphExtent x @ program scroller morphExtent y]! !
+
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 22:33:23'!
+update: aSymbol
+
+	| linespace ptsize hh pos |
+
+	aSymbol = #selectSolution: ifFalse:[^self].
+	
+	scores removeAllMorphs.
+	
+	model selectedSolution = 0 ifTrue:[^self].
+	
+	pos := self calculateRulePositions.
+			
+	linespace := FontFamily defaultFamilyAndPointSize ascent.
+			
+	ptsize := 9.
+
+	hh := FontFamily defaultFamilyPointSize: ptsize :: ascent.
+
+	pos  do:[:each | | text y |		
+		
+		text := '{1}' format: { each at:2 }.
+		
+		y := (linespace - hh) + (each at:1).
+		
+		scores addMorph: (LabelMorph contents:text :: borderWidth:0 ; borderColor: Color red; font: (FontFamily defaultFamilyPointSize: ptsize); yourself) position: 0@ y ].
+
+	model penalties ifNotEmpty:[ | lastPenalty | lastPenalty := (model penalties last at:2) . model selection: (lastPenalty to: lastPenalty - 1). ].
+	
+	program triggerEvent: #vScrollBarValue: with: program scrollerOffset y / program vLeftoverScrollRange.
+	! !
 GenieBrowserModel initialize!
