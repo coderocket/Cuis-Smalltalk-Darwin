@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 October 2024 at 10:35:41 pm'!
+'From Cuis7.1 [latest update: #6709] on 23 October 2024 at 7:01:11 pm'!
 'Description '!
-!provides: 'Darwin' 1 223!
+!provides: 'Darwin' 1 224!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -101,14 +101,26 @@ addProgram
 				Programs at: aString put:'Empty for now'.
 				self changed: #programs ; changed: #program ]! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:47:11'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:09:14'!
 build
-	self make! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/19/2024 17:45:50'!
+	| succ |
+	
+	consoleOutput := ''. 
+
+	succ := self compile.
+	
+	succ ifTrue:[
+		self make ].! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:10:13'!
 compile
 
-	programIndex = 0 ifTrue:[consoleOutput := 'No program selected.'. self changed: #console. ^self].
+	| result |
+	
+	result := false.
+	
+	programIndex = 0 ifTrue:[consoleOutput := 'No program selected.'. self changed: #console. ^ result].
 	
 	[ | outcome |
 		
@@ -124,7 +136,10 @@ compile
 			ifEmpty:[
 				ast := outcome first second.
 				self generate.
-				consoleOutput := 'Compilation successful.'. 	]
+				consoleOutput := 'C++ code generated successfully.
+Compiling ...
+'. 	
+				result := true ]
 	]
 	on: XraySyntaxError do:[:anXraySyntaxError | 
 	
@@ -140,7 +155,9 @@ compile
 		consoleOutput := aGenieUndefinedSymbolException messageText 		].
 	
 	self changed: #program ; changed:#console. 		
-! !
+
+	^result
+	! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 9/30/2024 15:48:55'!
 console
@@ -195,6 +212,14 @@ initialize
 	
 	selectedSolution := 0.! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:20:39'!
+isNotRunning
+	^genieProcess isNil or: [genieProcess isComplete]! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:15:27'!
+isRunning
+	^genieProcess isRunning! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:15:22'!
 load
 
@@ -219,7 +244,7 @@ load
 	
 	consoleOutput := 'Solution loaded.'. self changed:#console ; changed: #solutions.! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:28:05'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:08:59'!
 make
 
 	| workingDirectory fifoName commandName aProcess aReadStream model result |
@@ -230,8 +255,6 @@ make
 	
 	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
 	
-	consoleOutput := ''. self changed:#console. 
-
 	model := self.
 			
 	aProcess := OSProcess command: commandName.
@@ -1132,10 +1155,10 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/13/2024 18:52:17'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:22:23'!
 buildMorphicWindow
 
-	| programs program console  compileButton buildButton runButton stopButton resetButton |
+	| programs program console  loadButton buildButton runButton stopButton resetButton |
 	
 	programs := PluggableListMorph withModel: model listGetter: #programs indexGetter: #selectedProgram indexSetter: #selectProgram: :: menuNshortcutsKey: #programsMenuSpec.
 	
@@ -1146,19 +1169,19 @@ buildMorphicWindow
 			textSetter: #program:
 			selectionGetter: #selectProgramText :: - (1/2)p | 1p.
 	
-	compileButton := PluggableButtonMorph model: model stateGetter: nil action: #compile.
-	compileButton label: 'Compile'.
-
-	buildButton := PluggableButtonMorph model: model stateGetter: nil action: #build.
+	buildButton := PluggableButtonMorph model: model stateGetter: nil action: #build ::enableSelector: #isNotRunning.
 	buildButton label: 'Build'.
 
-	runButton := PluggableButtonMorph model: model stateGetter: nil action: #run.
+	runButton := PluggableButtonMorph model: model stateGetter: nil action: #run :: enableSelector: #isNotRunning.
 	runButton label: 'Run'.
 
-	stopButton := PluggableButtonMorph model: model stateGetter: nil action: #stop.
+	stopButton := PluggableButtonMorph model: model stateGetter: nil action: #stop :: enableSelector: #isRunning.
 	stopButton label: 'Stop'.
 
-	resetButton := PluggableButtonMorph model: model stateGetter: nil action: #reset.
+	loadButton := PluggableButtonMorph model: model stateGetter: nil action: #load :: enableSelector: #isNotRunning.
+	loadButton label: 'Load'.
+
+	resetButton := PluggableButtonMorph model: model stateGetter: nil action: #reset :: enableSelector: #isNotRunning.
 	resetButton label: 'Reset'.
 
 	console :=  TextModelMorph 
@@ -1169,7 +1192,7 @@ buildMorphicWindow
 	
 	
 	self layoutMorph addMorph:
-(programs | 1p - (1/6) p) <+> program <+> ((((compileButton - 1p + (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
+(programs | 1p - (1/6) p) <+> program <+> (((( (buildButton - 1p) + (runButton -1p) + (stopButton -1p) +  (loadButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
 ! !
 
 !GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:20:37'!
