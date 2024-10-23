@@ -1,2 +1,7 @@
 *.o
 *.bak
+src/generated_*
+*.fifo
+dependencies
+solutions.json
+population.gimage
