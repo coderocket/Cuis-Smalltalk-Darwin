@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 23 October 2024 at 7:01:11 pm'!
+'From Cuis7.1 [latest update: #6709] on 27 October 2024 at 10:02:38 am'!
 'Description '!
-!provides: 'Darwin' 1 224!
+!provides: 'Darwin' 1 227!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -11,7 +11,7 @@ SystemOrganization addCategory: #Darwin!
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
 	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration solutions selectedSolution'
-	classVariableNames: 'Programs'
+	classVariableNames: 'InitialProgramTemplate Programs'
 	poolDictionaries: ''
 	category: 'Darwin'!
 !classDefinition: 'GenieBrowserModel class' category: #Darwin!
@@ -89,7 +89,7 @@ GenieSolutionBrowser class
 	instanceVariableNames: ''!
 
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 22:17:50'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 10:01:29'!
 addProgram
 
 	StringRequestMorph 
@@ -98,7 +98,9 @@ addProgram
 		verifying: [:aString |
 			aString notEmpty and:[ (Programs includesKey: aString) not ] ] 
 		do: [ :aString | 
-				Programs at: aString put:'Empty for now'.
+				Programs at: aString put: InitialProgramTemplate. 
+				self selectProgram: (Programs keys sort findFirst:[:key | key = aString ]).
+				self program: self program.
 				self changed: #programs ; changed: #program ]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:09:14'!
@@ -322,6 +324,19 @@ program: aText
 programs
 	^ Programs keys sort ! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 09:53:27'!
+removeProgram
+
+	| result |
+	
+	programName ifNil:[^self].
+	
+	result := self confirm: ('Are you sure you want to remove the program {1}?' format:{programName}).
+	
+	result ifTrue:[
+		Programs removeKey: programName. programName := nil. programIndex := 0. self changed: #programs ; changed: #program ]
+	! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/19/2024 17:45:46'!
 renameProgram
 
@@ -500,12 +515,48 @@ wd: aString
 	
 	codeGenerator codePath: aString asDirectoryEntry.! !
 
-!GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:04:10'!
+!GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 10:01:59'!
 initialize
 
 	"self initialize"
 	
-	Programs := Dictionary new.! !
+	Programs := Dictionary new.
+	
+	InitialProgramTemplate := '
+Parameters
+
+epochs: 			30 
+generations: 20 
+
+population: 			3000
+instances: 			100
+
+mutationp :			1.0e-3
+inversionp :			2.0e-1
+
+Schema 
+ 
+bit: 0..1
+
+Functions
+
+dummy 
+
+0 1
+1 0
+
+Keys
+
+notused : dummy(bit)
+
+Rules
+
+bonus 10 ;
+
+# a comment
+
+penalty bit = 0;
+' asText! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/19/2024 17:52:16'!
 generateCode: anASTNode programName: aString
