@@ -1,8 +1,12 @@
 #include <assert.h>
 #include <array>
+#include <vector>
 #include "interval.h"
 #include "genie_constants.h"
 #include "genie_types.h"
+
+using std::vector;
+
 #include "generated_functions.h"
 
 void chromosome_to_instance(const chromosome_t* c, instance_t* out) {
@@ -17,7 +21,6 @@ void chromosome_to_instance(const chromosome_t* c, instance_t* out) {
 	}
 }
 
-
 void instance_to_chromosome(const instance_t* b, chromosome_t* out) {
 	for(int i = 0; i < CHROMOSOME_SIZE; i++) {
 		int index = out->gene[i].index / GENIE_SCHEMA_SIZE;
@@ -26,7 +29,6 @@ void instance_to_chromosome(const instance_t* b, chromosome_t* out) {
 		out->gene[i].value = b[index][attr];
 	}
 }
-
 
 void compute_instance_keys(instance_t* b) {
 

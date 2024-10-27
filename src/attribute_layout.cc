@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <array>
+#include <vector>
 #include "interval.h"
 #include "genie_constants.h"
 #include "genie_types.h"
@@ -8,6 +9,9 @@
 using namespace std;
 
 #include "generated_functions.h"
+
+int select_at_random(const interval_t&);
+int select_at_random(const vector<int>&);
 
 void mutate_attribute(instance_t& an_instance, int index) {
 	switch(index) {

@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 27 October 2024 at 10:02:38 am'!
+'From Cuis7.1 [latest update: #6709] on 27 October 2024 at 2:16:18 pm'!
 'Description '!
-!provides: 'Darwin' 1 227!
+!provides: 'Darwin' 1 233!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -48,15 +48,15 @@ Object subclass: #GridModel
 GridModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #GenieUndefinedSymbolException category: #Darwin!
-Exception subclass: #GenieUndefinedSymbolException
+!classDefinition: #GenieException category: #Darwin!
+Exception subclass: #GenieException
 	instanceVariableNames: 'start end'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Darwin'!
-!classDefinition: 'GenieUndefinedSymbolException class' category: #Darwin!
-GenieUndefinedSymbolException class
-	instanceVariableNames: 'start'!
+!classDefinition: 'GenieException class' category: #Darwin!
+GenieException class
+	instanceVariableNames: ''!
 
 !classDefinition: #GridMorph category: #Darwin!
 PluggableMorph subclass: #GridMorph
@@ -115,7 +115,7 @@ build
 	succ ifTrue:[
 		self make ].! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:10:13'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 14:15:44'!
 compile
 
 	| result |
@@ -149,12 +149,12 @@ Compiling ...
 		
 		programText addAttribute: TextColor red from: anXraySyntaxError position + 1 to: programText size ]
 	
-	on: GenieUndefinedSymbolException do:[:aGenieUndefinedSymbolException |
+	on: GenieException do:[:aGenieException |
 		
-		selection := aGenieUndefinedSymbolException start to: aGenieUndefinedSymbolException end. 
+		selection := aGenieException start to: aGenieException end. 
 		
-		programText addAttribute: TextColor red from: aGenieUndefinedSymbolException start to: aGenieUndefinedSymbolException end.
-		consoleOutput := aGenieUndefinedSymbolException messageText 		].
+		programText addAttribute: TextColor red from: aGenieException start to: aGenieException end.
+		consoleOutput := aGenieException messageText 		].
 	
 	self changed: #program ; changed:#console. 		
 
@@ -218,9 +218,9 @@ initialize
 isNotRunning
 	^genieProcess isNil or: [genieProcess isComplete]! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:15:27'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 11:24:38'!
 isRunning
-	^genieProcess isRunning! !
+	^genieProcess notNil and: [genieProcess isRunning]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:15:22'!
 load
@@ -649,7 +649,7 @@ compileName: aString
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/6/2024 21:14:08'!
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/27/2024 14:15:48'!
 compileName: aTerminal env: aCollection
 
 	| aString |
@@ -657,9 +657,19 @@ compileName: aTerminal env: aCollection
 	aString := aTerminal value asString.
 
 	aString = 'id' or: [aCollection includes: aString] :: ifFalse:[
-		GenieUndefinedSymbolException new messageText: 'Undefined attribute: ', aString ; start: aTerminal start; end: aTerminal end; signal ]. 
+		GenieException new messageText: 'Undefined attribute: ', aString ; start: aTerminal start; end: aTerminal end; signal ]. 
 	
 	^'GENIE_', aString asUppercase! !
+
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/27/2024 14:10:01'!
+compileNonDeterministicCall: aString type: aTypeString location: aToken
+
+	{ 'vector<int>' . 'interval_t' } includes: aTypeString :: ifFalse:[
+		GenieException new messageText: ('Type mismatch: {1}, expecting an interval or a set.' format:{  aTypeString }) ; start: aToken start ; end: aToken end ; signal ].
+	
+	^'select_at_random({1})' format: {aString }
+	
+	! !
 
 !GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/1/2024 17:37:17'!
 compileSchema: anOrderedCollection
@@ -676,14 +686,14 @@ compileSchema: anOrderedCollection
 	
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/6/2024 20:26:48'!
-compileSchemaFunctionName: aTerminal inTables: aSet
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/27/2024 14:16:07'!
+compileSchemaFunctionName: aTerminal inTables: aDictionary
 
 	| aString |
 	
 	aString := aTerminal value asString.
 	
-	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText: 'Undefined function: ', aString ; start: aTerminal start; end: aTerminal end; signal ].
+	aDictionary includesKey: aString :: ifFalse:[GenieException new messageText: 'Undefined function: ', aString ; start: aTerminal start; end: aTerminal end; signal ].
 
 	^'genie_', aString ! !
 
@@ -720,8 +730,11 @@ compileParameters: names values: values types: types
 	
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/2/2024 15:04:36'!
-compileKey: aString value: anotherString
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 14:13:02'!
+compileDeterministicCall: aString value: anotherString type: aTypeString location: aToken
+
+	'int' = aTypeString :: ifFalse:[
+		GenieException new messageText: ('Type mismatch: {1}, expecting an integer.' format:{  aTypeString }) ; start: aToken start ; end: aToken end ; signal ].
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
 
@@ -761,22 +774,22 @@ compileRuleInnerCall: aString args: anOrderedCollection
 	
 	^'genie_{1}({2})' format: { aString . aWriteStream contents }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/24/2024 22:23:27'!
-compileRuleName: aString isMemberIn: aSet
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 14:15:51'!
+compileRuleName: aString isMemberIn: aSet location: aToken
 
 	aSet includes: aString :: ifFalse:[
 		
-		GenieUndefinedSymbolException new messageText: 'Undefined attribute: ', aString ; signal ].
+		GenieException new messageText: 'Undefined attribute: ', aString ; start: aToken start; end: aToken end; signal ].
 
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/1/2024 18:05:57'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 14:15:55'!
 compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 
 	^ anInteger = 1 
 		ifTrue:[
 	
-		validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString asString ; signal].
+		validFunctions includes: aString :: ifFalse:[GenieException new messageText:'Undefined function ', aString asString ; signal].
 
 	'genie_{1}(b,e,[](const instance_t* each) \{ return {2}; \})' format:{aString . anotherString } ]
 
@@ -787,7 +800,7 @@ compileRulePrimitiveCallName: aString expr: anotherString group: anInteger
 
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/6/2024 20:08:44'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 14:15:58'!
 compileRuleVariable: aTerminal attrs: attrsSet locals: localsSet
 
 	| aString |
@@ -800,14 +813,14 @@ compileRuleVariable: aTerminal attrs: attrsSet locals: localsSet
 	
 	aString = 'id' ifTrue:[^'(*each)[GENIE_SCHEMA_SIZE]' ].
 	
-	GenieUndefinedSymbolException new messageText:'Undefined variable ', aString ; start: aTerminal start; end: aTerminal end; signal.
+	GenieException new messageText:'Undefined variable ', aString ; start: aTerminal start; end: aTerminal end; signal.
 	
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 22:31:43'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 14:16:03'!
 compileRuleVariable: aString in: aSet
 
-	aSet includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined attribute ', aString ; signal].
+	aSet includes: aString :: ifFalse:[GenieException new messageText:'Undefined attribute ', aString ; signal].
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
 
@@ -875,6 +888,26 @@ compileFunctionDeclaration: aString type: aCollection
 	aStream nextPutAll: ('{1} genie_{2}(int arg);' format:{ cppType . aString }) ; nextPut: Character lf.
 	
 	^aStream contents ! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/27/2024 12:58:11'!
+compileFunctionType: aCollection location: aToken
+
+	| types |
+	
+	types := aCollection asSet.
+	
+	types size = 1 ifFalse:[ | aWriteStream |
+		
+		aWriteStream := WriteStream on: ''.
+		
+		types do:[:each | aWriteStream nextPutAll: each ] separatedBy:[ aWriteStream nextPutAll: ' ,' ].
+		
+		GenieException new messageText: ('Type mismatch: {1}' format:{  aWriteStream contents }) ; start: aToken start ; end: aToken end ; signal ].
+	
+	^types anyOne
+	
+
+	! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/26/2024 19:25:06'!
 compileTriple: arg1 and: arg2 range: aString
@@ -1013,24 +1046,24 @@ rows: nrows cols: ncols data: aDictionary
 
 	! !
 
-!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 9/24/2024 20:10:58'!
+!GenieException methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 12:54:30'!
 defaultAction
 
 	UnhandledError signalForException: self! !
 
-!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:29'!
+!GenieException methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 12:54:36'!
 end
 	^end! !
 
-!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:21'!
+!GenieException methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 12:54:42'!
 end: anInteger
 	end := anInteger ! !
 
-!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:27'!
+!GenieException methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 12:54:48'!
 start
 	^start! !
 
-!GenieUndefinedSymbolException methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:08:11'!
+!GenieException methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 12:54:53'!
 start: anInteger
 	start := anInteger! !
 

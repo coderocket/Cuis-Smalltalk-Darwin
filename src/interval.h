@@ -6,7 +6,7 @@ struct interval_t {
 
 	interval_t(int b, int e) : begin(b) , end(e) {}
 
-	int at_random(); 
+	int at_random() const; 
 
 	bool contains(int x) {
 		return begin <= x && x <= end;

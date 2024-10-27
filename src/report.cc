@@ -153,14 +153,14 @@ void json_write_solution(const chromosome_t* c, ostream& out) {
 		out << "[";
 		int k;
 		for(k=0; k < INSTANCE_SIZE - 1; k++) {
-			out << an_instance[j][k] << ",\n";
+			out << an_instance[j][k] << ", ";
 		}
 		out << an_instance[j][k];
 
 		out << "] ]";
 
 		if (j < GENIE_N_INSTANCES - 1)
-			out << ", ";
+			out << ",\n";
 	}
 
 	out << "]" << endl;

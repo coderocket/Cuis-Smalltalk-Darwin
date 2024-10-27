@@ -25,7 +25,7 @@ Start 'x' : Params 'p' Structure 'g' Fun 'f' RuleKeys 'k' Fitness 'r'
 
 	{ params @ x = code @ p }
 
-	{ fnames @ x = (fnames @ f) asSet }
+	{ fnames @ x = (fnames @ f) asDictionary }
 
 	{ schema @ x = code @ g }
 
@@ -106,7 +106,7 @@ Value 'x' :
 
 	| Function 'f'
 
-	{ code @ x = (code @ f), '.at_random()' }
+	{ code @ x = GenieCompiler instance compileNonDeterministicCall: (code @ f) type: ((fnames @ x) at: (rawname @ f)) location: f }
 
 	;
 
@@ -123,6 +123,8 @@ Range 'x' : number 'b' ".." number  'e'
 Function 'x' : name 'fn' "(" Argument 'e' ")"
 
 	{ n @ x = GenieCompiler instance compileSchemaFunctionName: fn inTables: fnames @ x }
+
+	{ rawname @ x = fn value asString }
 
 	{ key @ x = key @ e }
 
@@ -178,7 +180,7 @@ Key 'x' : name 'kn' ":" Function 'f'
 
 	{ keys @ x = { kn value asString } }
 
-	{ code @ x = GenieCompiler instance compileKey: kn value asString value: code@f  }
+	{ code @ x = GenieCompiler instance compileDeterministicCall: kn value asString value: code@f type: ((fnames @ x) at: (rawname @ f)) location: kn }
 
 	;
 
@@ -309,7 +311,7 @@ Primitive 'x' : number 'n'
 
 	| name 'n' 
 
-	{ value @ x = '(*each)[{1}]' format: { GenieCompiler instance compileRuleName: n value asString isMemberIn: attrs @ x } } 
+	{ value @ x = '(*each)[{1}]' format: { GenieCompiler instance compileRuleName: n value asString isMemberIn: attrs @ x location: n } } 
 
 	| "(" Compare 'c' ")" 
 
@@ -386,9 +388,11 @@ Table 'x' : name 'n' Tuple + 't'
 
 	{ code @ x =  GenieCompiler instance compileFunction: v@t name: n value asString type: type @ t }
 	
-	{ fname @ x = { n value asString } }
+	{ fname @ x = { n value asString -> (type @ x) } }
 
 	{ fdecl @ x = GenieCompiler instance compileFunctionDeclaration: n value asString type: type @ t }
+
+	{ type @ x = GenieCompiler instance compileFunctionType: type @ t location: n }
 
 	;
 

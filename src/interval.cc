@@ -8,7 +8,6 @@ extern random_number_generator interval_rng;
 
 random_number_generator interval_rng;
 
-
-int interval_t::at_random() {
+int interval_t::at_random() const {
 	return begin + (interval_rng() % (end - begin + 1));
 }
