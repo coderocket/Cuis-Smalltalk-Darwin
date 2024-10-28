@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 2:22:48 pm'!
+'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 3:42:09 pm'!
 'Description '!
-!provides: 'College' 1 34!
+!provides: 'College' 1 37!
 SystemOrganization addCategory: #College!
 
 
@@ -12,6 +12,16 @@ Object subclass: #College
 	category: 'College'!
 !classDefinition: 'College class' category: #College!
 College class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeBrowser category: #College!
+Object subclass: #CollegeBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeBrowser class' category: #College!
+CollegeBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeTopic category: #College!
@@ -76,7 +86,7 @@ ModuleInstance class
 
 !classDefinition: #PluggableCollegeGridModel category: #College!
 GridModel subclass: #PluggableCollegeGridModel
-	instanceVariableNames: 'selection college indices topic format instance'
+	instanceVariableNames: 'selection college indices item format instance topicIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -536,7 +546,7 @@ example3
 	
 	! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:15:53'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:17:52'!
 school
 
 	"self school"
@@ -611,7 +621,7 @@ school
 		'לימור מתתיהו' . 'רועי זימון' . 'אפרת ויינברג' 
 	
 	} withIndexDo: [:each :i |
-		aCollege addLecturer: (Lecturer new id: i ; description: each ;yourself) ].
+		aCollege addLecturer: (Lecturer new id: i ; description: (each copyFrom:1 count: (7 min: each size)) ;yourself) ].
 	
 	^aCollege
 "
@@ -630,6 +640,16 @@ school
 	
 	
 	! !
+
+!CollegeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:23:24'!
+open: aJsonSolution
+
+	| aCollege |
+	
+	aCollege := College school assign: aJsonSolution by: { #day -> 1 . #hour -> 2 . #lecturer -> 3 . #module -> 4 . #duration -> 5 } asDictionary. 
+
+PluggableCollegeGridModel college: aCollege topic: #frames format: [:each | '{1}:{2}' format:{each lecturer description . each module description } ].
+! !
 
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
 addInstance: aModuleInstance
@@ -756,24 +776,52 @@ college: aCollege
 format: aBlock
 	format := aBlock! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:51:08'!
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:39:46'!
 initialize
 	
 	selection := 0.
 
 	indices := #(0).
 		
-	topic := nil.
+	item := nil.
+	
+	topicIndex := 0.
 	
 	college := nil.
 
 	format := [:each | each asString ]! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/23/2024 18:11:34'!
-topic: aString
-	topic := aString! !
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:39:46'!
+item: aString
+	item := aString! !
 
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 9/26/2024 15:30:28'!
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:40:10'!
+selectTopic: anIndex
+
+	! !
+
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:38:57'!
+topicSelection
+	^topicIndex! !
+
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:37:20'!
+topics
+	^ { 'lecturers' . 'frames' . 'rooms' }! !
+
+!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 15:39:46'!
+items
+
+	| t keys |
+	
+	college ifNil:[^{}].
+	
+	t := college perform: item.
+	
+	keys := t keys sort.
+	
+	^keys collect:[:key | t at: key :: description ]! !
+
+!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 15:39:46'!
 select: anIndex
 
 	| index keys t |
@@ -784,7 +832,7 @@ select: anIndex
 	
 	selection = 0 ifTrue:[instance := nil. ^self].
 	
-	t := college perform: topic.
+	t := college perform: item.
 	
 	keys :=  t keys sort.
 	
@@ -799,19 +847,6 @@ select: anIndex
 !PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 9/23/2024 16:48:35'!
 selection
 	^selection ! !
-
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 9/26/2024 15:37:31'!
-topics
-
-	| t keys |
-	
-	college ifNil:[^{}].
-	
-	t := college perform: topic.
-	
-	keys := t keys sort.
-	
-	^keys collect:[:key | t at: key :: description ]! !
 
 !PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 9/26/2024 15:28:35'!
 at: row at: col
@@ -834,17 +869,22 @@ nCols
 nRows
 	^24! !
 
-!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 15:44:57'!
+!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:38:44'!
 college: aCollege topic: aSymbol format: aBlock
 
-	| aCollegeModel aListMorph |
+	| aCollegeModel topics items aGridMorph |
 	
 	aCollegeModel := self new.
 	
-	aCollegeModel college: aCollege; topic: aSymbol ; format: aBlock.
+	aCollegeModel college: aCollege; item: aSymbol ; format: aBlock.
 	
-	aListMorph := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #selection indexSetter: #select:.
+	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topicSelection indexSetter: #selectTopic:.
+	
+	items := PluggableListMorph withModel: aCollegeModel listGetter: #items indexGetter: #selection indexSetter: #select:.
 
-	aListMorph | 1.0p  <+> ((GridMorph new model: aCollegeModel)  | 1.0 p - 1.0p ) :: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Time Table' format:{aSymbol asString capitalized}) :: openInWorld 
+	aGridMorph := GridMorph new model: aCollegeModel. 
+
+	(topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
+	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Time Table' format:{aSymbol asString capitalized}) :: openInWorld 
 
 ! !

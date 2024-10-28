@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 12:39:28 pm'!
+'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 3:28:57 pm'!
 'Description '!
-!provides: 'Darwin' 1 239!
+!provides: 'Darwin' 1 240!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -482,6 +482,10 @@ setWorkingDirectory
 			aString notEmpty and:[ aString asDirectoryEntry isDirectory] ] 
 		do: [ :aString | 
 			codeGenerator codePath: aString asDirectoryEntry ]! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:27:55'!
+solutionAt: anIndex
+	^solutions at: anIndex :: at: 'solution'! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 21:32:12'!
 solutions
@@ -1193,12 +1197,12 @@ drawModelColumnHeadersOn: aCanvas
 	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 9/28/2024 18:41:34'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:19:02'!
 drawModelDataOn: aCanvas
 
 	| aFont dataOrigin dw dh canvas form nc nr |
 	
-	aFont := FontFamily defaultFamilyAndPointSize.
+	aFont := FontFamily defaultFamilyPointSize: 9.
 	
 	dw := gridW / nCols.
 	dh := gridH / nRows.
