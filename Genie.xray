@@ -1,6 +1,6 @@
 tokens
 
-".." Schema Parameters Functions Keys Rules "(" ")"Syntax error -> ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in
+".." Schema Parameters Functions Keys Rules "(" ")"Syntax error -> ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in on
 
 
 patterns
@@ -32,6 +32,8 @@ Start 'x' : Params 'p' Structure 'g' Fun 'f' RuleKeys 'k' Fitness 'r'
 	{ functions @ x = code @ f }
 
 	{ tables @ x = tables @ f }
+
+	{ tnames @ x = GenieCompiler instance compileTableDecls: tnames @ f }
 
 	{ mutate @ x = mutate @ g }
 
@@ -117,6 +119,10 @@ Range 'x' : number 'b' ".." number  'e'
 	{ e@x = e value  }
 
 	{ code @ x = '(interval_t({1},{2}))' format: { b value . e value } }
+
+	{ min @ x = b value asString asInteger }
+
+	{ max @ x = e value asString asInteger }
 
 	;
 
@@ -210,8 +216,7 @@ RuleList 'x' : RuleList 'list' Rule 'r'
 
 	;
 
-
-Rule 'x' : bonus 'keyword' Group 'a' 
+Rule 'x' : bonus 'keyword' Formula 'a' 
 
 	{ kind @ a = 1 }
 
@@ -219,8 +224,7 @@ Rule 'x' : bonus 'keyword' Group 'a'
 
 	{ code @ x = code @ a }
 
-
-	| penalty 'keyword' Group 'a'
+	| penalty 'keyword' Formula 'a'
 
 	{ kind @ a = -1 }
 
@@ -228,19 +232,41 @@ Rule 'x' : bonus 'keyword' Group 'a'
 
 	{ code @ x = code @ a }
 ;
+
+Formula 'x' : Group 'y' 
+		{ code @ x = code @ y }  
+	| TableIteration 'y' 
+		{ code @ x = code @ y }  
+	| FunctionEnum 'y'
+		{ code @ x = code @ y }
+	| ExprFormula 'y' 
+		{ code @ x = code @ y } 
+	;
  
 Group 'x' : group by "(" Arguments 'a' ")" Expr 'e'  ";"
 	 
 	{ code @ x = GenieCompiler instance compileRuleGroupByKeys: keys @ a expr: value @ e kind: kind @ x position: position @ x location: location @ x }
 
-	{ group @ e = 1 }
+	{ group @ e = 1 } 
+	;
 
-	| for name 'index' in name 'tab' "(" name 'key1' "," name 'key2' ")" E 'e' ";"
+TableIteration 'x' : for name 'index' in name 'tab' "(" name 'key1' "," name 'key2' ")" E 'e' ";"
  
 	{ code @ x = GenieCompiler instance compileTableExpr: tab index: index key: key1 key: key2 expr: value @ e kind: kind @ x position: position @ x location: location @ x }
+
 	{ locals @ e = { index value asString } asSet }
 
-	| Expr 'e' ";"
+	;
+
+FunctionEnum 'x' : on name 'n' group by "(" Arguments 'a' ")" Expr 'e'  ";"
+
+	{ code @ x = GenieCompiler instance compileFunctionEnum: n value asString finfo: ((fnames @ x) at: n value asString)  keys: keys @ a expr: value @ e kind: kind @ x position: position @ x location: location @ x }
+
+	{ group @ e = 1 } 
+
+	;
+
+ExprFormula 'x' : Expr 'e' ";"
 
 	{ code @ x = GenieCompiler instance compileRuleExpr: value @ e kind: kind @ x position: position @ x location: location @ x }
 
@@ -382,18 +408,22 @@ Fun 'x' : Functions Table + 't'
 	{ tables @ x = (table @ t) isEmpty ifTrue:[{}] ifFalse:[ table@ t reduce:[:u :v | u, String lfString, v] ] }
  
 	{ tnames @ x = tname @ t }
+
 	;
 
 Table 'x' : name 'n' Tuple + 't' 
 
 	{ code @ x =  GenieCompiler instance compileFunction: v@t name: n value asString type: type @ t }
 	
-	{ fname @ x = { n value asString -> (type @ x) } }
+	{ fname @ x = { n value asString -> { (type @ x) . (min @ x) . (max @ x) } } }
 
 	{ fdecl @ x = GenieCompiler instance compileFunctionDeclaration: n value asString type: type @ t }
 
 	{ type @ x = GenieCompiler instance compileFunctionType: type @ t location: n }
 
+	{ min @ x = (min @ t) min }
+
+	{ max @ x = (min @ t) max }
 	;
 
 Tuple 'x' : Range 'r' Seq 's'
@@ -401,6 +431,10 @@ Tuple 'x' : Range 'r' Seq 's'
 	{ v @ x = GenieCompiler instance compileTupleRangeBegin: b@r end:e@r seq: v@s }
 
 	{ type @ x = type @ s }
+
+	{ min @ x = min @ r }
+
+	{ max @ x = max @ r }
 
 	;
 
@@ -410,6 +444,9 @@ Tuple 'x' : Seq 'left' Seq 'right'
 
 	{ type @ x = type @ right }
 
+	{ min @ x = min @ left }
+
+	{ max @ x = min @ left }
 ;
 
 Tuple 'x' : Seq 'seq' Range 'r'
@@ -417,6 +454,10 @@ Tuple 'x' : Seq 'seq' Range 'r'
 	{ v @ x = GenieCompiler instance compileTuple: v@seq range: code@r }
 
 	{ type @ x = GenieCompiler rangeType }
+
+	{ min @ x = min @ seq }
+
+	{ max @ x = min @ seq }
 
 	;
 
@@ -426,6 +467,9 @@ Tuple 'x' : Range 'r1' Range 'r2'
 
 	{ type @ x = GenieCompiler rangeType }
 
+	{ min @ x = min @ r1 }
+
+	{ max @ x = max @ r1 }
 	;
 
 Table 'x' : table name 'n' Triple + 't'  
@@ -448,11 +492,19 @@ Seq 'x' :
 	
 	{ v @ x = { n value asString } }
 
+	{ min @ x = n value asString asInteger }
+
+	{ max @ x = n value asString asInteger }
+
 	{ type @ x = GenieCompiler numberType }
 
 	| Seq 'seq' "," number 'n'
 	
 	{ v @ x = (v @ seq) , { n value asString } }
+
+	{ min @ x = (min @ seq) min: (n value asString asInteger) }
+
+	{ max @ x = (max @ seq) max: (n value asString asInteger) }
 
 	{ type @ x = GenieCompiler seqType }
 

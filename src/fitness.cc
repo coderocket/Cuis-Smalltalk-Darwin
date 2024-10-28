@@ -17,6 +17,7 @@
 
 using namespace std;
 
+#include "generated_tables.h"
 #include "generated_functions.h"
 #include "fitness_library.cc"
 

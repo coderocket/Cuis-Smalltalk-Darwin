@@ -1,7 +1,7 @@
 
 CXX = $(PLATFORM_CPLUSPLUS_COMPILER)
 
-o = fitness.o genie.o mutate.o breed.o crossover.o report.o invert.o attribute_layout.o chromo.o genie_functions.o image.o setup.o interval.o
+o = fitness.o genie.o mutate.o breed.o crossover.o report.o invert.o attribute_layout.o chromo.o genie_functions.o image.o setup.o interval.o genie_tables.o
 
 genie : $o 
 	$(CXX) $(FLAGS) $(^F) -o $@

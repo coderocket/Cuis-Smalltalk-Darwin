@@ -23,22 +23,22 @@ int next(int j, instance_t* p[], int keys[], int n_keys) {
 	return j;
 }
 
-int group_by(instance_t* c, int keys[], int n_keys, int (*f)(instance_t** ,instance_t**)) {
+int group_by(instance_t* b, instance_t* e, int keys[], int n_keys, int (*f)(instance_t** ,instance_t**)) {
 	int result = 0;
 
-	instance_t* p[GENIE_N_INSTANCES];
+	instance_t* p[e-b];
 	
-	for(int i = 0; i < GENIE_N_INSTANCES;i++)
-		p[i] = &c[i];
+	for(int i = 0; i < e-b;i++)
+		p[i] = &b[i];
 
 	for(int i = 0 ; i < n_keys; i++) {
-		stable_sort(p,p+GENIE_N_INSTANCES, compare_by(keys[i]));
+		stable_sort(p,p+(e-b), compare_by(keys[i]));
 	}
 
 	int pj = 0;
 	int nj = next(0, p, keys, n_keys);
 
-	while (pj < GENIE_N_INSTANCES) {
+	while (pj < (e-b)) {
 		result += f(p+pj, p+nj);
 		pj = nj; 
 		nj = next(nj, p, keys, n_keys);
@@ -81,19 +81,6 @@ int genie_count(instance_t** b, instance_t** e, int (*f)(const instance_t*)) {
 	}
 
 	return a_set.size();
-}
-
-template<typename F>
-int genie_table_iterate(const multimap<array<int, 2>, interval_t> & table, int key1, int key2, F f) {
-	int sum = 0;
-	auto b = table.lower_bound({key1, key2});
-	auto e = table.upper_bound({key1, key2});
-	while (b!=e) {
-		sum += f(b->second);
-		++b;
-	}
-
-	return sum;
 }
 
 int genie_intersect(interval_t x, interval_t y) { 

@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 27 October 2024 at 2:16:18 pm'!
+'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 12:39:28 pm'!
 'Description '!
-!provides: 'Darwin' 1 233!
+!provides: 'Darwin' 1 239!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -11,7 +11,7 @@ SystemOrganization addCategory: #Darwin!
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
 	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration solutions selectedSolution'
-	classVariableNames: 'InitialProgramTemplate Programs'
+	classVariableNames: 'CommentRegex InitialProgramTemplate KeywordsRegex Programs SectionHeadersRegex'
 	poolDictionaries: ''
 	category: 'Darwin'!
 !classDefinition: 'GenieBrowserModel class' category: #Darwin!
@@ -305,16 +305,16 @@ penalties
 program
 	^ programText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/14/2024 19:03:45'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 12:32:59'!
 program: aText
 
 	aText removeAttributesThat: [:attr | attr isTextColor ].
 	
-	programText := 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
+	programText := SectionHeadersRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
 	
-	programText := 'group by|sum|count|overlap|maxgap|mingap|overlap_with|max' asRegex copy: programText translatingMatchesUsing:[:each | each color: (Color r: 0.380 g: 0.0 b: 0.235) ].
+	programText := KeywordsRegex copy: programText translatingMatchesUsing:[:each | each color: (Color r: 0.380 g: 0.0 b: 0.235) ].
 	
-	programText := '#:^isLineSeparator:*:isLineSeparator:' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
+	programText := CommentRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
 	
 	Programs at: programName put: programText.
 	
@@ -515,13 +515,34 @@ wd: aString
 	
 	codeGenerator codePath: aString asDirectoryEntry.! !
 
-!GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 10:01:59'!
+!GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 12:39:25'!
 initialize
 
 	"self initialize"
+
+	| aWriteStream keywords sectionHeaders |
+
 	
+	CommentRegex := '#:^isLineSeparator:*:isLineSeparator:' asRegex.
+
+	keywords := {'sum' . 'count' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' . 'max' . 'for' . 'in' . 'on' . 'penalty' . 'bonus' }.
+	
+	sectionHeaders := { 	'Parameters'.  'Schema'.  'Functions'.  'Keys'.  'Rules' }.
+
+	aWriteStream := WriteStream on:''.
+
+	sectionHeaders do:[:each | aWriteStream nextPutAll:('\\<{1}\\>' format: {each }) ] separatedBy:[ aWriteStream nextPutAll: '|'].
+	
+	SectionHeadersRegex := aWriteStream contents asRegex.
+
+	aWriteStream := WriteStream on:''.
+	
+	keywords do:[:each | aWriteStream nextPutAll:('\\<{1}\\>' format: {each }) ] separatedBy:[ aWriteStream nextPutAll: '|'].
+	
+	KeywordsRegex := aWriteStream contents asRegex.
+
 	Programs := Dictionary new.
-	
+
 	InitialProgramTemplate := '
 Parameters
 
@@ -558,7 +579,7 @@ bonus 10 ;
 penalty bit = 0;
 ' asText! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/19/2024 17:52:16'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/27/2024 16:24:09'!
 generateCode: anASTNode programName: aString
 
 	| programName |
@@ -570,6 +591,7 @@ generateCode: anASTNode programName: aString
 	self generateFunctions: #functions @ anASTNode.
 	self generateFunctionDecls: #fdecl @ anASTNode.
 	self generateTables: #tables @ anASTNode.
+	self generateTableHeaders: #tnames @ anASTNode.
 	self generateMutate: #mutate @ anASTNode.
 	self generateFitness: #fitness @ anASTNode.
 	self generateKeys: #keycode @ anASTNode.
@@ -605,10 +627,15 @@ generateMutate: aString
 
 	codePath / 'src' // 'generated_attribute_layout.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:47'!
-generateTables: aString
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/27/2024 16:23:46'!
+generateTableHeaders: aString
 
 	codePath / 'src' // 'generated_tables.h' fileContents: aString.! !
+
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/27/2024 16:23:35'!
+generateTables: aString
+
+	codePath / 'src' // 'generated_tables.cc' fileContents: aString.! !
 
 !GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:39:07'!
 codePath
@@ -661,11 +688,15 @@ compileName: aTerminal env: aCollection
 	
 	^'GENIE_', aString asUppercase! !
 
-!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/27/2024 14:10:01'!
-compileNonDeterministicCall: aString type: aTypeString location: aToken
+!GenieCompiler methodsFor: 'compiling schema' stamp: 'DF 10/28/2024 12:01:29'!
+compileNonDeterministicCall: aString type: functInfo location: aToken
 
-	{ 'vector<int>' . 'interval_t' } includes: aTypeString :: ifFalse:[
-		GenieException new messageText: ('Type mismatch: {1}, expecting an interval or a set.' format:{  aTypeString }) ; start: aToken start ; end: aToken end ; signal ].
+	| type |
+	
+	type := functInfo at:1.
+	
+	{ 'vector<int>' . 'interval_t' } includes: type :: ifFalse:[
+		GenieException new messageText: ('Type mismatch: {1}, expecting an interval or a set.' format:{  type }) ; start: aToken start ; end: aToken end ; signal ].
 	
 	^'select_at_random({1})' format: {aString }
 	
@@ -730,13 +761,46 @@ compileParameters: names values: values types: types
 	
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 14:13:02'!
-compileDeterministicCall: aString value: anotherString type: aTypeString location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/28/2024 11:57:19'!
+compileDeterministicCall: aString value: anotherString type: funcInfo location: aToken
 
-	'int' = aTypeString :: ifFalse:[
-		GenieException new messageText: ('Type mismatch: {1}, expecting an integer.' format:{  aTypeString }) ; start: aToken start ; end: aToken end ; signal ].
+	| type |
+	
+	type  := funcInfo at:1.
+	
+	'int' = type  :: ifFalse:[
+		GenieException new messageText: ('Type mismatch: {1}, expecting an integer.' format:{  type  }) ; start: aToken start ; end: aToken end ; signal ].
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/28/2024 12:11:56'!
+compileFunctionEnum: functionName finfo: funInfo keys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
+
+	| aStream  min max  |
+
+	min := funInfo at:2.
+	
+	max := funInfo at:3.
+	
+	aStream := WriteStream on: ''. 
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each asUppercase ] separatedBy:[ aStream nextPutAll: ', ' ].
+	
+	^'\{ int keys[] = \{{1}\}; 
+
+rule_location[{2}] = {6};
+score[{2}] = 0;
+for(int ii = {8}; ii <= {9} ; ++ii) \{
+	vector<int> gid = genie_{7}(ii);
+	instance_t* group = (instance_t*)alloca(gid.size()*sizeof(instance_t));
+	int jj;
+	for(jj = 0 ; jj < gid.size(); ++jj)
+		group[jj] = an_instance[gid[jj]];
+		
+	score[{2}] {5}= group_by(group, group+jj, keys,{3},[](instance_t** b, instance_t** e) 
+		\{ return {4}; \}); 
+	\}
+\}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start . functionName . min . max }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:10:34'!
 compileRuleExpr: aString kind: anInteger position: anotherInteger location: aToken
@@ -747,7 +811,7 @@ score[{1}] = 0;
 score[{1}] {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString . aToken start }.
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:08:54'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/28/2024 12:12:09'!
 compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
 
 	| aStream  |
@@ -760,7 +824,7 @@ compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger positi
 
 rule_location[{2}] = {6};
 score[{2}] = 0;
-score[{2}] {5}= group_by(an_instance, keys,{3},[](instance_t** b, instance_t** e) 
+score[{2}] {5}= group_by(an_instance, an_instance+GENIE_N_INSTANCES, keys,{3},[](instance_t** b, instance_t** e) 
 	\{ return {4}; \}); \}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 18:09:18'!
@@ -824,10 +888,10 @@ compileRuleVariable: aString in: aSet
 	
 	^'(*each)[{1}]' format:{ 'GENIE_', aString asUppercase }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:11:17'!
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 15:43:39'!
 compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger position: anotherInteger location: aToken
 
-^ 'rule_location[{1}] = {7};
+^ 'rule_location[{1}] = {8};
 score[{1}] = 0;
 score[{1}] {7}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
 	return genie_table_iterate(genie_{2}, (*each)[GENIE_{3}], (*each)[GENIE_{4}], [each](const interval_t& {5}) \{ return {6} \; \}); \});' format: { anotherInteger . tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start }! !
@@ -908,6 +972,18 @@ compileFunctionType: aCollection location: aToken
 	
 
 	! !
+
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/27/2024 16:22:48'!
+compileTableDecls: anOrderedCollection
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on: ''.
+	
+	anOrderedCollection do:[:each | aWriteStream nextPutAll: ('extern std::multimap< std::array<int, 2>, interval_t> genie_{1};
+' format: { each })].
+
+	^ aWriteStream contents.! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 9/26/2024 19:25:06'!
 compileTriple: arg1 and: arg2 range: aString

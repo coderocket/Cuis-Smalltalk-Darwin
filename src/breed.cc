@@ -23,7 +23,7 @@ chromosome_t* match(chromosome_t* b, random_number_generator& an_rng) {
 
 	chromosome_t* partner = b + (an_rng() % actual_population_size);
 
-	while (partner->fitness <= average_fitness && n_attempts < max_attempts) {
+	while (partner->fitness < average_fitness && n_attempts < max_attempts) {
 		partner = b + (an_rng() % actual_population_size);
  		++n_attempts;
 	}

@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 12 October 2024 at 5:24:33 pm'!
+'From Cuis7.1 [latest update: #6709] on 27 October 2024 at 5:29:48 pm'!
 'Description '!
-!provides: 'College' 1 28!
+!provides: 'College' 1 31!
 SystemOrganization addCategory: #College!
 
 
@@ -132,13 +132,11 @@ assign: aSolution  by: aDictionary
 
 		self assignInstance: (instances at: (each at:1))  to: (each at:2) by: aDictionary ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 14:38:20'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 17:02:54'!
 assignInstance: aModuleInstance to: aGene by: aDictionary
 
-	| room day hour frame module lecturer duration  |
+	| day hour frame module lecturer duration  |
 
-	room := rooms at: (aGene at: (aDictionary at:#room)) + (6* ((aGene at: (aDictionary at:#floor)) - 1)).
-	
 	day := aGene at:(aDictionary at:#day).
 	
 	hour := aGene at:(aDictionary at:#hour).
@@ -152,8 +150,6 @@ assignInstance: aModuleInstance to: aGene by: aDictionary
 	duration := aGene at:(aDictionary at:#duration).
 	
 	aModuleInstance day: day ; hour: hour.		
-	
-	aModuleInstance room: room. room addInstance: aModuleInstance.
 	
 	self assert: duration = module duration.
 	
@@ -422,6 +418,71 @@ Thus the lecturers can teach at most 42*24 = 1008 hours a week
 		'Liebniz'		. 'Spinoza'			. 'Virginia'			. 'Fermat'			. 'Berlioz'			. 'Liskov' .
 		'Dieter'		. 'Gaudi'			. 'Bowie'			. 'Mendeleve'	. 'Pushkin'					. 'Schubert' .
 		'Adam'		. 'Burkhardt' . 'Caneloni' 						.'Darwin' 			.'Eve' 			.'Frankenstien'
+	
+	} withIndexDo: [:each :i |
+		aCollege addLecturer: (Lecturer new id: i ; description: each ;yourself) ].
+	
+	^aCollege
+"
+	aReadStream := ReadStream on: ('/home/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry fileContents).
+
+	aSolution := Json readFrom: aReadStream.
+
+	aCollege assign: aSolution.
+
+	PluggableCollegeGridModel college: aCollege topic: #rooms format:[:each | '{1}:{2}' format:{ each lecturer description . each module description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #lecturers format:[:each | '{1}:{2}' format:{ each module description . each room description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #modules format:[:each | '{1}:{2}' format:{ each lecturer description . each room description } ]."
+
+	
+	
+	! !
+
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 16:53:58'!
+example3
+
+	"self example3"
+
+	| aCollege  |
+	
+	aCollege := College new.
+	
+	" rooms: { id description } "
+	
+	0 to:3 do:[:floor | 1 to:8 do:[:num | 
+		aCollege addRoom: (Room new id: floor * 6 + num ; description: ('room {1}.{2}' format:{ floor+1 . num}) ;yourself) ] ].
+	
+	" modules: { id . description . duration } "
+	
+	{ { 10016 . 'מבוא למדמח שיעור' . 3 } . { 910016 . 'מבוא למדמח תרגול' . 3  } . { 10010 . 'מבוא לתכנות מערכות הרצאה' . 2 } . { 910010 . 'מבוא לתכנות מערכות תרגול' . 2  } . { 10117 . 'מבני נתונים הרצאה' . 4 } . { 910017 . 'מבני נתונים תרגול' . 2 }  }  do:[:each | 
+		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
+
+	" frames. "
+	
+	1 to:2 do:[:frameIndex | |frame|
+		
+	frame := Frame new id: frameIndex  ; description: ('הנדסת תוכנה {1}' format: { frameIndex }) ; yourself.
+	
+	aCollege addFrame: frame ].
+	
+	" module instances { id . module id . frame id } "
+	
+	0 to:13 do:[:instanceIndex | |instance| 
+		
+		instance := (ModuleInstance new id: instanceIndex ; yourself).
+		
+		aCollege addInstance: instance ].
+		
+	" lecturers: { id description } "
+	
+	{	'יאיר אבן זוהר' . 'איל אייזנשטיין' . 'ניר אנדלמן' . 'מנחם אפטיין' . 'מריה ארטיצלב' . 'רועי אש' .
+		'רם בוסני' . 'הדר בינסקי' . 'ארנון ברקת' . 'לאה גולדין' . 'אפרת הרצברג מורג' . 'ראובן חוטובלי' .
+		'ויקטור טאובקין' . 'שמואל טישברוביץ' . 'שרון ילוב נהזדל' . 'קרן כליף' . 'הדס לפיד' . 'בוריס מורוז' .
+		'מיכאל מן' . 'דגנית ערמון' . 'דוד פייטלסון' . 'גדי פנקס' . 'גדי פסח' . 'דוד שטטר' .
+		'עמי האופטמן' . 'מאשה פרידין' . 'תום כהן' . 'פיני שלומי' . 'גיא איסקוב' . 'מיכל הוכמן' . 
+		'לימור מתתיהו' . 'רועי זימון' . 'אפרת ויינברג' 
 	
 	} withIndexDo: [:each :i |
 		aCollege addLecturer: (Lecturer new id: i ; description: each ;yourself) ].

@@ -59,6 +59,9 @@ chromosome_t* worst(chromosome_t* b, chromosome_t* e) {
 	return worst;
 }
 
+#include "generated_tables.h"
+#include "generated_functions.h"
+
 void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score, array<int, GENIE_N_RULES>& rule_location) {
 
 	instance_t an_instance[GENIE_N_INSTANCES];
