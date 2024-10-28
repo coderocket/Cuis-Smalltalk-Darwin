@@ -10,13 +10,13 @@ public:
 	}
 };
 
-int next(int j, instance_t* p[], int keys[], int n_keys) {
+int next(int j, instance_t* p[], size_t n_i, int keys[], int n_keys) {
 
 	int i = n_keys;
 
-	while (j < GENIE_N_INSTANCES && i == n_keys) {
+	while (j < n_i && i == n_keys) {
 		i = 0;
-		while (i < n_keys && j+1 < GENIE_N_INSTANCES && (*(p[j+1]))[keys[i]] == (*(p[j]))[keys[i]]) i++; 
+		while (i < n_keys && j+1 < n_i && (*(p[j+1]))[keys[i]] == (*(p[j]))[keys[i]]) i++; 
 		j++;
 	}
 
@@ -36,12 +36,12 @@ int group_by(instance_t* b, instance_t* e, int keys[], int n_keys, int (*f)(inst
 	}
 
 	int pj = 0;
-	int nj = next(0, p, keys, n_keys);
+	int nj = next(0, p, e-b, keys, n_keys);
 
 	while (pj < (e-b)) {
 		result += f(p+pj, p+nj);
 		pj = nj; 
-		nj = next(nj, p, keys, n_keys);
+		nj = next(nj, p, e-b, keys, n_keys);
 	}
 
 	return result;
