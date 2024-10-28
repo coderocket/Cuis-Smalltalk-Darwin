@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 3:42:09 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 October 2024 at 8:25:43 pm'!
 'Description '!
-!provides: 'College' 1 37!
+!provides: 'College' 1 43!
 SystemOrganization addCategory: #College!
 
 
@@ -86,7 +86,7 @@ ModuleInstance class
 
 !classDefinition: #PluggableCollegeGridModel category: #College!
 GridModel subclass: #PluggableCollegeGridModel
-	instanceVariableNames: 'selection college indices item format instance topicIndex'
+	instanceVariableNames: 'selection college indices topic format instance topicIndex topics'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -546,7 +546,7 @@ example3
 	
 	! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:17:52'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 20:25:34'!
 school
 
 	"self school"
@@ -562,12 +562,12 @@ school
 	
 	" modules: { id . description . duration } "
 	
-	{ { 10016 . 'מבוא למדמח שיעור' . 3 } . { 910016 . 'מבוא למדמח תרגול' . 3  } . { 10010 . 'מבוא לתכנות מערכות הרצאה' . 2 } . { 910010 . 'מבוא לתכנות מערכות תרגול' . 2  } . { 10117 . 'מבני נתונים הרצאה' . 4 } . { 910117 . 'מבני נתונים תרגול' . 2 }  }  do:[:each | 
+	{ { 10016 . 'מבוא למדמח שיעור' . 3 } . { 910016 . 'מבוא למדמח תרגול' . 3  } . { 10010 . 'מבוא לתכנות מערכות הרצאה' . 2 } . { 910010 . 'מבוא לתכנות מערכות תרגול' . 2  } . { 10117 . 'מבני נתונים הרצאה' . 4 } . { 910117 . 'מבני נתונים תרגול' . 2 } . { 10119 . 'תיכון הרצאה' . 3 } . { 910119 . 'תיכון תרגול' .2 } . { 10121 . 'אלגוריתם מתקדם הרצאה' . 3 } . { 910121 . 'אלגוריתם מתקדם תרגול' . 2 } . { 10214 . 'שיטות הרצאה' . 3 } . { 910214 . 'שיטות תרגול' . 2 } . { 10244 . 'למידת מכונה רצאה' . 3 } . { 910244 . 'למידת מכונה תרגול' . 2 } . { 10313 .  'אבטחת מידע הרצאה' . 2 } . { 910313 . 'אבטחת מידע תרגול' . 1 } . { 10110 . 'משובצות הרצאה' . 1 } . { 910110 . 'משובצות מעבדה' . 3 } }  do:[:each | 
 		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
 
 	" module instances { id . module id . frame id } "
 	
-	0 to:13 do:[:instanceIndex | |instance| 
+	0 to:35 do:[:instanceIndex | |instance| 
 		
 		instance := (ModuleInstance new id: instanceIndex ; yourself).
 		
@@ -587,27 +587,51 @@ school
 		
 	aCollege addFrame:	 frame.
 
-	frame :=  Frame new id: 3  ; description: 'תוכנה ב 1' ; yourself.
+	frame :=  Frame new id: 3  ; description: 'תוכנה א 3' ; yourself.
 	
 	{ 3 . 4 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
 		
 	aCollege addFrame:	 frame.
 
-	frame :=  Frame new id: 4  ; description: 'תוכנה ב 2' ; yourself.
+	frame :=  Frame new id: 4  ; description: 'תוכנה א 4' ; yourself.
 	
 	{ 3 . 5 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
 		
 	aCollege addFrame:	 frame.
 
-	frame :=  Frame new id: 5  ; description: 'תוכנה ג 1' ; yourself.
+	frame :=  Frame new id: 5  ; description: 'תוכנה ב 1' ; yourself.
 	
-	{ 6 . 7 . 10 . 11 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+	{ 6 . 7 . 10 . 11 . 14 . 15} do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
 		
 	aCollege addFrame:	 frame.
 
-	frame :=  Frame new id: 6  ; description: 'תוכנה ג 2' ; yourself.
+	frame :=  Frame new id: 6  ; description: 'תוכנה ב 2' ; yourself.
 	
-	{ 8 . 9 . 12 . 13 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+	{ 8 . 9 . 12 . 13 . 16 . 17 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 7  ; description: 'תוכנה ג 1' ; yourself.
+	
+	{ 18 . 19 . 22 . 23 . 26 . 27 . 28 . 29 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 8  ; description: 'תוכנה ג 2' ; yourself.
+	
+	{ 20 . 21 . 24 . 25 . 30 . 31 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 9  ; description: 'תוכנה ד 1' ; yourself.
+	
+	{ 32 . 33 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 10  ; description: 'תוכנה ד 2' ; yourself.
+	
+	{ 34 . 35 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
 		
 	aCollege addFrame:	 frame.
 	
@@ -621,7 +645,7 @@ school
 		'לימור מתתיהו' . 'רועי זימון' . 'אפרת ויינברג' 
 	
 	} withIndexDo: [:each :i |
-		aCollege addLecturer: (Lecturer new id: i ; description: (each copyFrom:1 count: (7 min: each size)) ;yourself) ].
+		aCollege addLecturer: (Lecturer new id: i ; description: each ;yourself) ].
 	
 	^aCollege
 "
@@ -641,14 +665,14 @@ school
 	
 	! !
 
-!CollegeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:23:24'!
+!CollegeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:33:45'!
 open: aJsonSolution
 
 	| aCollege |
 	
 	aCollege := College school assign: aJsonSolution by: { #day -> 1 . #hour -> 2 . #lecturer -> 3 . #module -> 4 . #duration -> 5 } asDictionary. 
 
-PluggableCollegeGridModel college: aCollege topic: #frames format: [:each | '{1}:{2}' format:{each lecturer description . each module description } ].
+PluggableCollegeGridModel college: aCollege.
 ! !
 
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
@@ -772,56 +796,54 @@ college: aCollege
 	
 	! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:58:40'!
-format: aBlock
-	format := aBlock! !
-
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:39:46'!
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:59:14'!
 initialize
 	
 	selection := 0.
 
 	indices := #(0).
 		
-	item := nil.
-	
-	topicIndex := 0.
+	topic := 0.
 	
 	college := nil.
 
-	format := [:each | each asString ]! !
+	format :={ 
+	
+		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
+	
+		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:39:46'!
-item: aString
-	item := aString! !
+		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ]  }.
+	
+	topics := { #lecturers . #frames . #rooms }! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:40:10'!
-selectTopic: anIndex
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:40:18'!
+topic
+	^topic! !
 
-	! !
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:42:22'!
+topic: anInteger
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:38:57'!
-topicSelection
-	^topicIndex! !
+	topic := anInteger.
+	
+	self changed: #items! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:37:20'!
-topics
-	^ { 'lecturers' . 'frames' . 'rooms' }! !
-
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 15:39:46'!
+!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:41:16'!
 items
 
 	| t keys |
 	
 	college ifNil:[^{}].
 	
-	t := college perform: item.
+	topic = 0 ifTrue:[^{}].
+	
+	t := college perform: (topics at:topic).
 	
 	keys := t keys sort.
 	
 	^keys collect:[:key | t at: key :: description ]! !
 
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 15:39:46'!
+!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:43:21'!
 select: anIndex
 
 	| index keys t |
@@ -832,7 +854,7 @@ select: anIndex
 	
 	selection = 0 ifTrue:[instance := nil. ^self].
 	
-	t := college perform: item.
+	t := college perform: (topics at:topic).
 	
 	keys :=  t keys sort.
 	
@@ -848,7 +870,11 @@ select: anIndex
 selection
 	^selection ! !
 
-!PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 9/26/2024 15:28:35'!
+!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:38:55'!
+topics
+	^ topics ! !
+
+!PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 10/28/2024 18:53:40'!
 at: row at: col
 
 	| result |
@@ -859,7 +885,7 @@ at: row at: col
 
 	result ifEmpty: [^''].
 
-	^ result collect:[:each | format value:each ] :: reduce:[:x :y | x,y].! !
+	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x,y].! !
 
 !PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nCols
@@ -869,22 +895,22 @@ nCols
 nRows
 	^24! !
 
-!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:38:44'!
-college: aCollege topic: aSymbol format: aBlock
+!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:35:25'!
+college: aCollege 
 
 	| aCollegeModel topics items aGridMorph |
 	
 	aCollegeModel := self new.
 	
-	aCollegeModel college: aCollege; item: aSymbol ; format: aBlock.
+	aCollegeModel college: aCollege.
 	
-	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topicSelection indexSetter: #selectTopic:.
+	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topic indexSetter: #topic:.
 	
 	items := PluggableListMorph withModel: aCollegeModel listGetter: #items indexGetter: #selection indexSetter: #select:.
 
 	aGridMorph := GridMorph new model: aCollegeModel. 
 
 	(topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
-	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('{1} Time Table' format:{aSymbol asString capitalized}) :: openInWorld 
+	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('Time Table') :: openInWorld 
 
 ! !
