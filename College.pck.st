@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 27 October 2024 at 5:29:48 pm'!
+'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 2:22:48 pm'!
 'Description '!
-!provides: 'College' 1 31!
+!provides: 'College' 1 34!
 SystemOrganization addCategory: #College!
 
 
@@ -66,7 +66,7 @@ Room class
 
 !classDefinition: #ModuleInstance category: #College!
 Object subclass: #ModuleInstance
-	instanceVariableNames: 'id day hour frame module room lecturer'
+	instanceVariableNames: 'id day hour frames module room lecturer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -132,10 +132,10 @@ assign: aSolution  by: aDictionary
 
 		self assignInstance: (instances at: (each at:1))  to: (each at:2) by: aDictionary ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 17:02:54'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 13:46:11'!
 assignInstance: aModuleInstance to: aGene by: aDictionary
 
-	| day hour frame module lecturer duration  |
+	| day hour module lecturer duration  |
 
 	day := aGene at:(aDictionary at:#day).
 	
@@ -145,8 +145,6 @@ assignInstance: aModuleInstance to: aGene by: aDictionary
 
 	module := modules at: (aGene at:(aDictionary at:#module)).
 
-	frame := frames at: (aGene at:(aDictionary at:#frame)).
-		
 	duration := aGene at:(aDictionary at:#duration).
 	
 	aModuleInstance day: day ; hour: hour.		
@@ -157,7 +155,6 @@ assignInstance: aModuleInstance to: aGene by: aDictionary
 	
 	aModuleInstance lecturer: lecturer. lecturer addInstance: aModuleInstance.
 	
-	aModuleInstance frame: frame. frame addInstance: aModuleInstance 
 
 	! !
 
@@ -177,6 +174,10 @@ initialize
 	frames := Dictionary new.
 	
 	instances := Dictionary new.! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 13:50:39'!
+instanceAt: anInteger
+	^ instances at: anInteger ! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:51:20'!
 moduleAt: anInteger
@@ -440,12 +441,12 @@ Thus the lecturers can teach at most 42*24 = 1008 hours a week
 	
 	! !
 
-!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 16:53:58'!
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:06:42'!
 example3
 
 	"self example3"
 
-	| aCollege  |
+	| aCollege frame |
 	
 	aCollege := College new.
 	
@@ -459,14 +460,6 @@ example3
 	{ { 10016 . 'מבוא למדמח שיעור' . 3 } . { 910016 . 'מבוא למדמח תרגול' . 3  } . { 10010 . 'מבוא לתכנות מערכות הרצאה' . 2 } . { 910010 . 'מבוא לתכנות מערכות תרגול' . 2  } . { 10117 . 'מבני נתונים הרצאה' . 4 } . { 910017 . 'מבני נתונים תרגול' . 2 }  }  do:[:each | 
 		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
 
-	" frames. "
-	
-	1 to:2 do:[:frameIndex | |frame|
-		
-	frame := Frame new id: frameIndex  ; description: ('הנדסת תוכנה {1}' format: { frameIndex }) ; yourself.
-	
-	aCollege addFrame: frame ].
-	
 	" module instances { id . module id . frame id } "
 	
 	0 to:13 do:[:instanceIndex | |instance| 
@@ -474,7 +467,140 @@ example3
 		instance := (ModuleInstance new id: instanceIndex ; yourself).
 		
 		aCollege addInstance: instance ].
+
+	" frames. "
+	
+	frame :=  Frame new id: 1  ; description: 'תוכנה א 1' ; yourself.
+	
+	frame addInstance: (aCollege instanceAt: 0) ; addInstance: (aCollege instanceAt: 1).
 		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 2  ; description: 'תוכנה א 2' ; yourself.
+	
+	frame addInstance: (aCollege instanceAt: 0) ; addInstance: (aCollege instanceAt: 2).
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 3  ; description: 'תוכנה ב 1' ; yourself.
+	
+	frame addInstance: (aCollege instanceAt: 3) ; addInstance: (aCollege instanceAt: 4).
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 4  ; description: 'תוכנה ב 2' ; yourself.
+	
+	frame addInstance: (aCollege instanceAt: 3) ; addInstance: (aCollege instanceAt: 5).
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 5  ; description: 'תוכנה ג 1' ; yourself.
+	
+	{ 6 . 7 . 10 . 11 } do:[:index | frame addInstance: (aCollege instanceAt: index) ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 6  ; description: 'תוכנה ג 2' ; yourself.
+	
+	{ 8 . 9 . 12 . 13 } do:[:index | frame addInstance: (aCollege instanceAt: index) ].
+		
+	aCollege addFrame:	 frame.
+	
+	" lecturers: { id description } "
+	
+	{	'יאיר אבן זוהר' . 'איל אייזנשטיין' . 'ניר אנדלמן' . 'מנחם אפטיין' . 'מריה ארטיצלב' . 'רועי אש' .
+		'רם בוסני' . 'הדר בינסקי' . 'ארנון ברקת' . 'לאה גולדין' . 'אפרת הרצברג מורג' . 'ראובן חוטובלי' .
+		'ויקטור טאובקין' . 'שמואל טישברוביץ' . 'שרון ילוב נהזדל' . 'קרן כליף' . 'הדס לפיד' . 'בוריס מורוז' .
+		'מיכאל מן' . 'דגנית ערמון' . 'דוד פייטלסון' . 'גדי פנקס' . 'גדי פסח' . 'דוד שטטר' .
+		'עמי האופטמן' . 'מאשה פרידין' . 'תום כהן' . 'פיני שלומי' . 'גיא איסקוב' . 'מיכל הוכמן' . 
+		'לימור מתתיהו' . 'רועי זימון' . 'אפרת ויינברג' 
+	
+	} withIndexDo: [:each :i |
+		aCollege addLecturer: (Lecturer new id: i ; description: each ;yourself) ].
+	
+	^aCollege
+"
+	aReadStream := ReadStream on: ('/home/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry fileContents).
+
+	aSolution := Json readFrom: aReadStream.
+
+	aCollege assign: aSolution.
+
+	PluggableCollegeGridModel college: aCollege topic: #rooms format:[:each | '{1}:{2}' format:{ each lecturer description . each module description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #lecturers format:[:each | '{1}:{2}' format:{ each module description . each room description } ].
+
+	PluggableCollegeGridModel college: aCollege topic: #modules format:[:each | '{1}:{2}' format:{ each lecturer description . each room description } ]."
+
+	
+	
+	! !
+
+!College class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:15:53'!
+school
+
+	"self school"
+
+	| aCollege frame |
+	
+	aCollege := College new.
+	
+	" rooms: { id description } "
+	
+	0 to:3 do:[:floor | 1 to:8 do:[:num | 
+		aCollege addRoom: (Room new id: floor * 6 + num ; description: ('room {1}.{2}' format:{ floor+1 . num}) ;yourself) ] ].
+	
+	" modules: { id . description . duration } "
+	
+	{ { 10016 . 'מבוא למדמח שיעור' . 3 } . { 910016 . 'מבוא למדמח תרגול' . 3  } . { 10010 . 'מבוא לתכנות מערכות הרצאה' . 2 } . { 910010 . 'מבוא לתכנות מערכות תרגול' . 2  } . { 10117 . 'מבני נתונים הרצאה' . 4 } . { 910117 . 'מבני נתונים תרגול' . 2 }  }  do:[:each | 
+		aCollege addModule: (Module new id: (each at:1) ; description: (each at:2) ; duration: (each at: 3) ; yourself) ].
+
+	" module instances { id . module id . frame id } "
+	
+	0 to:13 do:[:instanceIndex | |instance| 
+		
+		instance := (ModuleInstance new id: instanceIndex ; yourself).
+		
+		aCollege addInstance: instance ].
+
+	" frames. "
+	
+	frame :=  Frame new id: 1  ; description: 'תוכנה א 1' ; yourself.
+	
+	{ 0 . 1 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+	
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 2  ; description: 'תוכנה א 2' ; yourself.
+	
+	{ 0 . 2 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 3  ; description: 'תוכנה ב 1' ; yourself.
+	
+	{ 3 . 4 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 4  ; description: 'תוכנה ב 2' ; yourself.
+	
+	{ 3 . 5 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 5  ; description: 'תוכנה ג 1' ; yourself.
+	
+	{ 6 . 7 . 10 . 11 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+
+	frame :=  Frame new id: 6  ; description: 'תוכנה ג 2' ; yourself.
+	
+	{ 8 . 9 . 12 . 13 } do:[:index | | ii | ii := aCollege instanceAt: index. frame addInstance: ii. ii addFrame: frame ].
+		
+	aCollege addFrame:	 frame.
+	
 	" lecturers: { id description } "
 	
 	{	'יאיר אבן זוהר' . 'איל אייזנשטיין' . 'ניר אנדלמן' . 'מנחם אפטיין' . 'מריה ארטיצלב' . 'רועי אש' .
@@ -553,6 +679,10 @@ duration
 duration: anInteger
 	duration := anInteger ! !
 
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:07:35'!
+addFrame: anInteger
+	frames add: anInteger! !
+
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:08:13'!
 day
 	^day
@@ -566,13 +696,9 @@ day: anInteger
 duration
 	^module duration! !
 
-!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:22:22'!
-frame
-	^frame! !
-
-!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2024 11:22:17'!
-frame: anInteger
-	frame := anInteger ! !
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:07:18'!
+frames
+	^frames! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:08:16'!
 hour
@@ -589,6 +715,11 @@ id
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:08:21'!
 id: anInteger
 	id := anInteger ! !
+
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:08:15'!
+initialize
+
+	frames := Set new! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:10:00'!
 lecturer
