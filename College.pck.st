@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 28 October 2024 at 8:25:43 pm'!
+'From Cuis7.1 [latest update: #6676] on 1 November 2024 at 8:04:44 pm'!
 'Description '!
-!provides: 'College' 1 43!
+!provides: 'College' 1 67!
 SystemOrganization addCategory: #College!
 
 
@@ -46,7 +46,7 @@ Frame class
 
 !classDefinition: #Lecturer category: #College!
 CollegeTopic subclass: #Lecturer
-	instanceVariableNames: ''
+	instanceVariableNames: 'cordoned modules'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -56,7 +56,7 @@ Lecturer class
 
 !classDefinition: #Module category: #College!
 CollegeTopic subclass: #Module
-	instanceVariableNames: 'duration'
+	instanceVariableNames: 'duration lecturers'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -192,6 +192,215 @@ instanceAt: anInteger
 !College methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:51:20'!
 moduleAt: anInteger
 	^ modules at: anInteger ! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:38:42'!
+decoder
+
+	| aDictionary |
+
+	aDictionary := Dictionary new.
+	
+	aDictionary at: 'הרצאה' put: [:code | code  ].
+	aDictionary at: 'תרגול' put: [:code | '9{1}' format: { code } ].
+	aDictionary at: 'מעבדה' put: [:code | '9{1}' format: { code } ].
+
+	^aDictionary! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 19:33:46'!
+import: aPathString
+
+	self importLecturers: aPathString; importModules: aPathString ; importInstances: aPathString ; importFrames: aPathString ; importRepertoir: aPathString.
+	! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:44:52'!
+importFrames: aPathString
+
+	| aCSVFile aCSVReader aReadStream |
+	
+	aCSVFile := aPathString asDirectoryEntry // 'תבניות.csv'.
+	
+	aReadStream := aCSVFile readStream.
+
+	aCSVReader := NeoCSVReader on: aReadStream.
+
+	aCSVReader do:[:each |  | id |
+		
+		id := each at:1 :: asInteger.
+		
+		frames at: id 
+			ifPresent:[:frame | |instance|
+				instance := self instanceAt: (each at:2 :: asInteger).
+				frame addInstance: instance. instance addFrame: frame. ] 
+			ifAbsent:[ 		| aFrame instance |
+				instance := self instanceAt: (each at:2 :: asInteger).
+				aFrame := Frame new. 
+				aFrame id: id ; addInstance: instance ; description: ('{1} ש.{2}' format: {each at:4. each at: 3}).
+				instance addFrame: aFrame.
+				frames at: id put: aFrame ]
+		].
+! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:47:01'!
+importInstances: aPathString
+
+	| aCSVFile aCSVReader aReadStream decoder |
+	
+	decoder := self decoder.
+
+	aCSVFile := aPathString asDirectoryEntry // 'שיבוץ מלא.csv'.
+	
+	aReadStream := aCSVFile readStream.
+
+	aCSVReader := NeoCSVReader on: aReadStream.
+
+	aCSVReader do:[:each | | instance moduleId module |
+		
+		instance := ModuleInstance new.
+		
+		moduleId := ((decoder at: (each at:3)) value: (each at:2)) asInteger.
+		
+		module := self moduleAt: moduleId.
+		
+		instance id: (each at:1 :: asInteger) ; module: module.
+		
+		module addInstance: instance.
+		
+		self addInstance: instance ].
+! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 16:45:46'!
+importLecturers: aPathString
+
+	| aCSVFile aCSVReader aReadStream |
+	
+	aCSVFile := aPathString asDirectoryEntry // 'שעות חסומות.csv'.
+	
+	aReadStream := aCSVFile readStream.
+
+	aCSVReader := NeoCSVReader on: aReadStream.
+
+	aCSVReader next. "ignore the header".
+	
+	aCSVReader do:[:each |  | aLecturer |
+		
+		aLecturer := Lecturer new.
+		
+		aLecturer id: (each at:1) asInteger ; description: (each at:2).
+		
+		1 to:6 do:[:index | aLecturer onDay: index addCordonedInterval: (each at: 2+index) ].
+		
+		self addLecturer: aLecturer ].
+	
+! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 16:37:40'!
+importModules: aPathString
+
+	| aCSVFile decoder aCSVReader aReadStream |
+	
+	decoder := self decoder.
+	
+	aCSVFile := aPathString asDirectoryEntry // 'שעות הוראה.csv'.
+	
+	aReadStream := aCSVFile readStream.
+
+	aCSVReader := NeoCSVReader on: aReadStream.
+
+	aCSVReader do:[:each | | aModule | 
+
+		aModule := Module new.
+		aModule id: ((decoder at: (each at:2)) value: (each at:1)) asInteger.
+		aModule duration: (each at:3) asInteger.
+		aModule description: ('{1} {2}' format: { each at:4 . each at: 2 }).
+		
+		self addModule: aModule. ].
+! !
+
+!College methodsFor: 'importing' stamp: 'DF 11/1/2024 19:40:55'!
+importRepertoir: aPathString
+
+	| aCSVFile decoder aCSVReader aReadStream |
+	
+	decoder := self decoder.
+	
+	aCSVFile := aPathString asDirectoryEntry // 'רפרטואר מרצים.csv'.
+	
+	aReadStream := aCSVFile readStream.
+
+	aCSVReader := NeoCSVReader on: aReadStream.
+
+	aCSVReader next; next.
+	
+	aCSVReader do:[:each | | moduleId | 
+
+		moduleId := ((decoder at: (each at:2)) value: (each at:1)) asInteger.
+		
+		modules at: moduleId 
+			ifPresent:[ :aModule | 
+
+				5 to: each size do:[:index | 
+					(each at:index) = '1' ifTrue:[
+						| aLecturer |
+				
+						aLecturer := lecturers at: index - 3.
+						aLecturer addModule: aModule.
+						aModule addLecturer: aLecturer. ] ]		 ]
+			ifAbsent:[
+				Transcript show: ('Module {1} is undefined, skipping it.' format:{moduleId}) ; cr ] ]
+! !
+
+!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:51:33'!
+geniePlan
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on:''.
+
+	self writeGenieFramesTo: aWriteStream ; writeGenieInstancesTo: aWriteStream ; writeGenieLecturersTo: aWriteStream.
+	
+	^aWriteStream contents	! !
+
+!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:54:49'!
+writeGenieFramesTo: aWriteStream
+
+	aWriteStream nextPutAll: 'frame
+
+'.
+	frames do:[:each | 
+		aWriteStream nextPutAll: ('{1}' format:{each id}); nextPutAll: '	'.
+		each instances do:[:ii | aWriteStream nextPutAll: ('{1}' format:{ii id}) ] separatedBy:[ aWriteStream nextPutAll:', '].
+		aWriteStream nextPutAll: String lfString ].
+	
+	aWriteStream nextPutAll: String lfString
+! !
+
+!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:56:56'!
+writeGenieInstancesTo: aWriteStream
+
+	aWriteStream nextPutAll: 'module
+
+'.
+
+	instances do:[:each | aWriteStream nextPutAll: each genieTuple ; nextPutAll: String lfString ].
+
+	aWriteStream nextPutAll: String lfString.
+	
+! !
+
+!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:55:01'!
+writeGenieLecturersTo: aWriteStream
+
+	aWriteStream nextPutAll: 'lecturer
+
+'.
+
+	modules do:[:each | 
+		aWriteStream nextPutAll: ('{1} ' format:{each id}); nextPut: Character tab.
+		each lecturers do:[:ii | aWriteStream nextPutAll: ('{1}' format:{ii id}) ] separatedBy:[ aWriteStream nextPutAll:', '].
+		aWriteStream nextPutAll: String lfString ].
+
+	aWriteStream nextPutAll: String lfString	
+! !
 
 !College class methodsFor: 'as yet unclassified' stamp: 'DF 10/1/2024 18:53:04'!
 example
@@ -665,14 +874,10 @@ school
 	
 	! !
 
-!CollegeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:33:45'!
-open: aJsonSolution
+!CollegeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 14:50:12'!
+open: aCollege
 
-	| aCollege |
-	
-	aCollege := College school assign: aJsonSolution by: { #day -> 1 . #hour -> 2 . #lecturer -> 3 . #module -> 4 . #duration -> 5 } asDictionary. 
-
-PluggableCollegeGridModel college: aCollege.
+	PluggableCollegeGridModel college: aCollege.
 ! !
 
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
@@ -711,9 +916,73 @@ initialize
 
 	instances := OrderedCollection new! !
 
+!CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:36:11'!
+instances
+	^instances! !
+
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:36:14'!
 instancesDo: aBlock
 	^ instances do: aBlock! !
+
+!Lecturer methodsFor: 'initialization' stamp: 'DF 11/1/2024 18:55:33'!
+addModule: aModule
+
+	modules add: aModule! !
+
+!Lecturer methodsFor: 'initialization' stamp: 'DF 11/1/2024 18:55:20'!
+initialize
+
+	super initialize.
+	
+	modules := Set new.
+	
+	cordoned := Dictionary new.
+	
+	1 to: 6 do:[:index | cordoned at: index put: OrderedCollection new ].! !
+
+!Lecturer methodsFor: 'initialization' stamp: 'DF 11/1/2024 17:16:24'!
+onDay: aDay addCordonedInterval: aString
+
+	| rxmatcher jj ii result start end |
+
+	aString ifNil:[^self].
+		
+	rxmatcher := '[ ]*([0-9]+)-([0-9]+)[ ]*' asRegex.
+	
+	"break the string into individual ranges separated by + sign, iterate over each range and parse it using a second regex"
+
+	jj := 1.
+		
+	ii := aString indexOf: $+ startingAt: 1 ifAbsent: aString size + 1.
+	
+	[ii <= aString size] whileTrue:[
+	
+		result := rxmatcher matches: (aString copyFrom:jj to:ii - 1).	
+	
+		self assert: result = true.
+	
+		start := rxmatcher subexpression: 2 :: asInteger.
+		end := rxmatcher subexpression: 3 :: asInteger.
+	
+		cordoned at: aDay :: add: (start to: end) .
+	
+		jj := ii + 1.	
+		ii := aString indexOf: $+ startingAt: ii+1 ifAbsent: aString size + 1. ].
+
+	result := rxmatcher matches: (aString copyFrom:jj to:ii - 1).	
+	
+	self assert: result = true.
+	
+	start := rxmatcher subexpression: 2 :: asInteger.
+	end := rxmatcher subexpression: 3 :: asInteger.
+	
+	cordoned at: aDay :: add: (start to: end) .
+! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:55:05'!
+addLecturer: aLecturer
+
+	lecturers add: aLecturer ! !
 
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:49:30'!
 duration
@@ -722,6 +991,16 @@ duration
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:49:11'!
 duration: anInteger
 	duration := anInteger ! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:54:59'!
+initialize
+	super initialize .
+	
+	lecturers := Set new.! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:52:41'!
+lecturers
+	^lecturers ! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:07:35'!
 addFrame: anInteger
@@ -743,6 +1022,11 @@ duration
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:07:18'!
 frames
 	^frames! !
+
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:30:45'!
+genieTuple
+
+	^'{1}		{2}' format: {id . module id }! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:08:16'!
 hour
@@ -796,7 +1080,7 @@ college: aCollege
 	
 	! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:59:14'!
+!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 16:27:05'!
 initialize
 	
 	selection := 0.
@@ -810,12 +1094,13 @@ initialize
 	format :={ 
 	
 		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
+		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
 	
 		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
 
 		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ]  }.
 	
-	topics := { #lecturers . #frames . #rooms }! !
+	topics := { #lecturers . #modules . #frames . #rooms }! !
 
 !PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:40:18'!
 topic
