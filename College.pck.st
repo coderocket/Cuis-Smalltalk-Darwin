@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 1 November 2024 at 8:04:44 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 November 2024 at 7:18:20 pm'!
 'Description '!
-!provides: 'College' 1 67!
+!provides: 'College' 1 88!
 SystemOrganization addCategory: #College!
 
 
@@ -14,14 +14,14 @@ Object subclass: #College
 College class
 	instanceVariableNames: ''!
 
-!classDefinition: #CollegeBrowser category: #College!
-Object subclass: #CollegeBrowser
+!classDefinition: #CollegeTimeTableBrowser category: #College!
+Object subclass: #CollegeTimeTableBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
-!classDefinition: 'CollegeBrowser class' category: #College!
-CollegeBrowser class
+!classDefinition: 'CollegeTimeTableBrowser class' category: #College!
+CollegeTimeTableBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeTopic category: #College!
@@ -84,14 +84,64 @@ Object subclass: #ModuleInstance
 ModuleInstance class
 	instanceVariableNames: ''!
 
-!classDefinition: #PluggableCollegeGridModel category: #College!
-GridModel subclass: #PluggableCollegeGridModel
+!classDefinition: #CollegeTimeTableModel category: #College!
+GridModel subclass: #CollegeTimeTableModel
 	instanceVariableNames: 'selection college indices topic format instance topicIndex topics'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
-!classDefinition: 'PluggableCollegeGridModel class' category: #College!
-PluggableCollegeGridModel class
+!classDefinition: 'CollegeTimeTableModel class' category: #College!
+CollegeTimeTableModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeNavigator category: #College!
+NavigatorObjectModel subclass: #CollegeNavigator
+	instanceVariableNames: 'college'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeNavigator class' category: #College!
+CollegeNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #FrameNavigator category: #College!
+NavigatorObjectModel subclass: #FrameNavigator
+	instanceVariableNames: 'frame'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'FrameNavigator class' category: #College!
+FrameNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #InstanceNavigator category: #College!
+NavigatorObjectModel subclass: #InstanceNavigator
+	instanceVariableNames: 'instance'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'InstanceNavigator class' category: #College!
+InstanceNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerNavigator category: #College!
+NavigatorObjectModel subclass: #LecturerNavigator
+	instanceVariableNames: 'presentor lecturer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'LecturerNavigator class' category: #College!
+LecturerNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #ModuleNavigator category: #College!
+NavigatorObjectModel subclass: #ModuleNavigator
+	instanceVariableNames: 'module'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'ModuleNavigator class' category: #College!
+ModuleNavigator class
 	instanceVariableNames: ''!
 
 
@@ -193,6 +243,11 @@ instanceAt: anInteger
 moduleAt: anInteger
 	^ modules at: anInteger ! !
 
+!College methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:12:28'!
+navigator
+	
+	NavigatorObjectMorph new model: (CollegeNavigator new college: self ; yourself)  ; build; embeddedInMorphicWindowLabeled: ('{1} Navigator' format: {'College' }) :: openInWorld :: morphExtent: 640@480! !
+
 !College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:38:42'!
 decoder
 
@@ -212,7 +267,7 @@ import: aPathString
 	self importLecturers: aPathString; importModules: aPathString ; importInstances: aPathString ; importFrames: aPathString ; importRepertoir: aPathString.
 	! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:44:52'!
+!College methodsFor: 'importing' stamp: 'DF 11/2/2024 19:12:50'!
 importFrames: aPathString
 
 	| aCSVFile aCSVReader aReadStream |
@@ -234,7 +289,7 @@ importFrames: aPathString
 			ifAbsent:[ 		| aFrame instance |
 				instance := self instanceAt: (each at:2 :: asInteger).
 				aFrame := Frame new. 
-				aFrame id: id ; addInstance: instance ; description: ('{1} ש.{2}' format: {each at:4. each at: 3}).
+				aFrame id: id ; addInstance: instance ; description: (' {3}# {2}.ש {1}' format: {each at:4 :: reverse. each at: 3 . id} ).
 				instance addFrame: aFrame.
 				frames at: id put: aFrame ]
 		].
@@ -268,7 +323,7 @@ importInstances: aPathString
 		self addInstance: instance ].
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/1/2024 16:45:46'!
+!College methodsFor: 'importing' stamp: 'DF 11/2/2024 17:32:10'!
 importLecturers: aPathString
 
 	| aCSVFile aCSVReader aReadStream |
@@ -285,7 +340,7 @@ importLecturers: aPathString
 		
 		aLecturer := Lecturer new.
 		
-		aLecturer id: (each at:1) asInteger ; description: (each at:2).
+		aLecturer id: (each at:1) asInteger ; description: (each at:2) reverse.
 		
 		1 to:6 do:[:index | aLecturer onDay: index addCordonedInterval: (each at: 2+index) ].
 		
@@ -293,7 +348,7 @@ importLecturers: aPathString
 	
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/1/2024 16:37:40'!
+!College methodsFor: 'importing' stamp: 'DF 11/2/2024 18:09:12'!
 importModules: aPathString
 
 	| aCSVFile decoder aCSVReader aReadStream |
@@ -311,7 +366,7 @@ importModules: aPathString
 		aModule := Module new.
 		aModule id: ((decoder at: (each at:2)) value: (each at:1)) asInteger.
 		aModule duration: (each at:3) asInteger.
-		aModule description: ('{1} {2}' format: { each at:4 . each at: 2 }).
+		aModule description: ('{1} {2} {3}' format: { each at:1 . each at:2 :: reverse . each at: 4 :: reverse }).
 		
 		self addModule: aModule. ].
 ! !
@@ -349,16 +404,31 @@ importRepertoir: aPathString
 				Transcript show: ('Module {1} is undefined, skipping it.' format:{moduleId}) ; cr ] ]
 ! !
 
-!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:51:33'!
+!College methodsFor: 'exporting' stamp: 'DF 11/2/2024 17:59:45'!
 geniePlan
 
 	| aWriteStream |
 	
 	aWriteStream := WriteStream on:''.
 
-	self writeGenieFramesTo: aWriteStream ; writeGenieInstancesTo: aWriteStream ; writeGenieLecturersTo: aWriteStream.
+	self writeGenieFramesTo: aWriteStream ; writeGenieInstancesTo: aWriteStream ; writeGenieRepertoirTo: aWriteStream ; writeGenieCordonedHoursTo: aWriteStream.
 	
 	^aWriteStream contents	! !
+
+!College methodsFor: 'exporting' stamp: 'DF 11/2/2024 17:59:16'!
+writeGenieCordonedHoursTo: aWriteStream
+
+	aWriteStream nextPutAll: 'table timetable
+
+'.
+
+	lecturers do:[:each | 
+		each cordoned keysAndValuesDo:[:day :hours |
+		
+			hours do:[:interval | aWriteStream nextPutAll: ('{1} {2} 	{3} .. {4}' format:{each id . day . interval first . interval last }); nextPut: Character lf] ] ].
+
+	aWriteStream nextPut: Character lf.
+! !
 
 !College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:54:49'!
 writeGenieFramesTo: aWriteStream
@@ -387,8 +457,8 @@ writeGenieInstancesTo: aWriteStream
 	
 ! !
 
-!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:55:01'!
-writeGenieLecturersTo: aWriteStream
+!College methodsFor: 'exporting' stamp: 'DF 11/2/2024 17:56:07'!
+writeGenieRepertoirTo: aWriteStream
 
 	aWriteStream nextPutAll: 'lecturer
 
@@ -874,10 +944,24 @@ school
 	
 	! !
 
-!CollegeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 14:50:12'!
+!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 13:21:48'!
 open: aCollege
 
-	PluggableCollegeGridModel college: aCollege.
+	| aCollegeModel topics items aGridMorph |
+	
+	aCollegeModel := CollegeTimeTableModel new.
+	
+	aCollegeModel college: aCollege.
+	
+	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topic indexSetter: #topic:.
+	
+	items := PluggableListMorph withModel: aCollegeModel listGetter: #items indexGetter: #selection indexSetter: #select:.
+
+	aGridMorph := GridMorph new model: aCollegeModel. 
+
+	(topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
+	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('Time Table') :: openInWorld 
+
 ! !
 
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
@@ -924,10 +1008,19 @@ instances
 instancesDo: aBlock
 	^ instances do: aBlock! !
 
+!Frame methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:06:52'!
+navigator
+
+	NavigatorObjectMorph new model: (FrameNavigator new frame: self ; yourself) ;  build ; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Frame' . self description}) :: openInWorld :: morphExtent: 640@480! !
+
 !Lecturer methodsFor: 'initialization' stamp: 'DF 11/1/2024 18:55:33'!
 addModule: aModule
 
 	modules add: aModule! !
+
+!Lecturer methodsFor: 'initialization' stamp: 'DF 11/2/2024 15:01:25'!
+cordoned
+	^cordoned! !
 
 !Lecturer methodsFor: 'initialization' stamp: 'DF 11/1/2024 18:55:20'!
 initialize
@@ -979,6 +1072,15 @@ onDay: aDay addCordonedInterval: aString
 	cordoned at: aDay :: add: (start to: end) .
 ! !
 
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:02:14'!
+modules
+	^modules! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:03:07'!
+navigator
+
+	NavigatorObjectMorph new model: (LecturerNavigator new lecturer: self ; yourself) ;  build ; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Lecturer' . self description}) :: openInWorld :: morphExtent: 640@480! !
+
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:55:05'!
 addLecturer: aLecturer
 
@@ -1002,6 +1104,11 @@ initialize
 lecturers
 	^lecturers ! !
 
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:03:33'!
+navigator
+	
+	NavigatorObjectMorph new model: (ModuleNavigator new module: self ; yourself)  ; build; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Module' . self description}) :: openInWorld :: morphExtent: 640@480! !
+
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:07:35'!
 addFrame: anInteger
 	frames add: anInteger! !
@@ -1014,6 +1121,10 @@ day
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:07:51'!
 day: anInteger
 	day := anInteger ! !
+
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:00:53'!
+description
+	^'{1} #{2}' format:{ module description . id }! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:38:42'!
 duration
@@ -1065,6 +1176,11 @@ module
 module: aModule
 	module := aModule! !
 
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:01:51'!
+navigator
+	
+	NavigatorObjectMorph new model: (InstanceNavigator new instance: self ; yourself)  ; build; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Instance' . self description}) :: openInWorld :: morphExtent: 640@480! !
+
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:09:25'!
 room
 	^room! !
@@ -1073,14 +1189,14 @@ room
 room: aRoom
 	room := aRoom! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:20:47'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:20:47'!
 college: aCollege
 
 	college := aCollege.
 	
 	! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 16:27:05'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 16:27:05'!
 initialize
 	
 	selection := 0.
@@ -1102,18 +1218,18 @@ initialize
 	
 	topics := { #lecturers . #modules . #frames . #rooms }! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:40:18'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:40:18'!
 topic
 	^topic! !
 
-!PluggableCollegeGridModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:42:22'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:42:22'!
 topic: anInteger
 
 	topic := anInteger.
 	
 	self changed: #items! !
 
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:41:16'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:41:16'!
 items
 
 	| t keys |
@@ -1128,7 +1244,7 @@ items
 	
 	^keys collect:[:key | t at: key :: description ]! !
 
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:43:21'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:43:21'!
 select: anIndex
 
 	| index keys t |
@@ -1151,15 +1267,15 @@ select: anIndex
 	
 ! !
 
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 9/23/2024 16:48:35'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 9/23/2024 16:48:35'!
 selection
 	^selection ! !
 
-!PluggableCollegeGridModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:38:55'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:38:55'!
 topics
 	^ topics ! !
 
-!PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 10/28/2024 18:53:40'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 10/28/2024 18:53:40'!
 at: row at: col
 
 	| result |
@@ -1172,30 +1288,206 @@ at: row at: col
 
 	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x,y].! !
 
-!PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nCols
 	^6! !
 
-!PluggableCollegeGridModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nRows
 	^24! !
 
-!PluggableCollegeGridModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:35:25'!
-college: aCollege 
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:08:59'!
+attributeContents
 
-	| aCollegeModel topics items aGridMorph |
+	index = 0 ifTrue:[^{}].
 	
-	aCollegeModel := self new.
-	
-	aCollegeModel college: aCollege.
-	
-	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topic indexSetter: #topic:.
-	
-	items := PluggableListMorph withModel: aCollegeModel listGetter: #items indexGetter: #selection indexSetter: #select:.
+	index = 1 ifTrue:[ 	^college modules asOrderedCollection collect:[:each | each description] :: sort ].
 
-	aGridMorph := GridMorph new model: aCollegeModel. 
+	index = 2 ifTrue:[ ^college lecturers asOrderedCollection collect:[:each | each description] :: sort ].
 
-	(topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
-	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('Time Table') :: openInWorld 
+	index = 3 ifTrue:[ 	^college frames asOrderedCollection collect:[:each | each description] :: sort ].
+	
+	index = 4 ifTrue:[ 	^college rooms asOrderedCollection collect:[:each | each description] :: sort ].
+	
+! !
+
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:09:33'!
+attributes
+	^ {'קורסים' . 'מרצים' . 'תבניות' . 'חדרים' } collect:[:each | each reverse ]! !
+
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:08:01'!
+college: aCollege
+	college := aCollege.! !
+
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:10:13'!
+selectValue: anIndex
+
+	index = 0  ifTrue:[^self].
+	 
+	index = 1 ifTrue:[ | modules |
+	
+		modules := college modules asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		(modules at: anIndex) navigator.
+		
+		^self 	].
+	
+	index = 2 ifTrue:[ | lecturers |
+	
+		lecturers := college lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		(lecturers at: anIndex) navigator.
+		
+		^self 	].	
+
+	index = 3 ifTrue:[ | frames |
+	
+		frames := college frames asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		(frames at: anIndex) navigator.
+		
+		^self 	].	
+! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:05:13'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	index = 1 ifTrue:[^ frame instances asOrderedCollection collect:[:each | each description ] :: sort ]! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:04:44'!
+attributes
+	^ { 'שיבוצים' } collect:[:each | each reverse ]! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:04:22'!
+frame: aFrame
+	frame := aFrame! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:15:43'!
+selectValue: anIndex
+
+	| instances |
+	
+	index = 1  ifFalse:[^self].
+	
+	instances := frame instances asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(instances at: anIndex) navigator! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:56'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	index =  1 ifTrue:[^{ instance module description } ].
+	
+	index = 2 ifTrue:[^ instance frames asOrderedCollection collect:[:each | each description ] :: sort ]! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:02'!
+attributes
+	^ { 'קורס' . 'תבניות' } collect:[:each | each reverse ]! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:52:50'!
+instance: aModuleInstance
+	instance := aModuleInstance ! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:06:13'!
+selectValue: anIndex
+
+	| frames |
+	
+	index = 2  ifFalse:[^self].
+	
+	frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(frames at: anIndex) navigator! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:12:39'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	^(presentor at: index) value: lecturer! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:37:36'!
+attributes
+	^ {'שם מלא' . 'שעות חסומות' . 'קורסים' } collect:[:each | each reverse ]! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:29:08'!
+initialize
+
+	super initialize.
+	
+	presentor := Dictionary new.
+	
+	presentor at:1 put: [:obj | {obj description} ].
+	
+	presentor at: 2 put: [ :obj | | result |
+		
+		result := OrderedCollection new.
+		
+		obj cordoned keysAndValuesDo: [:day :hours |
+			hours notEmpty ifTrue:[ | aWriteStream |
+				aWriteStream := WriteStream on: ''.
+				aWriteStream nextPutAll: ('{1} ' format: {day}).
+				hours do:[:interval | aWriteStream nextPutAll: ('{1} .. {2}' format:{ interval first . interval last })] separatedBy:[ aWriteStream nextPutAll: ', '].
+				result add: aWriteStream contents ] ].
+		result
+	].
+	
+	presentor at:3 put: [ :obj | obj modules asOrderedCollection collect:[:each | each description ] :: sort ].! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:05:49'!
+lecturer: aLecturer
+	lecturer := aLecturer! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 16:53:54'!
+selectValue: anIndex
+
+	| modules |
+	
+	index = 3  ifFalse:[^self].
+	
+	modules := lecturer modules asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(modules at: anIndex) navigator! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:58:09'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	index = 1 ifTrue:[ 	^{ module description} ].
+
+	index = 2 ifTrue:[ 	^{ '{1}' format:{ module duration} } ].
+	
+	index = 3 ifTrue:[ ^ module lecturers asOrderedCollection collect:[:each | each description] :: sort ].
+	
+	index = 4 ifTrue:[ ^ module instances asOrderedCollection collect:[:each | each description] :: sort ]	! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:08:07'!
+attributes
+	^ {'תיאור' . 'שעות' . 'מרצים' . 'שיבוצים' } collect:[:each | each reverse ]! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:41:32'!
+module: aModule
+
+	module := aModule! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:59:05'!
+selectValue: anIndex
+	
+	index = 3  ifTrue: [ 	| lecturers |
+	
+	lecturers := module lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(lecturers at: anIndex) navigator ].
+
+	index = 4  ifTrue: [ 	| instances |
+	
+	instances := module instances asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(instances at: anIndex) navigator ].
 
 ! !
