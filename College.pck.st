@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 2 November 2024 at 7:18:20 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 November 2024 at 8:31:24 pm'!
 'Description '!
-!provides: 'College' 1 88!
+!provides: 'College' 1 89!
 SystemOrganization addCategory: #College!
 
 
@@ -444,14 +444,14 @@ writeGenieFramesTo: aWriteStream
 	aWriteStream nextPutAll: String lfString
 ! !
 
-!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:56:56'!
+!College methodsFor: 'exporting' stamp: 'DF 11/2/2024 20:28:31'!
 writeGenieInstancesTo: aWriteStream
 
 	aWriteStream nextPutAll: 'module
 
 '.
 
-	instances do:[:each | aWriteStream nextPutAll: each genieTuple ; nextPutAll: String lfString ].
+	instances asOrderedCollection sort:[:x :y | x id <= y id] :: do:[:each | aWriteStream nextPutAll: each genieTuple ; nextPutAll: String lfString ].
 
 	aWriteStream nextPutAll: String lfString.
 	
