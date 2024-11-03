@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 2 November 2024 at 8:31:24 pm'!
+'From Cuis7.1 [latest update: #6676] on 3 November 2024 at 6:19:50 pm'!
 'Description '!
-!provides: 'College' 1 89!
+!provides: 'College' 1 93!
 SystemOrganization addCategory: #College!
 
 
@@ -348,10 +348,10 @@ importLecturers: aPathString
 	
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/2/2024 18:09:12'!
+!College methodsFor: 'importing' stamp: 'DF 11/3/2024 17:44:30'!
 importModules: aPathString
 
-	| aCSVFile decoder aCSVReader aReadStream |
+	| aCSVFile field דוק גוס ךשמ רואית decoder aCSVReader aReadStream |
 	
 	decoder := self decoder.
 	
@@ -361,17 +361,31 @@ importModules: aPathString
 
 	aCSVReader := NeoCSVReader on: aReadStream.
 
+	"first row holds field names for subsequent tuples"
+	
+	field := Dictionary new.
+	
+	aCSVReader next withIndexDo:[:name :ii | field at: name put: ii ].
+	
+	דוק := field at: 'קוד'.
+	
+	גוס := field at: 'סוג'.
+	
+	ךשמ := field at: 'משך'.
+	
+	רואית := field at: 'תיאור'.
+	
 	aCSVReader do:[:each | | aModule | 
 
 		aModule := Module new.
-		aModule id: ((decoder at: (each at:2)) value: (each at:1)) asInteger.
-		aModule duration: (each at:3) asInteger.
-		aModule description: ('{1} {2} {3}' format: { each at:1 . each at:2 :: reverse . each at: 4 :: reverse }).
+		aModule id: ((decoder at: (each at:גוס)) value: (each at:דוק)) asInteger.
+		aModule duration: (each at:ךשמ) asInteger.
+		aModule description: ('{1} {2} {3}' format: { each at:דוק . each at:גוס :: reverse . each at: רואית :: reverse }).
 		
 		self addModule: aModule. ].
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/1/2024 19:40:55'!
+!College methodsFor: 'importing' stamp: 'DF 11/3/2024 09:41:50'!
 importRepertoir: aPathString
 
 	| aCSVFile decoder aCSVReader aReadStream |
@@ -389,11 +403,11 @@ importRepertoir: aPathString
 	aCSVReader do:[:each | | moduleId | 
 
 		moduleId := ((decoder at: (each at:2)) value: (each at:1)) asInteger.
-		
+				
 		modules at: moduleId 
 			ifPresent:[ :aModule | 
 
-				5 to: each size do:[:index | 
+				4 to: each size do:[:index | 
 					(each at:index) = '1' ifTrue:[
 						| aLecturer |
 				
@@ -1296,7 +1310,7 @@ nCols
 nRows
 	^24! !
 
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:08:59'!
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:15'!
 attributeContents
 
 	index = 0 ifTrue:[^{}].
@@ -1305,7 +1319,7 @@ attributeContents
 
 	index = 2 ifTrue:[ ^college lecturers asOrderedCollection collect:[:each | each description] :: sort ].
 
-	index = 3 ifTrue:[ 	^college frames asOrderedCollection collect:[:each | each description] :: sort ].
+	index = 3 ifTrue:[ 	^college frames asOrderedCollection sort:[:x :y | x id <= y id] :: collect:[:each | each description]  ].
 	
 	index = 4 ifTrue:[ 	^college rooms asOrderedCollection collect:[:each | each description] :: sort ].
 	
@@ -1319,7 +1333,7 @@ attributes
 college: aCollege
 	college := aCollege.! !
 
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:10:13'!
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:43'!
 selectValue: anIndex
 
 	index = 0  ifTrue:[^self].
@@ -1342,7 +1356,7 @@ selectValue: anIndex
 
 	index = 3 ifTrue:[ | frames |
 	
-		frames := college frames asOrderedCollection sort:[:x :y | x description <= y description ].
+		frames := college frames asOrderedCollection sort:[:x :y | x id <= y id ].
 	
 		(frames at: anIndex) navigator.
 		
@@ -1392,16 +1406,22 @@ attributes
 instance: aModuleInstance
 	instance := aModuleInstance ! !
 
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:06:13'!
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 17:53:48'!
 selectValue: anIndex
 
 	| frames |
 	
-	index = 2  ifFalse:[^self].
+	index = 1 ifTrue:[
+		
+		^instance module navigator].
 	
-	frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
+	index = 2  ifTrue:[
 	
-	(frames at: anIndex) navigator! !
+		frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		^(frames at: anIndex) navigator ].
+	
+	! !
 
 !LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:12:39'!
 attributeContents
