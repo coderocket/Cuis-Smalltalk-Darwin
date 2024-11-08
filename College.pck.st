@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 3 November 2024 at 6:19:50 pm'!
+'From Cuis7.1 [latest update: #6676] on 7 November 2024 at 10:57:51 pm'!
 'Description '!
-!provides: 'College' 1 93!
+!provides: 'College' 1 97!
 SystemOrganization addCategory: #College!
 
 
@@ -261,22 +261,24 @@ decoder
 
 	^aDictionary! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/1/2024 19:33:46'!
+!College methodsFor: 'importing' stamp: 'DF 11/7/2024 21:58:58'!
 import: aPathString
 
-	self importLecturers: aPathString; importModules: aPathString ; importInstances: aPathString ; importFrames: aPathString ; importRepertoir: aPathString.
+	self importLecturers: aPathString; importRepertoir: aPathString ; importInstances: aPathString ; importFrames: aPathString .
 	! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/2/2024 19:12:50'!
+!College methodsFor: 'importing' stamp: 'DF 11/7/2024 22:40:23'!
 importFrames: aPathString
 
 	| aCSVFile aCSVReader aReadStream |
 	
-	aCSVFile := aPathString asDirectoryEntry // 'תבניות.csv'.
+	aCSVFile := aPathString asDirectoryEntry // 'תוכנית לימודים בית הספר להנדסת תוכנה.תבניות.csv'.
 	
 	aReadStream := aCSVFile readStream.
 
 	aCSVReader := NeoCSVReader on: aReadStream.
+	
+	aCSVReader next.
 
 	aCSVReader do:[:each |  | id |
 		
@@ -295,18 +297,20 @@ importFrames: aPathString
 		].
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:47:01'!
+!College methodsFor: 'importing' stamp: 'DF 11/7/2024 22:39:35'!
 importInstances: aPathString
 
 	| aCSVFile aCSVReader aReadStream decoder |
 	
 	decoder := self decoder.
 
-	aCSVFile := aPathString asDirectoryEntry // 'שיבוץ מלא.csv'.
+	aCSVFile := aPathString asDirectoryEntry // 'תוכנית לימודים בית הספר להנדסת תוכנה.שיבוץ.csv'.
 	
 	aReadStream := aCSVFile readStream.
 
 	aCSVReader := NeoCSVReader on: aReadStream.
+	
+	aCSVReader next.
 
 	aCSVReader do:[:each | | instance moduleId module |
 		
@@ -323,12 +327,12 @@ importInstances: aPathString
 		self addInstance: instance ].
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/2/2024 17:32:10'!
+!College methodsFor: 'importing' stamp: 'DF 11/7/2024 21:57:13'!
 importLecturers: aPathString
 
 	| aCSVFile aCSVReader aReadStream |
 	
-	aCSVFile := aPathString asDirectoryEntry // 'שעות חסומות.csv'.
+	aCSVFile := aPathString asDirectoryEntry // 'תוכנית לימודים בית הספר להנדסת תוכנה.שעות חסומות.csv'.
 	
 	aReadStream := aCSVFile readStream.
 
@@ -348,51 +352,14 @@ importLecturers: aPathString
 	
 ! !
 
-!College methodsFor: 'importing' stamp: 'DF 11/3/2024 17:44:30'!
-importModules: aPathString
-
-	| aCSVFile field דוק גוס ךשמ רואית decoder aCSVReader aReadStream |
-	
-	decoder := self decoder.
-	
-	aCSVFile := aPathString asDirectoryEntry // 'שעות הוראה.csv'.
-	
-	aReadStream := aCSVFile readStream.
-
-	aCSVReader := NeoCSVReader on: aReadStream.
-
-	"first row holds field names for subsequent tuples"
-	
-	field := Dictionary new.
-	
-	aCSVReader next withIndexDo:[:name :ii | field at: name put: ii ].
-	
-	דוק := field at: 'קוד'.
-	
-	גוס := field at: 'סוג'.
-	
-	ךשמ := field at: 'משך'.
-	
-	רואית := field at: 'תיאור'.
-	
-	aCSVReader do:[:each | | aModule | 
-
-		aModule := Module new.
-		aModule id: ((decoder at: (each at:גוס)) value: (each at:דוק)) asInteger.
-		aModule duration: (each at:ךשמ) asInteger.
-		aModule description: ('{1} {2} {3}' format: { each at:דוק . each at:גוס :: reverse . each at: רואית :: reverse }).
-		
-		self addModule: aModule. ].
-! !
-
-!College methodsFor: 'importing' stamp: 'DF 11/3/2024 09:41:50'!
+!College methodsFor: 'importing' stamp: 'DF 11/7/2024 22:43:55'!
 importRepertoir: aPathString
 
 	| aCSVFile decoder aCSVReader aReadStream |
 	
 	decoder := self decoder.
 	
-	aCSVFile := aPathString asDirectoryEntry // 'רפרטואר מרצים.csv'.
+	aCSVFile := aPathString asDirectoryEntry // 'תוכנית לימודים בית הספר להנדסת תוכנה.רפרטואר.csv'.
 	
 	aReadStream := aCSVFile readStream.
 
@@ -400,22 +367,26 @@ importRepertoir: aPathString
 
 	aCSVReader next; next.
 	
-	aCSVReader do:[:each | | moduleId | 
+	aCSVReader do:[:each | | aModule moduleId topic type duration descr  | 
 
-		moduleId := ((decoder at: (each at:2)) value: (each at:1)) asInteger.
-				
-		modules at: moduleId 
-			ifPresent:[ :aModule | 
+		topic := each at:1.
+		type := each at:2.
+		duration := each at:3 :: asInteger.		
+		descr := each at:4.
+		
+		moduleId := ((decoder at: type) value: topic) asInteger.
 
-				4 to: each size do:[:index | 
+		aModule := Module new id: moduleId; 				duration: duration; description: descr; yourself.
+		
+		modules at: moduleId put: aModule.
+		 
+		5 to: each size do:[:index | 
 					(each at:index) = '1' ifTrue:[
 						| aLecturer |
 				
-						aLecturer := lecturers at: index - 3.
+						aLecturer := lecturers at: index - 4.
 						aLecturer addModule: aModule.
-						aModule addLecturer: aLecturer. ] ]		 ]
-			ifAbsent:[
-				Transcript show: ('Module {1} is undefined, skipping it.' format:{moduleId}) ; cr ] ]
+						aModule addLecturer: aLecturer ] ]		 ]
 ! !
 
 !College methodsFor: 'exporting' stamp: 'DF 11/2/2024 17:59:45'!
@@ -1100,6 +1071,31 @@ addLecturer: aLecturer
 
 	lecturers add: aLecturer ! !
 
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:57:28'!
+decodeNumber
+
+	| aString |
+	
+	aString :=  id asString.
+	
+	^$9 = (aString at:1) ifTrue:[aString allButFirst] ifFalse:[aString].
+	! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:57:34'!
+decodeType
+
+	| aString |
+	
+	aString := id asString.
+	
+	^$9 = (aString at:1) ifTrue:['תרגול'] ifFalse:['הרצאה'].! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:55:34'!
+description
+
+	^ '{1} {2} {3}' format: { self decodeNumber  . description reverse . self decodeType reverse }.
+! !
+
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:49:30'!
 duration
 	^duration! !
@@ -1473,12 +1469,12 @@ selectValue: anIndex
 	
 	(modules at: anIndex) navigator! !
 
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:58:09'!
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:56:05'!
 attributeContents
 
 	index = 0 ifTrue:[^{}].
 	
-	index = 1 ifTrue:[ 	^{ module description} ].
+	index = 1 ifTrue:[ 	^{ module description } ].
 
 	index = 2 ifTrue:[ 	^{ '{1}' format:{ module duration} } ].
 	
@@ -1489,6 +1485,25 @@ attributeContents
 !ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:08:07'!
 attributes
 	^ {'תיאור' . 'שעות' . 'מרצים' . 'שיבוצים' } collect:[:each | each reverse ]! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:52:18'!
+decodeNumber
+
+	| aString |
+	
+	aString := module id asString.
+	
+	^'9' = (aString at:1) ifTrue:[aString allButFirst] ifFalse:[aString].
+	! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:51:43'!
+decodeType
+
+	| aString |
+	
+	aString := module id asString.
+	
+	^'9' = (aString at:1) ifTrue:['תרגול'] ifFalse:['הרצאה'].! !
 
 !ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:41:32'!
 module: aModule
