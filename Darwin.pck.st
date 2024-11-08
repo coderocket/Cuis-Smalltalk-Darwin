@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 28 October 2024 at 3:28:57 pm'!
+'From Cuis7.1 [latest update: #6676] on 8 November 2024 at 1:35:44 pm'!
 'Description '!
-!provides: 'Darwin' 1 240!
+!provides: 'Darwin' 1 243!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -10,7 +10,7 @@ SystemOrganization addCategory: #Darwin!
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration solutions selectedSolution'
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration solutions selectedSolution scanner'
 	classVariableNames: 'CommentRegex InitialProgramTemplate KeywordsRegex Programs SectionHeadersRegex'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -86,6 +86,16 @@ SystemWindow subclass: #GenieSolutionBrowser
 	category: 'Darwin'!
 !classDefinition: 'GenieSolutionBrowser class' category: #Darwin!
 GenieSolutionBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #GenieScanner category: #Darwin!
+XrayScanner subclass: #GenieScanner
+	instanceVariableNames: 'workingDirectory'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'GenieScanner class' category: #Darwin!
+GenieScanner class
 	instanceVariableNames: ''!
 
 
@@ -193,7 +203,7 @@ generate
 	
 	codeGenerator generateCode: ast programName: programName ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:42:37'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:05:40'!
 initialize
 
 	consoleOutput := ''.
@@ -201,12 +211,16 @@ initialize
 	programText := ''.
 	
 	configuration := 'openmp'. "release"
-	
-	parser := Language parserFor: 'Genie'.
 
-	ast := nil.	
-	
 	codeGenerator := GenieCodeGenerator new.
+	
+	scanner := GenieScanner new.
+
+	scanner workingDirectory: codeGenerator codePath.
+		
+	parser := Language parserFor: 'Genie' withScanner: scanner.
+
+	ast := nil.		
 
 	programIndex := 0.
 
@@ -472,7 +486,7 @@ selection: anInterval
 	
 	self changed: #selectProgramText! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:21:40'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:06:18'!
 setWorkingDirectory
 
 	StringRequestMorph 
@@ -481,7 +495,8 @@ setWorkingDirectory
 		verifying: [:aString |
 			aString notEmpty and:[ aString asDirectoryEntry isDirectory] ] 
 		do: [ :aString | 
-			codeGenerator codePath: aString asDirectoryEntry ]! !
+			codeGenerator codePath: aString asDirectoryEntry.
+			scanner workingDirectory: codeGenerator codePath ]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:27:55'!
 solutionAt: anIndex
@@ -957,7 +972,7 @@ compileFunctionDeclaration: aString type: aCollection
 	
 	^aStream contents ! !
 
-!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/27/2024 12:58:11'!
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 11/8/2024 13:35:39'!
 compileFunctionType: aCollection location: aToken
 
 	| types |
@@ -1481,4 +1496,24 @@ update: aSymbol
 	
 	program triggerEvent: #vScrollBarValue: with: program scrollerOffset y / program vLeftoverScrollRange.
 	! !
+
+!GenieScanner methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:34:59'!
+load: aString
+
+	| result matcher |
+	
+	matcher := 'load +([[:alpha:][:digit:].]+)' asRegex.
+	
+	result := matcher matches: aString.
+	
+	self assert: result.
+	
+	streams addFirst: (workingDirectory // (matcher subexpression: 2) asString) readStream.
+	
+	^self nextTerminal ! !
+
+!GenieScanner methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 12:48:14'!
+workingDirectory: aString
+	
+	workingDirectory := aString asDirectoryEntry.! !
 GenieBrowserModel initialize!
