@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 9 November 2024 at 8:40:45 pm'!
+'From Cuis7.1 [latest update: #6676] on 9 November 2024 at 9:09:56 pm'!
 'Description '!
-!provides: 'Darwin' 1 249!
+!provides: 'Darwin' 1 250!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -125,7 +125,7 @@ build
 	succ ifTrue:[
 		self make ].! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/9/2024 20:40:06'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/9/2024 21:09:53'!
 compile
 
 	| result |
@@ -143,31 +143,11 @@ compile
 		programText removeAttributes: { TextColor red . TextBackgroundColor yellow } from: 1 to: programText size.
 		outcome := parser parse: programText.
 		outcome second 
-			ifNotEmpty:[ | fileEntry terminal |
+			ifNotEmpty:[ 
 				
 				consoleOutput := consoleOutput, ' Syntax error.'. 
 
-				terminal := outcome second first.
-								
-				fileEntry := scanner fileEntryFor: parser terminalIndex.
-							
-				fileEntry 
-					ifNil:[				
-						programText addAttribute: TextColor red from: terminal start + 1 to: programText size. selection := 	terminal start + 1 to: terminal start ]
-					ifNotNil:[ | text model morph window |
-						text := fileEntry asFileEntry fileContents asText.
-						text addAttribute: TextColor red from: terminal start + 1 to: text size.
-						model := TextModel new.
-						window := SystemWindow new.
-						window model: model.
-						window setLabel: ('Text Editor: {1}' format:{ fileEntry}).
-						morph := (TextModelMorph withModel: model) 			wrapFlag: true.
-						window layoutMorph addMorph: morph proportionalHeight: 1.
-						window openInWorld.
-						model actualContents: text.
-						morph selectFrom: terminal start+1 to: terminal start.
-						window forceSaveContentsTo: fileEntry asFileEntry.
-					] ].
+				self highlightErrorAt: outcome second first start].
 		outcome second 
 			ifEmpty:[
 				ast := outcome first second.
@@ -179,12 +159,12 @@ Compiling ...
 	]
 	on: XraySyntaxError do:[:anXraySyntaxError | 
 	
-		selection := 	anXraySyntaxError position + 1 to: anXraySyntaxError position.
-		
-		programText addAttribute: TextColor red from: anXraySyntaxError position + 1 to: programText size ]
+		self highlightErrorAt: anXraySyntaxError position. ]
 	
 	on: GenieException do:[:aGenieException |
-		
+
+		self halt.
+				
 		selection := aGenieException start to: aGenieException end. 
 		
 		programText addAttribute: TextColor red from: aGenieException start to: aGenieException end.
@@ -203,6 +183,25 @@ console
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/13/2024 18:51:47'!
 consoleEnd
 	^ consoleOutput size +1 to: consoleOutput size ! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/9/2024 21:08:47'!
+editFileEntry: aFileEntry markerAt: anInteger
+
+	| text model morph window |
+						
+	text := aFileEntry fileContents asText.
+	
+	text addAttribute: TextColor red from: anInteger + 1 to: text size.
+	model := TextModel new.
+	window := SystemWindow new.
+	window model: model.
+	window setLabel: ('Text Editor: {1}' format:{ aFileEntry pathName }).
+	morph := (TextModelMorph withModel: model) 			wrapFlag: true.
+	window layoutMorph addMorph: morph proportionalHeight: 1.
+	window openInWorld.
+	model actualContents: text.
+	morph selectFrom: anInteger+1 to: anInteger.
+	window forceSaveContentsTo: aFileEntry! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:29:16'!
 fileOutProgram
@@ -226,6 +225,20 @@ generate
 	self assert: ast notNil.
 	
 	codeGenerator generateCode: ast programName: programName ! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/9/2024 21:06:37'!
+highlightErrorAt: anInteger
+
+	| fileEntry |
+	
+	fileEntry := scanner fileEntryFor: parser terminalIndex.
+							
+	fileEntry 
+		ifNil:[				
+			programText addAttribute: TextColor red from: anInteger + 1 to: programText size. selection := 	anInteger + 1 to: anInteger ]
+		ifNotNil:[ 
+			self editFileEntry: fileEntry asFileEntry markerAt: anInteger 					].
+! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:05:40'!
 initialize
