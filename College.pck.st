@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 7 November 2024 at 10:57:51 pm'!
+'From Cuis7.1 [latest update: #6676] on 8 November 2024 at 3:44:47 pm'!
 'Description '!
-!provides: 'College' 1 97!
+!provides: 'College' 1 98!
 SystemOrganization addCategory: #College!
 
 
@@ -389,6 +389,15 @@ importRepertoir: aPathString
 						aModule addLecturer: aLecturer ] ]		 ]
 ! !
 
+!College methodsFor: 'exporting' stamp: 'DF 11/8/2024 15:44:35'!
+fileOutGeniePlanTo: aFileEntry
+
+	| aWriteStream |
+	
+	aWriteStream := aFileEntry writeStream.
+	
+	[self writeGeniePlanTo: aWriteStream] ensure: [ 	aWriteStream close ].! !
+
 !College methodsFor: 'exporting' stamp: 'DF 11/2/2024 17:59:45'!
 geniePlan
 
@@ -439,6 +448,13 @@ writeGenieInstancesTo: aWriteStream
 	instances asOrderedCollection sort:[:x :y | x id <= y id] :: do:[:each | aWriteStream nextPutAll: each genieTuple ; nextPutAll: String lfString ].
 
 	aWriteStream nextPutAll: String lfString.
+	
+! !
+
+!College methodsFor: 'exporting' stamp: 'DF 11/8/2024 15:42:19'!
+writeGeniePlanTo: aWriteStream
+
+	self writeGenieFramesTo: aWriteStream ; writeGenieInstancesTo: aWriteStream ; writeGenieRepertoirTo: aWriteStream ; writeGenieCordonedHoursTo: aWriteStream.
 	
 ! !
 
