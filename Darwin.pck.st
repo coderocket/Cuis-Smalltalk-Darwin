@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 8 November 2024 at 1:35:44 pm'!
+'From Cuis7.1 [latest update: #6676] on 9 November 2024 at 8:40:45 pm'!
 'Description '!
-!provides: 'Darwin' 1 243!
+!provides: 'Darwin' 1 249!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -125,17 +125,17 @@ build
 	succ ifTrue:[
 		self make ].! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 14:15:44'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/9/2024 20:40:06'!
 compile
 
 	| result |
 	
-	result := false.
+	result := false. 
 	
 	programIndex = 0 ifTrue:[consoleOutput := 'No program selected.'. self changed: #console. ^ result].
 	
 	[ | outcome |
-		
+
 		selection := 0 to: 0.
 		
 		consoleOutput := 'Compilation failed.'.
@@ -143,7 +143,31 @@ compile
 		programText removeAttributes: { TextColor red . TextBackgroundColor yellow } from: 1 to: programText size.
 		outcome := parser parse: programText.
 		outcome second 
-			ifNotEmpty:[programText addAttribute: TextColor red from: outcome second first start + 1 to: programText size ].
+			ifNotEmpty:[ | fileEntry terminal |
+				
+				consoleOutput := consoleOutput, ' Syntax error.'. 
+
+				terminal := outcome second first.
+								
+				fileEntry := scanner fileEntryFor: parser terminalIndex.
+							
+				fileEntry 
+					ifNil:[				
+						programText addAttribute: TextColor red from: terminal start + 1 to: programText size. selection := 	terminal start + 1 to: terminal start ]
+					ifNotNil:[ | text model morph window |
+						text := fileEntry asFileEntry fileContents asText.
+						text addAttribute: TextColor red from: terminal start + 1 to: text size.
+						model := TextModel new.
+						window := SystemWindow new.
+						window model: model.
+						window setLabel: ('Text Editor: {1}' format:{ fileEntry}).
+						morph := (TextModelMorph withModel: model) 			wrapFlag: true.
+						window layoutMorph addMorph: morph proportionalHeight: 1.
+						window openInWorld.
+						model actualContents: text.
+						morph selectFrom: terminal start+1 to: terminal start.
+						window forceSaveContentsTo: fileEntry asFileEntry.
+					] ].
 		outcome second 
 			ifEmpty:[
 				ast := outcome first second.
@@ -529,10 +553,10 @@ stop
 		
 		model changed: #console ] fork.! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 20:14:57'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 16:22:59'!
 wd: aString
 	
-	codeGenerator codePath: aString asDirectoryEntry.! !
+	codeGenerator codePath: aString asDirectoryEntry. scanner workingDirectory: aString asDirectoryEntry ! !
 
 !GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 12:39:25'!
 initialize
@@ -1497,7 +1521,7 @@ update: aSymbol
 	program triggerEvent: #vScrollBarValue: with: program scrollerOffset y / program vLeftoverScrollRange.
 	! !
 
-!GenieScanner methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:34:59'!
+!GenieScanner methodsFor: 'as yet unclassified' stamp: 'DF 11/9/2024 13:25:21'!
 load: aString
 
 	| result matcher |
@@ -1508,7 +1532,7 @@ load: aString
 	
 	self assert: result.
 	
-	streams addFirst: (workingDirectory // (matcher subexpression: 2) asString) readStream.
+	self stream: (workingDirectory // (matcher subexpression: 2) asString) readStream.
 	
 	^self nextTerminal ! !
 
