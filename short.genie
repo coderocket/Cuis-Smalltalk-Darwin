@@ -1,0 +1,31 @@
+
+Parameters
+
+epochs: 			30 
+generations: 20 
+
+population: 			3000
+instances: 			100
+
+mutationp :			1.0e-3
+inversionp :			2.0e-1
+
+Schema 
+ 
+bit: 0..1
+
+Functions
+
+load short.genief
+
+Keys
+
+notused : dummy(bit)
+
+Rules
+
+bonus 10 ;
+
+# a comment
+
+penalty bit = 0;
