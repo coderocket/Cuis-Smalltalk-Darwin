@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 10 November 2024 at 8:57:03 am'!
+'From Cuis7.1 [latest update: #6709] on 10 November 2024 at 9:04:33 pm'!
 'Description '!
-!provides: 'Darwin' 1 252!
+!provides: 'Darwin' 1 254!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -186,33 +186,6 @@ console
 consoleEnd
 	^ consoleOutput size +1 to: consoleOutput size ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/10/2024 08:47:45'!
-editFileEntry: aFileEntry markerAt: anInteger
-
-	self editFileEntry: aFileEntry selectFrom: anInteger to: nil.
-! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/10/2024 08:50:57'!
-editFileEntry: aFileEntry selectFrom: start to: endornil
-
-	| text model morph window end |
-						
-	text := aFileEntry fileContents asText.
-	
-	end := endornil = nil ifTrue:[text size] ifFalse:[endornil].
-	
-	text addAttribute: TextColor red from: start to: end.
-	model := TextModel new.
-	window := SystemWindow new.
-	window model: model.
-	window setLabel: ('Text Editor: {1}' format:{ aFileEntry pathName }).
-	morph := (TextModelMorph withModel: model) 			wrapFlag: true.
-	window layoutMorph addMorph: morph proportionalHeight: 1.
-	window openInWorld.
-	model actualContents: text.
-	morph selectFrom: start to: end.
-	window forceSaveContentsTo: aFileEntry! !
-
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:29:16'!
 fileOutProgram
 
@@ -235,26 +208,6 @@ generate
 	self assert: ast notNil.
 	
 	codeGenerator generateCode: ast programName: programName ! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/10/2024 08:46:20'!
-highlightErrorAt: anInteger
-
-	self highlightErrorAtIndex: parser terminalIndex from: anInteger + 1  to: programText size.
-! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/10/2024 08:54:32'!
-highlightErrorAtIndex: index from: start to: end
-
-	| fileEntry |
-	
-	fileEntry := scanner fileEntryFor: index.
-							
-	fileEntry 
-		ifNil:[				
-			programText addAttribute: TextColor red from: start to: end. selection := start to: end ]
-		ifNotNil:[ 
-			self editFileEntry: fileEntry asFileEntry selectFrom: start + 1 					to: end ].
-! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:05:40'!
 initialize
@@ -586,6 +539,56 @@ stop
 wd: aString
 	
 	codeGenerator codePath: aString asDirectoryEntry. scanner workingDirectory: aString asDirectoryEntry ! !
+
+!GenieBrowserModel methodsFor: 'error handling' stamp: 'DF 11/10/2024 08:47:45'!
+editFileEntry: aFileEntry markerAt: anInteger
+
+	self editFileEntry: aFileEntry selectFrom: anInteger to: nil.
+! !
+
+!GenieBrowserModel methodsFor: 'error handling' stamp: 'DF 11/10/2024 20:29:56'!
+editFileEntry: aFileEntry selectFrom: start to: endornil
+
+	| text model morph window end |
+						
+	text := aFileEntry fileContents asText.
+	
+	end := endornil = nil ifTrue:[text size] ifFalse:[endornil].
+	
+	text addAttribute: TextColor red from: start to: end.
+	model := TextModel new.
+	window := SystemWindow new.
+	window model: model.
+	window setLabel: ('Text Editor: {1}' format:{ aFileEntry pathName }).
+	morph := (TextModelMorph withModel: model) 			wrapFlag: true.
+	window layoutMorph addMorph: morph proportionalHeight: 1.
+	window openInWorld.
+	model actualContents: text.
+	morph selectFrom: start to: end ; scrollSelectionIntoView.
+	window forceSaveContentsTo: aFileEntry! !
+
+!GenieBrowserModel methodsFor: 'error handling' stamp: 'DF 11/10/2024 10:47:24'!
+highlightErrorAt: anInteger
+
+	self highlightErrorAtIndex: parser terminalIndex from: anInteger  to: nil.
+! !
+
+!GenieBrowserModel methodsFor: 'error handling' stamp: 'DF 11/10/2024 10:50:43'!
+highlightErrorAtIndex: index from: start to: endornil
+
+	| fileEntry |
+	
+	fileEntry := scanner fileEntryFor: index.
+							
+	fileEntry 
+		ifNil:[	 | end |
+			consoleOutput := '{1} Syntax error.' format:{ consoleOutput }. 
+			end := endornil ifNil:[programText size] ifNotNil:[endornil].
+			programText addAttribute: TextColor red from: start to: end. selection := start to: end ]
+		ifNotNil:[ 
+			consoleOutput := '{1} Syntax error in file {2}.' format:{ consoleOutput . fileEntry}. 
+			self editFileEntry: fileEntry asFileEntry selectFrom: start + 1 					to: endornil ].
+! !
 
 !GenieBrowserModel class methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 12:39:25'!
 initialize
