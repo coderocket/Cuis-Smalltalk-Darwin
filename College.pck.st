@@ -1,8 +1,58 @@
-'From Cuis7.1 [latest update: #6676] on 8 November 2024 at 3:44:47 pm'!
+'From Cuis7.1 [latest update: #6709] on 10 November 2024 at 9:04:36 pm'!
 'Description '!
-!provides: 'College' 1 98!
+!provides: 'College' 1 100!
 SystemOrganization addCategory: #College!
 
+
+!classDefinition: #CollegeNavigator category: #College!
+ProtoObject subclass: #CollegeNavigator
+	instanceVariableNames: 'college'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeNavigator class' category: #College!
+CollegeNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #FrameNavigator category: #College!
+ProtoObject subclass: #FrameNavigator
+	instanceVariableNames: 'frame'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'FrameNavigator class' category: #College!
+FrameNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #InstanceNavigator category: #College!
+ProtoObject subclass: #InstanceNavigator
+	instanceVariableNames: 'instance'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'InstanceNavigator class' category: #College!
+InstanceNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerNavigator category: #College!
+ProtoObject subclass: #LecturerNavigator
+	instanceVariableNames: 'presentor lecturer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'LecturerNavigator class' category: #College!
+LecturerNavigator class
+	instanceVariableNames: ''!
+
+!classDefinition: #ModuleNavigator category: #College!
+ProtoObject subclass: #ModuleNavigator
+	instanceVariableNames: 'module'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'ModuleNavigator class' category: #College!
+ModuleNavigator class
+	instanceVariableNames: ''!
 
 !classDefinition: #College category: #College!
 Object subclass: #College
@@ -94,56 +144,227 @@ GridModel subclass: #CollegeTimeTableModel
 CollegeTimeTableModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #CollegeNavigator category: #College!
-NavigatorObjectModel subclass: #CollegeNavigator
-	instanceVariableNames: 'college'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'CollegeNavigator class' category: #College!
-CollegeNavigator class
-	instanceVariableNames: ''!
 
-!classDefinition: #FrameNavigator category: #College!
-NavigatorObjectModel subclass: #FrameNavigator
-	instanceVariableNames: 'frame'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'FrameNavigator class' category: #College!
-FrameNavigator class
-	instanceVariableNames: ''!
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:15'!
+attributeContents
 
-!classDefinition: #InstanceNavigator category: #College!
-NavigatorObjectModel subclass: #InstanceNavigator
-	instanceVariableNames: 'instance'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'InstanceNavigator class' category: #College!
-InstanceNavigator class
-	instanceVariableNames: ''!
+	index = 0 ifTrue:[^{}].
+	
+	index = 1 ifTrue:[ 	^college modules asOrderedCollection collect:[:each | each description] :: sort ].
 
-!classDefinition: #LecturerNavigator category: #College!
-NavigatorObjectModel subclass: #LecturerNavigator
-	instanceVariableNames: 'presentor lecturer'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'LecturerNavigator class' category: #College!
-LecturerNavigator class
-	instanceVariableNames: ''!
+	index = 2 ifTrue:[ ^college lecturers asOrderedCollection collect:[:each | each description] :: sort ].
 
-!classDefinition: #ModuleNavigator category: #College!
-NavigatorObjectModel subclass: #ModuleNavigator
-	instanceVariableNames: 'module'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'ModuleNavigator class' category: #College!
-ModuleNavigator class
-	instanceVariableNames: ''!
+	index = 3 ifTrue:[ 	^college frames asOrderedCollection sort:[:x :y | x id <= y id] :: collect:[:each | each description]  ].
+	
+	index = 4 ifTrue:[ 	^college rooms asOrderedCollection collect:[:each | each description] :: sort ].
+	
+! !
 
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:09:33'!
+attributes
+	^ {'קורסים' . 'מרצים' . 'תבניות' . 'חדרים' } collect:[:each | each reverse ]! !
+
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:08:01'!
+college: aCollege
+	college := aCollege.! !
+
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:43'!
+selectValue: anIndex
+
+	index = 0  ifTrue:[^self].
+	 
+	index = 1 ifTrue:[ | modules |
+	
+		modules := college modules asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		(modules at: anIndex) navigator.
+		
+		^self 	].
+	
+	index = 2 ifTrue:[ | lecturers |
+	
+		lecturers := college lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		(lecturers at: anIndex) navigator.
+		
+		^self 	].	
+
+	index = 3 ifTrue:[ | frames |
+	
+		frames := college frames asOrderedCollection sort:[:x :y | x id <= y id ].
+	
+		(frames at: anIndex) navigator.
+		
+		^self 	].	
+! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:05:13'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	index = 1 ifTrue:[^ frame instances asOrderedCollection collect:[:each | each description ] :: sort ]! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:04:44'!
+attributes
+	^ { 'שיבוצים' } collect:[:each | each reverse ]! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:04:22'!
+frame: aFrame
+	frame := aFrame! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:15:43'!
+selectValue: anIndex
+
+	| instances |
+	
+	index = 1  ifFalse:[^self].
+	
+	instances := frame instances asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(instances at: anIndex) navigator! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:56'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	index =  1 ifTrue:[^{ instance module description } ].
+	
+	index = 2 ifTrue:[^ instance frames asOrderedCollection collect:[:each | each description ] :: sort ]! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:02'!
+attributes
+	^ { 'קורס' . 'תבניות' } collect:[:each | each reverse ]! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:52:50'!
+instance: aModuleInstance
+	instance := aModuleInstance ! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 17:53:48'!
+selectValue: anIndex
+
+	| frames |
+	
+	index = 1 ifTrue:[
+		
+		^instance module navigator].
+	
+	index = 2  ifTrue:[
+	
+		frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+		^(frames at: anIndex) navigator ].
+	
+	! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:12:39'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	^(presentor at: index) value: lecturer! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:37:36'!
+attributes
+	^ {'שם מלא' . 'שעות חסומות' . 'קורסים' } collect:[:each | each reverse ]! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:29:08'!
+initialize
+
+	super initialize.
+	
+	presentor := Dictionary new.
+	
+	presentor at:1 put: [:obj | {obj description} ].
+	
+	presentor at: 2 put: [ :obj | | result |
+		
+		result := OrderedCollection new.
+		
+		obj cordoned keysAndValuesDo: [:day :hours |
+			hours notEmpty ifTrue:[ | aWriteStream |
+				aWriteStream := WriteStream on: ''.
+				aWriteStream nextPutAll: ('{1} ' format: {day}).
+				hours do:[:interval | aWriteStream nextPutAll: ('{1} .. {2}' format:{ interval first . interval last })] separatedBy:[ aWriteStream nextPutAll: ', '].
+				result add: aWriteStream contents ] ].
+		result
+	].
+	
+	presentor at:3 put: [ :obj | obj modules asOrderedCollection collect:[:each | each description ] :: sort ].! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:05:49'!
+lecturer: aLecturer
+	lecturer := aLecturer! !
+
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 16:53:54'!
+selectValue: anIndex
+
+	| modules |
+	
+	index = 3  ifFalse:[^self].
+	
+	modules := lecturer modules asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(modules at: anIndex) navigator! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:56:05'!
+attributeContents
+
+	index = 0 ifTrue:[^{}].
+	
+	index = 1 ifTrue:[ 	^{ module description } ].
+
+	index = 2 ifTrue:[ 	^{ '{1}' format:{ module duration} } ].
+	
+	index = 3 ifTrue:[ ^ module lecturers asOrderedCollection collect:[:each | each description] :: sort ].
+	
+	index = 4 ifTrue:[ ^ module instances asOrderedCollection collect:[:each | each description] :: sort ]	! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:08:07'!
+attributes
+	^ {'תיאור' . 'שעות' . 'מרצים' . 'שיבוצים' } collect:[:each | each reverse ]! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:52:18'!
+decodeNumber
+
+	| aString |
+	
+	aString := module id asString.
+	
+	^'9' = (aString at:1) ifTrue:[aString allButFirst] ifFalse:[aString].
+	! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:51:43'!
+decodeType
+
+	| aString |
+	
+	aString := module id asString.
+	
+	^'9' = (aString at:1) ifTrue:['תרגול'] ifFalse:['הרצאה'].! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:41:32'!
+module: aModule
+
+	module := aModule! !
+
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:59:05'!
+selectValue: anIndex
+	
+	index = 3  ifTrue: [ 	| lecturers |
+	
+	lecturers := module lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(lecturers at: anIndex) navigator ].
+
+	index = 4  ifTrue: [ 	| instances |
+	
+	instances := module instances asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	(instances at: anIndex) navigator ].
+
+! !
 
 !College methodsFor: 'accessing' stamp: 'DF 9/27/2024 11:26:24'!
 frames
@@ -424,14 +645,15 @@ writeGenieCordonedHoursTo: aWriteStream
 	aWriteStream nextPut: Character lf.
 ! !
 
-!College methodsFor: 'exporting' stamp: 'DF 11/1/2024 19:54:49'!
+!College methodsFor: 'exporting' stamp: 'DF 11/10/2024 20:58:15'!
 writeGenieFramesTo: aWriteStream
 
 	aWriteStream nextPutAll: 'frame
 
 '.
-	frames do:[:each | 
+	frames values sort:[:x :y | x id <= y id ] :: do:[:each | 
 		aWriteStream nextPutAll: ('{1}' format:{each id}); nextPutAll: '	'.
+		
 		each instances do:[:ii | aWriteStream nextPutAll: ('{1}' format:{ii id}) ] separatedBy:[ aWriteStream nextPutAll:', '].
 		aWriteStream nextPutAll: String lfString ].
 	
@@ -458,7 +680,7 @@ writeGeniePlanTo: aWriteStream
 	
 ! !
 
-!College methodsFor: 'exporting' stamp: 'DF 11/2/2024 17:56:07'!
+!College methodsFor: 'exporting' stamp: 'DF 11/10/2024 20:55:51'!
 writeGenieRepertoirTo: aWriteStream
 
 	aWriteStream nextPutAll: 'lecturer
@@ -466,9 +688,14 @@ writeGenieRepertoirTo: aWriteStream
 '.
 
 	modules do:[:each | 
-		aWriteStream nextPutAll: ('{1} ' format:{each id}); nextPut: Character tab.
-		each lecturers do:[:ii | aWriteStream nextPutAll: ('{1}' format:{ii id}) ] separatedBy:[ aWriteStream nextPutAll:', '].
-		aWriteStream nextPutAll: String lfString ].
+		each lecturers ifNotEmpty:[ :candidates | 
+			aWriteStream nextPutAll: ('{1} ' format:{each id}); nextPut: Character tab.
+			candidates size = 1 
+				ifTrue:[ 
+					aWriteStream nextPutAll:('{1} , {1}' format: {candidates anyOne id})]
+				ifFalse:[
+					candidates do:[:ii | aWriteStream nextPutAll: ('{1}' format:{ii id}) ] separatedBy:[ aWriteStream nextPutAll:', '] ]. 
+		aWriteStream nextPutAll: String lfString ] ].
 
 	aWriteStream nextPutAll: String lfString	
 ! !
@@ -1321,224 +1548,3 @@ nCols
 !CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nRows
 	^24! !
-
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:15'!
-attributeContents
-
-	index = 0 ifTrue:[^{}].
-	
-	index = 1 ifTrue:[ 	^college modules asOrderedCollection collect:[:each | each description] :: sort ].
-
-	index = 2 ifTrue:[ ^college lecturers asOrderedCollection collect:[:each | each description] :: sort ].
-
-	index = 3 ifTrue:[ 	^college frames asOrderedCollection sort:[:x :y | x id <= y id] :: collect:[:each | each description]  ].
-	
-	index = 4 ifTrue:[ 	^college rooms asOrderedCollection collect:[:each | each description] :: sort ].
-	
-! !
-
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:09:33'!
-attributes
-	^ {'קורסים' . 'מרצים' . 'תבניות' . 'חדרים' } collect:[:each | each reverse ]! !
-
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:08:01'!
-college: aCollege
-	college := aCollege.! !
-
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:43'!
-selectValue: anIndex
-
-	index = 0  ifTrue:[^self].
-	 
-	index = 1 ifTrue:[ | modules |
-	
-		modules := college modules asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-		(modules at: anIndex) navigator.
-		
-		^self 	].
-	
-	index = 2 ifTrue:[ | lecturers |
-	
-		lecturers := college lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-		(lecturers at: anIndex) navigator.
-		
-		^self 	].	
-
-	index = 3 ifTrue:[ | frames |
-	
-		frames := college frames asOrderedCollection sort:[:x :y | x id <= y id ].
-	
-		(frames at: anIndex) navigator.
-		
-		^self 	].	
-! !
-
-!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:05:13'!
-attributeContents
-
-	index = 0 ifTrue:[^{}].
-	
-	index = 1 ifTrue:[^ frame instances asOrderedCollection collect:[:each | each description ] :: sort ]! !
-
-!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:04:44'!
-attributes
-	^ { 'שיבוצים' } collect:[:each | each reverse ]! !
-
-!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:04:22'!
-frame: aFrame
-	frame := aFrame! !
-
-!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:15:43'!
-selectValue: anIndex
-
-	| instances |
-	
-	index = 1  ifFalse:[^self].
-	
-	instances := frame instances asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-	(instances at: anIndex) navigator! !
-
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:56'!
-attributeContents
-
-	index = 0 ifTrue:[^{}].
-	
-	index =  1 ifTrue:[^{ instance module description } ].
-	
-	index = 2 ifTrue:[^ instance frames asOrderedCollection collect:[:each | each description ] :: sort ]! !
-
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:02'!
-attributes
-	^ { 'קורס' . 'תבניות' } collect:[:each | each reverse ]! !
-
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:52:50'!
-instance: aModuleInstance
-	instance := aModuleInstance ! !
-
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 17:53:48'!
-selectValue: anIndex
-
-	| frames |
-	
-	index = 1 ifTrue:[
-		
-		^instance module navigator].
-	
-	index = 2  ifTrue:[
-	
-		frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-		^(frames at: anIndex) navigator ].
-	
-	! !
-
-!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:12:39'!
-attributeContents
-
-	index = 0 ifTrue:[^{}].
-	
-	^(presentor at: index) value: lecturer! !
-
-!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:37:36'!
-attributes
-	^ {'שם מלא' . 'שעות חסומות' . 'קורסים' } collect:[:each | each reverse ]! !
-
-!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:29:08'!
-initialize
-
-	super initialize.
-	
-	presentor := Dictionary new.
-	
-	presentor at:1 put: [:obj | {obj description} ].
-	
-	presentor at: 2 put: [ :obj | | result |
-		
-		result := OrderedCollection new.
-		
-		obj cordoned keysAndValuesDo: [:day :hours |
-			hours notEmpty ifTrue:[ | aWriteStream |
-				aWriteStream := WriteStream on: ''.
-				aWriteStream nextPutAll: ('{1} ' format: {day}).
-				hours do:[:interval | aWriteStream nextPutAll: ('{1} .. {2}' format:{ interval first . interval last })] separatedBy:[ aWriteStream nextPutAll: ', '].
-				result add: aWriteStream contents ] ].
-		result
-	].
-	
-	presentor at:3 put: [ :obj | obj modules asOrderedCollection collect:[:each | each description ] :: sort ].! !
-
-!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:05:49'!
-lecturer: aLecturer
-	lecturer := aLecturer! !
-
-!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 16:53:54'!
-selectValue: anIndex
-
-	| modules |
-	
-	index = 3  ifFalse:[^self].
-	
-	modules := lecturer modules asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-	(modules at: anIndex) navigator! !
-
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:56:05'!
-attributeContents
-
-	index = 0 ifTrue:[^{}].
-	
-	index = 1 ifTrue:[ 	^{ module description } ].
-
-	index = 2 ifTrue:[ 	^{ '{1}' format:{ module duration} } ].
-	
-	index = 3 ifTrue:[ ^ module lecturers asOrderedCollection collect:[:each | each description] :: sort ].
-	
-	index = 4 ifTrue:[ ^ module instances asOrderedCollection collect:[:each | each description] :: sort ]	! !
-
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:08:07'!
-attributes
-	^ {'תיאור' . 'שעות' . 'מרצים' . 'שיבוצים' } collect:[:each | each reverse ]! !
-
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:52:18'!
-decodeNumber
-
-	| aString |
-	
-	aString := module id asString.
-	
-	^'9' = (aString at:1) ifTrue:[aString allButFirst] ifFalse:[aString].
-	! !
-
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:51:43'!
-decodeType
-
-	| aString |
-	
-	aString := module id asString.
-	
-	^'9' = (aString at:1) ifTrue:['תרגול'] ifFalse:['הרצאה'].! !
-
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:41:32'!
-module: aModule
-
-	module := aModule! !
-
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:59:05'!
-selectValue: anIndex
-	
-	index = 3  ifTrue: [ 	| lecturers |
-	
-	lecturers := module lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-	(lecturers at: anIndex) navigator ].
-
-	index = 4  ifTrue: [ 	| instances |
-	
-	instances := module instances asOrderedCollection sort:[:x :y | x description <= y description ].
-	
-	(instances at: anIndex) navigator ].
-
-! !
