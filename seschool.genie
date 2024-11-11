@@ -1,10 +1,10 @@
 
 Parameters 
  
-epochs: 			10 
-generations: 10 
+epochs: 			15
+generations: 25 
 
-population: 			100
+population: 			320
 instances: 			145
 
 mutationp :			1.0e-3
@@ -48,7 +48,7 @@ penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hou
  
 penalty group by (day, lecturer) overlap(hour .. hour + duration);
  
-# the students in a frame cannot study more than on class in the same hour.
+# the students in a frame cannot study more than one class in the same hour.
  
 penalty on frame group by (day) overlap(hour .. hour + duration);
 

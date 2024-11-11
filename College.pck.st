@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 11 November 2024 at 2:16:38 pm'!
+'From Cuis7.1 [latest update: #6676] on 11 November 2024 at 8:54:53 pm'!
 'Description '!
-!provides: 'College' 1 103!
+!provides: 'College' 1 105!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -186,17 +186,17 @@ addRoom: aRoom
 
 	rooms at: aRoom id put: aRoom.! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/11/2024 22:44:02'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 20:54:48'!
 assign: aSolution  by: aDictionary
 
 	aSolution do:[:each | 
 
 		self assignInstance: (instances at: (each at:1))  to: (each at:2) by: aDictionary ]! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 13:46:11'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 19:10:29'!
 assignInstance: aModuleInstance to: aGene by: aDictionary
 
-	| day hour module lecturer duration  |
+	| day hour module lecturer |
 
 	day := aGene at:(aDictionary at:#day).
 	
@@ -206,13 +206,9 @@ assignInstance: aModuleInstance to: aGene by: aDictionary
 
 	module := modules at: (aGene at:(aDictionary at:#module)).
 
-	duration := aGene at:(aDictionary at:#duration).
+	self assert: aModuleInstance module = module.	
 	
 	aModuleInstance day: day ; hour: hour.		
-	
-	self assert: duration = module duration.
-	
-	aModuleInstance module: module. module addInstance: aModuleInstance.
 	
 	aModuleInstance lecturer: lecturer. lecturer addInstance: aModuleInstance.
 	
@@ -1412,24 +1408,36 @@ selectValue: anIndex
 	
 	(instances at: anIndex) navigator! !
 
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:56'!
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 20:52:46'!
 attributeContents
 
 	index = 0 ifTrue:[^{}].
 	
 	index =  1 ifTrue:[^{ instance module description } ].
 	
-	index = 2 ifTrue:[^ instance frames asOrderedCollection collect:[:each | each description ] :: sort ]! !
+	index = 2 ifTrue:[^ instance frames asOrderedCollection collect:[:each | each description ] :: sort ].
+	
+	index = 3 ifTrue:[
+		
+		instance day ifNil:[^{'אין השמה' reverse}].
+		
+		^{ '{1} {2} - {3}' format:{ instance day . instance hour . instance hour + instance duration } }].
+	
+	index = 4 ifTrue:[
+		
+		instance lecturer ifNil:[^{'אין השמה' reverse}].
+		
+		^ {instance lecturer description} ]! !
 
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:55:02'!
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 20:48:04'!
 attributes
-	^ { 'קורס' . 'תבניות' } collect:[:each | each reverse ]! !
+	^ { 'קורס' . 'תבניות' . 'מועד' . 'מרצה' } collect:[:each | each reverse ]! !
 
 !InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:52:50'!
 instance: aModuleInstance
 	instance := aModuleInstance ! !
 
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 17:53:48'!
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 20:50:30'!
 selectValue: anIndex
 
 	| frames |
@@ -1443,6 +1451,10 @@ selectValue: anIndex
 		frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
 	
 		^(frames at: anIndex) navigator ].
+	
+	index = 4 ifTrue:[
+		
+		^instance lecturer navigator ].
 	
 	! !
 
