@@ -1,0 +1,54 @@
+
+Parameters 
+ 
+epochs: 			10 
+generations: 10 
+
+population: 			100
+instances: 			145
+
+mutationp :			1.0e-3
+inversionp :			2.0e-1
+
+Schema 
+ 
+day: 			1 .. 5
+hour	:		hour(day)
+lecturer:			lecturer(module(id))
+ 
+Functions
+
+hour
+
+# day           hour
+
+1                  8 .. 17
+2                  8 .. 17
+3                  8 .. 17
+4                  8 .. 17
+5                  8 .. 17
+6                  8 .. 13
+
+load seplan.genief
+
+Keys
+
+module : 		module(id) 
+duration: duration(module(id))
+
+Rules
+
+bonus 10 ;
+
+# a lecturer must not teach on days and hours that they have cordoned  
+
+penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hour + duration) ;
+ 
+# the same lecturer cannot teach on the same day and hour more than one class
+ 
+penalty group by (day, lecturer) overlap(hour .. hour + duration);
+ 
+# the students in a frame cannot study more than on class in the same hour.
+ 
+penalty on frame group by (day) overlap(hour .. hour + duration);
+
