@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 10 November 2024 at 9:04:33 pm'!
+'From Cuis7.1 [latest update: #6709] on 11 November 2024 at 2:23:26 pm'!
 'Description '!
-!provides: 'Darwin' 1 254!
+!provides: 'Darwin' 1 255!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -1098,14 +1098,14 @@ compileTuple: anOrderedCollection range: aString
 
 	^aStream contents! !
 
-!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 10/1/2024 08:01:29'!
-compileTuple: anOrderedCollection seq: anotherCollection
+!GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 11/11/2024 14:22:17'!
+compileTuple: anOrderedCollection seq: anotherCollection type: aTypeString
 
 	| aStream |
 	
 	aStream := WriteStream on: ''.
 	
-	anotherCollection size = 1 
+	aTypeString = GenieCompiler numberType
 		ifTrue:[			
 			anOrderedCollection do:[:each | aStream nextPutAll: ('if (arg == {1}) \{ return {2}; \}' format:{ each .  anotherCollection first }) ] separatedBy:[ aStream nextPut: Character lf] ] 
 		ifFalse:[

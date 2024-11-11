@@ -1,6 +1,6 @@
 tokens
 
-".." Schema Parameters Functions Keys Rules "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in on
+".." Schema Parameters Functions Keys Rules "{" "}" "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in on
  
 patterns
 
@@ -398,9 +398,7 @@ Arguments 'x' : Argument 'a'
 %topic functions
 
 Fun 'x' : Functions Table + 't'
-
 	 
-
 	{ code @ x = code @ t reduce:[:u :v | u, String lfString, v] }
 
 	{ fnames @ x = fname @ t }
@@ -413,7 +411,6 @@ Fun 'x' : Functions Table + 't'
 
 Table 'x' : name 'n' Tuple + 't'
 	 
-
 	{ code @ x =  GenieCompiler instance compileFunction: v@t name: n type: type @ t }
 	
 	{ fname @ x = { n value asString -> { (type @ x) . (min @ x) . (max @ x) } } }
@@ -427,9 +424,7 @@ Table 'x' : name 'n' Tuple + 't'
 	{ max @ x = (min @ t) max };
 
 Tuple 'x' : Range 'r' Seq 's'
-
-	
-	
+		
 	{ v @ x = GenieCompiler instance compileTupleRangeBegin: b@r end:e@r seq: v@s }
 
 	{ type @ x = type @ s }
@@ -439,9 +434,8 @@ Tuple 'x' : Range 'r' Seq 's'
 	{ max @ x = max @ r };
 
 Tuple 'x' : Seq 'left' Seq 'right'
-
 	 
-	{ v @ x = GenieCompiler instance compileTuple: v@left seq: v@right }
+	{ v @ x = GenieCompiler instance compileTuple: v@left seq: v@right type: type @ right }
 
 	{ type @ x = type @ right }
 
@@ -450,9 +444,7 @@ Tuple 'x' : Seq 'left' Seq 'right'
 	{ max @ x = min @ left };
 
 Tuple 'x' : Seq 'seq' Range 'r'
-
 	
-
 	{ v @ x = GenieCompiler instance compileTuple: v@seq range: code@r }
 
 	{ type @ x = GenieCompiler rangeType }
@@ -462,7 +454,6 @@ Tuple 'x' : Seq 'seq' Range 'r'
 	{ max @ x = min @ seq };
 
 Tuple 'x' : Range 'r1' Range 'r2'
-	
 	
 	{ v @ x = GenieCompiler instance compileTupleRangeBegin: b@r1 end:e@r1 begin: b@r2 end: e@r2 }
 
@@ -474,23 +465,17 @@ Tuple 'x' : Range 'r1' Range 'r2'
 
 Table 'x' : table name 'n' Triple + 't'
 	
-	  
-
 	{ table @ x =  GenieCompiler instance compileTripleTable: v@t name: n value asString }
 	
 	{ tname @ x = { n value asString } };
 
 Triple 'x' : number 'a1' number 'a2' Range 'y'
 
-	 
-
 	{ v @ x = GenieCompiler instance compileTriple: a1 value and: a2 value range: code@y };
 
 Seq 'x' : 
 
 	number 'n'
-
-	
 	
 	{ v @ x = { n value asString } }
 
@@ -498,9 +483,19 @@ Seq 'x' :
 
 	{ max @ x = n value asString asInteger }
 
-	{ type @ x = GenieCompiler numberType }| Seq 'seq' "," number 'n'
+	{ type @ x = GenieCompiler numberType }
 
+	| "{" number 'n' "}"
 	
+	{ v @ x = { n value asString } }
+
+	{ min @ x = n value asString asInteger }
+
+	{ max @ x = n value asString asInteger }
+
+	{ type @ x = GenieCompiler seqType }
+
+	| Seq 'seq' "," number 'n'
 	
 	{ v @ x = (v @ seq) , { n value asString } }
 
