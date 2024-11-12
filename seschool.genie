@@ -52,3 +52,10 @@ penalty group by (day, lecturer) overlap(hour .. hour + duration);
  
 penalty on frame group by (day) overlap(hour .. hour + duration);
 
+# a lecturer cannot teach more than 20 hours in a week
+
+penalty group by (lecturer) sum(duration) -  20 max 0;
+
+# each frame must have at least one free day
+
+penalty on frame count(day) - 4 max 0;

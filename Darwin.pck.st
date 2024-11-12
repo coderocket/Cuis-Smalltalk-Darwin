@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 11 November 2024 at 2:23:26 pm'!
+'From Cuis7.1 [latest update: #6676] on 12 November 2024 at 9:44:57 pm'!
 'Description '!
-!provides: 'Darwin' 1 255!
+!provides: 'Darwin' 1 257!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -847,6 +847,32 @@ compileDeterministicCall: aString value: anotherString type: funcInfo location: 
 		GenieException new messageText: ('Type mismatch: {1}, expecting an integer.' format:{  type  }) ; index: aToken index; start: aToken start ; end: aToken end ; signal ].
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/12/2024 21:32:47'!
+compileFunctionEnum: functionName finfo: funInfo expr: aString kind: anInteger position: positionInteger location: aToken
+
+	| min max  |
+
+	min := funInfo at:2.
+	
+	max := funInfo at:3.
+	
+	^'\{ 
+
+rule_location[{1}] = {4};
+score[{1}] = 0;
+for(int ii = {6}; ii <= {7} ; ++ii) \{
+	vector<int> gid = genie_{5}(ii);
+	instance_t** group = (instance_t**)alloca(gid.size()*sizeof(instance_t*));
+	int jj;
+	for(jj = 0 ; jj < gid.size(); ++jj)
+		group[jj] = &an_instance[gid[jj]];
+	
+	instance_t** b = group;
+	instance_t** e = group+jj;
+	score[{1}] {3}= {2}; 
+	\}
+\}' format:{ positionInteger . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start . functionName . min . max }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/28/2024 12:11:56'!
 compileFunctionEnum: functionName finfo: funInfo keys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken

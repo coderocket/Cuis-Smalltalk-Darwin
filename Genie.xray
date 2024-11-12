@@ -266,6 +266,12 @@ FunctionEnum 'x' : on name 'n' group by "(" Arguments 'a' ")" Expr 'e'  ";"
 
 	{ group @ e = 1 };
 
+FunctionEnum 'x' : on name 'n' Expr 'e'  ";" 
+
+	{ code @ x = GenieCompiler instance compileFunctionEnum: n value asString finfo: ((fnames @ x) at: n value asString)  expr: value @ e kind: kind @ x position: position @ x location: location @ x }
+
+	{ group @ e = 1 };
+
 ExprFormula 'x' : Expr 'e' ";"
 
 	
