@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <unistd.h>
 #include <cstdlib>
 #include <cassert>
@@ -50,6 +51,24 @@ void produce_next_generation() {
 
 }
 
+void store_solution()
+{
+	fstream file("solutions.json", std::ios::out);
+
+	json_write_results(current, current + actual_population_size , 10, file);
+
+	file.close();
+
+	store_image(current, current+actual_population_size);
+}
+
+bool should_store_solution = false;
+
+static void signal_handler(int signum)
+{
+	should_store_solution = true;
+}
+
 int main(int argc, char** argv) {
 
 	use_fifo = false;
@@ -78,6 +97,17 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	struct sigaction a_sigaction;
+
+	a_sigaction.sa_handler = signal_handler;
+
+	sigemptyset(&a_sigaction.sa_mask);
+	a_sigaction.sa_flags = SA_RESTART; 
+	if (sigaction(SIGINT, &a_sigaction, NULL) == -1) {
+		perror("Could not install signal handler.");
+		exit(1);
+	}
+
 	current = population[0];
 	next = population[1];
 
@@ -95,16 +125,14 @@ int main(int argc, char** argv) {
 			actual_population_size = next_population_size;
 		}
 		report_progress(current, current + actual_population_size);
+
+		if (should_store_solution) {
+			should_store_solution = false;
+			store_solution();
+		}	
 	}
 
-	fstream file("solutions.json", std::ios::out);
-
-	json_write_results(current, current + actual_population_size , 10, file);
-
-	file.close();
-
-	store_image(current, current+actual_population_size);
-
+	store_solution();
 
 	return 0;
 }
