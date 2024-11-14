@@ -343,31 +343,39 @@ Primitive 'x' : number 'n'
 
 	{ value @ x = GenieCompiler instance compileRulePrimitiveCallName: n expr: value @ e group: group@x }| name 'n' 
 
-	 
-
-	{ value @ x = '(*each)[{1}]' format: { GenieCompiler instance compileRuleName: n value asString isMemberIn: attrs @ x location: n } }| "(" Compare 'c' ")"
-
-	 
+	{ value @ x = '(*each)[{1}]' format: { GenieCompiler instance compileRuleName: n value asString isMemberIn: attrs @ x location: n } }| "(" Compare 'c' ")"	 
 
 	{ value @ x = value @ c };
 
-E 'x' : E 'left' ".." T 'right'
+E 'x' : E 'left' "max" M 'right'
 
-	
+	{ value @ x = '(max(({1}),({2})))' format:{ value @ left . value @ right }  }
 
-	{ value @ x = 'interval_t({1}, {2})' format: { value @ left . value @ right } }| T 't'
+	| M 't'
 
-	
+	{ value @ x = value @ t }
+;
+
+M 'x' : M 'left' ".." T 'right'
+
+	{ value @ x = 'interval_t({1}, {2})' format: { value @ left . value @ right } }
+
+	| T 't'
 
 	{ value @ x = value @ t };
 
 T 'x' : T 'left' "+" F 'right'
-
 	
 
-	{ value @ x = '({1}) + ({2})' format: { value @ left . value @ right } }| F 'f'
+	{ value @ x = '({1}) + ({2})' format: { value @ left . value @ right } }
 
-	
+	| F 'f'
+
+	{ value @ x = value @ f };
+
+T 'x' : T 'left' "-" F 'right'
+
+	{ value @ x = '({1}) - ({2})' format: { value @ left . value @ right } }| F 'f'
 
 	{ value @ x = value @ f };
 
