@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 11 November 2024 at 8:54:53 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 November 2024 at 9:55:00 pm'!
 'Description '!
-!provides: 'College' 1 105!
+!provides: 'College' 1 113!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -87,7 +87,7 @@ ModuleInstance class
 
 !classDefinition: #CollegeTimeTableModel category: #College!
 GridModel subclass: #CollegeTimeTableModel
-	instanceVariableNames: 'selection college indices topic format instance topicIndex topics'
+	instanceVariableNames: 'solutions selection college indices topic format instance topicIndex topics workingDirectory selectedSolution'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
@@ -952,14 +952,16 @@ school
 	
 	! !
 
-!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 13:21:48'!
-open: aCollege
+!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:54:55'!
+open: aPathString
 
-	| aCollegeModel topics items aGridMorph |
+	| aCollegeModel solutions topics items aGridMorph |
 	
 	aCollegeModel := CollegeTimeTableModel new.
+
+	aCollegeModel workingDirectory: aPathString ; load.
 	
-	aCollegeModel college: aCollege.
+	solutions := PluggableListMorph withModel: aCollegeModel listGetter: #solutions indexGetter: #selectedSolution indexSetter: #selectSolution:. 
 	
 	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topic indexSetter: #topic:.
 	
@@ -967,9 +969,8 @@ open: aCollege
 
 	aGridMorph := GridMorph new model: aCollegeModel. 
 
-	(topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
+	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
 	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('Time Table') :: openInWorld 
-
 ! !
 
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
@@ -1222,14 +1223,7 @@ room
 room: aRoom
 	room := aRoom! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:20:47'!
-college: aCollege
-
-	college := aCollege.
-	
-	! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 16:27:05'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:25'!
 initialize
 	
 	selection := 0.
@@ -1239,6 +1233,10 @@ initialize
 	topic := 0.
 	
 	college := nil.
+	
+	solutions := {}.
+	
+	selectedSolution := 0.
 
 	format :={ 
 	
@@ -1251,16 +1249,75 @@ initialize
 	
 	topics := { #lecturers . #modules . #frames . #rooms }! !
 
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:57:30'!
+load
+
+	| aFileEntry aReadStream json |
+
+	aFileEntry := workingDirectory asDirectoryEntry // 'solutions.json'.
+
+	aFileEntry exists ifFalse:[
+			self error: ('Cannot load. Solution file {1} does not exit.' format:{ 'solutions.json' }) ].		
+		
+	aReadStream := ReadStream on: aFileEntry fileContents.
+
+	json := Json readFrom: aReadStream.
+
+	json at:'problem' ifAbsent:[			self error: ('Cannot load. Json file {1} is not a genie solution.' format:{ 'solutions.json' })].
+	
+	solutions := json at: 'solutions'.
+	
+	self changed:#solutions.! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 20:20:32'!
+selectSolution: anInteger
+
+	| aSolution |
+	
+	selectedSolution := anInteger.
+	
+	selectedSolution > 0 ifTrue:[
+	
+		college := College new.
+
+		college import: workingDirectory.
+
+		aSolution := solutions at: anInteger :: at: 'solution'.
+		
+		college assign: aSolution by: { #day -> 1 . #hour -> 2 . #lecturer -> 3 . #module -> 4 . #duration -> 5 } asDictionary. 
+		
+		self select: selection.
+	].! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:17'!
+selectedSolution
+	^selectedSolution ! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:54:41'!
+solutions
+
+	solutions ifNil:[^{}].
+	
+	^solutions collect:[:each | each at: 'score' :: collect:[:pair | pair at:3 ] :: sum ]! !
+
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:40:18'!
 topic
 	^topic! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 18:42:22'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 21:45:47'!
 topic: anInteger
 
+	topic > topics size ifTrue:[^self].
+	
 	topic := anInteger.
 	
+	self select: selection.
+	
 	self changed: #items! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:42:18'!
+workingDirectory: aString
+	workingDirectory := aString! !
 
 !CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:41:16'!
 items
@@ -1277,7 +1334,7 @@ items
 	
 	^keys collect:[:key | t at: key :: description ]! !
 
-!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:43:21'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 11/14/2024 21:45:24'!
 select: anIndex
 
 	| index keys t |
@@ -1304,18 +1361,21 @@ select: anIndex
 selection
 	^selection ! !
 
-!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 10/28/2024 18:38:55'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 11/14/2024 21:53:46'!
 topics
-	^ topics ! !
+	"{ #lecturers . #modules . #frames . #rooms }"
+	^ { 'מרצים' . 'קורסים' . 'תבניות' . '' } collect:[:each | each reverse ] ! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 10/28/2024 18:53:40'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/14/2024 20:19:40'!
 at: row at: col
 
 	| result |
 	
 	instance ifNil:[^''].
+	
+	topic = 0 ifTrue:[^''].
 
-	result := instance  at: col at: row.
+	result := instance at: col at: row.
 
 	result ifEmpty: [^''].
 
