@@ -207,7 +207,7 @@ void json_write_solution_and_score(const genie_solution_t& q, ostream& out) {
 void json_write_best_unique_solutions(chromosome_t* b, chromosome_t* e, size_t k, ostream& out) {
 
 
-	set< genie_solution_t > solutions;
+	multiset< genie_solution_t > solutions;
 
 	for(const chromosome_t* p = b; p != e; ++p) {
 
