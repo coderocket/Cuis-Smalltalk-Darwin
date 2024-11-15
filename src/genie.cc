@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
 	sigemptyset(&a_sigaction.sa_mask);
 	a_sigaction.sa_flags = SA_RESTART; 
-	if (sigaction(SIGINT, &a_sigaction, NULL) == -1) {
+	if (sigaction(SIGHUP, &a_sigaction, NULL) == -1) {
 		perror("Could not install signal handler.");
 		exit(1);
 	}
