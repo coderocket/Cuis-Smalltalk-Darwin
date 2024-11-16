@@ -86,7 +86,9 @@ void report_score(const chromosome_t* cc, ostream& out) {
 	}
 }
 
-void report_score_gnuplot(const chromosome_t* cc, ostream& out) {
+void report_score_gnuplot(chromosome_t* b, chromosome_t* e, ostream& out) {
+
+	chromosome_t* cc = best(b, e); 
 
 	array<int,GENIE_N_RULES> rule_location;
 	array<int, GENIE_N_RULES> score;
@@ -101,38 +103,50 @@ void report_score_gnuplot(const chromosome_t* cc, ostream& out) {
 	out << endl;
 }
 
-void report_progress(chromosome_t* b, chromosome_t* e) {
+static stringstream progress_stream;
+
+void report_progress(chromosome_t* b, chromosome_t* e, ostream& out) {
 
 	chromosome_t* p = best(b, e); 
 
-	if (use_fifo) {
-		fstream pipe(fifo_name, ios::out);
-		report_score_gnuplot(p, pipe);
-		pipe << flush;
-	} else {
-		chromosome_t* q = worst(b, e);
+	chromosome_t* q = worst(b, e);
 	
-		timeval now;
-		gettimeofday(&now, 0);
+	timeval now;
+	gettimeofday(&now, 0);
 	
-		tm* today = localtime(&now.tv_sec);
+	tm* today = localtime(&now.tv_sec);
 	
-		int hh, mm, ss , ms;
+	int hh, mm, ss , ms;
 	
-		hh = today->tm_hour;
-		mm = today->tm_min;
-		ss = today->tm_sec;
-		ms = now.tv_usec / 1000;
+	hh = today->tm_hour;
+	mm = today->tm_min;
+	ss = today->tm_sec;
+	ms = now.tv_usec / 1000;
 	
-		stringstream stream;
 	
-		stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness << " \t"; 
+	progress_stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness << " \t"; 
 	
-		report_score(p, stream);
+	report_score(p, progress_stream);
 	
-		stream << endl;
+	progress_stream << endl;
 
-		cout << stream.str() << endl;
+	out << progress_stream.str() << endl;
+}
+
+void report(chromosome_t* b, chromosome_t* e) {
+
+	if (use_fifo) {
+		{
+			fstream progress_pipe(string("progress.") + fifo_name, ios::out);
+			report_progress(b,e,progress_pipe);
+		}
+		{
+			fstream score_pipe(string("score.") + fifo_name, ios::out);
+			report_score_gnuplot(b, e, score_pipe);
+		}
+	} else {
+		progress_stream.str("");
+		report_progress(b,e, cout);
 	}
 }
 

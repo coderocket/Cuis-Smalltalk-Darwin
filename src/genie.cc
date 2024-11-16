@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 
 	calculate_fitness(current, current + actual_population_size);
  
-	report_progress(current, current + actual_population_size);
+	report(current, current + actual_population_size);
 
 	for(int i = 0; i < N_EPOCH;i++) {
 
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
 			std::swap(next, current);
 			actual_population_size = next_population_size;
 		}
-		report_progress(current, current + actual_population_size);
+		report(current, current + actual_population_size);
 
 		if (should_store_solution) {
 			should_store_solution = false;
