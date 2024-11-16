@@ -1,0 +1,13 @@
+set terminal qt size 400,400
+
+# plot the score for individual rules
+
+set offsets 0,0,2,2
+set border lc rgbcolor "#888888"
+set boxwidth 0.8
+set style fill solid 0.2
+set xtic 1
+set yrange [-100:2]
+while (1) {
+plot 'score.gnuplot.fifo' using 1:2:(sprintf("%d", $2)) with labels point pt 2 offset 0,-1 notitle
+}

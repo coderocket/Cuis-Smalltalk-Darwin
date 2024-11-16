@@ -1,0 +1,15 @@
+set terminal qt size 400,400
+
+# plot the total score as a function of time
+
+set offsets 0,0,2,2
+set xdata time
+set autoscale y #yrange [0:1500]
+set timefmt "%H:%M:%S"
+set format x "%.3S"
+set border lc rgbcolor "#888888"
+
+while (1) {
+plot 'progress.gnuplot.fifo' using 1:2 notitle
+}
+
