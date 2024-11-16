@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 12 November 2024 at 9:44:57 pm'!
+'From Cuis7.1 [latest update: #6676] on 15 November 2024 at 5:10:42 pm'!
 'Description '!
-!provides: 'Darwin' 1 257!
+!provides: 'Darwin' 1 258!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -1197,6 +1197,11 @@ at: row at: column
 
 	^ row @ column :: asString! !
 
+!GridModel methodsFor: 'as yet unclassified' stamp: 'DF 11/15/2024 16:53:16'!
+colorAt: row at: column
+
+	^ Color white! !
+
 !GridModel methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 12:28:33'!
 columnsHeader
 
@@ -1304,7 +1309,7 @@ drawModelColumnHeadersOn: aCanvas
 	
 			 ! !
 
-!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:19:02'!
+!GridMorph methodsFor: 'as yet unclassified' stamp: 'DF 11/15/2024 16:53:54'!
 drawModelDataOn: aCanvas
 
 	| aFont dataOrigin dw dh canvas form nc nr |
@@ -1336,7 +1341,7 @@ drawModelDataOn: aCanvas
 		
 			t := model at: row at: col + 1.
 		
-			form fillWhite.
+			form fillWithColor: (model colorAt: row at: col + 1).
 			
 			canvas drawString: t at: 2@2 font: aFont color: Color black.
 			

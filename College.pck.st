@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 November 2024 at 9:55:00 pm'!
+'From Cuis7.1 [latest update: #6676] on 15 November 2024 at 6:39:00 pm'!
 'Description '!
-!provides: 'College' 1 113!
+!provides: 'College' 1 116!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -952,7 +952,7 @@ school
 	
 	! !
 
-!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:54:55'!
+!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/15/2024 16:57:49'!
 open: aPathString
 
 	| aCollegeModel solutions topics items aGridMorph |
@@ -1334,7 +1334,7 @@ items
 	
 	^keys collect:[:key | t at: key :: description ]! !
 
-!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 11/14/2024 21:45:24'!
+!CollegeTimeTableModel methodsFor: 'list model' stamp: 'DF 11/15/2024 18:33:22'!
 select: anIndex
 
 	| index keys t |
@@ -1345,10 +1345,16 @@ select: anIndex
 	
 	selection = 0 ifTrue:[instance := nil. ^self].
 	
+	(topic > topics size) ifTrue:[instance := nil. ^self].
+	
+	topic = 0 ifTrue:[instance := nil. ^self].
+	
 	t := college perform: (topics at:topic).
 	
 	keys :=  t keys sort.
-	
+
+	(selection > keys size) ifTrue:[instance := nil. ^self].
+		
 	index := keys at: selection.
 	
 	instance := t at: index.
@@ -1380,6 +1386,21 @@ at: row at: col
 	result ifEmpty: [^''].
 
 	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x,y].! !
+
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/15/2024 17:18:03'!
+colorAt: row at: col
+
+	| intervals |
+	
+	topic = 1 ifFalse:[^Color white].
+	
+	instance isNil ifTrue:[^Color white].
+	
+	self assert: (instance isKindOf: Lecturer).
+	
+	intervals := instance cordoned at: col.
+	
+	^intervals detect:[:each | each first <= row and: [row < each last] ] ifFound:[:x | Color h:0.0 s:0.17 v:1.0] ifNone:[Color white].! !
 
 !CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nCols
