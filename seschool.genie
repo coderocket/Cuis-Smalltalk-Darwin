@@ -4,7 +4,7 @@ Parameters
 epochs: 			15
 generations: 25 
 
-population: 			320
+population: 			1500
 instances: 			145
 
 mutationp :			1.0e-3
@@ -22,11 +22,11 @@ hour
 
 # day           hour
 
-1                  8 .. 17
-2                  8 .. 17
-3                  8 .. 17
-4                  8 .. 17
-5                  8 .. 17
+1                  8 .. 20
+2                  8 .. 20
+3                  8 .. 20
+4                  8 .. 20
+5                  8 .. 20
 6                  8 .. 13
 
 load seplan.genief
@@ -47,15 +47,37 @@ penalty for interval in timetable(lecturer, day) intersect(interval, hour .. hou
 # the same lecturer cannot teach on the same day and hour more than one class
  
 penalty group by (day, lecturer) overlap(hour .. hour + duration);
+
+# if a lecturer teaches in a particular day then they teach at least 3 hours
+
+penalty group by (day,lecturer) (sum(duration) > 0) * (  3 - sum(duration)) max 0 ;
  
 # the students in a frame cannot study more than one class in the same hour.
  
-penalty on frame group by (day) overlap(hour .. hour + duration);
+penalty on morning group by (day) overlap(hour .. hour + duration);
+
+penalty on evening group by (day) overlap(hour .. hour + duration);
 
 # a lecturer cannot teach more than 20 hours in a week
 
 penalty group by (lecturer) sum(duration) -  20 max 0;
 
+# a lecturer must no teach more than 6 hours a day
+
+penalty group by (day,lecturer) sum(duration) -  6 max 0;
+
+
 # each frame must have at least one free day
 
-penalty on frame count(day) - 4 max 0;
+penalty on morning count(day) - 4 max 0;
+
+penalty on evening count(day) - 4 max 0;
+
+# day tracks may not start lectures after 17
+
+penalty on morning sum(hour - 17 max 0) ;
+
+# evening tracks may not start lectures before 17
+
+penalty on evening sum(17 - hour max 0) ; 
+
