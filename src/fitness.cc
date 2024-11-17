@@ -32,22 +32,16 @@ extern int total_fitness;
 
 int fitness_array[POPULATION_SIZE + POPULATION_SIZE/4];
 
-void calculate_fitness(chromosome_t* b, chromosome_t* e) {
+void calculate_chromo_fitness(chromosome_t& cc) {
 
-extern int total_fitness;
+	instance_t an_instance[GENIE_N_INSTANCES];
 
-	total_fitness = 0;
+	chromosome_t* b = &cc;
 
-	for_each(b, e, [](chromosome_t& cc) {
+	chromosome_to_instance(b, an_instance);	
+	compute_instance_keys(an_instance);
 
-		instance_t an_instance[GENIE_N_INSTANCES];
-
-		chromosome_t* b = &cc;
-
-		chromosome_to_instance(b, an_instance);	
-		compute_instance_keys(an_instance);
-
-		b->fitness = 0;
+	b->fitness = 0;
 
 	int rule_location[GENIE_N_RULES];
 	int score[GENIE_N_RULES];
@@ -55,7 +49,17 @@ extern int total_fitness;
 for(int jj = 0 ; jj < GENIE_N_RULES; jj++) 
         b->fitness += score[jj];
 
-	});
+}
+
+void calculate_fitness(chromosome_t* b, chromosome_t* e) {
+
+extern int total_fitness;
+
+	total_fitness = 0;
+
+	chromosome_t* pp;
+	#pragma omp parallel for
+	for(pp = b; pp != e ; ++pp) calculate_chromo_fitness(*pp);
 
 	transform(b, e, fitness_array, [] (const chromosome_t& cc) { return cc.fitness; });
 
