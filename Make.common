@@ -17,10 +17,10 @@ clean:
 depend:
 	(cd $(SRC) && makedepend *.cc -f -) > dependencies
 
-prepare:
-	mkfifo make.fifo
-	mkfifo run.fifo
-	mkfifo gnuplot.fifo
+%.fifo:
+	mkfifo $(@F)
+
+prepare: make.fifo run.fifo score.gnuplot.fifo progress.gnuplot.fifo
 
 include dependencies
 
