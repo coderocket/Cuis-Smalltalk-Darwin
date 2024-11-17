@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 15 November 2024 at 5:10:42 pm'!
+'From Cuis7.1 [latest update: #6709] on 17 November 2024 at 6:20:31 pm'!
 'Description '!
-!provides: 'Darwin' 1 258!
+!provides: 'Darwin' 1 260!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -540,6 +540,10 @@ wd: aString
 	
 	codeGenerator codePath: aString asDirectoryEntry. scanner workingDirectory: aString asDirectoryEntry ! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/17/2024 17:53:42'!
+workingDirectory
+	^codeGenerator codePath! !
+
 !GenieBrowserModel methodsFor: 'error handling' stamp: 'DF 11/10/2024 08:47:45'!
 editFileEntry: aFileEntry markerAt: anInteger
 
@@ -848,10 +852,14 @@ compileDeterministicCall: aString value: anotherString type: funcInfo location: 
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/12/2024 21:32:47'!
-compileFunctionEnum: functionName finfo: funInfo expr: aString kind: anInteger position: positionInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/17/2024 18:19:39'!
+compileFunctionEnum: functionNameTerminal env: env expr: aString kind: anInteger position: positionInteger location: aToken
 
-	| min max  |
+	| functionName funInfo min max  |
+
+	functionName := functionNameTerminal value asString.
+	
+	funInfo := env at: functionName ifAbsent:[GenieException new messageText: 'Undefined function: ', functionName; index: functionNameTerminal index; start: functionNameTerminal start; end: functionNameTerminal end; signal ].
 
 	min := funInfo at:2.
 	
@@ -874,11 +882,15 @@ for(int ii = {6}; ii <= {7} ; ++ii) \{
 	\}
 \}' format:{ positionInteger . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start . functionName . min . max }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/28/2024 12:11:56'!
-compileFunctionEnum: functionName finfo: funInfo keys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/17/2024 18:20:26'!
+compileFunctionEnum: functionNameTerminal env: env keys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
 
-	| aStream  min max  |
+	| functionName aStream funInfo min max  |
 
+	functionName := functionNameTerminal value asString.
+	
+	funInfo := env at: functionName ifAbsent:[GenieException new messageText: 'Undefined function: ', functionName; index: functionNameTerminal index; start: functionNameTerminal start; end: functionNameTerminal end; signal ].
+	
 	min := funInfo at:2.
 	
 	max := funInfo at:3.
