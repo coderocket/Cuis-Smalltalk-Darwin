@@ -19,7 +19,7 @@ J=$PWD
 
 # create fifos for communicating with the genie compiler and gnuplot 
 
-mkfifo make.fifo
+mkfifo engine/make.fifo
 mkfifo run.fifo
 mkfifo score.gnuplot.fifo
 mkfifo progress.gnuplot.fifo

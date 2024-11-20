@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 17 November 2024 at 6:20:31 pm'!
+'From Cuis7.1 [latest update: #6676] on 20 November 2024 at 7:55:44 pm'!
 'Description '!
-!provides: 'Darwin' 1 260!
+!provides: 'Darwin' 1 263!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -20,7 +20,7 @@ GenieBrowserModel class
 
 !classDefinition: #GenieCodeGenerator category: #Darwin!
 Object subclass: #GenieCodeGenerator
-	instanceVariableNames: 'codePath'
+	instanceVariableNames: 'codePath place'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -125,7 +125,7 @@ build
 	succ ifTrue:[
 		self make ].! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/10/2024 08:55:21'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 18:31:59'!
 compile
 
 	| result |
@@ -160,6 +160,8 @@ Compiling ...
 	on: XraySyntaxError do:[:anXraySyntaxError | 
 	
 		self highlightErrorAt: anXraySyntaxError position. ]
+	
+	on: FileDoesNotExistException do:[ :aFileDoesNotExist |  consoleOutput := 'Files does not exist: {1}' format:{ aFileDoesNotExist messageText}. ]
 	
 	on: GenieException do:[:aGenieException |
 
@@ -209,14 +211,14 @@ generate
 	
 	codeGenerator generateCode: ast programName: programName ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:05:40'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 18:24:23'!
 initialize
 
 	consoleOutput := ''.
 	
 	programText := ''.
 	
-	configuration := 'openmp'. "release"
+	configuration := 'engine'. "release"
 
 	codeGenerator := GenieCodeGenerator new.
 	
@@ -390,7 +392,7 @@ reset
 	consoleOutput := 'deleted population.gimage file'. self changed: #console.
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/12/2024 17:28:31'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 18:42:01'!
 run
 
 	| workingDirectory fifoName commandName model aReadStream result |
@@ -398,7 +400,7 @@ run
 	
 	fifoName := 'run.fifo'.
 	
-	commandName := 'cd {1}  && exec ./{2}/genie -file 2> {3}' format: { workingDirectory . configuration . fifoName }.
+	commandName := 'cd {1}  && exec ./{2}/src/genie -file 2> {3}' format: { workingDirectory . configuration . fifoName }.
 	
 	consoleOutput := ''. self changed:#console. 
 
@@ -676,45 +678,45 @@ generateCode: anASTNode programName: aString
 	self generateKeys: #keycode @ anASTNode.
 ! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:16'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:50:43'!
 generateConstants: aString
 
-	codePath / 'src' // 'generated_constants.h' fileContents: aString.! !
+	codePath / place // 'generated_constants.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:26'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:50:48'!
 generateFitness: aString
 
-	codePath  / 'src' // 'generated_fitness.cc' fileContents: aString. ! !
+	codePath  / place // 'generated_fitness.cc' fileContents: aString. ! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:30'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:50:54'!
 generateFunctionDecls: aString
 
-	codePath  / 'src' // 'generated_functions.h' fileContents: aString.! !
+	codePath  / place // 'generated_functions.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:34'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:50:59'!
 generateFunctions: aString
 
-	codePath  / 'src' // 'generated_functions.cc' fileContents: aString.! !
+	codePath  / place // 'generated_functions.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:38'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:51:04'!
 generateKeys: aString
 
-	codePath / 'src' // 'generated_keys.cc' fileContents: aString.! !
+	codePath / place // 'generated_keys.cc' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/11/2024 22:19:43'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:51:09'!
 generateMutate: aString
 
-	codePath / 'src' // 'generated_attribute_layout.h' fileContents: aString.! !
+	codePath / place // 'generated_attribute_layout.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/27/2024 16:23:46'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:51:15'!
 generateTableHeaders: aString
 
-	codePath / 'src' // 'generated_tables.h' fileContents: aString.! !
+	codePath / place // 'generated_tables.h' fileContents: aString.! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 10/27/2024 16:23:35'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:51:20'!
 generateTables: aString
 
-	codePath / 'src' // 'generated_tables.cc' fileContents: aString.! !
+	codePath / place // 'generated_tables.cc' fileContents: aString.! !
 
 !GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 10/3/2024 23:39:07'!
 codePath
@@ -724,10 +726,12 @@ codePath
 codePath: aDirectoryEntry
 	codePath := aDirectoryEntry! !
 
-!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:19:19'!
+!GenieCodeGenerator methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 19:50:29'!
 initialize
 
-	codePath := DirectoryEntry currentDirectory 
+	codePath := DirectoryEntry currentDirectory.
+	
+	place := 'generated'.
 
 
 ! !

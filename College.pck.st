@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 15 November 2024 at 6:39:00 pm'!
+'From Cuis7.1 [latest update: #6676] on 20 November 2024 at 7:55:47 pm'!
 'Description '!
-!provides: 'College' 1 116!
+!provides: 'College' 1 117!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -1269,7 +1269,7 @@ load
 	
 	self changed:#solutions.! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 20:20:32'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 19:21:38'!
 selectSolution: anInteger
 
 	| aSolution |
@@ -1280,7 +1280,7 @@ selectSolution: anInteger
 	
 		college := College new.
 
-		college import: workingDirectory.
+		college import: workingDirectory asDirectoryEntry / 'csv'.
 
 		aSolution := solutions at: anInteger :: at: 'solution'.
 		
