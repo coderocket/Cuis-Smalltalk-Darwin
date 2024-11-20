@@ -11,7 +11,7 @@ AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile])
 
 # Checks for programs.
 AC_PROG_RANLIB
-AC_PROG_CXX
+AC_PROG_CXX([g++-14 g++])
 AC_PROG_CC
 gl_EARLY
 

@@ -4,23 +4,23 @@
 
 # create a directory to hold the compiled engine
 
-echo mkdir engine
+mkdir engine
 
 # create a directory to hold the c++ files that the genie compiler generates
 
-echo mkdir generated
-
-# create fifos for communicating with the genie compiler and gnuplot 
-
-echo mkfifo make.fifo
-echo mkfifo run.fifo
-echo mkfifo score.gnuplot.fifo
-echo mkfifo progress.gnuplot.fifo
+mkdir generated
 
 # configure the engine 
 
 C=$(dirname $0)/genie/configure
 J=$PWD
 
-cd engine && $C CXX='g++-14' CXXFLAGS="-O2 -fopenmp -I$J/generated"
+(cd engine && $C CXXFLAGS="-O2 -fopenmp -I$J/generated")
+
+# create fifos for communicating with the genie compiler and gnuplot 
+
+mkfifo make.fifo
+mkfifo run.fifo
+mkfifo score.gnuplot.fifo
+mkfifo progress.gnuplot.fifo
 

@@ -1,6 +1,7 @@
 *.csv
 *.o
 *.bak
+*~
 src/generated_*
 *.fifo
 dependencies
@@ -24,3 +25,4 @@ genie/config.sub
 genie/lib
 genie/autom4te.cache
 genie/config.h.in
+test.*.er
