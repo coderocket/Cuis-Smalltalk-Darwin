@@ -1,0 +1,326 @@
+
+
+----STARTUP---- (7 October 2024 09:50:23) as /Users/davidf/src/Cuis/Cuis-Smalltalk-Dev/CuisImage/Cuis7.1-6668-Darwin-12-9-24.image!
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/7/2024 09:59:00' prior: 50573113!
+make
+
+	| workingDirectory fifoName commandName aProcess aReadStream model result |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	fifoName := 'make.fifo'.
+	
+	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
+	
+	consoleOutput := ''. self changed:#console. 
+
+	model := self.
+			
+	aProcess := OSProcess command: commandName.
+
+	[aProcess isNotYetRunning ] whileTrue:[ Processor yield ].
+	
+	aReadStream := UniFileStream new.
+
+	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
+	
+	result ifNil:[
+		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
+
+	aReadStream disableReadBuffering .
+
+	[ | bytes |
+		
+	Delay forSeconds: 1 :: wait.
+	
+	bytes := aReadStream nextBytes:20.
+
+	[bytes size > 0] whileTrue:[
+	
+		consoleOutput := consoleOutput , bytes asString. model changed: #console.
+		
+		Processor yield.
+		
+		bytes := aReadStream nextBytes:20.
+	].
+
+	aReadStream close. ] value "fork"
+	! !
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/7/2024 10:03:06' prior: 50574771!
+make
+
+	| workingDirectory fifoName commandName aProcess aReadStream model result |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	fifoName := 'make.fifo'.
+	
+	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
+	
+	consoleOutput := ''. self changed:#console. 
+
+	model := self.
+			
+	aProcess := OSProcess command: commandName.
+
+	[aProcess isNotYetRunning ] whileTrue:[ Processor yield ].
+	
+	aReadStream := UniFileStream new.
+
+	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
+	
+	result ifNil:[
+		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
+
+	aReadStream disableReadBuffering .
+
+	[ | bytes |
+		
+	Delay forSeconds: 1 :: wait.
+	
+	bytes := aReadStream nextBytes:20.
+
+	[bytes size > 0] whileTrue:[
+	
+		self halt.
+		consoleOutput := consoleOutput , bytes asString. model changed: #console.
+		
+		Processor yield.
+		
+		bytes := aReadStream nextBytes:20.
+	].
+
+	aReadStream close. ] value "fork"
+	! !
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/7/2024 10:11:13' prior: 50574807!
+make
+
+	| workingDirectory fifoName commandName aProcess aReadStream model result |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	fifoName := 'make.fifo'.
+	
+	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
+	
+	consoleOutput := ''. self changed:#console. 
+
+	model := self.
+			
+	aProcess := OSProcess command: commandName.
+
+	[aProcess isNotYetRunning ] whileTrue:[ Processor yield ].
+	
+	aReadStream := UniFileStream new.
+
+	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
+	
+	result ifNil:[
+		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
+
+	aReadStream disableReadBuffering .
+
+	[ | bytes |
+		
+	Delay forSeconds: 1 :: wait.
+	
+	bytes := aReadStream nextBytes:20.
+
+	[bytes size > 0] whileTrue:[
+	
+		consoleOutput := consoleOutput , bytes asString. model changed: #console.
+		
+		Processor yield.
+		
+		bytes := aReadStream nextBytes:20.
+	].
+
+	self assert: (aReadStream nextBytes:20) > 0.
+	
+	aReadStream close. ] value "fork"
+	! !
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/7/2024 10:11:25' prior: 50574843!
+make
+
+	| workingDirectory fifoName commandName aProcess aReadStream model result |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	fifoName := 'make.fifo'.
+	
+	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
+	
+	consoleOutput := ''. self changed:#console. 
+
+	model := self.
+			
+	aProcess := OSProcess command: commandName.
+
+	[aProcess isNotYetRunning ] whileTrue:[ Processor yield ].
+	
+	aReadStream := UniFileStream new.
+
+	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
+	
+	result ifNil:[
+		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
+
+	aReadStream disableReadBuffering .
+
+	[ | bytes |
+		
+	Delay forSeconds: 1 :: wait.
+	
+	bytes := aReadStream nextBytes:20.
+
+	[bytes size > 0] whileTrue:[
+	
+		consoleOutput := consoleOutput , bytes asString. model changed: #console.
+		
+		Processor yield.
+		
+		bytes := aReadStream nextBytes:20.
+	].
+
+	self assert: (aReadStream nextBytes:20) size > 0.
+	
+	aReadStream close. ] value "fork"
+	! !
+
+bytes size !
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/7/2024 10:12:42' prior: 50574880!
+make
+
+	| workingDirectory fifoName commandName aProcess aReadStream model result |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	fifoName := 'make.fifo'.
+	
+	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
+	
+	consoleOutput := ''. self changed:#console. 
+
+	model := self.
+			
+	aProcess := OSProcess command: commandName.
+
+	[aProcess isNotYetRunning ] whileTrue:[ Processor yield ].
+	
+	aReadStream := UniFileStream new.
+
+	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
+	
+	result ifNil:[
+		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
+
+	aReadStream disableReadBuffering .
+
+	[ | bytes |
+		
+	Delay forSeconds: 1 :: wait.
+	
+	bytes := aReadStream nextBytes:20.
+
+	[bytes size > 0] whileTrue:[
+	
+		consoleOutput := consoleOutput , bytes asString. model changed: #console.
+		
+		Processor yield.
+		
+		bytes := aReadStream nextBytes:20.
+	].
+
+	self assert: (aReadStream nextBytes:20) size = 0.
+	
+	aReadStream close. ] value "fork"
+	! !
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/7/2024 10:14:39' prior: 50574918!
+make
+
+	| workingDirectory fifoName commandName aProcess aReadStream model result |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	fifoName := 'make.fifo'.
+	
+	commandName := 'cd {1}  && /usr/bin/make > {2} 2>&1' format: { workingDirectory . fifoName }.
+	
+	consoleOutput := ''. self changed:#console. 
+
+	model := self.
+			
+	aProcess := OSProcess command: commandName.
+
+	[aProcess isNotYetRunning ] whileTrue:[ Processor yield ].
+	
+	aReadStream := UniFileStream new.
+
+	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
+	
+	result ifNil:[
+		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
+
+	aReadStream disableReadBuffering .
+
+	[ | bytes |
+		
+	Delay forSeconds: 1 :: wait.
+	
+	bytes := aReadStream nextBytes:20.
+
+	[bytes size > 0] whileTrue:[
+	
+		consoleOutput := consoleOutput , bytes asString. model changed: #console.
+		
+		Processor yield.
+		
+		bytes := aReadStream nextBytes:20.
+	].
+
+	self assert: (aReadStream nextBytes:20) size = 0.
+	
+	aReadStream close. ] fork
+	! !
+
+aCollege  College example.
+
+aFile  '/Users/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry.
+
+aReadStream  ReadStream on: aFile fileContents.
+
+aJson  Json readFrom: aReadStream.
+
+aCollege assign: aJson.
+!
+
+PluggableCollegeGridModel college: aCollege topic: #lecturers format: [:each | '{1}:{2}' format:{each module description . each room description } ].
+!
+
+aCollege  College example.
+
+aFile  '/Users/davidf/src/Cuis-Smalltalk-Darwin/solution.json' asFileEntry.
+
+aReadStream  ReadStream on: aFile fileContents.
+
+aJson  Json readFrom: aReadStream.
+
+aCollege assign: aJson.
+!
+
+PluggableCollegeGridModel college: aCollege topic: #rooms format: [:each | '{1}:{2}' format:{each lecturer description . each module description } ].
+!
+
+PluggableCollegeGridModel college: aCollege topic: #frames format: [:each | '{1}:{2}' format:{each lecturer description . each module description } ].
+!
+
+PluggableCollegeGridModel college: aCollege topic: #lecturers format: [:each | '{1}:{2}' format:{each module description . each room description } ].
+!
+
+PluggableCollegeGridModel college: aCollege topic: #frames format: [:each | '{1}:{2}' format:{each lecturer description . each module description } ].
+!
+
+----SNAPSHOT----(7 October 2024 17:41:38) Cuis7.1-6668-Darwin-12-9-24.image priorSource: 7779601!
+
+----QUIT----(8 October 2024 13:15:40) Cuis7.1-6668-Darwin-12-9-24.image priorSource: 7788097!

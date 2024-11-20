@@ -1,0 +1,234 @@
+
+
+----STARTUP---- (13 October 2024 09:56:45) as /Users/davidf/src/Cuis/Cuis-Smalltalk-Dev/CuisImage/Cuis7.1-6668-Genie-15-09-24.image!
+
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-Darwin/Darwin.pck.st----!
+
+!methodRemoval: Dictionary #project: stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+project: keys
+
+	| result |
+	
+	result := self class new.
+	
+	self keysAndValuesDo: [:key :value | keys includes: key :: ifTrue:[ result at:key put: value ] ].
+	
+	^result!
+
+!methodRemoval: SequenceableCollection #toDictionaryUsing: stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+toDictionaryUsing: keys
+
+	| result |
+	
+	result := Dictionary new.
+	
+	1 to: self size do:[:index | result at: (keys at:index) put: (self at:index) ].
+	
+	^result!
+
+!methodRemoval: GenieCompiler #compileRulePrimitiveCallName:expr: stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+compileRulePrimitiveCallName: aString expr: anotherString
+
+	validFunctions includes: aString :: ifFalse:[GenieUndefinedSymbolException new messageText:'Undefined function ', aString ; signal].
+
+	^ 'genie_{1}(b,e,[](const gene_t* each) \{ return {2}; \})' format:{aString . anotherString } 
+	!
+
+!methodRemoval: GenieCompiler #compileParameters:values: stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+compileParameters: names values: values
+
+	| aStream params |
+
+	names includes: 'GENIE_GENES' :: ifFalse:[self error: 'genes is not defined'].
+
+	params := defaults copy.
+	
+	1 to: names size do:[:i | params at: (names at:i) put: (values at:i) ].		
+	
+	aStream := WriteStream on:''.
+	
+	params keysAndValuesDo: [:key :value | aStream nextPutAll: 'const int ' ; nextPutAll: key ; nextPutAll: ' = ' ; nextPutAll: value ; nextPutAll:';' ; nextPut: Character lf.  ].
+	
+	^aStream contents!
+
+!methodRemoval: GenieCompiler #compileTable:name: stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+compileTable: anOrderedCollection name: aString
+
+	| aStream |
+	
+	aStream := WriteStream on:''.
+	
+	aStream nextPutAll: 'int genie_' ; nextPutAll: aString ; nextPutAll: '(int arg) {'; nextPut: Character lf.
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each ] separatedBy:[ aStream nextPut: Character lf].
+	
+	aStream nextPut: Character lf.
+	
+	aStream nextPutAll: '{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_' ; nextPutAll: aString ; nextPutAll:'" ; throw invalid_argument(err_msg.str()); }'; nextPut: Character lf; nextPutAll:'}'; nextPut: Character lf.
+	
+	^aStream contents !
+
+!methodRemoval: GridModel #title stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+title
+	^'Title'!
+
+!methodRemoval: GenieCodeGenerator #getSolutionKeys: stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+getSolutionKeys: anASTNode
+
+	^(#attrs @ anASTNode).
+	
+	!
+
+!classRemoval: #PluggableGridBrowserModel stamp: 'Install-Darwin 10/13/2024 09:56:58'!
+GridModel subclass: #PluggableGridBrowserModel
+	instanceVariableNames: 'selection dictionary indices topic template'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-Darwin/College.pck.st----!
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel codePath: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-LayoutAlgebra/LayoutAlgebra.pck.st----!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-RegEx/Regex-Core.pck.st----!
+
+!methodRemoval: Character #asInteger stamp: 'Install-Regex-Core 10/13/2024 10:06:09'!
+asInteger
+	"From Squeak"
+	"Answer the receiver's character code."
+	<primitive: 171>
+	^self primitiveFailed!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/13/2024 10:11:00' prior: 50473153!
+program: aText
+
+	aText removeAttributesThat: [:attr | attr isTextColor].
+	
+	programText := 'Parameters|Schema|Functions|Keys|Rules' asRegex copy:aText  translatingMatchesUsing:[:each | each color: Color blue  ].
+		
+	programText := '#:^isLineSeparator:*:isLineSeparator:' asRegex copy:programText translatingMatchesUsing:[:each | each color: Color green darker darker darker ].
+	
+	Programs at: programName put: programText.
+	
+	^true! !
+
+aGenieBrowserModel  GenieBrowserModel new.
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+aGenieBrowserModel  GenieBrowserModel new.!
+!RxCharSetParser methodsFor: 'parsing' stamp: 'DF 10/13/2024 10:18:57' prior: 50475969!
+addRangeFrom: firstChar to: lastChar
+
+	firstChar codePoint > lastChar codePoint ifTrue:
+		[RxParser signalSyntaxException: ' bad character range'].
+	elements add: (RxsRange from: firstChar to: lastChar)! !
+!Character methodsFor: '*Regex-Core' stamp: 'DF 10/13/2024 10:20:38'!
+asInteger
+	^self codePoint! !
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+programName  'college'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+self initialize!
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+!GenieCompiler methodsFor: 'initialization' stamp: 'DF 10/13/2024 10:27:39' prior: 50473794 overrides: 16932029!
+initialize
+
+self halt.
+
+	defaults := { 
+		'GENIE_EPOCHS' -> 							{ 'int' . '15' } . 
+		'GENIE_GENERATIONS' -> 							{ 'int' . '100'} . 
+		'GENIE_THREADS' -> 							{ 'int' . '1'} . 
+		'GENIE_MUTATIONP' -> 							{ 'double' . '1e-3' }  . 
+		'GENIE_INVERSIONP' -> 							{ 'double' . '1e-2' } . 
+		'GENIE_POPULATION' -> 							{ 'int' . '1000'  } } asDictionary.
+	
+	validFunctions := { 'sum' . 'count' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' }.
+
+! !
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+Instance := self new!
+!GenieCompiler methodsFor: 'initialization' stamp: 'DF 10/13/2024 10:28:55' prior: 50479700 overrides: 16932029!
+initialize
+
+	defaults := { 
+		'GENIE_EPOCHS' -> 							{ 'int' . '15' } . 
+		'GENIE_GENERATIONS' -> 							{ 'int' . '100'} . 
+		'GENIE_THREADS' -> 							{ 'int' . '1'} . 
+		'GENIE_MUTATIONP' -> 							{ 'double' . '1e-3' }  . 
+		'GENIE_INVERSIONP' -> 							{ 'double' . '1e-2' } . 
+		'GENIE_POPULATION' -> 							{ 'int' . '1000'  } } asDictionary.
+	
+	validFunctions := { 'sum' . 'count' . 'overlap' . 'maxgap' . 'mingap' . 'overlap_with' }.
+
+! !
+
+aGenieBrowserModel  GenieBrowserModel new.!
+
+aGenieBrowserModel  wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'.!
+
+GenieBrowser open: aGenieBrowserModel label: 'Genie Browser'.!
+
+----SNAPSHOT----(13 October 2024 10:29:46) Cuis7.1-6668-Genie-15-09-24.image priorSource: 4519046!
+
+----SNAPSHOT----(13 October 2024 10:31:04) Cuis7.1-6668-Genie-15-09-24.image priorSource: 4738964!
+
+Feature require:'OSProcess'.!
+
+----End fileIn of /Users/davidf/src/Cuis/Cuis-Smalltalk-Dev/Packages/System/Network-Kernel.pck.st----!
+
+----End fileIn of /Users/davidf/src/Cuis/OSProcess/OSProcess.pck.st----!
+
+----SNAPSHOT----(13 October 2024 10:32:02) Cuis7.1-6668-Genie-15-09-24.image priorSource: 4739064!
+
+8 * 60 !
+
+480 / 30 !
+
+480 / 30 !

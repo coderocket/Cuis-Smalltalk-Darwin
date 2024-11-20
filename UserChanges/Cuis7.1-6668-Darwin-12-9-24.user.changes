@@ -1,0 +1,485 @@
+
+
+----STARTUP---- (15 October 2024 11:52:47) as /Users/davidf/src/Cuis/Cuis-Smalltalk-Dev/CuisImage/Cuis7.1-6668-Darwin-12-9-24.image!
+
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-RegEx/Regex-Tests.pck.st----!
+
+----End fileIn of /Users/davidf/src/Cuis/Cuis-Smalltalk-Dev/Packages/TerseGuide.pck.st----!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-RegEx/Regex.pck.st----!
+
+!methodRemoval: CharacterSequence #search: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+search: aString
+	"compatibility method to make regexp and strings work polymorphicly"
+	^ aString includesSubString: self!
+
+!methodRemoval: CharacterSequence #copyWithRegex:matchesTranslatedUsing: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+copyWithRegex: rxString matchesTranslatedUsing: aBlock
+
+	^rxString asRegex
+		copy: self translatingMatchesUsing: aBlock!
+
+!methodRemoval: CharacterSequence #regex:matchesCollect: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+regex: rxString matchesCollect: aBlock
+
+	^rxString asRegex matchesIn: self collect: aBlock!
+
+!methodRemoval: CharacterSequence #allRegexMatches: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+allRegexMatches: rxString
+
+	^rxString asRegex matchesIn: self!
+
+!methodRemoval: CharacterSequence #prefixMatchesRegexIgnoringCase: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+prefixMatchesRegexIgnoringCase: regexString
+	"Test if the receiver's prefix matches a regex.	
+	May raise RxParser class>>regexErrorSignal or child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegexIgnoringCase matchesPrefix: self!
+
+!methodRemoval: CharacterSequence #asRegexIgnoringCase stamp: 'Install-Regex 10/15/2024 11:53:15'!
+asRegexIgnoringCase
+	"Compile the receiver as a regex matcher. May raise RxParser>>syntaxErrorSignal
+	or RxParser>>compilationErrorSignal.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^RxParser preferredMatcherClass
+		for: (RxParser new parse: self)
+		ignoreCase: true!
+
+!methodRemoval: CharacterSequence #copyWithRegex:matchesReplacedWith: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+copyWithRegex: rxString matchesReplacedWith: aString
+
+	^rxString asRegex
+		copy: self replacingMatchesWith: aString!
+
+!methodRemoval: CharacterSequence #regex:matchesDo: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+regex: rxString matchesDo: aBlock
+
+	^rxString asRegex matchesIn: self do: aBlock!
+
+!methodRemoval: CharacterSequence #matchesRegexIgnoringCase: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+matchesRegexIgnoringCase: regexString
+	"Test if the receiver matches a regex.  May raise RxParser>>regexErrorSignal or
+	child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegexIgnoringCase matches: self!
+
+!methodRemoval: CharacterSequence #allRangesOfRegexMatches: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+allRangesOfRegexMatches: rxString
+
+	^rxString asRegex matchingRangesIn: self!
+
+!methodRemoval: CharacterSequence #prefixMatchesRegex: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+prefixMatchesRegex: regexString
+	"Test if the receiver's prefix matches a regex.	
+	May raise RxParser class>>regexErrorSignal or child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegex matchesPrefix: self!
+
+!methodRemoval: CharacterSequence #asRegex stamp: 'Install-Regex 10/15/2024 11:53:15'!
+asRegex
+	"Compile the receiver as a regex matcher. May raise RxParser>>syntaxErrorSignal
+	or RxParser>>compilationErrorSignal.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^RxParser preferredMatcherClass for: (RxParser new parse: self)!
+
+!methodRemoval: CharacterSequence #matchesRegex: stamp: 'Install-Regex 10/15/2024 11:53:15'!
+matchesRegex: regexString
+	"Test if the receiver matches a regex.  May raise RxParser>>regexErrorSignal or
+	child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegex matches: self!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-Darwin/Darwin.pck.st----!
+
+!methodRemoval: GenieCompiler #compileTableExpr:index:key:key:expr:kind: stamp: 'Install-Darwin 10/15/2024 11:53:31'!
+compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger
+
+^ 'b->fitness {6}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
+	return genie_table_iterate(genie_{1}, (*each)[GENIE_{2}], (*each)[GENIE_{3}], [each](const interval_t& {4}) \{ return {5} \; \}); \});' format: { tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }!
+
+!methodRemoval: GenieCompiler #compileRuleGroupByKeys:expr:kind: stamp: 'Install-Darwin 10/15/2024 11:53:31'!
+compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger
+
+	| aStream  |
+	
+	aStream := WriteStream on: ''. 
+	
+	anOrderedCollection do:[:each | aStream nextPutAll: each asUppercase ] separatedBy:[ aStream nextPutAll: ', ' ].
+	
+	^ '\{ int keys[] = \{{1}\}; 
+
+b->fitness {4}= group_by(an_instance, keys,{2},[](instance_t** b, instance_t** e) 
+	\{ return {3}; \}); \}' format:{ aStream contents  . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] }!
+
+!methodRemoval: GenieCompiler #compileRuleExpr:kind: stamp: 'Install-Darwin 10/15/2024 11:53:31'!
+compileRuleExpr: aString kind: anInteger
+
+	^'b->fitness {1}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {2}; \});' format:{ (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString }.
+	!
+
+!methodRemoval: GenieCompiler #compileTableExpr:keys:expr: stamp: 'Install-Darwin 10/15/2024 11:53:31'!
+compileTableExpr: aString keys: anOrderedCollection expr: exprString
+
+	| aWriteStream |
+	
+	aWriteStream := WriteStream on: ''.
+	
+	anOrderedCollection do:[:each | aWriteStream nextPutAll: ('(*each)[{1}]'format: {each}) ] separatedBy: [aWriteStream nextPutAll: ', '].
+
+^ 
+
+'b->fitness += sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
+	genie_table_iterate({1}, {2}, [](const interval_t& interval) \{ return {3} \; \});' format: { aString . aWriteStream contents . exprString }!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-Darwin/College.pck.st----!
+
+!methodRemoval: College #assignInstance:to: stamp: 'Install-College 10/15/2024 11:53:34'!
+assignInstance: aModuleInstance to: aGene
+
+	| room day hour frame module lecturer duration  |
+
+	room := rooms at: (aGene at:1).
+	
+	day := aGene at:2.
+	
+	hour := aGene at:3.
+
+	lecturer := lecturers at: (aGene at:4).
+
+	module := modules at: (aGene at:5).
+
+	frame := frames at: (aGene at:6).
+		
+	duration := aGene at:7.
+	
+	aModuleInstance day: day ; hour: hour.		
+	
+	aModuleInstance room: room. room addInstance: aModuleInstance.
+	
+	self assert: duration = module duration.
+	
+	aModuleInstance module: module. module addInstance: aModuleInstance.
+	
+	aModuleInstance lecturer: lecturer. lecturer addInstance: aModuleInstance.
+	
+	aModuleInstance frame: frame. frame addInstance: aModuleInstance 
+
+	!
+
+!methodRemoval: College #assign: stamp: 'Install-College 10/15/2024 11:53:34'!
+assign: aSolution  
+
+	aSolution do:[:each | 
+
+		self assignInstance: (instances at: (each at:1) + 1) to: (each at:2) ]!
+
+----SNAPSHOT----(15 October 2024 11:54:19) Cuis7.1-6668-Darwin-12-9-24.image priorSource: 7788196!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-LayoutAlgebra/LayoutAlgebra.pck.st----!
+
+----SNAPSHOT----(15 October 2024 11:54:30) Cuis7.1-6668-Darwin-12-9-24.image priorSource: 8202420!
+
+aGenieBrowserModel  GenieBrowserModel new.
+
+aGenieBrowserModel wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'. 
+
+GenieBrowser open: aGenieBrowserModel label:'Genie Browser'.!
+
+----End fileIn of /Users/davidf/src/Cuis-Smalltalk-RegEx/Regex-Core.pck.st----!
+
+!methodRemoval: String #regex:matchesCollect: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+regex: rxString matchesCollect: aBlock
+
+	^rxString asRegex matchesIn: self collect: aBlock!
+
+!methodRemoval: String #allRangesOfRegexMatches: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+allRangesOfRegexMatches: rxString
+
+	^rxString asRegex matchingRangesIn: self!
+
+!methodRemoval: String #copyWithRegex:matchesReplacedWith: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+copyWithRegex: rxString matchesReplacedWith: aString
+
+	^rxString asRegex
+		copy: self replacingMatchesWith: aString!
+
+!methodRemoval: String #matchesRegex: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+matchesRegex: regexString
+	"Test if the receiver matches a regex.  May raise RxParser>>regexErrorSignal or
+	child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegex matches: self!
+
+!methodRemoval: String #allRegexMatches: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+allRegexMatches: rxString
+
+	^rxString asRegex matchesIn: self!
+
+!methodRemoval: String #search: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+search: aString
+	"compatibility method to make regexp and strings work polymorphicly"
+	^ aString includesSubString: self!
+
+!methodRemoval: String #matchesRegexIgnoringCase: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+matchesRegexIgnoringCase: regexString
+	"Test if the receiver matches a regex.  May raise RxParser>>regexErrorSignal or
+	child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegexIgnoringCase matches: self!
+
+!methodRemoval: String #asRegex stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+asRegex
+	"Compile the receiver as a regex matcher. May raise RxParser>>syntaxErrorSignal
+	or RxParser>>compilationErrorSignal.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^RxParser preferredMatcherClass for: (RxParser new parse: self)!
+
+!methodRemoval: Character #asInteger stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+asInteger
+	"From Squeak"
+	"Answer the receiver's character code."
+	<primitive: 171>
+	^self primitiveFailed!
+
+!methodRemoval: String #prefixMatchesRegex: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+prefixMatchesRegex: regexString
+	"Test if the receiver's prefix matches a regex.	
+	May raise RxParser class>>regexErrorSignal or child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegex matchesPrefix: self!
+
+!methodRemoval: String #prefixMatchesRegexIgnoringCase: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+prefixMatchesRegexIgnoringCase: regexString
+	"Test if the receiver's prefix matches a regex.	
+	May raise RxParser class>>regexErrorSignal or child signals.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^regexString asRegexIgnoringCase matchesPrefix: self!
+
+!methodRemoval: String #asRegexIgnoringCase stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+asRegexIgnoringCase
+	"Compile the receiver as a regex matcher. May raise RxParser>>syntaxErrorSignal
+	or RxParser>>compilationErrorSignal.
+	This is a part of the Regular Expression Matcher package, (c) 1996, 1999 Vassili Bykov.
+	Refer to `documentation' protocol of RxParser class for details."
+
+	^RxParser preferredMatcherClass
+		for: (RxParser new parse: self)
+		ignoreCase: true!
+
+!methodRemoval: String #regex:matchesDo: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+regex: rxString matchesDo: aBlock
+
+	^rxString asRegex matchesIn: self do: aBlock!
+
+!methodRemoval: String #copyWithRegex:matchesTranslatedUsing: stamp: 'Install-Regex-Core 10/15/2024 12:52:01'!
+copyWithRegex: rxString matchesTranslatedUsing: aBlock
+
+	^rxString asRegex
+		copy: self translatingMatchesUsing: aBlock!
+
+aGenieBrowserModel  GenieBrowserModel new.
+
+aGenieBrowserModel wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'. 
+
+GenieBrowser open: aGenieBrowserModel label:'Genie Browser'.!
+!Character methodsFor: '*Regex-Core' stamp: 'DF 10/15/2024 12:52:34'!
+asInteger
+	^self codePoint! !
+This is a common superclass for errors in regular expressions.!
+This class represents compilation errors in regular expressions.!
+This class represents matching errors in regular expressions.!
+This class represents syntax errors in regular expressions.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+I am a parser created to parse the insides of a character set ([...]) construct. I create and answer a collection of "elements", each being an instance of one of: RxsCharacter, RxsRange, or RxsPredicate.
+
+Instance Variables:
+
+	source	<Stream>	open on whatever is inside the square brackets we have to parse.
+	lookahead	<Character>	The current lookahead character
+	elements	<Collection of: <RxsCharacter|RxsRange|RxsPredicate>> Parsing result!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A match start optimizer, handy for searching a string. Takes a regex syntax tree and sets itself up so that prefix characters or matcher states that cannot start a match are later recognized with #canStartMatch:in: method.
+
+Used by RxMatcher, but can be used by other matchers (if implemented) as well.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+This is a recursive regex matcher. Not strikingly efficient, but simple. Also, keeps track of matched subexpressions.  The life cycle goes as follows:
+
+1. Initialization. Accepts a syntax tree (presumably produced by RxParser) and compiles it into a matcher built of other classes in this category.
+
+2. Matching. Accepts a stream or a string and returns a boolean indicating whether the whole stream or its prefix -- depending on the message sent -- matches the regex.
+
+3. Subexpression query. After a successful match, and before any other match, the matcher may be queried about the range of specific stream (string) positions that matched to certain parenthesized subexpressions of the original expression.
+
+Any number of queries may follow a successful match, and any number or matches may follow a successful initialization.
+
+Note that `matcher' is actually a sort of a misnomer. The actual matcher is a web of Rxm* instances built by RxMatcher during initialization. RxMatcher is just the interface facade of this network.  It is also a builder of it, and also provides a stream-like protocol to easily access the stream being matched.
+
+Instance variables:
+	matcher				<RxmLink> The entry point into the actual matcher.
+	stream				<Stream> The stream currently being matched against.
+	markerPositions		<Array of: Integer> Positions of markers' matches.
+	markerCount		<Integer> Number of markers.
+	lastResult 			<Boolean> Whether the latest match attempt succeeded or not.
+	lastChar			<Character | nil> character last seen in the matcher stream!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+The regular expression parser. Translates a regular expression read from a stream into a parse tree. ('accessing' protocol). The tree can later be passed to a matcher initialization method.  All other classes in this category implement the tree. Refer to their comments for any details.
+
+Instance variables:
+	input		<Stream> A stream with the regular expression being parsed.
+	lookahead	<Character>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A matcher is built of a number of links interconnected into some intricate structure. Regardless of fancy stuff, any link (except for the terminator) has the next one. Any link can match against a stream of characters, recursively propagating the match to the next link. Any link supports a number of matcher-building messages. This superclass does all of the above. 
+
+The class is not necessarily abstract. It may double as an empty string matcher: it recursively propagates the match to the next link, thus always matching nothing successfully.
+
+Principal method:
+	matchAgainst: aMatcher
+		Any subclass will reimplement this to test the state of the matcher, most
+		probably reading one or more characters from the matcher's stream, and
+		either decide it has matched and answer true, leaving matcher stream
+		positioned at the end of match, or answer false and restore the matcher
+		stream position to whatever it was before the matching attempt.
+
+Instance variables:
+	next		<RxmLink | RxmTerminator> The next link in the structure.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+This is a branch of a matching process. Either `next' chain should match, or `alternative', if not nil, should match. Since this is also used to build loopbacks to match repetitions, `loopback' variable indicates whether the instance is a loopback: it affects the matcher-building operations (which of the paths through the branch is to consider as the primary when we have to find the "tail" of a matcher construct).
+
+Instance variables
+	alternative		<RxmLink> to match if `next' fails to match.
+	loopback		<Boolean>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A marker is used to remember positions of match of certain points of a regular expression. The marker receives an identifying key from the Matcher and uses that key to report positions of successful matches to the Matcher.
+
+Instance variables:
+	index	<Object> Something that makes sense for the Matcher. Received from the latter during initalization and later passed to it to identify the receiver.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+Instance holds onto a one-argument block and matches exactly one character if the block evaluates to true when passed the character as the argument.
+
+Instance variables:
+	predicate		<BlockClosure>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A special node that matches a specific matcher state rather than any input character.
+The state is either at-beginning-of-line or at-end-of-line.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+Instance holds onto a string and matches exactly this string, and exactly once.
+
+Instance variables:
+	string 	<String>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+Instances of this class are used to terminate matcher's chains. When a match reaches this (an instance receives #matchAgainst: message), the match is considered to succeed. Instances also support building protocol of RxmLinks, with some restrictions.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A generic syntax tree node, provides some common responses to the standard tests, as well as tree structure printing -- handy for debugging.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A Branch is a Piece followed by a Branch or an empty string.
+
+Instance variables:
+	piece		<RxsPiece>
+	branch		<RxsBranch|RxsEpsilon>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A character set corresponds to a [...] construct in the regular expression.
+
+Instance variables:
+	elements	<OrderedCollection> An element can be one of: RxsCharacter, RxsRange, or RxsPredicate.
+	negated		<Boolean>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A character is a literal character that appears either in the expression itself or in a character set within an expression.
+
+Instance variables:
+	character		<Character>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+One of a few special nodes more often representing special state of the match rather than a predicate on a character.  The ugly exception is the #any condition which *is* a predicate on a character.
+
+Instance variables:
+	kind		<Selector>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+This is an empty string.  It terminates some of the recursive constructs.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A message predicate represents a condition on a character that is tested (at the match time) by sending a unary message to the character expecting a Boolean answer.
+
+Instance variables:
+	selector		<Symbol>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+A piece is an atom, possibly optional or repeated a number of times.
+
+Instance variables:
+	atom	<RxsCharacter|RxsCharSet|RxsPredicate|RxsRegex|RxsSpecial>
+	min		<Integer>
+	max	<Integer|nil> nil means infinity!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+This represents a character that satisfies a certain predicate.
+
+Instance Variables:
+
+	predicate	<BlockClosure>	A one-argument block. If it evaluates to the value defined by <negated> when it is passed a character, the predicate is considered to match.
+	negation	<BlockClosure>	A one-argument block that is a negation of <predicate>.!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+I represent a range of characters as appear in character classes such as
+
+	[a-ZA-Z0-9].
+
+I appear in a syntax tree only as an element of RxsCharSet.
+
+Instance Variables:
+
+	first	<Character>
+	last	<Character>!
+-- Regular Expression Matcher v 1.1 (C) 1996, 1999 Vassili Bykov
+--
+The body of a parenthesized thing, or a top-level expression, also an atom.  
+
+Instance variables:
+	branch		<RxsBranch>
+	regex		<RxsRegex | RxsEpsilon>!
+
+self initialize!
+
+aGenieBrowserModel  GenieBrowserModel new.
+
+aGenieBrowserModel wd: '/Users/davidf/src/Cuis-Smalltalk-Darwin'. 
+
+GenieBrowser open: aGenieBrowserModel label:'Genie Browser'.!
