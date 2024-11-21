@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 20 November 2024 at 7:55:47 pm'!
+'From Cuis7.1 [latest update: #6676] on 21 November 2024 at 7:21:13 pm'!
 'Description '!
-!provides: 'College' 1 117!
+!provides: 'College' 1 118!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -13,16 +13,6 @@ Object subclass: #College
 	category: 'College'!
 !classDefinition: 'College class' category: #College!
 College class
-	instanceVariableNames: ''!
-
-!classDefinition: #CollegeTimeTableBrowser category: #College!
-Object subclass: #CollegeTimeTableBrowser
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'CollegeTimeTableBrowser class' category: #College!
-CollegeTimeTableBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeTopic category: #College!
@@ -87,12 +77,22 @@ ModuleInstance class
 
 !classDefinition: #CollegeTimeTableModel category: #College!
 GridModel subclass: #CollegeTimeTableModel
-	instanceVariableNames: 'solutions selection college indices topic format instance topicIndex topics workingDirectory selectedSolution'
+	instanceVariableNames: 'solutions selection college indices topic format instance topicIndex topics workingDirectory selectedSolution genie'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
 !classDefinition: 'CollegeTimeTableModel class' category: #College!
 CollegeTimeTableModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeTimeTableBrowser category: #College!
+SystemWindow subclass: #CollegeTimeTableBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeTimeTableBrowser class' category: #College!
+CollegeTimeTableBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeNavigator category: #College!
@@ -952,27 +952,6 @@ school
 	
 	! !
 
-!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/15/2024 16:57:49'!
-open: aPathString
-
-	| aCollegeModel solutions topics items aGridMorph |
-	
-	aCollegeModel := CollegeTimeTableModel new.
-
-	aCollegeModel workingDirectory: aPathString ; load.
-	
-	solutions := PluggableListMorph withModel: aCollegeModel listGetter: #solutions indexGetter: #selectedSolution indexSetter: #selectSolution:. 
-	
-	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topic indexSetter: #topic:.
-	
-	items := PluggableListMorph withModel: aCollegeModel listGetter: #items indexGetter: #selection indexSetter: #select:.
-
-	aGridMorph := GridMorph new model: aCollegeModel. 
-
-	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
-	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('Time Table') :: openInWorld 
-! !
-
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
 addInstance: aModuleInstance
 	
@@ -1223,6 +1202,24 @@ room
 room: aRoom
 	room := aRoom! !
 
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:21:07'!
+analyse
+
+	| aSolutionModel |
+	
+	aSolutionModel := SolutionsModel new.
+	 
+	aSolutionModel solutions: solutions. 
+	
+	aSolutionModel program: genie program.
+	
+	GenieSolutionBrowser open: aSolutionModel.! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:14:59'!
+genie: aGenieBrowserModel
+	genie := aGenieBrowserModel 
+	! !
+
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:25'!
 initialize
 	
@@ -1269,6 +1266,13 @@ load
 	
 	self changed:#solutions.! !
 
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:46:20'!
+navigate
+
+	college ifNil: [^self].
+	
+	college navigator! !
+
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 19:21:38'!
 selectSolution: anInteger
 
@@ -1292,6 +1296,17 @@ selectSolution: anInteger
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:17'!
 selectedSolution
 	^selectedSolution ! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:45:08'!
+setWorkingDirectory
+
+	StringRequestMorph 
+		request: 'Working directory'
+		initialAnswer: workingDirectory asString
+		verifying: [:aString |
+			aString notEmpty and:[ aString asDirectoryEntry isDirectory] ] 
+		do: [ :aString | 
+			workingDirectory := aString asDirectoryEntry ]! !
 
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:54:41'!
 solutions
@@ -1409,6 +1424,39 @@ nCols
 !CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nRows
 	^24! !
+
+!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:41:32'!
+buildMorphicWindow
+
+	| solutions topics items aGridMorph |
+	
+	model load.
+	
+	solutions := PluggableListMorph withModel: model listGetter: #solutions indexGetter: #selectedSolution indexSetter: #selectSolution: :: menuNshortcutsKey: #programsMenuSpec.. 
+	
+	topics := PluggableListMorph withModel: model listGetter: #topics indexGetter: #topic indexSetter: #topic:.
+	
+	items := PluggableListMorph withModel: model listGetter: #items indexGetter: #selection indexSetter: #select:.
+
+	aGridMorph := GridMorph new model: model. 
+
+	self layoutMorph addMorph:
+	
+	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
+	
+! !
+
+!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:17:49'!
+programsMenuSpec
+
+	^# (
+		#(0 		'College Browser' 					false)
+		
+		#(10 		'navigate (n)'			 $a model navigate nil 'open a navigator')
+		#(20 		'analyse program (a)'			 $a model analyse nil 'show the penalties for each rule')
+		#(40 		'-----')
+		#(60 'set working directory ... (w)' $f model setWorkingDirectory nil 'set the directory into which programs will file out')
+	)! !
 
 !CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:15'!
 attributeContents
