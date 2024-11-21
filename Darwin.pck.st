@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 20 November 2024 at 7:55:44 pm'!
+'From Cuis7.1 [latest update: #6676] on 21 November 2024 at 7:34:40 pm'!
 'Description '!
-!provides: 'Darwin' 1 263!
+!provides: 'Darwin' 1 265!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -10,7 +10,7 @@ SystemOrganization addCategory: #Darwin!
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration solutions selectedSolution scanner'
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration selectedSolution scanner'
 	classVariableNames: 'CommentRegex InitialProgramTemplate KeywordsRegex Programs SectionHeadersRegex'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -46,6 +46,16 @@ Object subclass: #GridModel
 	category: 'Darwin'!
 !classDefinition: 'GridModel class' category: #Darwin!
 GridModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #SolutionsModel category: #Darwin!
+Object subclass: #SolutionsModel
+	instanceVariableNames: 'solutions selectedSolution programText selection'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Darwin'!
+!classDefinition: 'SolutionsModel class' category: #Darwin!
+SolutionsModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #GenieException category: #Darwin!
@@ -211,7 +221,7 @@ generate
 	
 	codeGenerator generateCode: ast programName: programName ! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 18:24:23'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:32:29'!
 initialize
 
 	consoleOutput := ''.
@@ -231,10 +241,7 @@ initialize
 	ast := nil.		
 
 	programIndex := 0.
-
-	selection := 0 to:0.
-	
-	selectedSolution := 0.! !
+! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:20:39'!
 isNotRunning
@@ -243,30 +250,6 @@ isNotRunning
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 11:24:38'!
 isRunning
 	^genieProcess notNil and: [genieProcess isRunning]! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:15:22'!
-load
-
-	| aFileEntry aReadStream json problemName |
-
-	aFileEntry := codeGenerator codePath // 'solutions.json'.
-
-	aFileEntry exists ifFalse:[
-			consoleOutput := 'Cannot load. Solution file {1} does not exit.' format:{ 'solutions.json' }. self changed:#console . ^self ].		
-		
-	aReadStream := ReadStream on: aFileEntry fileContents.
-
-	json := Json readFrom: aReadStream.
-
-	problemName := json at:'problem' ifAbsent:[			consoleOutput := 'Cannot load. Json file {1} is not a genie solution.' format:{ 'solutions.json' }. self changed:#console . ^self ].
-	
-	problemName = programName 
-		ifFalse:[
-			consoleOutput := 'Cannot load. Solution {1} does not fit problem {2}.' format:{ problemName . programName}. self changed:#console . ^self ].
-		
-	solutions := json at: 'solutions'.
-	
-	consoleOutput := 'Solution loaded.'. self changed:#console ; changed: #solutions.! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:08:59'!
 make
@@ -314,14 +297,6 @@ make
 	consoleOutput := consoleOutput, '
 Build complete.'. model changed: #console. ] fork
 	! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:43:23'!
-penalties
-	"answer penalties of selected solution"
-	
-	selectedSolution = 0 ifTrue:[^{}].
-	
-	^solutions at: selectedSolution :: at: 'score'! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:48:35'!
 program
@@ -392,10 +367,11 @@ reset
 	consoleOutput := 'deleted population.gimage file'. self changed: #console.
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 18:42:01'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:59:24'!
 run
 
 	| workingDirectory fifoName commandName model aReadStream result |
+	
 	workingDirectory := codeGenerator codePath.
 	
 	fifoName := 'run.fifo'.
@@ -468,31 +444,10 @@ selectProgram: anInteger
 selectProgramText
 	^ selection! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:50:15'!
-selectSolution: anIndex
-
-	selectedSolution := anIndex.
-
-	self changed: #selectSolution: ! !
-
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:15:56'!
 selectedProgram
 
 	^programIndex! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:18:37'!
-selectedSolution
-	
-	selectedSolution ifNil:[^0].
-	
-	^selectedSolution ! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 22:14:29'!
-selection: anInterval
-
-	selection := anInterval.
-	
-	self changed: #selectProgramText! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/8/2024 13:06:18'!
 setWorkingDirectory
@@ -505,17 +460,6 @@ setWorkingDirectory
 		do: [ :aString | 
 			codeGenerator codePath: aString asDirectoryEntry.
 			scanner workingDirectory: codeGenerator codePath ]! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 15:27:55'!
-solutionAt: anIndex
-	^solutions at: anIndex :: at: 'solution'! !
-
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 21:32:12'!
-solutions
-
-	solutions ifNil:[^{}].
-	
-	^solutions collect:[:each | each at: 'score' :: collect:[:pair | pair at:3 ] :: sum ]! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 12:14:29'!
 stop
@@ -1246,6 +1190,65 @@ rows: nrows cols: ncols data: aDictionary
 
 	! !
 
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:28:46'!
+initialize
+
+	solutions := OrderedCollection new.
+	
+	selectedSolution := 0.
+	
+	selection := 0 to:0.
+! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:04:20'!
+penalties
+
+	^solutions at: selectedSolution :: at: 'score'! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:06:54'!
+program
+	^programText! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:06:48'!
+program: aText
+	programText := aText! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:29:03'!
+selectProgramText
+	^ selection! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:05:11'!
+selectSolution: anIndex
+
+	selectedSolution := anIndex.
+
+	self changed: #selectSolution: ! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:04:55'!
+selectedSolution
+	
+	selectedSolution ifNil:[^0].
+	
+	^selectedSolution ! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:28:13'!
+selection: anInterval
+
+	selection := anInterval.
+	
+	self changed: #selectProgramText! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:09:20'!
+solutions
+
+	solutions ifNil:[^{}].
+	
+	^solutions collect:[:each | each at: 'score' :: collect:[:pair | pair at:3 ] :: sum ]! !
+
+!SolutionsModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:21:03'!
+solutions: aDictionary
+	solutions := aDictionary ! !
+
 !GenieException methodsFor: 'as yet unclassified' stamp: 'DF 10/27/2024 12:54:30'!
 defaultAction
 
@@ -1447,10 +1450,10 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/22/2024 11:22:23'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:31:51'!
 buildMorphicWindow
 
-	| programs program console  loadButton buildButton runButton stopButton resetButton |
+	| programs program console  buildButton runButton stopButton resetButton |
 	
 	programs := PluggableListMorph withModel: model listGetter: #programs indexGetter: #selectedProgram indexSetter: #selectProgram: :: menuNshortcutsKey: #programsMenuSpec.
 	
@@ -1470,9 +1473,6 @@ buildMorphicWindow
 	stopButton := PluggableButtonMorph model: model stateGetter: nil action: #stop :: enableSelector: #isRunning.
 	stopButton label: 'Stop'.
 
-	loadButton := PluggableButtonMorph model: model stateGetter: nil action: #load :: enableSelector: #isNotRunning.
-	loadButton label: 'Load'.
-
 	resetButton := PluggableButtonMorph model: model stateGetter: nil action: #reset :: enableSelector: #isNotRunning.
 	resetButton label: 'Reset'.
 
@@ -1484,7 +1484,7 @@ buildMorphicWindow
 	
 	
 	self layoutMorph addMorph:
-(programs | 1p - (1/6) p) <+> program <+> (((( (buildButton - 1p) + (runButton -1p) + (stopButton -1p) +  (loadButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
+(programs | 1p - (1/6) p) <+> program <+> (((( (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
 ! !
 
 !GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:20:37'!
@@ -1501,12 +1501,10 @@ programsMenuSpec
 		#(60 'set working directory ... (w)' $f model setWorkingDirectory nil 'set the directory into which programs will file out')
 	)! !
 
-!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 20:47:23'!
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:29:12'!
 buildMorphicWindow
 
-	| programs scoresScroller solutions |
-	
-	programs := PluggableListMorph withModel: model listGetter: #programs indexGetter: #selectedProgram indexSetter: #selectProgram: :: menuNshortcutsKey: #programsMenuSpec.
+	| scoresScroller solutions |
 	
 	scores := BoxedMorph new borderWidth:0 ; color: Color transparent ; yourself.
 
@@ -1530,7 +1528,7 @@ buildMorphicWindow
 	model addDependent: self. 
 		
 	self layoutMorph addMorph:
- (solutions | 1p -(1/3)p) <+> (scoresScroller | 1p - 48 f) + (program - (1/2)p | 1p) <+> (programs | 1p - (1/6) p) .
+ (solutions | 1p -(1/8)p) <+> (scoresScroller | 1p - 48 f) + (program - (7/8)p | 1p) .
 
 		
 ! !

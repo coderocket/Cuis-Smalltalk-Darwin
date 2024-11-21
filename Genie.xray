@@ -347,14 +347,27 @@ Primitive 'x' : number 'n'
 
 	{ value @ x = value @ c };
 
-E 'x' : E 'left' "max" M 'right'
+E 'x' : E 'left' "max" C 'right'
 
 	{ value @ x = '(max(({1}),({2})))' format:{ value @ left . value @ right }  }
+
+	| C 't'
+
+	{ value @ x = value @ t }
+;
+
+C 'x' : C 'left' compop 'op' M 'right'
+
+	{ value @ x = '(int)(({1}) {2} ({3}))' format:{ value @ left . op value asString . value @ right }  }
+
+	| C 'left'  equal M 'right'
+
+	{ value @ x = '(int)(({1}) == ({2}))' format:{ value @ left . value @ right }  }
 
 	| M 't'
 
 	{ value @ x = value @ t }
-;
+	;
 
 M 'x' : M 'left' ".." T 'right'
 
@@ -369,29 +382,41 @@ T 'x' : T 'left' "+" F 'right'
 
 	{ value @ x = '({1}) + ({2})' format: { value @ left . value @ right } }
 
+	| T 'left' "-" F 'right'
+
+	{ value @ x = '({1}) - ({2})' format: { value @ left . value @ right } }
+
 	| F 'f'
 
 	{ value @ x = value @ f };
 
-T 'x' : T 'left' "-" F 'right'
+F 'x' : F 'left' multiply A 'right'
 
-	{ value @ x = '({1}) - ({2})' format: { value @ left . value @ right } }| F 'f'
+	{ value @ x = '({1}) * ({2})' format: { value @ left . value @ right } }
 
-	{ value @ x = value @ f };
+	| A 'a'
 
-F 'x' : name 'n'
+	{ value @ x = value @ a }
 
+	;
 	
+A 'x' : name 'n'
 
-	{ value @ x = GenieCompiler instance compileRuleVariable: n attrs: (attrs @ x) locals: (locals @ x)  }| name 'n' "(" Es 'e' ")"
+	{ value @ x = GenieCompiler instance compileRuleVariable: n attrs: (attrs @ x) locals: (locals @ x)  }
 
-	 
+	| name 'n' "(" Es 'e' ")"	 
 
-	{ value @ x = GenieCompiler instance compileRuleInnerCall: n value asString args: value @ e}| number 'n'
+	{ value @ x = GenieCompiler instance compileRuleInnerCall: n value asString args: value @ e}
 
+	| number 'n'
 	
-	
-	{ value @ x = n value };
+	{ value @ x = n value }
+
+	| "(" E 'e' ")"
+
+	{ value @ x = value @ e }
+
+	;
 
 Es 'x' : E 'e' 
 	
