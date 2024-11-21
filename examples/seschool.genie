@@ -81,3 +81,9 @@ penalty on morning sum(hour - 17 max 0) ;
 
 penalty on evening sum(17 - hour max 0) ; 
 
+# gap between classes should not be more than 3 hours
+
+penalty on morning group by (day) maxgap(hour .. hour + duration) - 3 max 0;
+
+penalty on evening group by (day) maxgap(hour .. hour + duration) - 3 max 0;
+
