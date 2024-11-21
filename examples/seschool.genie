@@ -2,9 +2,9 @@
 Parameters 
  
 epochs: 			15
-generations: 25 
+generations: 35 
 
-population: 			1500
+population: 			3200
 instances: 			145
 
 mutationp :			1.0e-3
@@ -12,7 +12,7 @@ inversionp :			2.0e-1
 
 Schema 
  
-day: 			1 .. 5
+day: 			1 .. 6
 hour	:		hour(day)
 lecturer:			lecturer(module(id))
  
@@ -50,7 +50,7 @@ penalty group by (day, lecturer) overlap(hour .. hour + duration);
 
 # if a lecturer teaches in a particular day then they teach at least 3 hours
 
-penalty group by (day,lecturer) (sum(duration) > 0) * (  3 - sum(duration)) max 0 ;
+penalty group by (day,lecturer) ( sum(duration) > 0) * (  (3 - sum(duration)) * sum(day < 6)) max 0 ;
  
 # the students in a frame cannot study more than one class in the same hour.
  
@@ -77,9 +77,10 @@ penalty on evening count(day) - 4 max 0;
 
 penalty on morning sum(hour - 17 max 0) ;
 
-# evening tracks may not start lectures before 17
-
-penalty on evening sum(17 - hour max 0) ; 
+# evening tracks may not start lectures before 17 except on fridays
+ 
+penalty on evening sum( (day < 6)*(17 - hour max 0)); 
+penalty on evening sum( (day = 6)*(hour + duration - 15 max 0));
 
 # gap between classes should not be more than 3 hours
 
@@ -87,3 +88,10 @@ penalty on morning group by (day) maxgap(hour .. hour + duration) - 3 max 0;
 
 penalty on evening group by (day) maxgap(hour .. hour + duration) - 3 max 0;
 
+# non empty morning frames have at least 3 hours
+
+penalty on morning group by (day) (sum(duration) > 0) * (  3 - sum(duration)) max 0 ;
+
+# morning frames do not study on friday
+
+penalty on morning sum( day = 6 ) ;
