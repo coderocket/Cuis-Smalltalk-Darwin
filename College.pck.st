@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 November 2024 at 7:21:13 pm'!
+'From Cuis7.1 [latest update: #6676] on 22 November 2024 at 12:46:30 pm'!
 'Description '!
-!provides: 'College' 1 118!
+!provides: 'College' 1 120!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -1220,7 +1220,7 @@ genie: aGenieBrowserModel
 	genie := aGenieBrowserModel 
 	! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:25'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/22/2024 12:37:55'!
 initialize
 	
 	selection := 0.
@@ -1237,12 +1237,10 @@ initialize
 
 	format :={ 
 	
-		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
-		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
-	
-		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
-
-		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ]  }.
+		[:each | each module description ] .
+		[:each | each lecturer description ] .
+		[:each | each module description ] .
+		[:each | each lecturer description ]  }.
 	
 	topics := { #lecturers . #modules . #frames . #rooms }! !
 
@@ -1387,7 +1385,7 @@ topics
 	"{ #lecturers . #modules . #frames . #rooms }"
 	^ { 'מרצים' . 'קורסים' . 'תבניות' . '' } collect:[:each | each reverse ] ! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/14/2024 20:19:40'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 12:42:49'!
 at: row at: col
 
 	| result |
@@ -1396,13 +1394,13 @@ at: row at: col
 	
 	topic = 0 ifTrue:[^''].
 
-	result := instance at: col at: row.
+	result := instance at: col at: row + 8.
 
 	result ifEmpty: [^''].
 
-	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x,y].! !
+	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x, ', ', y].! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/15/2024 17:18:03'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 12:10:03'!
 colorAt: row at: col
 
 	| intervals |
@@ -1415,15 +1413,22 @@ colorAt: row at: col
 	
 	intervals := instance cordoned at: col.
 	
-	^intervals detect:[:each | each first <= row and: [row < each last] ] ifFound:[:x | Color h:0.0 s:0.17 v:1.0] ifNone:[Color white].! !
+	^intervals detect:[:each | each first <= (row + 8) and: [row + 8 < each last] ] ifFound:[:x | Color h:0.0 s:0.17 v:1.0] ifNone:[Color white].! !
 
 !CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nCols
 	^6! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 11:50:25'!
 nRows
-	^24! !
+	^17! !
+
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 11:53:53'!
+rowsHeader
+
+	^(1 to: self nRows) collect:[:i | '{1}' format:{i+7} ]
+	
+	! !
 
 !CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:41:32'!
 buildMorphicWindow
