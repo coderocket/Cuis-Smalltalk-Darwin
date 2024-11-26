@@ -17,7 +17,8 @@ public:
 		return result;
 	}
 
-	static int max() { return RAND_MAX; }
+	static constexpr int max() { return RAND_MAX; }
+	static constexpr int min() { return 0; }
 
 	typedef int result_type;
 private:
