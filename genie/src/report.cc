@@ -25,7 +25,6 @@ extern bool use_fifo;
 extern string fifo_name;
 
 extern int actual_population_size; 
-extern int total_fitness; 
 
 using std::max;
 using std::min;
@@ -63,7 +62,7 @@ chromosome_t* worst(chromosome_t* b, chromosome_t* e) {
 #include "generated_tables.h"
 #include "generated_functions.h"
 
-void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score, array<int, GENIE_N_RULES>& rule_location) {
+void prepare_score(const chromosome_t* cc, array<genie_rule_t, GENIE_N_RULES>& rules) {
 
 	instance_t an_instance[GENIE_N_INSTANCES];
 
@@ -76,14 +75,13 @@ void prepare_score(const chromosome_t* cc, array<int, GENIE_N_RULES>& score, arr
 
 void report_score(const chromosome_t* cc, ostream& out) {
 
-	array<int,GENIE_N_RULES> rule_location;
-	array<int,GENIE_N_RULES> score;
+	array<genie_rule_t,GENIE_N_RULES> rules;
 
-	prepare_score(cc, score, rule_location);
+	prepare_score(cc, rules);
 
 	for(int jj = 0 ; jj < GENIE_N_RULES; ++jj) {
 
-		out << score[jj] << " ";
+		out << rules[jj].score << " ";
 	}
 }
 
@@ -91,14 +89,13 @@ void report_score_gnuplot(chromosome_t* b, chromosome_t* e, ostream& out) {
 
 	chromosome_t* cc = best(b, e); 
 
-	array<int,GENIE_N_RULES> rule_location;
-	array<int, GENIE_N_RULES> score;
+	array<genie_rule_t,GENIE_N_RULES> rules;
 
-	prepare_score(cc, score, rule_location);
+	prepare_score(cc, rules);
 
 	for(int jj = 1 ; jj < GENIE_N_RULES; ++jj) { // don't print the large bonus in the first score array
 
-		out << jj << ' ' << score[jj] << '\n';
+		out << jj << ' ' << rules[jj].score << '\n';
 	}
 
 	out << endl;
@@ -184,36 +181,35 @@ void json_write_solution(const chromosome_t* c, ostream& out) {
 	out << "]" << endl;
 }
 
-void json_write_score(const array<int, GENIE_N_RULES>& score, const array<int, GENIE_N_RULES>& rule_location, ostream& out) {
+void json_write_score(const array<genie_rule_t, GENIE_N_RULES>& rules, ostream& out) {
 
 	out << "[";
 
 	for(int jj = 0 ; jj < GENIE_N_RULES-1; ++jj) {
 
-		if (score[jj] <=0) 
-			out << "[" << jj << "," << rule_location[jj] << "," << score[jj] << "], ";
+		if (rules[jj].score <=0) 
+			out << "[" << jj << "," << rules[jj].location << "," << rules[jj].score << "], ";
 	}
 
-	if (score[GENIE_N_RULES-1] <=0)
-		out << "[" << GENIE_N_RULES-1 << "," << rule_location[GENIE_N_RULES-1] << "," << score[GENIE_N_RULES-1] << "]";
+	if (rules[GENIE_N_RULES-1].score <=0)
+		out << "[" << GENIE_N_RULES-1 << "," << rules[GENIE_N_RULES-1].location << "," << rules[GENIE_N_RULES-1].score << "]";
 	out << "]";
 }
 
 struct genie_solution_t {
-	array<int, GENIE_N_RULES> score;
-	array<int, GENIE_N_RULES> rule_location;
+	array<genie_rule_t, GENIE_N_RULES> rules;
 	const chromosome_t* cc;
 };
 
 bool operator<(const genie_solution_t& x, const genie_solution_t& y) {
-	return accumulate(x.score.begin(), x.score.end(), 0) > accumulate(y.score.begin(), y.score.end(),0);
+	return accumulate(x.rules.begin(), x.rules.end(), 0, [](int acc, genie_rule_t v) { return acc + v.score ;}) > accumulate(y.rules.begin(), y.rules.end(),0, [](int acc, genie_rule_t v) { return acc + v.score; });
 }
 
 void json_write_solution_and_score(const genie_solution_t& q, ostream& out) {
 
 	out << "{";
 	out << "\n\"score\"" << ":"; 
-	json_write_score(q.score, q.rule_location, out);
+	json_write_score(q.rules, out);
 	out << ",\n\"solution\"" << ":";
 	json_write_solution(q.cc, out);
 	out << "}";
@@ -228,7 +224,7 @@ void json_write_best_unique_solutions(chromosome_t* b, chromosome_t* e, size_t k
 
 		genie_solution_t s;
 		s.cc = p;
-		prepare_score(p, s.score, s.rule_location);
+		prepare_score(p, s.rules);
 		solutions.insert(s);
 	}
 

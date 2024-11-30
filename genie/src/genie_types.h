@@ -7,6 +7,12 @@ struct gene_t {
 
 struct chromosome_t {
 	gene_t gene[CHROMOSOME_SIZE];
-	int fitness;
+	double fitness;
 	double num_offspring;
+};
+
+struct genie_rule_t {
+	double score;
+	double weight;
+	int location;
 };

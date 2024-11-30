@@ -12,7 +12,7 @@
 
 using namespace std;
 
-extern int total_fitness;
+extern double total_fitness;
 extern int actual_population_size;
 
 double average_fitness;
@@ -40,7 +40,7 @@ int breed(chromosome_t* b, chromosome_t* e, chromosome_t* out) {
 
 	int next_population_size = 0;
 
-        average_fitness = (double)total_fitness/actual_population_size; 
+        average_fitness = total_fitness/actual_population_size; 
 
 	#pragma omp parallel shared(out) reduction(+:next_population_size)
 	{

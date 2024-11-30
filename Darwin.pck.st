@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 November 2024 at 7:34:40 pm'!
+'From Cuis7.1 [latest update: #6676] on 30 November 2024 at 8:20:27 pm'!
 'Description '!
-!provides: 'Darwin' 1 265!
+!provides: 'Darwin' 1 268!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -800,8 +800,8 @@ compileDeterministicCall: aString value: anotherString type: funcInfo location: 
 
 	^'an_instance[{1}] = {2};' format: { self compileName: aString . anotherString }! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/17/2024 18:19:39'!
-compileFunctionEnum: functionNameTerminal env: env expr: aString kind: anInteger position: positionInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 20:19:34'!
+compileFunctionEnum: functionNameTerminal env: env expr: aStringExpr kind: anInteger position: positionInteger
 
 	| functionName funInfo min max  |
 
@@ -813,12 +813,9 @@ compileFunctionEnum: functionNameTerminal env: env expr: aString kind: anInteger
 	
 	max := funInfo at:3.
 	
-	^'\{ 
-
-rule_location[{1}] = {4};
-score[{1}] = 0;
-for(int ii = {6}; ii <= {7} ; ++ii) \{
-	vector<int> gid = genie_{5}(ii);
+	^
+'for(int ii = {5}; ii <= {6} ; ++ii) \{
+	vector<int> gid = genie_{4}(ii);
 	instance_t** group = (instance_t**)alloca(gid.size()*sizeof(instance_t*));
 	int jj;
 	for(jj = 0 ; jj < gid.size(); ++jj)
@@ -826,12 +823,13 @@ for(int ii = {6}; ii <= {7} ; ++ii) \{
 	
 	instance_t** b = group;
 	instance_t** e = group+jj;
-	score[{1}] {3}= {2}; 
-	\}
-\}' format:{ positionInteger . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start . functionName . min . max }! !
+	rules[{1}].score {3}= {2}; 
+\}' 
+format:{ positionInteger . aStringExpr . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . functionName . min . max }
+! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/17/2024 18:20:26'!
-compileFunctionEnum: functionNameTerminal env: env keys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 19:58:16'!
+compileFunctionEnum: functionNameTerminal env: env keys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger 
 
 	| functionName aStream funInfo min max  |
 
@@ -847,33 +845,43 @@ compileFunctionEnum: functionNameTerminal env: env keys: anOrderedCollection exp
 	
 	anOrderedCollection do:[:each | aStream nextPutAll: each asUppercase ] separatedBy:[ aStream nextPutAll: ', ' ].
 	
-	^'\{ int keys[] = \{{1}\}; 
-
-rule_location[{2}] = {6};
-score[{2}] = 0;
-for(int ii = {8}; ii <= {9} ; ++ii) \{
-	vector<int> gid = genie_{7}(ii);
+	^
+'int keys[] = \{{1}\}; 
+for(int ii = {7}; ii <= {8} ; ++ii) \{
+	vector<int> gid = genie_{6}(ii);
 	instance_t* group = (instance_t*)alloca(gid.size()*sizeof(instance_t));
 	int jj;
 	for(jj = 0 ; jj < gid.size(); ++jj)
 		group[jj] = an_instance[gid[jj]];
 		
-	score[{2}] {5}= group_by(group, group+jj, keys,{3},[](instance_t** b, instance_t** e) 
+	rules[{2}].score {5}= group_by(group, group+jj, keys,{3},[](instance_t** b, instance_t** e) 
 		\{ return {4}; \}); 
-	\}
-\}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start . functionName . min . max }! !
+\}' 
+format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-']  . functionName . min . max }
+! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/21/2024 21:10:34'!
-compileRuleExpr: aString kind: anInteger position: anotherInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 19:49:37'!
+compileRule: ruleCodeString node: anASTNode index: anInteger weight: aCollection
 
-	^'
-rule_location[{1}] = {4};
-score[{1}] = 0;
-score[{1}] {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString . aToken start }.
+	^ 
+'\{ 
+rules[{1}].location = {2};
+rules[{1}].weight = {3};
+rules[{1}].score = 0;
+{4} 
+\}' 
+format:{ anInteger . anASTNode start . aCollection ifEmpty:1.0 ifNotEmpty:[:c | c first ] . ruleCodeString}
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/28/2024 12:12:09'!
-compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger position: anotherInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 20:00:47'!
+compileRuleExpr: aString kind: anInteger position: anotherInteger 
+
+	^'
+rules[{1}].score {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString  }.
+	! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 20:06:46'!
+compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger position: anIntegerPosition
 
 	| aStream  |
 
@@ -881,12 +889,11 @@ compileRuleGroupByKeys: anOrderedCollection expr: aString kind: anInteger positi
 	
 	anOrderedCollection do:[:each | aStream nextPutAll: each asUppercase ] separatedBy:[ aStream nextPutAll: ', ' ].
 	
-	^ '\{ int keys[] = \{{1}\}; 
-
-rule_location[{2}] = {6};
-score[{2}] = 0;
-score[{2}] {5}= group_by(an_instance, an_instance+GENIE_N_INSTANCES, keys,{3},[](instance_t** b, instance_t** e) 
-	\{ return {4}; \}); \}' format:{ aStream contents  . anotherInteger . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start }! !
+	^
+'int keys[] = \{{1}\}; 
+rules[{2}].score {5}= group_by(an_instance, an_instance+GENIE_N_INSTANCES, keys,{3},[](instance_t** b, instance_t** e) 
+	\{ return {4}; \});
+' format:{ aStream contents  . anIntegerPosition . anOrderedCollection size . aString . (anInteger = 1) ifTrue:['+'] ifFalse:['-']  }! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 9/26/2024 18:09:18'!
 compileRuleInnerCall: aString args: anOrderedCollection
@@ -946,13 +953,13 @@ compileRuleVariable: aTerminal attrs: attrsSet locals: localsSet
 	
 	! !
 
-!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 10/27/2024 15:43:39'!
-compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger position: anotherInteger location: aToken
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 20:07:21'!
+compileTableExpr: tableName index: indexName key: firstKey key: secondKey expr: exprString kind: anInteger position: anIntegerPosition
 
-^ 'rule_location[{1}] = {8};
-score[{1}] = 0;
-score[{1}] {7}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
-	return genie_table_iterate(genie_{2}, (*each)[GENIE_{3}], (*each)[GENIE_{4}], [each](const interval_t& {5}) \{ return {6} \; \}); \});' format: { anotherInteger . tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aToken start }! !
+	^ 
+'rules[{1}].score {7}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ 
+	return genie_table_iterate(genie_{2}, (*each)[GENIE_{3}], (*each)[GENIE_{4}], [each](const interval_t& {5}) \{ return {6} \; \}); \});
+' format: { anIntegerPosition . tableName value asString . firstKey value asString asUppercase. secondKey value asString asUppercase . indexName . exprString . (anInteger = 1) ifTrue:['+'] ifFalse:['-']  }! !
 
 !GenieCompiler methodsFor: 'compiling tables' stamp: 'DF 11/10/2024 08:40:05'!
 compileFunction: anOrderedCollection name: aToken type: aCollection

@@ -24,10 +24,10 @@ using namespace std;
 
 void calculate_num_offspring(chromosome_t* b, chromosome_t* e) {
 
-extern int total_fitness;
+extern double total_fitness;
 
 	for_each(b, e, [](chromosome_t& cc) {
-		cc.num_offspring = (((double)cc.fitness)/total_fitness)*POPULATION_SIZE;
+		cc.num_offspring = (cc.fitness/total_fitness)*POPULATION_SIZE;
 	});
 }
 
@@ -44,19 +44,18 @@ void calculate_chromo_fitness(chromosome_t& cc) {
 
 	b->fitness = 0;
 
-	int rule_location[GENIE_N_RULES];
-	int score[GENIE_N_RULES];
+	genie_rule_t rules[GENIE_N_RULES];
 #include "generated_fitness.cc"
 for(int jj = 0 ; jj < GENIE_N_RULES; jj++) 
-        b->fitness += score[jj];
+        b->fitness += rules[jj].score*rules[jj].weight;
 
 }
 
 void calculate_fitness(chromosome_t* b, chromosome_t* e) {
 
-extern int total_fitness;
+extern double total_fitness;
 
-	total_fitness = 0;
+	total_fitness = 0.0;
 
 	chromosome_t* pp;
 	#pragma omp parallel for
