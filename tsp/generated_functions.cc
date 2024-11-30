@@ -1,7 +1,42 @@
 #include <math.h>
 #include <array>
+#include "random_number_generator.h"
+#include "chromo.h"
 
 using std::array;
+
+#include "bitmap.cc"
+
+int genie_dummy(int arg) {
+if (arg == 0) { return 1; }
+if (arg == 1) { return 0; }
+{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_dummy" ; throw invalid_argument(err_msg.str()); }
+}
+
+#if 0
+int genie_xcoord(int arg) {
+
+if (arg ==  0 ) { return  12 ; }
+if (arg ==  1 ) { return  17 ; }
+if (arg ==  2 ) { return  13 ; }
+if (arg ==  3 ) { return  9 ; }
+if (arg ==  4 ) { return  5 ; }
+
+{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_xcoord" ; throw invalid_argument(err_msg.str()); }
+
+}
+
+int genie_ycoord(int arg) {
+
+if (arg ==  0 ) { return  21 ; }
+if (arg ==  1 ) { return  15 ; }
+if (arg ==  2 ) { return  8 ; }
+if (arg ==  3 ) { return  7 ; }
+if (arg ==  4 ) { return  13 ; }
+
+{ stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_ycoord" ; throw invalid_argument(err_msg.str()); }
+}
+#endif 
 
 int genie_xcoord(int arg) {
 
@@ -111,16 +146,19 @@ if (arg ==  47 ) { return  55 ; }
 if (arg ==  48 ) { return  28 ; }
 if (arg ==  49 ) { return  37 ; }
 if (arg ==  50 ) { return  40 ; }
+
 { stringstream err_msg; err_msg << "unexpected argument: " << arg << " to function: " << "genie_ycoord" ; throw invalid_argument(err_msg.str()); }
 }
 
-double euclid_distance(const instance_t& p, const instance_t& q) {
+double euclid_distance(int c1, int c2) {
 
-	double x1 = genie_xcoord(p[GENIE_CITY]);
-	double y1 = genie_ycoord(p[GENIE_CITY]);
+	double x1 = genie_xcoord(c1);
+	double y1 = genie_ycoord(c1);
 
-	double x2 = genie_xcoord(q[GENIE_CITY]);
-	double y2 = genie_ycoord(q[GENIE_CITY]);
+	double x2 = genie_xcoord(c2);
+	double y2 = genie_ycoord(c2);
 
 	return sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );	
 }
+
+#include "generated_initial_population.cc"
