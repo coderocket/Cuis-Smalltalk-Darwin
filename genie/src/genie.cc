@@ -37,7 +37,7 @@ int actual_population_size = POPULATION_SIZE;
 
 int next_population_size = 0;
 
-int total_fitness = 0;
+double total_fitness = 0.0;
 
 void produce_next_generation() {
 
