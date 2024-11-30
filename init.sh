@@ -1,5 +1,7 @@
 #!/bin/sh
 
+H=$(dirname $0)
+
 # prepare a directory for working with the genie engine
 
 # create a directory to hold the compiled engine
@@ -10,9 +12,12 @@ mkdir engine
 
 mkdir generated
 
+cp $H/user_defined_template.h generated/user_defined_rules.h
+cp $H/user_defined_template.cc generated/user_defined_rules.cc
+
 # configure the engine 
 
-C=$(dirname $0)/genie/configure
+C=$H/genie/configure
 J=$PWD
 
 (cd engine && $C CXXFLAGS="-O2 -fopenmp -I$J/generated")

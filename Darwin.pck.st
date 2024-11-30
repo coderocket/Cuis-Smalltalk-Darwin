@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 30 November 2024 at 8:20:27 pm'!
+'From Cuis7.1 [latest update: #6676] on 30 November 2024 at 10:09:03 pm'!
 'Description '!
-!provides: 'Darwin' 1 268!
+!provides: 'Darwin' 1 269!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -632,15 +632,20 @@ generateFitness: aString
 
 	codePath  / place // 'generated_fitness.cc' fileContents: aString. ! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:50:54'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/30/2024 21:49:10'!
 generateFunctionDecls: aString
 
-	codePath  / place // 'generated_functions.h' fileContents: aString.! !
+	codePath  / place // 'generated_functions.h' fileContents: aString, '
+#include "user_defined_rules.h"
+'. ! !
 
-!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:50:59'!
+!GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/30/2024 21:49:23'!
 generateFunctions: aString
 
-	codePath  / place // 'generated_functions.cc' fileContents: aString.! !
+	codePath  / place // 'generated_functions.cc' fileContents: aString,
+'
+#include "user_defined_rules.cc"
+'.! !
 
 !GenieCodeGenerator methodsFor: 'cpp code generation' stamp: 'DF 11/20/2024 19:51:04'!
 generateKeys: aString
@@ -878,6 +883,13 @@ compileRuleExpr: aString kind: anInteger position: anotherInteger
 
 	^'
 rules[{1}].score {2}= sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) \{ return {3}; \});' format:{ anotherInteger . (anInteger = 1) ifTrue:['+'] ifFalse:['-'] . aString  }.
+	! !
+
+!GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 21:56:26'!
+compileRuleExternal: aStringFunctionName kind: anIntegerKind position: anIntegerPosition
+
+	^'
+rules[{1}].score {2}= {3}(an_instance, an_instance+GENIE_N_INSTANCES);' format:{ anIntegerPosition . (anIntegerKind = 1) ifTrue:['+'] ifFalse:['-'] . aStringFunctionName }.
 	! !
 
 !GenieCompiler methodsFor: 'compiling rules' stamp: 'DF 11/30/2024 20:06:46'!

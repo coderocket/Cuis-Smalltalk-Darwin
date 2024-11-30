@@ -1,6 +1,6 @@
 tokens
 
-".." Schema Parameters Functions Keys Rules "{" "}" "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in on weight  
+".." Schema Parameters Functions Keys Rules "{" "}" "(" ")" ":" "," group by penalty "+" "-"  max "(" ")" ";" table bonus penalty for in on weight  external
 
 patterns
 
@@ -231,7 +231,13 @@ Formula 'x' :
 
 	| ExprFormula 'y' 
 	 
-		{ code @ x = code @ y };
+		{ code @ x = code @ y }
+
+	| external name 'n'
+
+		{ code @ x = GenieCompiler instance compileRuleExternal: n value kind: kind @ x position: position @ x }
+
+	;
  
 Group 'x' : group by "(" Arguments 'a' ")" Expr 'e'  
 	 
