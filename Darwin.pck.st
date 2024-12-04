@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 30 November 2024 at 10:09:03 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 December 2024 at 10:04:24 am'!
 'Description '!
-!provides: 'Darwin' 1 269!
+!provides: 'Darwin' 1 270!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -1469,7 +1469,7 @@ update: aSymbol
 
 	self redrawNeeded ! !
 
-!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:31:51'!
+!GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 09:59:32'!
 buildMorphicWindow
 
 	| programs program console  buildButton runButton stopButton resetButton |
@@ -1503,7 +1503,9 @@ buildMorphicWindow
 	
 	
 	self layoutMorph addMorph:
-(programs | 1p - (1/6) p) <+> program <+> (((( (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p) 
+(programs | 1p - (1/6) p) <+> program <+> (((( (buildButton - 1p) + (runButton -1p) + (stopButton -1p) + (resetButton -1p)) | 32f) / console) - (1/3)p).
+
+	self setLabel:'Genie Editor'
 ! !
 
 !GenieBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 18:20:37'!
