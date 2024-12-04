@@ -2,6 +2,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
+#include <map>
+#include <array>
 #include "genie_constants.h"
 #include "genie_types.h"
 #include "interval.h"
