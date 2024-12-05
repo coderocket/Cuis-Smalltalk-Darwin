@@ -20,7 +20,7 @@ cp $H/user_defined_template.cc generated/user_defined_rules.cc
 C=$H/genie/configure
 J=$PWD
 
-(cd engine && $C CXXFLAGS="-O2 -fopenmp -I$J/generated")
+(cd engine && $C CXXFLAGS="-I$J/generated")
 
 # create fifos for communicating with the genie compiler and gnuplot 
 
