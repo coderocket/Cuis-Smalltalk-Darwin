@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 2 December 2024 at 10:10:48 am'!
+'From Cuis7.1 [latest update: #6709] on 5 December 2024 at 4:51:24 pm'!
 'Description '!
-!provides: 'College' 1 122!
+!provides: 'College' 1 123!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -1215,9 +1215,12 @@ analyse
 	
 	GenieSolutionBrowser open: aSolutionModel.! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:14:59'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 16:39:46'!
 genie: aGenieBrowserModel
-	genie := aGenieBrowserModel 
+
+	genie := aGenieBrowserModel.
+	
+	genie addDependent: self.
 	! !
 
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/22/2024 12:37:55'!
@@ -1327,6 +1330,11 @@ topic: anInteger
 	self select: selection.
 	
 	self changed: #items! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 16:42:12'!
+update: aSymbol
+
+	aSymbol = #run ifTrue:[self load]! !
 
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:06:46'!
 workingDirectory
