@@ -47,7 +47,7 @@ int group_by(instance_t* b, instance_t* e, int keys[], int n_keys, int (*f)(inst
 	return result;
 }
 
-int sum(instance_t* b, instance_t* e, int (*f)(const instance_t*)) {
+int sum(const instance_t* b, const instance_t* e, int (*f)(const instance_t*)) {
 
 	int result = 0;
 

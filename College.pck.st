@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 22 November 2024 at 12:46:30 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 December 2024 at 10:10:48 am'!
 'Description '!
-!provides: 'College' 1 120!
+!provides: 'College' 1 122!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -1328,6 +1328,10 @@ topic: anInteger
 	
 	self changed: #items! !
 
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:06:46'!
+workingDirectory
+	^workingDirectory ! !
+
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:42:18'!
 workingDirectory: aString
 	workingDirectory := aString! !
@@ -1430,7 +1434,7 @@ rowsHeader
 	
 	! !
 
-!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:41:32'!
+!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 09:58:22'!
 buildMorphicWindow
 
 	| solutions topics items aGridMorph |
@@ -1447,7 +1451,9 @@ buildMorphicWindow
 
 	self layoutMorph addMorph:
 	
-	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
+	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ).
+	
+	self setLabel: 'Timetable Browser'.
 	
 ! !
 

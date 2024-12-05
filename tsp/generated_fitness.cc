@@ -1,115 +1,39 @@
+{ 
+rules[0].location = 217;
+rules[0].weight = 1.0;
+rules[0].score = 0;
 
-rule_location[0] = 211;
-score[0] = 5000;
-
-rule_location[1] = 236;
-score[1] = 0;
-
-rule_location[2] = -99;
-score[2] = 0;
-
-{
-	score[2] -= 1*abs(51 - sum(an_instance, an_instance + GENIE_N_INSTANCES, [] (const instance_t* each) { return (*each)[GENIE_BIT];}));
-
+rules[0].score += sum(an_instance, an_instance+GENIE_N_INSTANCES, [](const instance_t* each) { return 5; }); 
 }
 
-rule_location[3] = -99;
-score[3] = 0;
+{ 
+rules[1].location = 229;
+rules[1].weight = 1.0;
+rules[1].score = 0;
 
-{
-	void bitmap_to_edges(int n, const int* a, int*x, int*y);
-
-	int x[GENIE_N_INSTANCES], y[GENIE_N_INSTANCES];
-	int a[GENIE_N_INSTANCES];
-	
-	for(int ii = 0; ii < GENIE_N_INSTANCES;++ii) {
-		a[ii] = an_instance[ii][GENIE_BIT];
-	}
-	
-	for(int ii = 0; ii < GENIE_N_INSTANCES; ++ii) {
-		x[ii] = -1; y[ii] = -1;
-	}
-
-	bitmap_to_edges(51, a, x, y);
-	
-	set<int> cities;
-
-	for(int ii = 0 ; ii < 51; ++ii) {
-		if (x[ii] != -1)
-			cities.insert(x[ii]);
-		if (y[ii] != -1)
-			cities.insert(y[ii]);
-	}
-	
-	score[3] -= (51 - cities.size());
+rules[1].score -= tour(an_instance, an_instance+GENIE_N_INSTANCES); 
 }
 
+{ 
+rules[2].location = 253;
+rules[2].weight = 2.0;
+rules[2].score = 0;
 
-rule_location[4] = -99;
-score[4] = 0;
-
-{
-	void bitmap_to_edges(int n, const int* a, int*x, int*y);
-
-	int x[GENIE_N_INSTANCES], y[GENIE_N_INSTANCES];
-	int a[GENIE_N_INSTANCES];
-	
-	for(int ii = 0; ii < GENIE_N_INSTANCES;++ii) {
-		a[ii] = an_instance[ii][GENIE_BIT];
-	}
-
-	for(int ii = 0; ii < GENIE_N_INSTANCES; ++ii) {
-		x[ii] = -1; y[ii] = -1;
-	}
-	
-	bitmap_to_edges(51, a, x, y);
-	set<int> adj[51];
-
-	for(int ii = 0 ; ii < 51; ++ii) {
-		if (x[ii] != -1) 
-		{
-			assert(y[ii] != -1);
-			adj[x[ii]].insert(y[ii]);
-		}
-		if (y[ii] != -1)
-		{
-			assert(x[ii] != -1);
-			adj[y[ii]].insert(x[ii]);
-		}
-	}
-	
-	for(int ii = 0; ii < 51; ++ii) {
-		score[4] -= 1*abs((int) (2 - adj[ii].size()));
-	}
+rules[2].score -= cities(an_instance, an_instance+GENIE_N_INSTANCES); 
 }
 
-rule_location[5] = -99;
+{ 
+rules[3].location = 278;
+rules[3].weight = 1.5;
+rules[3].score = 0;
 
-score[5] = 0;
-
-{
-	void bitmap_to_edges(int n, const int* a, int*x, int*y);
-
-	int x[GENIE_N_INSTANCES], y[GENIE_N_INSTANCES];
-	int a[GENIE_N_INSTANCES];
-
-	for(int ii = 0; ii < GENIE_N_INSTANCES;++ii) {
-		a[ii] = an_instance[ii][GENIE_BIT];
-	}
-
-	for(int ii = 0; ii < GENIE_N_INSTANCES; ++ii) {
-		x[ii] = -1; y[ii] = -1;
-	}
-	
-	bitmap_to_edges(51, a, x, y);
-
-	for(int ii = 0 ; ii < 51; ++ii) {
-		if (x[ii] != -1) 
-		{
-			assert(y[ii] != -1);
-
-			score[5] -= 1.0*euclid_distance(x[ii],y[ii]);
-		}
-	}
+rules[3].score -= chain(an_instance, an_instance+GENIE_N_INSTANCES); 
 }
 
+{ 
+rules[4].location = 302;
+rules[4].weight = 0.08;
+rules[4].score = 0;
+
+rules[4].score -= eudistance(an_instance, an_instance+GENIE_N_INSTANCES); 
+}

@@ -1,0 +1,13 @@
+const char GENIE_PROBLEM_NAME[]="eil51";
+ const int GENIE_N_RULES = 5 ; 
+const  int  GENIE_POPULATION = 8200;
+const int GENIE_THREADS = 1;
+const  int  GENIE_EPOCHS = 30;
+const  int  GENIE_GENERATIONS = 80;
+const  double  GENIE_MUTATIONP = 1.9e-3;
+const  double  GENIE_INVERSIONP = 2.0e-1;
+const  int  GENIE_INSTANCES = 1275;
+const int GENIE_BIT = 0;
+const int GENIE_SCHEMA_SIZE = 1;
+const int GENIE_DUMMY = 1;
+const int 	GENIE_KEY_SIZE = 1;

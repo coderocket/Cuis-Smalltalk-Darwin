@@ -202,7 +202,7 @@ struct genie_solution_t {
 };
 
 bool operator<(const genie_solution_t& x, const genie_solution_t& y) {
-	return accumulate(x.rules.begin(), x.rules.end(), 0, [](int acc, genie_rule_t v) { return acc + v.score ;}) > accumulate(y.rules.begin(), y.rules.end(),0, [](int acc, genie_rule_t v) { return acc + v.score; });
+	return accumulate(x.rules.begin(), x.rules.end(), 0, [](int acc, genie_rule_t v) { return acc + v.score * v.weight ;}) > accumulate(y.rules.begin(), y.rules.end(),0, [](int acc, genie_rule_t v) { return acc + v.score * v.weight; });
 }
 
 void json_write_solution_and_score(const genie_solution_t& q, ostream& out) {
