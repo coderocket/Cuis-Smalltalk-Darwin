@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 2 December 2024 at 10:10:48 am'!
+'From Cuis7.1 [latest update: #6676] on 5 December 2024 at 9:02:42 pm'!
 'Description '!
-!provides: 'College' 1 122!
+!provides: 'College' 1 124!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -1202,7 +1202,7 @@ room
 room: aRoom
 	room := aRoom! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:21:07'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 20:57:48'!
 analyse
 
 	| aSolutionModel |
@@ -1213,7 +1213,14 @@ analyse
 	
 	aSolutionModel program: genie program.
 	
-	GenieSolutionBrowser open: aSolutionModel.! !
+	GenieSolutionBrowser open: aSolutionModel label: 'Solution Score Analyser'.! !
+
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:16:39'!
+entityNavigate
+
+	instance ifNil: [^self].
+	
+	instance navigator! !
 
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:14:59'!
 genie: aGenieBrowserModel
@@ -1434,7 +1441,7 @@ rowsHeader
 	
 	! !
 
-!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 09:58:22'!
+!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:14:11'!
 buildMorphicWindow
 
 	| solutions topics items aGridMorph |
@@ -1445,7 +1452,7 @@ buildMorphicWindow
 	
 	topics := PluggableListMorph withModel: model listGetter: #topics indexGetter: #topic indexSetter: #topic:.
 	
-	items := PluggableListMorph withModel: model listGetter: #items indexGetter: #selection indexSetter: #select:.
+	items := PluggableListMorph withModel: model listGetter: #items indexGetter: #selection indexSetter: #select: :: menuNshortcutsKey: #itemMenuSpec.. .
 
 	aGridMorph := GridMorph new model: model. 
 
@@ -1456,6 +1463,15 @@ buildMorphicWindow
 	self setLabel: 'Timetable Browser'.
 	
 ! !
+
+!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:15:02'!
+itemMenuSpec
+
+	^# (
+		#(0 		'Entity Browser' 					false)
+		
+		#(10 		'navigate (n)'			 $a model entityNavigate nil 'open a navigator on the selected entity')
+	)! !
 
 !CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:17:49'!
 programsMenuSpec
