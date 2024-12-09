@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 9 December 2024 at 8:53:49 am'!
+'From Cuis7.1 [latest update: #6676] on 9 December 2024 at 8:35:30 pm'!
 'Description '!
-!provides: 'Plot' 1 28!
+!provides: 'Plot' 1 68!
 SystemOrganization addCategory: #Plot!
 
 
@@ -14,19 +14,9 @@ SystemWindow subclass: #PlotWindow
 PlotWindow class
 	instanceVariableNames: ''!
 
-!classDefinition: #HRulerMorph category: #Plot!
-BoxedMorph subclass: #HRulerMorph
-	instanceVariableNames: 'resolution begin end rulerFont marginX marginY tickHeight tickLabelAbove'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Plot'!
-!classDefinition: 'HRulerMorph class' category: #Plot!
-HRulerMorph class
-	instanceVariableNames: ''!
-
 !classDefinition: #PlotMorph category: #Plot!
 BoxedMorph subclass: #PlotMorph
-	instanceVariableNames: 'pointDiameter pointColor space data marginX marginY labelOffset showLabel labelFont labelColor'
+	instanceVariableNames: 'pointDiameter pointColor model marginX marginY labelOffset labelFont labelColor data'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Plot'!
@@ -34,9 +24,29 @@ BoxedMorph subclass: #PlotMorph
 PlotMorph class
 	instanceVariableNames: ''!
 
+!classDefinition: #RulerMorph category: #Plot!
+BoxedMorph subclass: #RulerMorph
+	instanceVariableNames: 'begin end rulerFont marginX marginY tickLength tickLabelMirror model tickLabelColor dimension'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Plot'!
+!classDefinition: 'RulerMorph class' category: #Plot!
+RulerMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #HRulerMorph category: #Plot!
+RulerMorph subclass: #HRulerMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Plot'!
+!classDefinition: 'HRulerMorph class' category: #Plot!
+HRulerMorph class
+	instanceVariableNames: ''!
+
 !classDefinition: #VRulerMorph category: #Plot!
-BoxedMorph subclass: #VRulerMorph
-	instanceVariableNames: 'resolution begin end rulerFont marginX marginY tickWidth tickLabelOnTheLeft'
+RulerMorph subclass: #VRulerMorph
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Plot'!
@@ -44,9 +54,19 @@ BoxedMorph subclass: #VRulerMorph
 VRulerMorph class
 	instanceVariableNames: ''!
 
+!classDefinition: #NamedPipe category: #Plot!
+Object subclass: #NamedPipe
+	instanceVariableNames: 'stream fileName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Plot'!
+!classDefinition: 'NamedPipe class' category: #Plot!
+NamedPipe class
+	instanceVariableNames: ''!
+
 !classDefinition: #PlotModel category: #Plot!
 Object subclass: #PlotModel
-	instanceVariableNames: 'file'
+	instanceVariableNames: 'namedPipe columns counter data row endOfRecord space xAxisFormatter yAxisFormatter dynamicX dynamicY showLabels resolutionX resolutionY'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Plot'!
@@ -55,155 +75,93 @@ PlotModel class
 	instanceVariableNames: ''!
 
 
-!PlotWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 20:58:50'!
+!PlotWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:50:35'!
 buildMorphicWindow
 
-	| aHRulerMorph aPlotMorph aVRulerMorph aSpace morph |
+	| aHRulerMorph aPlotMorph aVRulerMorph aSpace morph bgcolor tickcolor |
+	
+	bgcolor := Color fromHexString: '#fffeeb'.
+	tickcolor := Color fromHexString: '#888888'.
 	
 	aPlotMorph := PlotMorph new.
 
-	aPlotMorph data: model fetch.
+	aPlotMorph model: model.
 
+	aPlotMorph borderWidth:0 ; color: bgcolor.
+	
 	aHRulerMorph := HRulerMorph new.
 
-	aHRulerMorph tickLabelAbove: true.
+	aHRulerMorph model: model.
+	
+	aHRulerMorph borderWidth:0 ; color: bgcolor.
+	
+	aHRulerMorph tickLabelMirror: true.
 
-	aHRulerMorph color: Color black.
+	aHRulerMorph tickLabelColor: tickcolor. 
 
 	aVRulerMorph := VRulerMorph new.
 
-	aVRulerMorph tickLabelOnTheLeft: true.
+	aVRulerMorph borderWidth:0 ; color: bgcolor.
 
-	aVRulerMorph color: Color black.
+	aVRulerMorph tickLabelMirror: true.
+
+	aVRulerMorph model: model.
+
+	aVRulerMorph tickLabelColor: tickcolor.
 
 	aSpace := BoxedMorph new.
 	
-	aSpace color: Color transparent.
+	aSpace color: bgcolor. 
 	
 	aSpace borderWidth: 0.
 
-	morph := 		((aSpace -100f |100f) + (aHRulerMorph |100f -1.0p)) |100f / ((aVRulerMorph -100f |1.0p) + (aPlotMorph |1.0p - 1.0p)).
-
+	morph := 		((aSpace -100f |1p) + (aHRulerMorph |64f -1.0p)) |64f / ((aVRulerMorph -100f |1.0p) + (aPlotMorph |1.0p - 1.0p)).
+	
 	self layoutMorph addMorph: morph. 
 
-	self setLabel:'Plot Window'! !
+	self setLabel:'Plot Window'.
 
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 20:41:02'!
-drawOn: aCanvas
-
-	| transformer n delta labelOffset tickOffset  |
 	
-	transformer := AffineTransformation transformFrom: (begin@0 corner:end@1)  to: (self localBounds insetBy: marginX @ marginY  ).
-	
-	n := 0.
-	
-	delta := (end - begin) / resolution.
-
-	tickLabelAbove 
-		ifTrue:[
-			tickOffset := self morphHeight - tickHeight.
-			labelOffset := tickOffset - rulerFont lineSpacing 			 ] 
-		ifFalse:	[
-			labelOffset := tickHeight.
-			tickOffset := 0].
-		
-	resolution +1 timesRepeat: [ | pt alignment label x |
-		x := begin + (n*delta).
-		pt := transformer transform: x@0.
-
-		aCanvas strokeWidth: 1.0 color: color do: [ :canvas |
-		canvas
-			moveTo: pt x @ tickOffset;
-			lineTo: pt x@ (tickOffset+tickHeight) ].
-
-		label := '{1}' format:{x printStringFractionDigits: 1}.
-		
-		alignment := (rulerFont widthOfString: label) / 2.
-
-		aCanvas drawString: label at: (pt x - alignment ) @ labelOffset 	font: rulerFont color: color.
-		n := n + 1.
-		]
-! !
-
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:23:18'!
-from: aNumberBegin to: aNumberEnd
-
-	begin := aNumberBegin. end := aNumberEnd! !
-
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:57:38'!
-initialize
-
-	super initialize .
-
-	rulerFont := FontFamily defaultFamilyAndPointSize.
-
-	marginX := 24.0.
-	
-	marginY := 4.
-	
-	resolution := 10.
-	
-	begin := -0.5.
-	
-	end := 0.5.
-	
-	tickHeight := 24.
-	
-	tickLabelAbove := false.! !
-
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:50:39'!
-requiresVectorCanvas
-	^true! !
-
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:18:19'!
-resolution: anInteger
-	resolution := anInteger! !
-
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:53:43'!
-tickHeight: aNumber
-
-	tickHeight := aNumber! !
-
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:57:27'!
-tickLabelAbove: aBoolean
-	tickLabelAbove := aBoolean! !
+	! !
 
 !PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 21:02:25'!
 clipsSubmorphs
 	^true ! !
 
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:06:49'!
-data: anOrderedCollection
-	data := anOrderedCollection ! !
-
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 21:07:20'!
+!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:25:27'!
 drawOn: aCanvas
 
-	| transformer |
+	| transformer sspace space |
 	
-	transformer := AffineTransformation transformFrom: space  to: (self localBounds insetBy: marginX @ marginY  ) :: scaledBy: 1@-1.
+	super drawOn: aCanvas.
+	
+	space := model space.
+	
+	sspace := space origin x @ space corner y corner: space corner x @ space origin y.
+	
+	transformer := AffineTransformation transformFrom: sspace to: (self localBounds insetBy: marginX @ marginY  ) .
 	
 	data do:[:each | | p |
-		p := transformer transform: each.
+		p := transformer transform: ((each at:1) asNumber @ (each at:2) asNumber).
 		
 		aCanvas strokeWidth: 1.0 color: pointColor fillColor: pointColor do: [ :canvas |
 		canvas
 			circleCenter: p radius: pointDiameter/2].
 		
-		showLabel ifTrue:[
-			aCanvas drawString: ('{1}' format:{each y}) at: p + labelOffset font: labelFont color: labelColor.
+		model showLabels ifTrue:[ 
+			aCanvas drawString: ('{1}' format:{each at:2}) at: p + labelOffset font: labelFont color: labelColor.
 		 ].
 	]
 	
 	
 	! !
 
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:35:37'!
+!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:32:19'!
 initialize
 
 	super initialize.
 
-	data := { 0@0 }.
+	data := OrderedCollection new.
 	
 	pointDiameter := 4.
 	
@@ -213,15 +171,11 @@ initialize
 	
 	marginY := 24.0.
 	
-	showLabel := true.
-	
 	labelOffset := 5@ 0.
 	
 	labelFont := FontFamily defaultFamilyAndPointSize.
 	
 	labelColor := Color black.
-	
-	self space: (-0.5@-0.5 extent: 1.0@1.0).
 	
 ! !
 
@@ -245,6 +199,13 @@ marginX: aNumber
 marginY: aNumber
 	marginY := aNumber! !
 
+!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 09:57:21'!
+model: aPlotModel
+
+	model := aPlotModel.
+	
+	model addDependent: self.! !
+
 !PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:05:49'!
 pointColor: aColor
 	pointColor := aColor! !
@@ -257,24 +218,21 @@ pointDiameter: aNumber
 requiresVectorCanvas
 	^true! !
 
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:24:32'!
-showLabel: aBoolean
-	showLabel := aBoolean! !
+!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 16:03:50'!
+update: aSymbol
 
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 15:11:14'!
-space: aRectangle
+	data := model fetch.
+	
+	self redrawNeeded ! !
 
-	space := aRectangle.
-	! !
-
-!PlotMorph class methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:44:21'!
+!PlotMorph class methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 11:12:16'!
 open: aModel
 
 	| aHRulerMorph aPlotMorph aVRulerMorph aSpace |
 	
 	aPlotMorph := self new.
 
-	aPlotMorph data: aModel fetch.
+	aPlotMorph model: aModel.
 
 	aHRulerMorph := HRulerMorph new.
 
@@ -292,115 +250,417 @@ open: aModel
 	
 	^((aSpace -100f |100f) + (aHRulerMorph |100f -1.0p)) |100f / ((aVRulerMorph -100f |1.0p) + (aPlotMorph |1.0p - 1.0p)) morphExtent:500@500 :: openInWorld! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 20:37:53'!
-drawOn: aCanvas
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:47:20'!
+dimension: anInteger
+	dimension := anInteger! !
 
-	| transformer n delta labelOffset tickOffset |
-	
-	transformer := AffineTransformation transformFrom: (0@begin corner:1@end)  to: (self localBounds insetBy: marginX @ marginY  ) :: scaledBy: 1@-1.
-	
-	n := 0.
-	
-	delta := (end - begin) / resolution.
-
-	tickLabelOnTheLeft 
-		ifTrue:[
-			tickOffset := self morphWidth - tickWidth.
-			labelOffset := tickOffset - 4  ] 
-		ifFalse:	[
-			labelOffset := tickWidth.
-			tickOffset := 4].
-		
-	resolution +1 timesRepeat: [ | pt y label alignment |
-		
-		y := begin + (n*delta) .
-		pt := transformer transform: 0@y.
-
-		aCanvas strokeWidth: 1.0 color: color do: [ :canvas | canvas
-				moveTo: tickOffset @ pt y;
-				lineTo: (tickOffset+tickWidth) @ pt y ].
-			
-		label := '{1}' format:{y printStringFractionDigits: 1}.
-		
-		alignment := tickLabelOnTheLeft 
-			ifTrue:[	 rulerFont widthOfString: label ]
-			ifFalse:[ 0 ].
-		aCanvas drawString: label at: labelOffset - alignment @ (pt y -  (rulerFont lineSpacing / 2)) 	font: rulerFont color: color.
-		n := n + 1.
-	]
-! !
-
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:12:39'!
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:44:03'!
 from: aNumberBegin to: aNumberEnd
 
 	begin := aNumberBegin. end := aNumberEnd! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:18:54'!
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:55:01'!
 initialize
 
 	super initialize .
 
 	rulerFont := FontFamily defaultFamilyAndPointSize.
 
-	marginX := 4.0.
+	marginX := 24.0.
 	
 	marginY := 24.
-	
-	resolution := 10.
 	
 	begin := -0.5.
 	
 	end := 0.5.
 	
-	tickWidth := 24.
+	tickLength := 15.
 	
-	tickLabelOnTheLeft := false.! !
+	tickLabelMirror := false.
+	
+	tickLabelColor := Color black.
+! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:12:54'!
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:44:08'!
+model: aPlotModel
+
+	model := aPlotModel.
+	
+	model addDependent: self.! !
+
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:43:48'!
 requiresVectorCanvas
 	^true! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:12:33'!
-resolution: anInteger
-	resolution := anInteger! !
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:44:36'!
+tickLabelColor: aColor
+	tickLabelColor := aColor! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:14:23'!
-tickLabelOnTheLeft: aBoolean
-	tickLabelOnTheLeft := aBoolean! !
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:46:14'!
+tickLabelMirror: aBoolean
+	tickLabelMirror := aBoolean! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 17:13:50'!
-tickWidth: aNumber
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:45:57'!
+tickLength: aNumber
 
-	tickWidth := aNumber! !
+	tickLength := aNumber! !
 
-!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 21:37:18'!
+!RulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 18:59:24'!
+update: aSymbol
+
+	| message |
+	
+	message := dimension = 1 ifTrue:[#x] ifFalse:[#y].
+	
+	begin := model space origin perform: message.
+	end := model space corner perform: message.
+		
+	self redrawNeeded ! !
+
+!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:49:18'!
+drawOn: aCanvas
+
+	| transformer n delta labelOffset tickOffset  |
+	
+	super drawOn: aCanvas.
+	
+	transformer := AffineTransformation transformFrom: (begin@0 corner:end@1)  to: (self localBounds insetBy: marginX @ marginY  ).
+	
+	n := 0.
+	
+	delta := (end - begin) / model resolutionX.
+
+	tickLabelMirror 
+		ifTrue:[
+			tickOffset := self morphHeight - tickLength.
+			labelOffset := tickOffset - rulerFont lineSpacing 			 ] 
+		ifFalse:	[
+			labelOffset := tickLength.
+			tickOffset := 0].
+		
+	model resolutionX +1 timesRepeat: [ | pt alignment label x |
+		x := begin + (n*delta).
+		pt := transformer transform: x@0.
+
+		aCanvas strokeWidth: 1.0 color: tickLabelColor do: [ :canvas |
+		canvas
+			moveTo: pt x @ tickOffset;
+			lineTo: pt x@ (tickOffset+tickLength) ].
+
+		label := model formatX:x.
+		
+		alignment := (rulerFont widthOfString: label) / 2.
+
+		aCanvas drawString: label at: (pt x - alignment ) @ labelOffset 	font: rulerFont color: tickLabelColor.
+		n := n + 1.
+		]
+! !
+
+!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:47:36'!
+initialize
+
+	super initialize.
+	
+	dimension := 1.! !
+
+!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:49:09'!
+drawOn: aCanvas
+
+	| transformer n delta labelOffset tickOffset |
+
+	super drawOn: aCanvas.
+	
+	transformer := AffineTransformation transformFrom: (0@end corner:1@begin)  to: (self localBounds insetBy: marginX @ marginY  ) .
+	
+	n := 0.
+	
+	delta := (end - begin) / model resolutionY.
+
+	tickLabelMirror
+		ifTrue:[
+			tickOffset := self morphWidth - tickLength.
+			labelOffset := tickOffset - 4  ] 
+		ifFalse:	[
+			labelOffset := tickLength.
+			tickOffset := 4].
+		
+	model resolutionY +1 timesRepeat: [ | pt y label alignment |
+		
+		y := begin + (n*delta) .
+		pt := transformer transform: 0@y.
+
+		aCanvas strokeWidth: 1.0 color: tickLabelColor do: [ :canvas | canvas
+				moveTo: tickOffset @ pt y;
+				lineTo: (tickOffset+tickLength) @ pt y ].
+			
+		label := model formatY: y.
+		
+		alignment := tickLabelMirror
+			ifTrue:[	 rulerFont widthOfString: label ]
+			ifFalse:[ 0 ].
+		aCanvas drawString: label at: labelOffset - alignment @ (pt y -  (rulerFont lineSpacing / 2)) 	font: rulerFont color: tickLabelColor.
+		n := n + 1.
+	]
+! !
+
+!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 15:49:01'!
+initialize
+
+	super initialize .
+
+	dimension := 2.! !
+
+!NamedPipe methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:26:19'!
+atEnd
+	^stream atEndOfFile ! !
+
+!NamedPipe methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:23:07'!
+close
+	^stream close! !
+
+!NamedPipe methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:16:50'!
+fileName: aString
+	fileName := aString! !
+
+!NamedPipe methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:41:19'!
+nextToken
+
+	| c token |
+	
+	c := stream next.
+	
+	" first eat all the prefix separators "
+	
+	[ c notNil and:[c isSeparator] ]
+		whileTrue:[c := stream next]. 
+	
+	" now read the token characters "
+
+	token := WriteStream on:''.
+		
+	[ c isNil or:[c isSeparator] ]
+		whileFalse:[
+			token nextPut: c. 
+			c := stream next. ].
+	
+	^token contents! !
+
+!NamedPipe methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:16:25'!
+stream: anAsyncFileStream
+	stream := anAsyncFileStream ! !
+
+!NamedPipe methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:21:47'!
+update: aSymbol
+
+	self changed: fileName ! !
+
+!NamedPipe class methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:21:04'!
+open: aStringFileName forWrite: aBooleanWriteMode
+
+	| aNamedPipe fileID stream |
+	
+	fileID := self primOpen: aStringFileName asUtf8Bytes writable: aBooleanWriteMode.
+	
+	fileID ifNil: [^ nil].  "allows sender to detect failure"
+	
+	aNamedPipe := self new.
+	
+	stream := BufferedAsyncFileReadStream name: #notUsed attachTo: fileID writable: aBooleanWriteMode.
+	
+	aNamedPipe fileName: aStringFileName ; stream: stream.
+	
+	stream addDependent: aNamedPipe.
+	
+	^aNamedPipe
+! !
+
+!NamedPipe class methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:19:39'!
+primOpen: fileNameAsUtf8Bytes writable: writableFlag
+	"Open a file of the given name, and return the file ID obtained.
+	If writableFlag is true, then
+		if there is none with this name, then create one
+		else prepare to overwrite the existing from the beginning
+	otherwise
+		if the file exists, open it read-only
+		else return nil"
+
+	<primitive: 'primitiveFileOpen' module: 'FilePlugin'>
+	^ nil
+! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:47:43'!
+columns: anOrderedCollection
+	columns := anOrderedCollection ! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:12:20'!
+dynamicX: aBoolean
+	dynamicX := aBoolean! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:12:24'!
+dynamicY: aBoolean
+	dynamicY := aBoolean! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 11:19:54'!
 fetch
 
-	| data |
+	^data copy! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 18:45:12'!
+formatX: aNumber
+
+	^xAxisFormatter value: aNumber 
+	! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 18:45:02'!
+formatY: aNumber
+
+	^yAxisFormatter value: aNumber
+	! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:54:10'!
+initialize
+
+	columns := { Number . Number }.
+	
+	row := OrderedCollection new.
 	
 	data := OrderedCollection new.
-
-	file readStreamDo: [:aStream | 
 	
-		| x y |
+	space := -0.5@-0.5 extent: 1.0@1.0.
 
-		aStream useCharacters.
+	resolutionX := 10.
+
+	resolutionY := 10.
 		
-		x := aStream nextNumber.
-		y := aStream nextNumber.
+	dynamicX := true.
+
+	dynamicY := true.
 	
-		[aStream atEnd] whileFalse:[
+	showLabels := true.
+	
+	endOfRecord := 'END'.
+	
+	xAxisFormatter := [:x | '{1}' format:{x printStringFractionDigits: 1}].
+	
+	yAxisFormatter := [:y | '{1}' format:{y printStringFractionDigits: 1}].! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 11:22:51'!
+namedPipe: aNamedPipe
+
+	namedPipe := aNamedPipe.
+	
+	aNamedPipe addDependent: self.! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:47:18'!
+resolutionX
+	^resolutionX ! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:46:12'!
+resolutionX: aNumber
+	resolutionX := aNumber! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:48:27'!
+resolutionY
+	^resolutionY! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:48:43'!
+resolutionY: aNumber
+	resolutionY := aNumber! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:25:23'!
+showLabels
+	^showLabels ! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:25:23'!
+showLabels: aBoolean
+	showLabels := aBoolean! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 16:01:46'!
+space
+	^space! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:12:52'!
+update: aSymbol
+
+	| aToken |
+	
+	aToken := namedPipe nextToken.
+	
+	[aToken notEmpty and: [aToken ~= endOfRecord ] ]
+		whileTrue:[			
+			[ aToken notEmpty and: [aToken ~= endOfRecord ] and:[row size < columns size ] ]
+				whileTrue: [		
+					row add: aToken.
+					aToken := namedPipe nextToken ].
+	
+			row size = columns size 
+				ifTrue:[
+					data add: (columns with: row collect: [:class :string | | aReadStream | aReadStream := ReadStream on: string.  class readFrom: aReadStream]).
+					row removeAll. ] ].
+			
+	aToken = endOfRecord ifTrue:[
 		
-			data add: x@y.
-			x := aStream nextNumber.
-			y := aStream nextNumber.
+		dynamicX ifTrue:[self updateXSpace].
+		dynamicY ifTrue:[self updateYSpace].
+		
+		self changed: aSymbol.
+		
+		data removeAll. ].! !
 
-		 ]
-	].
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:37:36'!
+updateXSpace
 
-	^data! !
+	data notEmpty 
+		ifTrue:[ | xs minx maxx |
+			
+			xs := data collect:[:each | each at:1 ].
+			
+			minx := xs min asNumber. 
+			maxx := xs max asNumber.
+			
+			space := minx@space origin y corner: maxx@space corner y.
+				
+			space width = 0 
+				ifTrue:[space := space origin - (0.5 @ 0) corner: space corner + (0.5@0) ]. ]
+		ifFalse:[
+			space := -0.5@space origin y corner: 0.5@space corner y ].
+! !
 
-!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:56:55'!
-file: aPath
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:37:07'!
+updateYSpace
 
-	file := aPath asFileEntry! !
+	data notEmpty 
+		ifTrue:[ | ys miny maxy |
+						
+			ys := data collect: [:each | each at:2 ].
+			
+			miny := ys min asNumber.
+			maxy := ys max asNumber.
+			
+			space := space origin x@miny corner: space corner x@maxy.
+				
+			space height = 0 
+				ifTrue:[space := space origin - (0 @ 0.5) corner: space corner + (0 @ 0.5)] 			] 
+		ifFalse:[
+			space := space origin x @-0.5 corner: space corner x@0.5 ].
+! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 18:43:21'!
+xAxisFormatter: aBlock
+	xAxisFormatter := aBlock! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:16:12'!
+xFrom: b to: e
+	space := b @ space origin y corner: e @ space corner y! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 18:43:29'!
+yAxisFormatter: aBlock
+	yAxisFormatter := aBlock! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:17:15'!
+yFrom: b to: e
+	space := space origin x @ b corner: space corner x @ e! !
+
+!Time methodsFor: '*Plot' stamp: 'DF 12/9/2024 19:05:07'!
+asNumber
+	^ self asDurationSinceMidnight totalMilliseconds // 100 "tenths of a second is good enough for plotting purposes and avoids floating point errors "! !

@@ -31,6 +31,9 @@ using std::min;
 using std::cout;
 using std::endl;
 
+fstream progress_pipe;
+fstream score_pipe;
+
 vector<string> history;
 
 chromosome_t* best(chromosome_t* b, chromosome_t* e) {
@@ -97,8 +100,6 @@ void report_score_gnuplot(chromosome_t* b, chromosome_t* e, ostream& out) {
 
 		out << jj << ' ' << rules[jj].score << '\n';
 	}
-
-	out << endl;
 }
 
 static stringstream progress_stream;
@@ -124,7 +125,8 @@ void report_progress(chromosome_t* b, chromosome_t* e, ostream& out) {
 	
 	progress_stream << hh << ":" << mm << ":" << ss << "." << ms << " " << (p)->fitness << " " << (q)->fitness << " \t"; 
 	
-	report_score(p, progress_stream);
+	if(!use_fifo) 
+		report_score(p, progress_stream);
 	
 	progress_stream << endl;
 
@@ -134,14 +136,16 @@ void report_progress(chromosome_t* b, chromosome_t* e, ostream& out) {
 void report(chromosome_t* b, chromosome_t* e) {
 
 	if (use_fifo) {
-		{
-			fstream progress_pipe(string("progress.") + fifo_name, ios::out);
-			report_progress(b,e,progress_pipe);
-		}
-		{
-			fstream score_pipe(string("score.") + fifo_name, ios::out);
-			report_score_gnuplot(b, e, score_pipe);
-		}
+		if (!progress_pipe.is_open()) 
+			progress_pipe.open(string("progress.") + fifo_name, ios::out);
+		if (!score_pipe.is_open()) 
+			score_pipe.open(string("score.") + fifo_name, ios::out);
+
+		report_progress(b,e,progress_pipe);
+		progress_pipe << "END" << endl;
+
+		report_score_gnuplot(b, e, score_pipe);
+		score_pipe << "END" << endl;
 	} else {
 		progress_stream.str("");
 		report_progress(b,e, cout);
