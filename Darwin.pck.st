@@ -1,4 +1,4 @@
-'From Cuis7.1 [latest update: #6676] on 5 December 2024 at 9:02:40 pm'!
+'From Cuis7.1 [latest update: #6709] on 5 December 2024 at 4:51:21 pm'!
 'Description '!
 !provides: 'Darwin' 1 271!
 !requires: 'LayoutAlgebra' 1 10 nil!
@@ -367,7 +367,7 @@ reset
 	consoleOutput := 'deleted population.gimage file'. self changed: #console.
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:59:24'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 16:41:20'!
 run
 
 	| workingDirectory fifoName commandName model aReadStream result |
@@ -424,7 +424,7 @@ run
 	duration := finish - start.
 	
 	consoleOutput := consoleOutput, ('
-Run complete. Execution took {1} hours, {2} minutes, and {3} seconds.' format:{ duration hours . duration minutes . duration seconds}) . model changed: #console. ] fork
+Run complete. Execution took {1} hours, {2} minutes, and {3} seconds.' format:{ duration hours . duration minutes . duration seconds}) . model changed: #console. model changed:#run ] fork
 ! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:20:56'!
