@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 2 December 2024 at 10:04:24 am'!
+'From Cuis7.1 [latest update: #6676] on 5 December 2024 at 9:02:40 pm'!
 'Description '!
-!provides: 'Darwin' 1 270!
+!provides: 'Darwin' 1 271!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -1554,7 +1554,7 @@ buildMorphicWindow
 		
 ! !
 
-!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 22:02:06'!
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 20:53:15'!
 calculateRulePositions
 
 	| penalties hh tt ti ii yy xx n font ww result |
@@ -1562,7 +1562,7 @@ calculateRulePositions
 	penalties := model penalties. 
 	
 	"each element in penalties is a 3-tuple [index text-location score]"
-	
+
 	font := FontFamily defaultFamilyAndPointSize.
 	hh := font lineSpacing.
 	ww := program morphWidth.
@@ -1589,13 +1589,14 @@ calculateRulePositions
 	
 	^result! !
 
-!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 11:29:40'!
+!GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 20:58:19'!
 someSubmorphPositionOrExtentChanged
 
 	program ifNil:[^self].
 	
 	program isLayoutNeeded ifTrue:[
-		scores morphExtent: scores morphExtent x @ program scroller morphExtent y]! !
+		
+		scores morphExtent: scores morphExtent x @ program scroller morphExtent y. 				]! !
 
 !GenieSolutionBrowser methodsFor: 'as yet unclassified' stamp: 'DF 10/21/2024 22:33:23'!
 update: aSymbol
