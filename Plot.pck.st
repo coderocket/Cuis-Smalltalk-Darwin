@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 10 December 2024 at 2:39:09 pm'!
+'From Cuis7.1 [latest update: #6676] on 10 December 2024 at 9:28:29 pm'!
 'Description '!
-!provides: 'Plot' 1 69!
+!provides: 'Plot' 1 72!
 SystemOrganization addCategory: #Plot!
 
 
@@ -16,7 +16,7 @@ PlotWindow class
 
 !classDefinition: #PlotMorph category: #Plot!
 BoxedMorph subclass: #PlotMorph
-	instanceVariableNames: 'pointDiameter pointColor model marginX marginY labelOffset labelFont labelColor data'
+	instanceVariableNames: 'pointDiameter pointColor model marginX marginY labelOffset labelColor data'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Plot'!
@@ -66,7 +66,7 @@ NamedPipe class
 
 !classDefinition: #PlotModel category: #Plot!
 Object subclass: #PlotModel
-	instanceVariableNames: 'namedPipe columns counter data row endOfRecord space xAxisFormatter yAxisFormatter dynamicX dynamicY showLabels resolutionX resolutionY'
+	instanceVariableNames: 'namedPipe columns counter data row endOfRecord space xAxisFormatter yAxisFormatter dynamicX dynamicY showLabels resolutionX resolutionY labelFont'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Plot'!
@@ -128,7 +128,7 @@ buildMorphicWindow
 clipsSubmorphs
 	^true ! !
 
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:25:27'!
+!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 20:30:15'!
 drawOn: aCanvas
 
 	| transformer sspace space |
@@ -149,14 +149,14 @@ drawOn: aCanvas
 			circleCenter: p radius: pointDiameter/2].
 		
 		model showLabels ifTrue:[ 
-			aCanvas drawString: ('{1}' format:{each at:2}) at: p + labelOffset font: labelFont color: labelColor.
+			aCanvas drawString: ('{1}' format:{each at:2}) at: p + labelOffset font: model labelFont color: labelColor.
 		 ].
 	]
 	
 	
 	! !
 
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:32:19'!
+!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 20:30:44'!
 initialize
 
 	super initialize.
@@ -172,9 +172,7 @@ initialize
 	marginY := 24.0.
 	
 	labelOffset := 5@ 0.
-	
-	labelFont := FontFamily defaultFamilyAndPointSize.
-	
+		
 	labelColor := Color black.
 	
 ! !
@@ -182,10 +180,6 @@ initialize
 !PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:27:21'!
 labelColor: aColor
 	labelColor := aColor! !
-
-!PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:27:14'!
-labelFont: aFont
-	labelFont := aFont! !
 
 !PlotMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/7/2024 14:24:12'!
 labelOffset: aPoint
@@ -317,7 +311,7 @@ update: aSymbol
 		
 	self redrawNeeded ! !
 
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 14:36:59'!
+!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 18:49:04'!
 drawOn: aCanvas
 
 	| transformer n labelOffset tickOffset  |
@@ -336,7 +330,7 @@ drawOn: aCanvas
 			labelOffset := tickLength.
 			tickOffset := 0].
 		
-	[begin + (n * model resolutionX) < end] whileTrue: [ | pt alignment label x |
+	[begin + (n * model resolutionX) <= end] whileTrue: [ | pt alignment label x |
 		x := begin + (n* model resolutionX).
 		pt := transformer transform: x@0.
 
@@ -361,7 +355,7 @@ initialize
 	
 	dimension := 1.! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 14:35:37'!
+!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 18:49:10'!
 drawOn: aCanvas
 
 	| transformer n labelOffset tickOffset |
@@ -380,7 +374,7 @@ drawOn: aCanvas
 			labelOffset := tickLength.
 			tickOffset := 4].
 		
-	[begin + (n*model resolutionY) < end] whileTrue: [ | pt y label alignment |
+	[begin + (n*model resolutionY) <= end] whileTrue: [ | pt y label alignment |
 		
 		y := begin + (n*model resolutionY) .
 		pt := transformer transform: 0@y.
@@ -450,12 +444,12 @@ update: aSymbol
 
 	self changed: fileName ! !
 
-!NamedPipe class methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:21:04'!
+!NamedPipe class methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 17:42:54'!
 open: aStringFileName forWrite: aBooleanWriteMode
 
 	| aNamedPipe fileID stream |
 	
-	fileID := self primOpen: aStringFileName asUtf8Bytes writable: aBooleanWriteMode.
+	fileID := self primOpen: aStringFileName asString asUtf8Bytes writable: aBooleanWriteMode.
 	
 	fileID ifNil: [^ nil].  "allows sender to detect failure"
 	
@@ -483,6 +477,10 @@ primOpen: fileNameAsUtf8Bytes writable: writableFlag
 	<primitive: 'primitiveFileOpen' module: 'FilePlugin'>
 	^ nil
 ! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 17:41:16'!
+closePipe
+	namedPipe close! !
 
 !PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 10:47:43'!
 columns: anOrderedCollection
@@ -513,7 +511,7 @@ formatY: aNumber
 	^yAxisFormatter value: aNumber
 	! !
 
-!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:54:10'!
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 20:29:30'!
 initialize
 
 	columns := { Number . Number }.
@@ -538,7 +536,18 @@ initialize
 	
 	xAxisFormatter := [:x | '{1}' format:{x printStringFractionDigits: 1}].
 	
-	yAxisFormatter := [:y | '{1}' format:{y printStringFractionDigits: 1}].! !
+	yAxisFormatter := [:y | '{1}' format:{y printStringFractionDigits: 1}].
+	
+	labelFont := FontFamily defaultFamilyAndPointSize.
+	! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 20:30:02'!
+labelFont
+	^labelFont! !
+
+!PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 20:28:59'!
+labelFont: aFont
+	labelFont := aFont! !
 
 !PlotModel methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 11:22:51'!
 namedPipe: aNamedPipe
@@ -657,6 +666,6 @@ yAxisFormatter: aBlock
 yFrom: b to: e
 	space := space origin x @ b corner: space corner x @ e! !
 
-!Time methodsFor: '*Plot' stamp: 'DF 12/9/2024 19:05:07'!
+!Time methodsFor: '*Plot' stamp: 'DF 12/10/2024 18:14:13'!
 asNumber
-	^ self asDurationSinceMidnight totalMilliseconds // 100 "tenths of a second is good enough for plotting purposes and avoids floating point errors "! !
+	^ self asDurationSinceMidnight totalMilliseconds / 1000.0 "tenths of a second is good enough for plotting purposes and avoids floating point errors "! !

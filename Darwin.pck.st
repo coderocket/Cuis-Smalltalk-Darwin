@@ -1,6 +1,7 @@
-'From Cuis7.1 [latest update: #6709] on 5 December 2024 at 4:51:21 pm'!
+'From Cuis7.1 [latest update: #6676] on 10 December 2024 at 9:02:18 pm'!
 'Description '!
-!provides: 'Darwin' 1 271!
+!provides: 'Darwin' 1 280!
+!requires: 'Plot' 1 70 nil!
 !requires: 'LayoutAlgebra' 1 10 nil!
 !requires: 'Regex-Core' 1 9 nil!
 !requires: 'Xray' 1 26 nil!
@@ -10,7 +11,7 @@ SystemOrganization addCategory: #Darwin!
 
 !classDefinition: #GenieBrowserModel category: #Darwin!
 Object subclass: #GenieBrowserModel
-	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration selectedSolution scanner'
+	instanceVariableNames: 'consoleOutput programText parser ast codeGenerator genieProcess programIndex programName selection configuration selectedSolution scanner scorePlotModel progressPlotModel'
 	classVariableNames: 'CommentRegex InitialProgramTemplate KeywordsRegex Programs SectionHeadersRegex'
 	poolDictionaries: ''
 	category: 'Darwin'!
@@ -134,6 +135,24 @@ build
 	
 	succ ifTrue:[
 		self make ].! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 19:39:45'!
+closeProgressWindows
+
+	| names windows |
+	
+	names := { 'Score View' . 'Progress View' }.
+	
+	windows := OrderedCollection new.
+	
+	UISupervisor runningWorld  submorphsDo: [:each | 
+		each isKindOf: SystemWindow 
+			:: ifTrue:[ 
+				names includes: each label 
+					:: ifTrue:[ windows add: each ] ] ].
+	
+	windows do:[:each | each delete].
+! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 18:31:59'!
 compile
@@ -298,6 +317,62 @@ make
 Build complete.'. model changed: #console. ] fork
 	! !
 
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 17:36:27'!
+openNamedPipe: aStringPipeName
+
+	| workingDirectory path fifo plotModel |
+	
+	workingDirectory := codeGenerator codePath.
+	
+	path := workingDirectory // aStringPipeName.
+	
+	fifo := NamedPipe open: path forWrite:false.
+
+	plotModel := PlotModel new.
+
+	plotModel namedPipe: fifo.
+
+	^plotModel! !
+
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 20:31:53'!
+openProgressWindows
+
+	| now |
+	
+	now := Time now asDurationSinceMidnight totalMilliseconds / 1000.0.
+	
+	progressPlotModel := self openNamedPipe:  'progress.gnuplot.fifo'.
+	
+	progressPlotModel columns: { Time . Number . Number }.
+
+	progressPlotModel "dynamicY: false; yFrom: 1200 to: 1452 ;" showLabels:false.
+
+	progressPlotModel resolutionX: 1. 
+	
+	progressPlotModel resolutionY: 40. 
+
+	progressPlotModel yAxisFormatter: [:n | '{1}' format:{ n printStringFractionDigits: 0 }].
+
+	progressPlotModel xAxisFormatter: [:n | '{1}' format:{ n - now :: printStringFractionDigits: 1 }].
+
+	PlotWindow open: progressPlotModel label: 'Progress View' :: morphPosition: 200@610 :: morphExtent: 600@400.
+
+	scorePlotModel := self openNamedPipe:  'score.gnuplot.fifo'.
+
+	scorePlotModel labelFont: (FontFamily defaultFamilyPointSize: 10).
+	
+	scorePlotModel xAxisFormatter: [:n | '{1}' format:{ n printStringFractionDigits: 0 }].
+
+	scorePlotModel yAxisFormatter: [:n | '{1}' format:{ n printStringFractionDigits: 0 }].
+	
+	scorePlotModel dynamicY: false; yFrom: -100 to: 2 ; showLabels:true.
+
+	scorePlotModel resolutionX: 1. 
+
+	PlotWindow open: scorePlotModel label:'Score View' :: morphPosition: 200@200 :: morphExtent:600@400.
+
+! !
+
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/6/2024 19:48:35'!
 program
 	^ programText! !
@@ -367,10 +442,12 @@ reset
 	consoleOutput := 'deleted population.gimage file'. self changed: #console.
 	! !
 
-!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 16:41:20'!
+!GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 19:34:28'!
 run
 
 	| workingDirectory fifoName commandName model aReadStream result |
+	
+	self closeProgressWindows.
 	
 	workingDirectory := codeGenerator codePath.
 	
@@ -385,7 +462,7 @@ run
 	genieProcess := OSProcess command: commandName.
 
 	[genieProcess isNotYetRunning ] whileTrue:[ Processor yield ].
-	
+
 	aReadStream := UniFileStream new.
 
 	result := aReadStream open: ('{1}/{2}' format: { workingDirectory . fifoName }) forWrite: false.
@@ -393,6 +470,8 @@ run
 	result ifNil:[
 		consoleOutput := 'Could not run {1}.' format:{ commandName }. model changed: #console. ^self ].
 
+	self openProgressWindows.
+		
 	aReadStream disableReadBuffering .
 	
 	OSProcess accessor setNonBlocking: aReadStream fileID.
@@ -419,12 +498,16 @@ run
 	[genieProcess isRunning ] whileTrue:[
 		Delay forSeconds: 1 :: wait ].
 	
+	scorePlotModel ifNotNil:[:x | x closePipe ].
+
+	progressPlotModel ifNotNil:[:x | x closePipe ].
+	
 	finish := Time now.
 	
 	duration := finish - start.
 	
 	consoleOutput := consoleOutput, ('
-Run complete. Execution took {1} hours, {2} minutes, and {3} seconds.' format:{ duration hours . duration minutes . duration seconds}) . model changed: #console. model changed:#run ] fork
+Run complete. Execution took {1} hours, {2} minutes, and {3} seconds.' format:{ duration hours . duration minutes . duration seconds}) . model changed: #console. ] fork
 ! !
 
 !GenieBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 10/4/2024 21:20:56'!
