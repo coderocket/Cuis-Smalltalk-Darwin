@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 5 December 2024 at 8:41:58 pm'!
+'From Cuis7.1 [latest update: #6676] on 10 December 2024 at 9:40:32 pm'!
 'Description '!
-!provides: 'CUA' 1 5!
+!provides: 'CUA' 1 6!
 SystemOrganization addCategory: #CUA!
 
 
@@ -35,7 +35,7 @@ MenuBarButtonMorph class
 	instanceVariableNames: ''!
 
 
-!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 20:38:49'!
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 21:39:25'!
 menus: anOrderedCollection
 
 	"MenuBar menus: { { 'File' . { 'New' . 'Open' . 'Save' . 'Save As' } . { 'Edit' . { 'Undo' . 'Redo' . 'Cut' . 'Copy' . 'Past' } . { 'Help' . { 'About' } } }"
@@ -45,6 +45,8 @@ menus: anOrderedCollection
 	bar := LayoutMorph newRow.
 	
 	bar color: Color white.
+	
+	bar borderWidth:1 ; borderColor: Color black.
 	
 	anOrderedCollection do:[:each | | button menu  |
 		menu := MenuBarMenuMorph new.
