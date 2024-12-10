@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 9 December 2024 at 8:35:30 pm'!
+'From Cuis7.1 [latest update: #6709] on 10 December 2024 at 2:39:09 pm'!
 'Description '!
-!provides: 'Plot' 1 68!
+!provides: 'Plot' 1 69!
 SystemOrganization addCategory: #Plot!
 
 
@@ -317,10 +317,10 @@ update: aSymbol
 		
 	self redrawNeeded ! !
 
-!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:49:18'!
+!HRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 14:36:59'!
 drawOn: aCanvas
 
-	| transformer n delta labelOffset tickOffset  |
+	| transformer n labelOffset tickOffset  |
 	
 	super drawOn: aCanvas.
 	
@@ -328,8 +328,6 @@ drawOn: aCanvas
 	
 	n := 0.
 	
-	delta := (end - begin) / model resolutionX.
-
 	tickLabelMirror 
 		ifTrue:[
 			tickOffset := self morphHeight - tickLength.
@@ -338,8 +336,8 @@ drawOn: aCanvas
 			labelOffset := tickLength.
 			tickOffset := 0].
 		
-	model resolutionX +1 timesRepeat: [ | pt alignment label x |
-		x := begin + (n*delta).
+	[begin + (n * model resolutionX) < end] whileTrue: [ | pt alignment label x |
+		x := begin + (n* model resolutionX).
 		pt := transformer transform: x@0.
 
 		aCanvas strokeWidth: 1.0 color: tickLabelColor do: [ :canvas |
@@ -363,10 +361,10 @@ initialize
 	
 	dimension := 1.! !
 
-!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/9/2024 19:49:09'!
+!VRulerMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/10/2024 14:35:37'!
 drawOn: aCanvas
 
-	| transformer n delta labelOffset tickOffset |
+	| transformer n labelOffset tickOffset |
 
 	super drawOn: aCanvas.
 	
@@ -374,8 +372,6 @@ drawOn: aCanvas
 	
 	n := 0.
 	
-	delta := (end - begin) / model resolutionY.
-
 	tickLabelMirror
 		ifTrue:[
 			tickOffset := self morphWidth - tickLength.
@@ -384,9 +380,9 @@ drawOn: aCanvas
 			labelOffset := tickLength.
 			tickOffset := 4].
 		
-	model resolutionY +1 timesRepeat: [ | pt y label alignment |
+	[begin + (n*model resolutionY) < end] whileTrue: [ | pt y label alignment |
 		
-		y := begin + (n*delta) .
+		y := begin + (n*model resolutionY) .
 		pt := transformer transform: 0@y.
 
 		aCanvas strokeWidth: 1.0 color: tickLabelColor do: [ :canvas | canvas
