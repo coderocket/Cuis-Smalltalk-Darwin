@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 11 December 2024 at 3:14:06 pm'!
+'From Cuis7.1 [latest update: #6676] on 11 December 2024 at 5:54:00 pm'!
 'Description '!
-!provides: 'CUA' 1 9!
+!provides: 'CUA' 1 11!
 SystemOrganization addCategory: #CUA!
 
 
@@ -44,7 +44,7 @@ openMenu: aMenuBarButton
 
 	submorphs do:[:each | each == aMenuBarButton ifTrue:[each menu toggle] ifFalse:[each menu close. each redrawNeeded ] ]! !
 
-!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 11:16:21'!
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 17:53:01'!
 menus: anOrderedCollection
 
 	"MenuBar menus: { { 'File' . { 'New' . 'Open' . 'Save' . 'Save As' } . { 'Edit' . { 'Undo' . 'Redo' . 'Cut' . 'Copy' . 'Past' } . { 'Help' . { 'About' } } }"
@@ -60,7 +60,10 @@ menus: anOrderedCollection
 	anOrderedCollection do:[:each | | button menu  |
 		menu := MenuBarMenuMorph new.
 		menu color: Color white ; borderWidth: 1; borderColor: Color black.
-		(each at:2) do:[:item | (menu add: item action: nil) color: Theme current buttonLabel ].
+		(each at:2) do:[:item | 
+			item = $| 
+				ifTrue:[menu addLine]
+				ifFalse:[(menu add: item action: nil) color: Theme current buttonLabel ] ].
 		button := MenuBarButtonMorph model: bar stateGetter: #isOpen: action: #openMenu:.
 		button actionArgument: button.
 		button stateArgument: button.
@@ -87,6 +90,13 @@ close
 	
 	state := #closed. 	! !
 
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 17:37:25'!
+deleteIfPopUp: evt
+
+	super deleteIfPopUp: evt.
+	
+	state := #closed. button redrawNeeded ! !
+
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 11:08:00'!
 drawOn: aCanvas
 	
@@ -102,6 +112,15 @@ initialize
 isOpen
 	^state = #open! !
 
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 17:33:05'!
+mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
+
+	super mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition.
+
+	self includesPixel: aMouseButtonEvent eventPosition :: 
+		ifFalse:[ state := #closed. button redrawNeeded. ]
+! !
+
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 15:09:00'!
 open
 
@@ -115,15 +134,6 @@ open
 			h newMouseFocus: self ]].
 
 ! !
-
-!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 12:25:10'!
-selectItem: aMenuItem
-
-	super selectItem: aMenuItem.
-	
-	"state := #closed.
-	
-	button redrawNeeded "! !
 
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 10:45:27'!
 toggle
