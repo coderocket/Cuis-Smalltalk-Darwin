@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 12 December 2024 at 7:58:43 pm'!
+'From Cuis7.1 [latest update: #6709] on 14 December 2024 at 3:25:30 pm'!
 'Description '!
-!provides: 'CUA' 1 12!
+!provides: 'CUA' 1 16!
 SystemOrganization addCategory: #CUA!
 
 
@@ -35,18 +35,16 @@ MenuBarButtonMorph class
 	instanceVariableNames: ''!
 
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 16:28:02'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 20:14:05'!
 addMenu: aMenu
-	menus add: aMenu! !
+	menus addFirst: aMenu! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 17:18:27'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 17:59:19'!
 buttonPressed: aMenuBarButton
 
 	| index |
 	
-	menus do:[:each | each close ].
-	
-	submorphs do:[:each | each == aMenuBarButton ifFalse:[ each deselect ] ].
+	self clearSelectionExcept: aMenuBarButton.
 
 	aMenuBarButton isOn 
 		ifTrue:[ 		| menu |
@@ -57,16 +55,26 @@ buttonPressed: aMenuBarButton
 		
 			menu := menus at: index.
 			
-			menu morphPosition: aMenuBarButton morphPosition + (0 @ aMenuBarButton morphHeight).
-			
-			menu open.
-	
-			"self world ifNotNil: [ :w |
+			self world ifNotNil: [ :w |
 				w activeHand ifNotNil: [ :h |
-					h newMouseFocus: self ] ]" ]
-		ifFalse:[
+					h newMouseFocus: self ] ].
+		
+			menu popUpAt: aMenuBarButton morphPosition + (0 @ aMenuBarButton morphHeight) allowKeyboard: true. ]
+	  		ifFalse:[
 			aMenuBarButton deselect].
 
+! !
+
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:02:42'!
+clearSelection
+	self clearSelectionExcept: nil.! !
+
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 17:48:44'!
+clearSelectionExcept: aMenuBarButton
+	
+	menus do:[:each | each close ].
+
+	submorphs do:[:each | each == aMenuBarButton ifFalse:[ each deselect ] ].
 ! !
 
 !MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 16:28:11'!
@@ -76,22 +84,10 @@ initialize
 	
 	menus := OrderedCollection new.! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 17:08:04'!
-mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
-
-	super mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition.
-
-	self includesPixel: aMouseButtonEvent eventPosition :: 
-		ifFalse:[  
-			menus do:[:each | each close ].
-			submorphs do:[:each | each deselect ] ].
-
-! !
-
-!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 16:48:39'!
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 20:10:22'!
 menus: anOrderedCollection
 
-	"MenuBar menus: { { 'File' . { 'New' . 'Open' . 'Save' . 'Save As' } . { 'Edit' . { 'Undo' . 'Redo' . 'Cut' . 'Copy' . 'Past' } . { 'Help' . { 'About' } } }"
+	"MenuBar menus: { { 'File' . { 'New' . 'Open' . 'Save' . 'Save As' } } . { 'Edit' . { 'Undo' . 'Redo' . 'Cut' . 'Copy' . 'Paste' } } . { 'Help' . { 'About' } } }"
 	
 	| bar |
 	
@@ -114,8 +110,8 @@ menus: anOrderedCollection
 		(each at:2) do:[:item | 
 			item = $| 
 				ifTrue:[menu addLine]
-				ifFalse:[(menu add: item action: nil) color: Theme current buttonLabel ].
-		bar addMenu: menu ] ].
+				ifFalse:[(menu add: item action: nil) color: Theme current buttonLabel ] ].
+		bar addMenu: menu ] .
 
 	bar morphExtent: Display width @ bar morphExtent y.
 	
@@ -129,6 +125,14 @@ close
 	self delete. 
 ! !
 
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:53:51'!
+deleteIfPopUp: evt
+
+	super deleteIfPopUp: evt.	
+	
+	prevMouseFocus clearSelection
+! !
+
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 11:08:00'!
 drawOn: aCanvas
 	
@@ -140,7 +144,7 @@ open
 	
 ! !
 
-!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 17:15:08'!
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:43:08'!
 deselect
 
 	state := #off.
@@ -167,7 +171,14 @@ initialize
 isOn
 	^state = #on! !
 
-!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 17:17:27'!
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 17:46:57'!
+select
+
+	state := #on.
+	
+	self redrawNeeded ! !
+
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:42:55'!
 toggle
 
 	state = #off
