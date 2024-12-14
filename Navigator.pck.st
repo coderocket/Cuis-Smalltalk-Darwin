@@ -1,8 +1,18 @@
-'From Cuis7.1 [latest update: #6676] on 2 November 2024 at 3:37:55 pm'!
+'From Cuis7.1 [latest update: #6709] on 14 December 2024 at 5:23:55 pm'!
 'Description '!
-!provides: 'Navigator' 1 6!
+!provides: 'Navigator' 1 7!
 SystemOrganization addCategory: #Navigator!
 
+
+!classDefinition: #NavigatorWindow category: #Navigator!
+SystemWindow subclass: #NavigatorWindow
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Navigator'!
+!classDefinition: 'NavigatorWindow class' category: #Navigator!
+NavigatorWindow class
+	instanceVariableNames: ''!
 
 !classDefinition: #NavigatorObjectMorph category: #Navigator!
 PluggableMorph subclass: #NavigatorObjectMorph
@@ -24,6 +34,31 @@ Object subclass: #NavigatorObjectModel
 NavigatorObjectModel class
 	instanceVariableNames: ''!
 
+
+!NavigatorWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 13:38:35'!
+buildMorphicWindow
+
+	layoutMorph addMorph: 
+		(NavigatorObjectMorph new model: model ; build) - 1p | 1p
+! !
+
+!NavigatorWindow class methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:21:56'!
+navigateTo: anObject
+
+	| windows |
+	
+	windows := OrderedCollection new.
+	
+	UISupervisor ui submorphs do:[:morph | 
+		morph isKindOf: NavigatorWindow :: 
+			ifTrue:[ 
+				morph model item == anObject 
+					ifTrue:[windows add: morph] ] ].
+	
+	windows isEmpty 
+		ifTrue:[anObject navigator] 
+		ifFalse:[UISupervisor ui addMorphFront: windows anyOne]
+! !
 
 !NavigatorObjectMorph methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:36:44'!
 build
