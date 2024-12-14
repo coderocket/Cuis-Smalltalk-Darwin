@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 5 December 2024 at 4:51:24 pm'!
+'From Cuis7.1 [latest update: #6709] on 14 December 2024 at 3:25:46 pm'!
 'Description '!
-!provides: 'College' 1 124!
+!provides: 'College' 1 117!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -13,6 +13,16 @@ Object subclass: #College
 	category: 'College'!
 !classDefinition: 'College class' category: #College!
 College class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeTimeTableBrowser category: #College!
+Object subclass: #CollegeTimeTableBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeTimeTableBrowser class' category: #College!
+CollegeTimeTableBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeTopic category: #College!
@@ -77,22 +87,12 @@ ModuleInstance class
 
 !classDefinition: #CollegeTimeTableModel category: #College!
 GridModel subclass: #CollegeTimeTableModel
-	instanceVariableNames: 'solutions selection college indices topic format instance topicIndex topics workingDirectory selectedSolution genie'
+	instanceVariableNames: 'solutions selection college indices topic format instance topicIndex topics workingDirectory selectedSolution'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'College'!
 !classDefinition: 'CollegeTimeTableModel class' category: #College!
 CollegeTimeTableModel class
-	instanceVariableNames: ''!
-
-!classDefinition: #CollegeTimeTableBrowser category: #College!
-SystemWindow subclass: #CollegeTimeTableBrowser
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'College'!
-!classDefinition: 'CollegeTimeTableBrowser class' category: #College!
-CollegeTimeTableBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeNavigator category: #College!
@@ -240,10 +240,10 @@ instanceAt: anInteger
 moduleAt: anInteger
 	^ modules at: anInteger ! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:12:28'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 13:36:13'!
 navigator
 	
-	NavigatorObjectMorph new model: (CollegeNavigator new college: self ; yourself)  ; build; embeddedInMorphicWindowLabeled: ('{1} Navigator' format: {'College' }) :: openInWorld :: morphExtent: 640@480! !
+	NavigatorWindow open: (CollegeNavigator new college: self ; yourself) label: ('{1} Navigator' format: {'College' }) :: morphExtent: 640@480! !
 
 !College methodsFor: 'importing' stamp: 'DF 11/1/2024 14:38:42'!
 decoder
@@ -952,6 +952,27 @@ school
 	
 	! !
 
+!CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/15/2024 16:57:49'!
+open: aPathString
+
+	| aCollegeModel solutions topics items aGridMorph |
+	
+	aCollegeModel := CollegeTimeTableModel new.
+
+	aCollegeModel workingDirectory: aPathString ; load.
+	
+	solutions := PluggableListMorph withModel: aCollegeModel listGetter: #solutions indexGetter: #selectedSolution indexSetter: #selectSolution:. 
+	
+	topics := PluggableListMorph withModel: aCollegeModel listGetter: #topics indexGetter: #topic indexSetter: #topic:.
+	
+	items := PluggableListMorph withModel: aCollegeModel listGetter: #items indexGetter: #selection indexSetter: #select:.
+
+	aGridMorph := GridMorph new model: aCollegeModel. 
+
+	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ) 
+	:: morphExtent: 900@600  :: embeddedInMorphicWindowLabeled: ('Time Table') :: openInWorld 
+! !
+
 !CollegeTopic methodsFor: 'as yet unclassified' stamp: 'DF 9/26/2024 14:39:22'!
 addInstance: aModuleInstance
 	
@@ -996,10 +1017,11 @@ instances
 instancesDo: aBlock
 	^ instances do: aBlock! !
 
-!Frame methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:06:52'!
+!Frame methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 14:42:58'!
 navigator
 
-	NavigatorObjectMorph new model: (FrameNavigator new frame: self ; yourself) ;  build ; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Frame' . self description}) :: openInWorld :: morphExtent: 640@480! !
+	NavigatorWindow open: (FrameNavigator new frame: self ; yourself) label: ('{1} Navigator: {2}' format: {'Frame' . self description}) :: morphExtent: 640@480.
+! !
 
 !Lecturer methodsFor: 'initialization' stamp: 'DF 11/1/2024 18:55:33'!
 addModule: aModule
@@ -1064,10 +1086,12 @@ onDay: aDay addCordonedInterval: aString
 modules
 	^modules! !
 
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:03:07'!
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 14:40:43'!
 navigator
 
-	NavigatorObjectMorph new model: (LecturerNavigator new lecturer: self ; yourself) ;  build ; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Lecturer' . self description}) :: openInWorld :: morphExtent: 640@480! !
+	
+	NavigatorWindow open: (LecturerNavigator new lecturer: self ; yourself) label: ('{1} Navigator: {2}' format: {'Lecturer' . self description}) :: morphExtent: 640@480.
+! !
 
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 11/1/2024 18:55:05'!
 addLecturer: aLecturer
@@ -1117,10 +1141,11 @@ initialize
 lecturers
 	^lecturers ! !
 
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 17:03:33'!
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 14:41:31'!
 navigator
-	
-	NavigatorObjectMorph new model: (ModuleNavigator new module: self ; yourself)  ; build; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Module' . self description}) :: openInWorld :: morphExtent: 640@480! !
+			
+	NavigatorWindow open: (ModuleNavigator new module: self ; yourself) label: ('{1} Navigator: {2}' format: {'Module' . self description}) :: morphExtent: 640@480.
+! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2024 14:07:35'!
 addFrame: anInteger
@@ -1189,10 +1214,12 @@ module
 module: aModule
 	module := aModule! !
 
-!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:01:51'!
+!ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 14:42:27'!
 navigator
+
 	
-	NavigatorObjectMorph new model: (InstanceNavigator new instance: self ; yourself)  ; build; embeddedInMorphicWindowLabeled: ('{1} Navigator: {2}' format: {'Instance' . self description}) :: openInWorld :: morphExtent: 640@480! !
+	NavigatorWindow open: (InstanceNavigator new instance: self ; yourself) label: ('{1} Navigator: {2}' format: {'Instance' . self description}) :: morphExtent: 640@480.
+! !
 
 !ModuleInstance methodsFor: 'as yet unclassified' stamp: 'DF 9/25/2024 21:09:25'!
 room
@@ -1202,35 +1229,7 @@ room
 room: aRoom
 	room := aRoom! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 20:57:48'!
-analyse
-
-	| aSolutionModel |
-	
-	aSolutionModel := SolutionsModel new.
-	 
-	aSolutionModel solutions: solutions. 
-	
-	aSolutionModel program: genie program.
-	
-	GenieSolutionBrowser open: aSolutionModel label: 'Solution Score Analyser'.! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:16:39'!
-entityNavigate
-
-	instance ifNil: [^self].
-	
-	instance navigator! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 16:39:46'!
-genie: aGenieBrowserModel
-
-	genie := aGenieBrowserModel.
-	
-	genie addDependent: self.
-	! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/22/2024 12:37:55'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:25'!
 initialize
 	
 	selection := 0.
@@ -1247,10 +1246,12 @@ initialize
 
 	format :={ 
 	
-		[:each | each module description ] .
-		[:each | each lecturer description ] .
-		[:each | each module description ] .
-		[:each | each lecturer description ]  }.
+		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
+		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
+	
+		[:each | | text | text := each module description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ] .
+
+		[:each | | text | text := each lecturer description  . '{1}' format:{ text copyFrom:1 count: (16 min: text size) } ]  }.
 	
 	topics := { #lecturers . #modules . #frames . #rooms }! !
 
@@ -1274,14 +1275,7 @@ load
 	
 	self changed:#solutions.! !
 
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:46:20'!
-navigate
-
-	college ifNil: [^self].
-	
-	college navigator! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/20/2024 19:21:38'!
+!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 20:20:32'!
 selectSolution: anInteger
 
 	| aSolution |
@@ -1292,7 +1286,7 @@ selectSolution: anInteger
 	
 		college := College new.
 
-		college import: workingDirectory asDirectoryEntry / 'csv'.
+		college import: workingDirectory.
 
 		aSolution := solutions at: anInteger :: at: 'solution'.
 		
@@ -1304,17 +1298,6 @@ selectSolution: anInteger
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:43:17'!
 selectedSolution
 	^selectedSolution ! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 18:45:08'!
-setWorkingDirectory
-
-	StringRequestMorph 
-		request: 'Working directory'
-		initialAnswer: workingDirectory asString
-		verifying: [:aString |
-			aString notEmpty and:[ aString asDirectoryEntry isDirectory] ] 
-		do: [ :aString | 
-			workingDirectory := aString asDirectoryEntry ]! !
 
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:54:41'!
 solutions
@@ -1337,15 +1320,6 @@ topic: anInteger
 	self select: selection.
 	
 	self changed: #items! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 16:42:12'!
-update: aSymbol
-
-	aSymbol = #run ifTrue:[self load]! !
-
-!CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:06:46'!
-workingDirectory
-	^workingDirectory ! !
 
 !CollegeTimeTableModel methodsFor: 'as yet unclassified' stamp: 'DF 11/14/2024 19:42:18'!
 workingDirectory: aString
@@ -1404,7 +1378,7 @@ topics
 	"{ #lecturers . #modules . #frames . #rooms }"
 	^ { 'מרצים' . 'קורסים' . 'תבניות' . '' } collect:[:each | each reverse ] ! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 12:42:49'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/14/2024 20:19:40'!
 at: row at: col
 
 	| result |
@@ -1413,13 +1387,13 @@ at: row at: col
 	
 	topic = 0 ifTrue:[^''].
 
-	result := instance at: col at: row + 8.
+	result := instance at: col at: row.
 
 	result ifEmpty: [^''].
 
-	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x, ', ', y].! !
+	^ result collect:[:each | (format at:topic) value:each ] :: reduce:[:x :y | x,y].! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 12:10:03'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/15/2024 17:18:03'!
 colorAt: row at: col
 
 	| intervals |
@@ -1432,66 +1406,15 @@ colorAt: row at: col
 	
 	intervals := instance cordoned at: col.
 	
-	^intervals detect:[:each | each first <= (row + 8) and: [row + 8 < each last] ] ifFound:[:x | Color h:0.0 s:0.17 v:1.0] ifNone:[Color white].! !
+	^intervals detect:[:each | each first <= row and: [row < each last] ] ifFound:[:x | Color h:0.0 s:0.17 v:1.0] ifNone:[Color white].! !
 
 !CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nCols
 	^6! !
 
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 11:50:25'!
+!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nRows
-	^17! !
-
-!CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 11/22/2024 11:53:53'!
-rowsHeader
-
-	^(1 to: self nRows) collect:[:i | '{1}' format:{i+7} ]
-	
-	! !
-
-!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:14:11'!
-buildMorphicWindow
-
-	| solutions topics items aGridMorph |
-	
-	model load.
-	
-	solutions := PluggableListMorph withModel: model listGetter: #solutions indexGetter: #selectedSolution indexSetter: #selectSolution: :: menuNshortcutsKey: #programsMenuSpec.. 
-	
-	topics := PluggableListMorph withModel: model listGetter: #topics indexGetter: #topic indexSetter: #topic:.
-	
-	items := PluggableListMorph withModel: model listGetter: #items indexGetter: #selection indexSetter: #select: :: menuNshortcutsKey: #itemMenuSpec.. .
-
-	aGridMorph := GridMorph new model: model. 
-
-	self layoutMorph addMorph:
-	
-	(solutions | 1.0p) <+> (topics | 1.0p) <+> (items | 1.0p) <+> (aGridMorph | 1.0 p - 1.0p ).
-	
-	self setLabel: 'Timetable Browser'.
-	
-! !
-
-!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/2/2024 10:15:02'!
-itemMenuSpec
-
-	^# (
-		#(0 		'Entity Browser' 					false)
-		
-		#(10 		'navigate (n)'			 $a model entityNavigate nil 'open a navigator on the selected entity')
-	)! !
-
-!CollegeTimeTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 11/21/2024 19:17:49'!
-programsMenuSpec
-
-	^# (
-		#(0 		'College Browser' 					false)
-		
-		#(10 		'navigate (n)'			 $a model navigate nil 'open a navigator')
-		#(20 		'analyse program (a)'			 $a model analyse nil 'show the penalties for each rule')
-		#(40 		'-----')
-		#(60 'set working directory ... (w)' $f model setWorkingDirectory nil 'set the directory into which programs will file out')
-	)! !
+	^24! !
 
 !CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:15'!
 attributeContents
@@ -1516,16 +1439,21 @@ attributes
 college: aCollege
 	college := aCollege.! !
 
-!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:43'!
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:20:36'!
+item
+	^college! !
+
+!CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:09:40'!
 selectValue: anIndex
 
+	
 	index = 0  ifTrue:[^self].
-	 
+
 	index = 1 ifTrue:[ | modules |
 	
 		modules := college modules asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-		(modules at: anIndex) navigator.
+		NavigatorWindow navigateTo: (modules at: anIndex).
 		
 		^self 	].
 	
@@ -1533,7 +1461,7 @@ selectValue: anIndex
 	
 		lecturers := college lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-		(lecturers at: anIndex) navigator.
+		NavigatorWindow navigateTo: (lecturers at: anIndex) .
 		
 		^self 	].	
 
@@ -1541,7 +1469,7 @@ selectValue: anIndex
 	
 		frames := college frames asOrderedCollection sort:[:x :y | x id <= y id ].
 	
-		(frames at: anIndex) navigator.
+		NavigatorWindow navigateTo: (frames at: anIndex).
 		
 		^self 	].	
 ! !
@@ -1561,7 +1489,11 @@ attributes
 frame: aFrame
 	frame := aFrame! !
 
-!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 19:15:43'!
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:20:53'!
+item
+	^frame! !
+
+!FrameNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 14:59:34'!
 selectValue: anIndex
 
 	| instances |
@@ -1570,7 +1502,7 @@ selectValue: anIndex
 	
 	instances := frame instances asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-	(instances at: anIndex) navigator! !
+	NavigatorWindow navigateTo: (instances at: anIndex)! !
 
 !InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 20:52:46'!
 attributeContents
@@ -1601,24 +1533,28 @@ attributes
 instance: aModuleInstance
 	instance := aModuleInstance ! !
 
-!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/11/2024 20:50:30'!
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:21:01'!
+item
+	^instance! !
+
+!InstanceNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:00:08'!
 selectValue: anIndex
 
 	| frames |
 	
 	index = 1 ifTrue:[
 		
-		^instance module navigator].
+		^NavigatorWindow navigateTo: instance module].
 	
 	index = 2  ifTrue:[
 	
 		frames := instance frames asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-		^(frames at: anIndex) navigator ].
+		^NavigatorWindow navigateTo: (frames at: anIndex) ].
 	
 	index = 4 ifTrue:[
 		
-		^instance lecturer navigator ].
+		^NavigatorWindow navigateTo: instance lecturer ].
 	
 	! !
 
@@ -1657,11 +1593,15 @@ initialize
 	
 	presentor at:3 put: [ :obj | obj modules asOrderedCollection collect:[:each | each description ] :: sort ].! !
 
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:21:07'!
+item
+	^lecturer! !
+
 !LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:05:49'!
 lecturer: aLecturer
 	lecturer := aLecturer! !
 
-!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 16:53:54'!
+!LecturerNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:00:16'!
 selectValue: anIndex
 
 	| modules |
@@ -1670,7 +1610,7 @@ selectValue: anIndex
 	
 	modules := lecturer modules asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-	(modules at: anIndex) navigator! !
+	NavigatorWindow navigateTo: (modules at: anIndex) ! !
 
 !ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/7/2024 22:56:05'!
 attributeContents
@@ -1708,24 +1648,28 @@ decodeType
 	
 	^'9' = (aString at:1) ifTrue:['תרגול'] ifFalse:['הרצאה'].! !
 
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:22:46'!
+item
+	^module! !
+
 !ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 15:41:32'!
 module: aModule
 
 	module := aModule! !
 
-!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/2/2024 18:59:05'!
+!ModuleNavigator methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 15:00:25'!
 selectValue: anIndex
 	
 	index = 3  ifTrue: [ 	| lecturers |
 	
 	lecturers := module lecturers asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-	(lecturers at: anIndex) navigator ].
+	NavigatorWindow navigateTo: (lecturers at: anIndex)  ].
 
 	index = 4  ifTrue: [ 	| instances |
 	
 	instances := module instances asOrderedCollection sort:[:x :y | x description <= y description ].
 	
-	(instances at: anIndex) navigator ].
+	NavigatorWindow navigateTo: (instances at: anIndex)  ].
 
 ! !
