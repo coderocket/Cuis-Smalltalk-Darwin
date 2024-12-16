@@ -1,8 +1,18 @@
-'From Cuis7.1 [latest update: #6709] on 14 December 2024 at 3:25:30 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 December 2024 at 8:29:29 pm'!
 'Description '!
-!provides: 'CUA' 1 16!
+!provides: 'CUA' 1 19!
 SystemOrganization addCategory: #CUA!
 
+
+!classDefinition: #MenuBarModel category: #CUA!
+Object subclass: #MenuBarModel
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CUA'!
+!classDefinition: 'MenuBarModel class' category: #CUA!
+MenuBarModel class
+	instanceVariableNames: ''!
 
 !classDefinition: #MenuBar category: #CUA!
 LayoutMorph subclass: #MenuBar
@@ -34,6 +44,30 @@ PluggableButtonMorph subclass: #MenuBarButtonMorph
 MenuBarButtonMorph class
 	instanceVariableNames: ''!
 
+
+!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 20:03:13'!
+aboutAction
+	PopUpMenu inform: 'About'! !
+
+!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 20:06:10'!
+exitAction
+	PopUpMenu inform: 'Exit'! !
+
+!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:56:56'!
+newAction
+	PopUpMenu inform: 'New'! !
+
+!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:04'!
+openAction
+	PopUpMenu inform: 'Open'! !
+
+!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:13'!
+saveAction
+	PopUpMenu inform: 'Save'! !
+
+!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:18'!
+saveAsAction
+	PopUpMenu inform: 'Save as'! !
 
 !MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 20:14:05'!
 addMenu: aMenu
@@ -84,10 +118,44 @@ initialize
 	
 	menus := OrderedCollection new.! !
 
-!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 20:10:22'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:10:04'!
+popup: aPopupMenu closed: evt
+
+	| index button |
+	
+	" Find the button associated with this menu and see if the mouse is pointing at the button. 
+	If it is then the click that caused 	the popup to close will result in a button press so we should 
+	not clear the button's status as it 	will be cleared when the button press event will arrive."
+	
+	index := 1.
+	
+	[index <= menus size and:[ menus at:index :: ~= aPopupMenu ] ] 
+		whileTrue:[index := index+1].
+	
+	button := submorphs at: index.
+	
+	button includesPixel: evt eventPosition ::
+		ifTrue:[
+			self clearSelectionExcept: button ]
+		ifFalse:[
+			self clearSelection ].
+		! !
+
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 20:05:56'!
 menus: anOrderedCollection
 
-	"MenuBar menus: { { 'File' . { 'New' . 'Open' . 'Save' . 'Save As' } } . { 'Edit' . { 'Undo' . 'Redo' . 'Cut' . 'Copy' . 'Paste' } } . { 'Help' . { 'About' } } }"
+"
+MenuBar menus: { 
+	{ 'File' . { 
+		{ 'New' . model . #newAction }  . 
+		{ 'Open ...' . model . #openAction } . 
+		{ 'Save' . model . #saveAction } . 
+		{ 'Save as ...' . model . #saveAsAction } .
+		$| .
+		{ 'Exit' . model . #exitAction } } } .  
+	{ 'Help' . { 
+		{ 'About' . model . #aboutAction } } } }.
+"
 	
 	| bar |
 	
@@ -110,7 +178,7 @@ menus: anOrderedCollection
 		(each at:2) do:[:item | 
 			item = $| 
 				ifTrue:[menu addLine]
-				ifFalse:[(menu add: item action: nil) color: Theme current buttonLabel ] ].
+				ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ] ].
 		bar addMenu: menu ] .
 
 	bar morphExtent: Display width @ bar morphExtent y.
@@ -125,12 +193,14 @@ close
 	self delete. 
 ! !
 
-!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:53:51'!
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:09:09'!
 deleteIfPopUp: evt
 
 	super deleteIfPopUp: evt.	
 	
-	prevMouseFocus clearSelection
+	evt ifNil:[^self].
+	
+	prevMouseFocus popup: self closed: evt 
 ! !
 
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2024 11:08:00'!
@@ -144,11 +214,11 @@ open
 	
 ! !
 
-!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:43:08'!
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:09:32'!
 deselect
 
 	state := #off.
-	
+
 	self redrawNeeded ! !
 
 !MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/5/2024 20:13:37'!
@@ -171,14 +241,14 @@ initialize
 isOn
 	^state = #on! !
 
-!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 17:46:57'!
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 17:43:49'!
 select
 
 	state := #on.
 	
 	self redrawNeeded ! !
 
-!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 21:42:55'!
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:09:50'!
 toggle
 
 	state = #off
