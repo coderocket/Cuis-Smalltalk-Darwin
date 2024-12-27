@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 27 December 2024 at 5:08:13 pm'!
+'From Cuis7.1 [latest update: #6676] on 27 December 2024 at 10:27:36 pm'!
 'Description '!
-!provides: 'Tavor' 1 41!
+!provides: 'Tavor' 1 72!
 SystemOrganization addCategory: #'Tavor-Model'!
 SystemOrganization addCategory: #'Tavor-Morphic'!
 SystemOrganization addCategory: #Tavor!
@@ -66,6 +66,16 @@ LabelMorph subclass: #OffsetLabelMorph
 OffsetLabelMorph class
 	instanceVariableNames: ''!
 
+!classDefinition: #CollegeBrowser category: #'Tavor-Morphic'!
+SystemWindow subclass: #CollegeBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'CollegeBrowser class' category: #'Tavor-Morphic'!
+CollegeBrowser class
+	instanceVariableNames: ''!
+
 !classDefinition: #CellItem category: #'Tavor-Morphic'!
 BoxedMorph subclass: #CellItem
 	instanceVariableNames: ''
@@ -78,12 +88,22 @@ CellItem class
 
 !classDefinition: #AcademicProgram category: #'Tavor-Model'!
 Object subclass: #AcademicProgram
-	instanceVariableNames: 'academicYears description college'
+	instanceVariableNames: 'tracks description college'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
 !classDefinition: 'AcademicProgram class' category: #'Tavor-Model'!
 AcademicProgram class
+	instanceVariableNames: ''!
+
+!classDefinition: #AcademicTrack category: #'Tavor-Model'!
+Object subclass: #AcademicTrack
+	instanceVariableNames: 'academicYears description program'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Model'!
+!classDefinition: 'AcademicTrack class' category: #'Tavor-Model'!
+AcademicTrack class
 	instanceVariableNames: ''!
 
 !classDefinition: #AcademicUnit category: #'Tavor-Model'!
@@ -128,7 +148,7 @@ Recitation class
 
 !classDefinition: #AcademicYear category: #'Tavor-Model'!
 Object subclass: #AcademicYear
-	instanceVariableNames: 'program semesters description'
+	instanceVariableNames: 'semesters description track'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
@@ -174,6 +194,16 @@ Object subclass: #College
 	category: 'Tavor-Model'!
 !classDefinition: 'College class' category: #'Tavor-Model'!
 College class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeModel category: #'Tavor-Model'!
+Object subclass: #CollegeModel
+	instanceVariableNames: 'college theProgram selectedPrograms theYear selectedYears theTrack selectedTracks theSemester selectedSemesters'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Model'!
+!classDefinition: 'CollegeModel class' category: #'Tavor-Model'!
+CollegeModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #Lecturer category: #'Tavor-Model'!
@@ -565,6 +595,61 @@ drawOn: aCanvas
 		color: color.
 ! !
 
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 21:55:36'!
+buildMorphicWindow
+
+	| topPanel courses semesters years tracks programs bottomPanel |
+	
+	courses := PluggableListMorphOfMany withModel: model listGetter: #modules primarySelectionGetter: #moduleIndex primarySelectionSetter: #moduleIndex: listSelectionGetter: #moduleSelectionAt: listSelectionSetter: #moduleSelectionAt:put:.
+	
+	semesters := PluggableListMorphOfMany withModel: model listGetter: #semesters primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
+	
+	years := PluggableListMorphOfMany withModel: model listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
+	
+	tracks := PluggableListMorphOfMany withModel: model listGetter: #trackNames primarySelectionGetter: #trackIndex primarySelectionSetter: #trackIndex: listSelectionGetter: #trackSelectionAt: listSelectionSetter: #trackSelectionAt:put:.
+	
+	programs := PluggableListMorphOfMany withModel: model listGetter: #programNames primarySelectionGetter: #programIndex primarySelectionSetter: #programIndex: listSelectionGetter: #programSelectionAt: listSelectionSetter: #programSelectionAt:put:.
+	
+	topPanel := (courses - (1/5)p | 1p) <+> (semesters - (1/5)p | 1p) <+> (years - (1/5)p | 1p) <+> (tracks - (1/5)p | 1p) <+> (programs - (1/5)p | 1p).
+	
+	bottomPanel := self rightToLeftTableMorph: { 
+		{ 'נז' . 'שעות' . 'סוג' . 'שם קורס' . 'קוד קורס' } . 
+		{ '3' . '3' . 'הרצאה' . 'לוגיקה' . '10214' } . 
+		{  '1' . '2' . 'תרגול' . 'לוגיקה' . '10214' } . 
+		{ '' . '' . '' . '' . '' } . 
+		{ '' . '' . '' . '' . '' } . 
+		{ '' . '' . '' . '' . '' } } .
+
+	self layoutMorph addMorph: (topPanel -1.0p | 0.4p </> (bottomPanel -1.0p | 0.6p)).
+	! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:28:32'!
+rightToLeftMorph: anOrderedCollection
+
+	^anOrderedCollection collect:[:each | each reverse] :: morph! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:39:37'!
+rightToLeftTableMorph: anOrderedCollection
+
+	| nrows ncols header table |
+	
+	nrows := anOrderedCollection size.
+	
+	header := anOrderedCollection first.
+	
+	ncols := header size.
+	
+	table := TableMorph new.
+	
+	table numRows: nrows ; numColumns: ncols; build.
+	
+	1 to: nrows do:[:rowIndex |
+		1 to:ncols do:[:colIndex |
+			table at: rowIndex at:colIndex :: addMorph: (anOrderedCollection at:rowIndex :: at:colIndex :: reverse morph) ] ] .
+	
+	^table
+	! !
+
 !CellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
@@ -578,60 +663,136 @@ justGrabbedFrom: formerOwner
 	color := 	color alpha: 0.5.
 ! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:38:18'!
-addAcademicYear: anAcademicYear
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:25'!
+addAcademicTrack: anAcademicTrack
 
-	self assert: anAcademicYear program isNil.
-
-	self attachAcademicYear: anAcademicYear.
+	self assert: anAcademicTrack program isNil.
 	
-	anAcademicYear attachAcademicProgram: self.! !
+	self attachAcademicTrack: anAcademicTrack.
+	
+	anAcademicTrack program: self.! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:05'!
-attachAcademicYear: anAcademicYear
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:38'!
+attachAcademicTrack: anAcademicTrack
 
-	academicYears add: anAcademicYear ! !
+	tracks add: anAcademicTrack ! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:08:05'!
-college
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:46'!
+college 
 	^college! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:08:24'!
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:50'!
 college: aCollege
 
 	self assert: college isNil.
 	
 	college := aCollege.! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:49:03'!
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:27'!
 description
-	^description! !
+	^description ! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:57'!
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:17'!
 description: aString
 	description := aString! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:17'!
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:05:08'!
+detach
+
+	college ifNil:[^self].
+	
+	college detachAcademicProgram: self.
+	
+	college := nil! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:55'!
+detachAcademicTrack: anAcademicTrack
+
+	tracks remove: anAcademicTrack ! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:41'!
+initialize
+	tracks := Set new! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:15'!
+invariant
+
+	tracks do:[:eachTrack | eachTrack invariant ].
+
+	tracks do:[:eachTrack | eachTrack program == self ].
+	! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:02:54'!
+removeAcademicTrack: anAcademicTrack
+
+	self assert: anAcademicTrack program == self.
+	
+	self detachAcademicTrack: anAcademicTrack.
+	
+	anAcademicTrack detach.! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:29:57'!
+tracks
+	^tracks! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 22:01:58'!
+academicYears
+	^academicYears ! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:54'!
+addAcademicYear: anAcademicYear
+
+	self assert: anAcademicYear academicTrack isNil.
+
+	self attachAcademicYear: anAcademicYear.
+	
+	anAcademicYear attachAcademicTrack: self.! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:05'!
+attachAcademicYear: anAcademicYear
+
+	academicYears add: anAcademicYear ! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:49:03'!
+description
+	^description! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:57'!
+description: aString
+	description := aString! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:17'!
 detachAcademicYear: anAcademicYear
 
 	academicYears remove: anAcademicYear ! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:20:32'!
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:20:32'!
 initialize
 
 	academicYears := OrderedCollection new.! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:05:52'!
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:13:26'!
 invariant
 
 	academicYears do: [:anAcademicYear | anAcademicYear invariant ].
 	
-	academicYears do: [:anAcademicYear | self assert: anAcademicYear program == self ].! !
+	academicYears do: [:anAcademicYear | self assert: anAcademicYear academicTrack == self ].! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:31:15'!
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:52:30'!
+program
+	^program! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:52:16'!
+program: aProgram
+
+	self assert: program isNil.
+	
+	program := aProgram! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:53:55'!
 removeAcademicYear: anAcademicYear
 
-	self assert: anAcademicYear academicProgram == self.
+	self assert: anAcademicYear academicTrack == self.
 	
 	anAcademicYear detach.
 	
@@ -728,9 +889,9 @@ description
 	
 	^ module description, ' תרגול' ! !
 
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:31:25'!
-academicProgram
-	^program! !
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:09'!
+academicTrack
+	^track! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:46:06'!
 addSemester: aSemester
@@ -739,12 +900,12 @@ addSemester: aSemester
 	
 	aSemester attachAcademicYear: self.! !
 
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:42:32'!
-attachAcademicProgram: anAcademicProgram
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:40'!
+attachAcademicTrack: anAcademicTrack
 
-	self assert: program isNil.
+	self assert: track isNil.
 	
-	program := anAcademicProgram ! !
+	track := anAcademicTrack ! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:45:42'!
 attachSemester: aSemester
@@ -759,14 +920,14 @@ description
 description: aString
 	description := aString! !
 
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:42:22'!
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:56:03'!
 detach
 
-	program ifNil:[^self].
+	track ifNil:[^self].
 	
-	program detachAcademicYear: self.
+	track detachAcademicYear: self.
 	
-	program := nil.! !
+	track := nil.! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:44:47'!
 detachSemester: aSemester
@@ -785,10 +946,6 @@ invariant
 
 	semesters do: [:aSemester | self assert: aSemester academicYear == self ].
 	! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:38:28'!
-program
-	^program! !
 
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:12:24'!
 detach
@@ -1029,6 +1186,10 @@ invariant
 	lecturers do: [:aLecturer | self assert: aLecturer college == self ].
 	! !
 
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 18:15:20'!
+programs
+	^programs! !
+
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:19:24'!
 removeAcademicProgram: anAcademicProgram
 
@@ -1064,6 +1225,254 @@ removeModule: aModule
 	aModule detach.
 	
 	self detachModule: aModule.! !
+
+!CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 19:12:19'!
+yearIndex
+	
+	^ theYear! !
+
+!CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 19:12:07'!
+yearIndex: anIndex
+
+	theYear := anIndex! !
+
+!CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 22:08:26'!
+yearNames
+	
+	^self years collect:[:eachYear | eachYear description ] :: asOrderedCollection sort! !
+
+!CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 22:09:51'!
+yearSelectionAt: anIndex
+	
+	| yearDescription |
+	
+	yearDescription := self yearNames at: anIndex ifAbsent:[^false].
+
+	^ selectedYears anySatisfy:[:aYear | aYear description = yearDescription ]! !
+
+!CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 22:11:59'!
+yearSelectionAt: anIndex put: aBoolean
+
+	| years yearDescription |
+	
+	yearDescription := self yearNames at: anIndex ifAbsent:[^self].
+	
+	years := self years select:[:eachYear | eachYear description = yearDescription ].
+	
+	aBoolean 
+		ifTrue:[
+			selectedYears addAll: years ]
+		ifFalse:[
+			selectedYears removeAll: years ].
+		
+	self changed: #semesters! !
+
+!CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 22:04:47'!
+years
+	
+	| years tracks |
+	
+	years := Set new.
+	
+	tracks := selectedTracks ifEmpty:[self tracks] ifNotEmpty:[selectedTracks].
+	
+	tracks do:[:eachTrack | 
+		years addAll: eachTrack academicYears ].
+	
+	^ years 
+! !
+
+!CollegeModel methodsFor: 'programs' stamp: 'DF 12/27/2024 19:00:21'!
+programIndex
+	
+	^ theProgram! !
+
+!CollegeModel methodsFor: 'programs' stamp: 'DF 12/27/2024 19:00:31'!
+programIndex: anIndex
+
+	theProgram := anIndex! !
+
+!CollegeModel methodsFor: 'programs' stamp: 'DF 12/27/2024 21:35:28'!
+programNames
+
+	^self programs collect:[:each | each description] ! !
+
+!CollegeModel methodsFor: 'programs' stamp: 'DF 12/27/2024 21:40:11'!
+programSelectionAt: anIndex
+
+	| aProgram |
+	
+	aProgram := self programs at: anIndex.
+	
+	^selectedPrograms includes: aProgram.! !
+
+!CollegeModel methodsFor: 'programs' stamp: 'DF 12/27/2024 22:26:12'!
+programSelectionAt: anIndex put: aBoolean
+
+	| aProgram |
+	
+	aProgram := self programs at: anIndex.
+	
+	aBoolean 
+		ifTrue:[
+			selectedPrograms add: aProgram ]
+		ifFalse:[
+			selectedPrograms remove: aProgram ].
+	
+	selectedTracks removeAll.
+	
+	theTrack := 0.
+	
+	self changed: #trackNames! !
+
+!CollegeModel methodsFor: 'programs' stamp: 'DF 12/27/2024 21:35:41'!
+programs
+
+	^ college programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 19:21:49'!
+semesterSelectionAt: anIndex put: aBoolean
+	aBoolean 
+		ifTrue:[
+			selectedSemesters add: anIndex]
+		ifFalse:[
+			selectedSemesters remove: anIndex]! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 19:17:17'!
+trackIndex
+	
+	^ theTrack! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 19:17:33'!
+trackIndex: anIndex
+
+	theTrack := anIndex! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 21:41:38'!
+trackNames
+	
+	^ self tracks collect:[:eachTrack | eachTrack description]
+! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 21:50:32'!
+trackSelectionAt: anIndex
+	
+	^selectedTracks collect:[:eachTrack | eachTrack description] :: includes: (self trackNames at:anIndex).! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 22:26:53'!
+trackSelectionAt: anIndex put: aBoolean
+
+	| selectedDescription tracks |
+	
+	selectedDescription := self trackNames at: anIndex.
+	
+	tracks := self tracks select:[:eachTrack | eachTrack description = selectedDescription ].
+	
+	aBoolean 
+		ifTrue:[
+			selectedTracks addAll: tracks ]
+		ifFalse:[
+			selectedTracks removeAll: tracks ].
+		
+	selectedYears removeAll.
+
+	theYear := 0.
+	
+	self changed: #yearNames.! !
+
+!CollegeModel methodsFor: 'tracks' stamp: 'DF 12/27/2024 21:45:20'!
+tracks
+	
+	| tracks programs |
+	
+	tracks := Set new.
+	
+	programs := selectedPrograms ifEmpty:[self programs] ifNotEmpty:[selectedPrograms].
+	
+	programs do:[:eachProgram | 
+		tracks addAll: eachProgram tracks ].
+	
+	^ tracks asOrderedCollection sort:[:x :y | x description <= y description ]
+! !
+
+!CollegeModel methodsFor: 'semesters' stamp: 'DF 12/27/2024 19:20:49'!
+semesterIndex
+	
+	^ theSemester! !
+
+!CollegeModel methodsFor: 'semesters' stamp: 'DF 12/27/2024 19:21:29'!
+semesterIndex: anIndex
+
+	theSemester := anIndex! !
+
+!CollegeModel methodsFor: 'semesters' stamp: 'DF 12/27/2024 19:21:08'!
+semesterSelectionAt: anIndex
+	
+	^selectedSemesters includes: anIndex! !
+
+!CollegeModel methodsFor: 'semesters' stamp: 'DF 12/27/2024 19:20:05'!
+semesters
+	
+	^{ 'סמסאר א' . 'סמסטר ב' . 'סמסטר קיץ' }  collect:[:each | each reverse ]! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:04'!
+moduleIndex
+	^1! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:11'!
+moduleIndex: anIndex
+	! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:24'!
+moduleSelectionAt: anIndex
+	^ anIndex = 1! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:41'!
+moduleSelectionAt: anIndex put: aBoolean
+! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 20:19:09'!
+modules
+
+	^{ 'module' }
+	
+"
+	| allPrograms filteredPrograms |
+	
+	allPrograms := college programs asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	filteredPrograms := OrderedCollection new.
+	
+	selectedPrograms do:[:eachIndex | 
+	
+		filteredPrograms add: (allPrograms at: eachIndex)	 ].
+	
+	filteredPrograms do:[:eachProgram |
+		"! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 18:12:46'!
+college: aCollege
+
+	college := aCollege! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:22:07'!
+initialize
+
+	theProgram := 0.
+	
+	selectedPrograms := Set new.
+	
+	theYear := 0.
+	
+	selectedYears := Set new.
+	
+	theTrack := 0.
+	
+	selectedTracks := Set new.
+
+	theSemester:= 0.
+	
+	selectedSemesters := Set new.! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
@@ -1385,12 +1794,12 @@ removeAssignment: anAssignment
 semester
 	^semester! !
 
-!TavorExample class methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:07:24'!
+!TavorExample class methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 21:54:39'!
 example
 
 	"self example"
 	
-	| aCollege aLecturer aModule aLecture aRecitation anAcademicProgram aCampus |
+	| aCollege aLecturer aModule aLecture aRecitation anAcademicProgram aCampus anAcademicTrack |
 	
 	aCollege := College new.
 	
@@ -1426,6 +1835,34 @@ example
 	
 	anAcademicProgram description: 'מדעי הנתונים'.
 	
+	anAcademicTrack := AcademicTrack new.
+	
+	anAcademicTrack description: 'מסלול ערב'.
+	
+	anAcademicProgram addAcademicTrack: anAcademicTrack.
+	
+	1 to:4 do:[:i | | anAcademicYear |
+		
+		anAcademicYear := AcademicYear new.
+		
+		anAcademicYear description: ('{1} שנה' format:{i}).
+		
+		{ 'סמסטר א' . 'סמסטר ב' } do:[:each | | aSemester |
+			
+			aSemester := Semester new.
+			
+			aSemester description: each.
+			
+			anAcademicYear addSemester: aSemester ].
+		
+		anAcademicTrack addAcademicYear: anAcademicYear ].
+
+	anAcademicTrack := AcademicTrack new.
+	
+	anAcademicTrack description: 'מסלול יום'.
+	
+	anAcademicProgram addAcademicTrack: anAcademicTrack.
+	
 	1 to:3 do:[:i | | anAcademicYear |
 		
 		anAcademicYear := AcademicYear new.
@@ -1440,7 +1877,7 @@ example
 			
 			anAcademicYear addSemester: aSemester ].
 		
-		anAcademicProgram addAcademicYear: anAcademicYear ].
+		anAcademicTrack addAcademicYear: anAcademicYear ].
 	
 	aCollege addAcademicProgram: anAcademicProgram .
 	
@@ -1455,5 +1892,5 @@ example
 	
 	aCollege addCampus: aCampus.
 	
-	aCollege explore
+	^aCollege
 	! !
