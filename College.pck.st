@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6709] on 14 December 2024 at 3:25:46 pm'!
+'From Cuis7.1 [latest update: #6676] on 16 December 2024 at 9:51:41 pm'!
 'Description '!
-!provides: 'College' 1 117!
+!provides: 'College' 1 121!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #College!
 
@@ -13,6 +13,16 @@ Object subclass: #College
 	category: 'College'!
 !classDefinition: 'College class' category: #College!
 College class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeRule category: #College!
+Object subclass: #CollegeRule
+	instanceVariableNames: 'description weight selected'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeRule class' category: #College!
+CollegeRule class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeTimeTableBrowser category: #College!
@@ -93,6 +103,16 @@ GridModel subclass: #CollegeTimeTableModel
 	category: 'College'!
 !classDefinition: 'CollegeTimeTableModel class' category: #College!
 CollegeTimeTableModel class
+	instanceVariableNames: ''!
+
+!classDefinition: #CollegeRuleMorph category: #College!
+LayoutMorph subclass: #CollegeRuleMorph
+	instanceVariableNames: 'rule model'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'College'!
+!classDefinition: 'CollegeRuleMorph class' category: #College!
+CollegeRuleMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #CollegeNavigator category: #College!
@@ -952,6 +972,47 @@ school
 	
 	! !
 
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 18:23:24'!
+decWeight
+	weight > 0.1 ifTrue:[
+		weight := weight - 0.1 ]! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:30:48'!
+description
+	^description ! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:14:18'!
+description: aString
+	description := aString! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 18:23:01'!
+incWeight
+	weight := weight + 0.1! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:41:05'!
+initialize
+	description := 'None yet given'.
+	
+	weight := 1.0.
+	
+	selected := false.! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:30:36'!
+selected
+	^selected ! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:14:35'!
+selected: aBoolean
+	selected := aBoolean! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:30:42'!
+weight
+	^weight! !
+
+!CollegeRule methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:14:26'!
+weight: aFloat
+	weight := aFloat! !
+
 !CollegeTimeTableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 11/15/2024 16:57:49'!
 open: aPathString
 
@@ -1415,6 +1476,63 @@ nCols
 !CollegeTimeTableModel methodsFor: 'grid model' stamp: 'DF 9/23/2024 16:48:35'!
 nRows
 	^24! !
+
+!CollegeRuleMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 18:22:29'!
+build
+	
+	| aCheckBoxMorph aTextEntryMorph incw decw |
+	
+	self removeAllMorphs .
+	
+	self beRow.
+	
+	aCheckBoxMorph := CheckButtonMorph new.
+	
+	aCheckBoxMorph selected: model selected.
+	
+	aCheckBoxMorph when:#checkSelection send:#updateSelection: to: self.
+	
+	self + aCheckBoxMorph.
+	
+	self @ (12@0) + (LabelMorph contents: model description).
+	
+	aTextEntryMorph := TextEntryMorph contents: ('{1}' format:{model weight}).
+	
+	aTextEntryMorph crAction: [self updateWeight: aTextEntryMorph contents].
+	
+	self + aTextEntryMorph.
+
+	incw := PluggableButtonMorph model: model action: #incWeight label: '+'.
+
+	incw color: (Color fromHexString: '#eeeeee').
+	
+	decw := PluggableButtonMorph model: model action: #decWeight label: '-'.
+
+	decw color: (Color fromHexString: '#eeeeee').
+	
+	self + incw + decw.
+	! !
+
+!CollegeRuleMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 18:24:22'!
+model: aCollegeRule
+
+	model := aCollegeRule.
+! !
+
+!CollegeRuleMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 18:24:01'!
+update: aSymbol
+	
+	! !
+
+!CollegeRuleMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:32:47'!
+updateSelection: aCheckboxMorph
+
+	model selected: aCheckboxMorph isSelected! !
+
+!CollegeRuleMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:43:09'!
+updateWeight: aString
+
+	model weight: (Number readFrom: aString).! !
 
 !CollegeNavigator methodsFor: 'as yet unclassified' stamp: 'DF 11/3/2024 18:19:15'!
 attributeContents
