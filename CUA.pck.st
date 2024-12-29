@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 16 December 2024 at 10:03:30 pm'!
+'From Cuis7.1 [latest update: #6676] on 29 December 2024 at 10:54:09 pm'!
 'Description '!
-!provides: 'CUA' 1 23!
+!provides: 'CUA' 1 28!
 SystemOrganization addCategory: #CUA!
 
 
@@ -12,26 +12,6 @@ Object subclass: #MenuBarModel
 	category: 'CUA'!
 !classDefinition: 'MenuBarModel class' category: #CUA!
 MenuBarModel class
-	instanceVariableNames: ''!
-
-!classDefinition: #TableColumn category: #CUA!
-Object subclass: #TableColumn
-	instanceVariableNames: 'index'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CUA'!
-!classDefinition: 'TableColumn class' category: #CUA!
-TableColumn class
-	instanceVariableNames: ''!
-
-!classDefinition: #TableModel category: #CUA!
-Object subclass: #TableModel
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CUA'!
-!classDefinition: 'TableModel class' category: #CUA!
-TableModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #Gap category: #CUA!
@@ -62,16 +42,6 @@ LayoutMorph subclass: #MenuBar
 	category: 'CUA'!
 !classDefinition: 'MenuBar class' category: #CUA!
 MenuBar class
-	instanceVariableNames: ''!
-
-!classDefinition: #TableMorph category: #CUA!
-LayoutMorph subclass: #TableMorph
-	instanceVariableNames: 'model'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CUA'!
-!classDefinition: 'TableMorph class' category: #CUA!
-TableMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #MenuBarMenuMorph category: #CUA!
@@ -128,58 +98,6 @@ saveAction
 !MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:18'!
 saveAsAction
 	PopUpMenu inform: 'Save as'! !
-
-!TableColumn methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 15:18:29'!
-header
-	^'{1}' format:{index}! !
-
-!TableColumn methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 15:18:06'!
-index: anInteger
-	index := anInteger! !
-
-!TableColumn methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:03:23'!
-morph
-
-	index = 1 
-		ifTrue:[^LabelMorph].
-		
-	index = 2 
-		ifTrue:[
-		^CheckButtonMorph 	].
-	
-	index = 3 
-		ifTrue:[
-			^TextEntryMorph ]! !
-
-!TableColumn methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:03:59'!
-rowsDo: aBlock
-
-	index = 1 
-		ifTrue:[
-			{ 1 . 2 . 3 . 4 . 5 . 6 . 7 } do:[:i |
-				aBlock value: ('({1}.{2})' format:{i . index}) ] ].
-		
-	index = 2
-		ifTrue:[
-			{ 1 . 2 . 3 . 4 . 5 . 6 . 7 } do:[:i |
-				aBlock value: (i mod: 2) = 0 ].
-		].
-			
-	index = 3 
-		ifTrue:[
-			{ 1 . 2 . 3 . 4 . 5 . 6 . 7 } do:[:i |
-				aBlock value: ('{1}' format: {1.0 / i}) ].
-		]
-! !
-
-!TableModel methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 15:20:56'!
-columnsDo: aBlock
-
-	1 to: 3 do:[:i | | c |
-		c := TableColumn new.
-		c index: i.
-		aBlock value:c ]
-	! !
 
 !Gap methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 21:54:14'!
 deselect
@@ -250,12 +168,95 @@ clearSelectionExcept: aMenuBarButton
 	submorphs do:[:each | each == aMenuBarButton ifFalse:[ each deselect ] ].
 ! !
 
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 22:59:38'!
+cutAction
+
+	| aMorph |
+	
+	aMorph := 	self activeHand keyboardFocus.
+	
+	aMorph ifNil:[].
+	
+	aMorph editor cut.
+! !
+
 !MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 16:28:11'!
 initialize
 
 	super initialize.
 	
 	menus := OrderedCollection new.! !
+
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 22:31:45'!
+menus: anOrderedCollection
+
+"
+MenuBar menus: { 
+	{ 'File' . { 
+		{ 'New' . model . #newAction }  . 
+		{ 'Open ...' . model . #openAction } . 
+		{ 'Save' . model . #saveAction } . 
+		{ 'Save as ...' . model . #saveAsAction } .
+		$| .
+		{ 'Exit' . model . #exitAction } } } .  
+	{ 'Help' . { 
+		{ 'About' . model . #aboutAction } } } }.
+"
+	
+	self beRow.
+	
+	self removeAllMorphs.
+	
+	self color: Color white.
+	
+	self borderWidth:1 ; borderColor: Color black.
+	
+	anOrderedCollection do:[:each | | button |
+		
+		button := MenuBarButtonMorph new.
+		button model: button stateGetter: #isOn action: #toggle label: (each at:1).
+		button color: Color white.
+		self + button ].
+	
+	anOrderedCollection do:[:each | | menu |
+		menu := MenuBarMenuMorph new.
+		menu color: Color white ; borderWidth: 1; borderColor: Color black.
+		(each at:2) do:[:item | 
+			item = $| 
+				ifTrue:[menu addLine]
+				ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ] ].
+		self addMenu: menu ] .
+
+	self morphExtent: Display width @ self morphExtent y.
+	
+	self morphPosition: 0@0.
+	
+! !
+
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:53:43'!
+menusRightToLeft: anOrderedCollection
+	
+	self menus: 
+		(anOrderedCollection reverse collect:[:eachMenu |
+			{ eachMenu first reverse . 
+				(eachMenu second collect:[:eachEntry |
+					eachEntry  = $| 
+						ifTrue:[ eachEntry ]
+						ifFalse:[ { eachEntry at:1 :: reverse . eachEntry at:2 . eachEntry at:3 } ] ] ) } ] ).
+				
+	self axisEdgeWeight: #rowRight.! !
+
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 23:05:43'!
+pasteAction
+
+	| aMorph |
+	
+	aMorph := 	self activeHand keyboardFocus.
+	
+	aMorph ifNil:[].
+	
+	aMorph editor paste.
+! !
 
 !MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:10:04'!
 popup: aPopupMenu closed: evt
@@ -280,7 +281,7 @@ popup: aPopupMenu closed: evt
 			self clearSelection ].
 		! !
 
-!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 20:05:56'!
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 22:32:10'!
 menus: anOrderedCollection
 
 "
@@ -300,72 +301,25 @@ MenuBar menus: {
 	
 	bar := self newRow.
 	
-	bar color: Color white.
-	
-	bar borderWidth:1 ; borderColor: Color black.
-	
-	anOrderedCollection do:[:each | | button |
+	bar menus: anOrderedCollection.
 		
-		button := MenuBarButtonMorph new.
-		button model: button stateGetter: #isOn action: #toggle label: (each at:1).
-		button color: Color white.
-		bar := bar + button ].
-	
-	anOrderedCollection do:[:each | | menu |
-		menu := MenuBarMenuMorph new.
-		menu color: Color white ; borderWidth: 1; borderColor: Color black.
-		(each at:2) do:[:item | 
-			item = $| 
-				ifTrue:[menu addLine]
-				ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ] ].
-		bar addMenu: menu ] .
-
-	bar morphExtent: Display width @ bar morphExtent y.
-	
-	bar morphPosition: 0@0.
-	
 	^bar! !
 
-!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 21:54:27'!
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:51:37'!
 menusRightToLeft: anOrderedCollection
 	
 	| bar |
 	
-	bar := self menus: 
-		(anOrderedCollection reverse collect:[:eachMenu |
-			{ eachMenu first reverse . 
-				(eachMenu second collect:[:eachEntry |
-					eachEntry  = $| 
-						ifTrue:[ eachEntry ]
-						ifFalse:[ { eachEntry at:1 :: reverse . eachEntry at:2 . eachEntry at:3 } ] ] ) } ] ).
-				
-	bar addMorphBack: (Gap new -1p).
-	
+	bar := self newRow.
+
+	bar menusRightToLeft: anOrderedCollection .
+		
 	^bar! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 17:08:40'!
-build
+!MenuBar class methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 22:33:08'!
+new
 
-	self removeAllMorphs.
-	
-	self beRow.
-		
-	model columnsDo:[:each | | column |
-		
-		column := LayoutMorph newColumn.
-		
-		column := column / (LabelMorph contents: each header).
-		 
-		each rowsDo:[:item | column := column /  ((each morph contents: item) ) ].
-		
-		self <+> column. 
-	]
-		
-! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 15:08:15'!
-model: aTableModel
-	model := aTableModel ! !
+	^self newRow! !
 
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 22:01:44'!
 add: aString target: target action: aSymbol argumentList: argList
@@ -469,7 +423,7 @@ select
 	
 	self redrawNeeded ! !
 
-!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:09:50'!
+!MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 22:51:17'!
 toggle
 
 	state = #off

@@ -1,11 +1,22 @@
-'From Cuis7.1 [latest update: #6676] on 28 December 2024 at 5:52:15 pm'!
+'From Cuis7.1 [latest update: #6676] on 29 December 2024 at 11:09:35 pm'!
 'Description '!
-!provides: 'Tavor' 1 105!
+!provides: 'Tavor' 1 129!
+!requires: 'CUA' 1 28 nil!
 !requires: 'LayoutAlgebra' 1 11 nil!
 SystemOrganization addCategory: #'Tavor-Model'!
 SystemOrganization addCategory: #'Tavor-Morphic'!
 SystemOrganization addCategory: #Tavor!
 
+
+!classDefinition: #TavorError category: #'Tavor-Model'!
+Error subclass: #TavorError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Model'!
+!classDefinition: 'TavorError class' category: #'Tavor-Model'!
+TavorError class
+	instanceVariableNames: ''!
 
 !classDefinition: #TabbedGroup category: #'Tavor-Morphic'!
 LayoutMorph subclass: #TabbedGroup
@@ -57,14 +68,14 @@ LayoutMorph subclass: #TextFieldSentence
 TextFieldSentence class
 	instanceVariableNames: ''!
 
-!classDefinition: #LeftToRightInnerListMorph category: #'Tavor-Morphic'!
-InnerListMorph subclass: #LeftToRightInnerListMorph
+!classDefinition: #RtoLRightInnerListMorph category: #'Tavor-Morphic'!
+InnerListMorph subclass: #RtoLRightInnerListMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'LeftToRightInnerListMorph class' category: #'Tavor-Morphic'!
-LeftToRightInnerListMorph class
+!classDefinition: 'RtoLRightInnerListMorph class' category: #'Tavor-Morphic'!
+RtoLRightInnerListMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #OffsetLabelMorph category: #'Tavor-Morphic'!
@@ -77,24 +88,24 @@ LabelMorph subclass: #OffsetLabelMorph
 OffsetLabelMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #LToRPluggableListMorphOfMany category: #'Tavor-Morphic'!
-PluggableListMorphOfMany subclass: #LToRPluggableListMorphOfMany
+!classDefinition: #RtoLPluggableListMorphOfMany category: #'Tavor-Morphic'!
+PluggableListMorphOfMany subclass: #RtoLPluggableListMorphOfMany
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'LToRPluggableListMorphOfMany class' category: #'Tavor-Morphic'!
-LToRPluggableListMorphOfMany class
+!classDefinition: 'RtoLPluggableListMorphOfMany class' category: #'Tavor-Morphic'!
+RtoLPluggableListMorphOfMany class
 	instanceVariableNames: ''!
 
-!classDefinition: #LeftToRightPluggableListMorph category: #'Tavor-Morphic'!
-PluggableListMorph subclass: #LeftToRightPluggableListMorph
+!classDefinition: #RtoLPluggableListMorph category: #'Tavor-Morphic'!
+PluggableListMorph subclass: #RtoLPluggableListMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'LeftToRightPluggableListMorph class' category: #'Tavor-Morphic'!
-LeftToRightPluggableListMorph class
+!classDefinition: 'RtoLPluggableListMorph class' category: #'Tavor-Morphic'!
+RtoLPluggableListMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #PluggableTableMorph category: #'Tavor-Morphic'!
@@ -107,8 +118,18 @@ PluggableScrollPane subclass: #PluggableTableMorph
 PluggableTableMorph class
 	instanceVariableNames: ''!
 
+!classDefinition: #RtoLSystemWindow category: #'Tavor-Morphic'!
+SystemWindow subclass: #RtoLSystemWindow
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'RtoLSystemWindow class' category: #'Tavor-Morphic'!
+RtoLSystemWindow class
+	instanceVariableNames: ''!
+
 !classDefinition: #CollegeBrowser category: #'Tavor-Morphic'!
-SystemWindow subclass: #CollegeBrowser
+RtoLSystemWindow subclass: #CollegeBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -239,7 +260,7 @@ College class
 
 !classDefinition: #CollegeModel category: #'Tavor-Model'!
 Object subclass: #CollegeModel
-	instanceVariableNames: 'college theProgram selectedPrograms theYear selectedYears theTrack selectedTracks theSemester selectedSemesters'
+	instanceVariableNames: 'college theProgram selectedPrograms theYear selectedYears theTrack selectedTracks theSemester selectedSemesters latestNewModule'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
@@ -295,6 +316,16 @@ Object subclass: #TavorExample
 	category: 'Tavor-Model'!
 !classDefinition: 'TavorExample class' category: #'Tavor-Model'!
 TavorExample class
+	instanceVariableNames: ''!
+
+!classDefinition: #RtoLSelectMultipleField category: #'Tavor-Morphic'!
+SelectMultipleField subclass: #RtoLSelectMultipleField
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'RtoLSelectMultipleField class' category: #'Tavor-Morphic'!
+RtoLSelectMultipleField class
 	instanceVariableNames: ''!
 
 
@@ -497,6 +528,10 @@ initialize
 	
 	! !
 
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 15:08:15'!
+model: aTableModel
+	model := aTableModel ! !
+
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:09:03'!
 numColumns
 	^numColumns! !
@@ -625,7 +660,7 @@ initialize
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
-!LeftToRightInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:23:05'!
+!RtoLRightInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:23:05'!
 draw: item atRow: row on: canvas
 	"display the given item at row row"
 	| f c len x |
@@ -663,13 +698,13 @@ drawOn: aCanvas
 		color: color.
 ! !
 
-!LToRPluggableListMorphOfMany methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:27:55'!
+!RtoLPluggableListMorphOfMany methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:07:29'!
 innerMorphClass
-	^LeftToRightInnerListMorph! !
+	^RtoLRightInnerListMorph! !
 
-!LeftToRightPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:24:41'!
+!RtoLPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:07:29'!
 innerMorphClass
-	^LeftToRightInnerListMorph! !
+	^RtoLRightInnerListMorph! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:58:54'!
 headerRow: aBoolean
@@ -730,18 +765,133 @@ update: aSymbol
 			scroller at: rowIndex at:colIndex :: axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:rowIndex :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
 ! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:06:45'!
+!RtoLSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 23:07:55'!
+drawLabelOn: aCanvas
+
+	| x0 y0 f w availableW l |
+	f := Preferences at: #windowTitleFont.
+	x0 :=  f lineSpacing * 5 + borderWidth.
+	y0 := borderWidth * 6 // 10.
+	availableW := extent x - x0.
+	l := labelString.
+	w := f widthOfString: l.
+	x0 := (extent x - w) / 2.
+	[ w > availableW ] whileTrue: [
+		l := l squeezedTo: (1.0 * l size * availableW / w) truncated.
+		l isEmpty ifTrue: [ ^self ].
+		w := f widthOfString: l ].
+	aCanvas
+		drawString: l reverse
+		at: x0@y0
+		font: f
+		color: Theme current windowLabel
+		embossed: Theme current embossedTitles! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 21:34:19'!
+addModuleToAcademicProgramDialog
+
+	| mold programs tracks years semesters |
+	
+	mold := Mold new.
+	
+	programs := ListMultiModel with: model college programNames.
+
+	tracks := ListMultiModel with: model college trackNames.
+	
+	years := ListMultiModel with: model college academicYearNames.
+
+	semesters := ListMultiModel with: model college semesterNames.
+	
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד הקורס';
+		on: #propertyValue of: (ValueHolder new propertyValue: (model latestNewModule ifNotNil:[model latestNewModule code] ifNil:[nil]) ; yourself);
+		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'תוכניות לימודים';
+		on: #selectedIndexes of: programs;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'מסלול לימודים';
+		on: #selectedIndexes of: tracks;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'שנות לימוד';
+		on: #selectedIndexes of: years;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'סמסטרים';
+		on: #selectedIndexes of: semesters;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	
+	mold openDialog: 'הוסף קורס לתוכניות לימודים'.
+	
+	mold when: #edited send: #addModuleToAcademicProgram: to: model with: mold fields.
+	
+! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 19:44:27'!
+addNewModuleDialog
+
+	| mold |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold rtolStringField)
+		label: 'שם הקורס';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'קוד הקורס:';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'שעות הרצאה';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'שעות תרגול';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'שעות מעבדה';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	
+	mold openDialog: 'קורס חדש'.
+	
+	mold when: #edited send: #addNewModule: to: model with: mold fields.
+	
+! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:07:38'!
 buildMorphicWindow
 
 	| topPanel semesters years tracks programs bottomPanel |
 	
-	semesters := LToRPluggableListMorphOfMany withModel: model listGetter: #semesterNames primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
+	semesters := RtoLPluggableListMorphOfMany withModel: model listGetter: #semesterNames primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
 	
-	years := LToRPluggableListMorphOfMany withModel: model listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
+	years := RtoLPluggableListMorphOfMany withModel: model listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
 	
-	tracks := LToRPluggableListMorphOfMany withModel: model listGetter: #trackNames primarySelectionGetter: #trackIndex primarySelectionSetter: #trackIndex: listSelectionGetter: #trackSelectionAt: listSelectionSetter: #trackSelectionAt:put:.
+	tracks := RtoLPluggableListMorphOfMany withModel: model listGetter: #trackNames primarySelectionGetter: #trackIndex primarySelectionSetter: #trackIndex: listSelectionGetter: #trackSelectionAt: listSelectionSetter: #trackSelectionAt:put:.
 	
-	programs := LToRPluggableListMorphOfMany withModel: model listGetter: #programs primarySelectionGetter: #programIndex primarySelectionSetter: #programIndex: listSelectionGetter: #programSelectionAt: listSelectionSetter: #programSelectionAt:put:.
+	programs := RtoLPluggableListMorphOfMany withModel: model listGetter: #programs primarySelectionGetter: #programIndex primarySelectionSetter: #programIndex: listSelectionGetter: #programSelectionAt: listSelectionSetter: #programSelectionAt:put:.
 	
 	topPanel := (semesters - (1/4)p | 1p) <+> (years - (1/4)p | 1p) <+> (tracks - (1/4)p | 1p) <+> (programs - (1/4)p | 1p).
 	
@@ -751,6 +901,43 @@ buildMorphicWindow
 
 	self layoutMorph addMorph: (topPanel -1.0p | 0.4p </> (bottomPanel -1.0p | 0.6p)).
 	! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:56:43'!
+makeMenuBar
+
+	| aMenuBar |
+	
+	aMenuBar := MenuBar new.
+
+	aMenuBar menusRightToLeft: { 
+	{ 'קובץ' . { 
+		{ 'חדש' . aMenuBar . #newAction }  . 
+		{ 'פתח ...' . aMenuBar . #openAction } . 
+		{ 'שמור' . aMenuBar . #saveAction } . 
+		{ 'שמור בשם ...' . aMenuBar . #saveAsAction } .
+		$| .
+		{ 'סגור' . aMenuBar . #exitAction } } } .  
+	{ 'עריכה' . {
+		{ 'גזור' . aMenuBar . #cutAction } .
+		{ 'הדבק' . aMenuBar . #pasteAction } } } .
+	{ 'תוכנית לימוד' . {
+		{ 'תוכנית לימוד חדשה ...' . aMenuBar . #cutAction } 
+		 } } .
+	{ 'קורס' . {
+		{ 'קורס חדש ...' . aMenuBar . #cutAction } .
+		{ 'הוסף קורס לתוכניות לימודים ...' . aMenuBar . #cutAction } .
+		{ 'הוסף קורס לרפרטואר מרצה ...' . aMenuBar . #cutAction } 
+		 } } .
+	{ 'מרצה' . {
+		{ 'מרצה חדשה ...' . aMenuBar . #cutAction } 
+		 } } .
+	{ 'חדר' . {
+		{ 'קמפוס חדש ...' . aMenuBar . #cutAction } .
+		{ 'חדר חדש ...' . aMenuBar . #cutAction } 
+		 } } .
+	{ 'עזרה' . { 
+		{ 'אודות' . aMenuBar . #aboutAction } } } } :: openInWorld morphPosition:0@0.
+! !
 
 !CellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
 justDroppedInto: newOwnerMorph event: anEvent 
@@ -837,9 +1024,19 @@ removeAcademicTrack: anAcademicTrack
 	
 	anAcademicTrack detach.! !
 
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:21'!
+trackAt: aString
+
+	^ tracks detect:[:eachTrack | eachTrack description = aString] ifFound:[:aTrack | aTrack] ifNone:[nil]! !
+
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:29:57'!
 tracks
 	^tracks! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:50'!
+academicYearAt: aString
+
+	^ academicYears detect:[:eachYear | eachYear description = aString] ifFound:[:aYear | aYear] ifNone:[nil]! !
 
 !AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 22:01:58'!
 academicYears
@@ -1015,9 +1212,9 @@ description
 	
 	^ 'תרגול' ! !
 
-!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:24'!
+!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 21:53:41'!
 points
-	^ 0.7 * duration! !
+	^  duration / 2! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:09'!
 academicTrack
@@ -1080,6 +1277,11 @@ invariant
 
 	semesters do: [:aSemester | self assert: aSemester academicYear == self ].
 	! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:24:28'!
+semesterAt: aString
+
+	^ semesters detect:[:eachSemester | eachSemester description = aString] ifFound:[:aSemester | aSemester] ifNone:[nil]! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:05:06'!
 semesters
@@ -1229,6 +1431,11 @@ detach
 invariant
 	^true! !
 
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:35:18'!
+academicYearNames
+
+	^{ 'שנה 1' . 'שנה 2' . 'שנה 3' . 'שנה 4' }! !
+
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:17:06'!
 addAcademicProgram: anAcademicProgram
 
@@ -1324,6 +1531,22 @@ invariant
 	lecturers do: [:aLecturer | self assert: aLecturer college == self ].
 	! !
 
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 18:20:44'!
+moduleAt: aCodeInteger
+
+	^modules detect:[:eachModule | eachModule code = aCodeInteger ] ifFound:[:aModule | aModule] ifNone:[nil]! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:21:54'!
+programAt: aString
+
+	^programs detect:[:eachProgram | eachProgram description = aString] ifFound:[:aProgram | aProgram] ifNone:[nil]! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:45:55'!
+programNames
+
+	^programs collect:[:each | each description ] :: asOrderedCollection sort
+! !
+
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 18:15:20'!
 programs
 	^programs! !
@@ -1363,6 +1586,16 @@ removeModule: aModule
 	aModule detach.
 	
 	self detachModule: aModule.! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:34:54'!
+semesterNames
+
+	^{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' }! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:38:50'!
+trackNames
+
+	^{ 'מסלול יום' . 'מסלול ערב' . 'מסלול משולב' }! !
 
 !CollegeModel methodsFor: 'years' stamp: 'DF 12/27/2024 19:12:19'!
 yearIndex
@@ -1584,23 +1817,7 @@ semesters
 	^ semesters
 ! !
 
-!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:04'!
-moduleIndex
-	^1! !
-
-!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:11'!
-moduleIndex: anIndex
-	! !
-
-!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:24'!
-moduleSelectionAt: anIndex
-	^ anIndex = 1! !
-
-!CollegeModel methodsFor: 'modules' stamp: 'DF 12/27/2024 19:31:41'!
-moduleSelectionAt: anIndex put: aBoolean
-! !
-
-!CollegeModel methodsFor: 'modules' stamp: 'DF 12/28/2024 15:53:59'!
+!CollegeModel methodsFor: 'modules' stamp: 'DF 12/29/2024 21:43:36'!
 modules
 
 	| modules semesters table |
@@ -1616,19 +1833,28 @@ modules
 	
 	table add: { 'נז' . 'שעות' . 'סוג' . 'שם קורס' . 'קוד קורס' }.
 	
-	modules do:[:eachModule |
+	modules asOrderedCollection sort:[:x :y | x code <= y code ] :: do:[:eachModule |
 		eachModule units do:[:eachUnit |
-			table add: { '{1}' format:{eachUnit points} . '{1}' format:{eachUnit duration} . eachUnit description . eachModule description . '{1}' format:{ eachModule code } } ] ].
+			table add: { '{1}' format:{eachUnit points} :: reverse . '{1}' format:{eachUnit duration} :: reverse . eachUnit description . eachModule description . '{1}' format:{ eachModule code } :: reverse } ] ].
 	
 	^table
 ! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 18:12:46'!
+!CollegeModel methodsFor: 'accessing' stamp: 'DF 12/29/2024 20:45:03'!
+college
+	^college! !
+
+!CollegeModel methodsFor: 'accessing' stamp: 'DF 12/27/2024 18:12:46'!
 college: aCollege
 
 	college := aCollege! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:22:07'!
+!CollegeModel methodsFor: 'accessing' stamp: 'DF 12/29/2024 21:26:30'!
+latestNewModule
+
+	^latestNewModule ! !
+
+!CollegeModel methodsFor: 'initialization' stamp: 'DF 12/27/2024 19:22:07'!
 initialize
 
 	theProgram := 0.
@@ -1646,6 +1872,90 @@ initialize
 	theSemester:= 0.
 	
 	selectedSemesters := Set new.! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:26:46'!
+addModuleToAcademicProgram: fields
+
+	| anIntegerCode programNames aModule semesterNames yearNames trackNames |
+	
+	anIntegerCode := fields at:1 :: value.
+	
+	programNames := fields at:2 :: value.
+
+	trackNames := fields at:3 :: value.
+	
+	yearNames := fields at:4 :: value.
+	
+	semesterNames := fields at:5 :: value.
+	
+	aModule := college moduleAt: anIntegerCode.
+	
+	programNames do:[:eachProgramName | | program | 
+		
+		program := college programAt: eachProgramName. 
+		
+		trackNames do:[:eachTrackName | | track |
+			
+			track := program trackAt: eachTrackName.
+		
+			yearNames do:[:eachYearName | | academicYear |
+			
+				academicYear := track academicYearAt: eachYearName. 
+			
+					semesterNames do:[:eachSemesterName | | semester |
+				
+						semester := academicYear semesterAt: eachSemesterName.
+				
+						semester addModule: aModule ] ] ] ].
+	
+	 
+	
+	! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 21:26:25'!
+addNewModule: fields
+
+	| aModule aLabDurationInteger aLectureDurationInteger aRecitationDurationInteger aStringDescription anIntegerCode |
+	
+	aStringDescription := fields at:1 :: value.
+
+	anIntegerCode := fields at:2 :: value.
+	
+	aLectureDurationInteger := fields at:3 :: value.
+	
+	aRecitationDurationInteger := fields at:4 :: value.
+	
+	aLabDurationInteger := fields at:5 :: value.
+	
+	college moduleAt: anIntegerCode :: notNil 
+		ifTrue:[TavorError new messageText: 'לא ניתן ליצור קורס עם קוד קיים.' ; signal].
+		
+	aModule := Module new.
+	
+	aModule code: anIntegerCode ; description: aStringDescription.
+	
+	aLectureDurationInteger > 0
+		ifTrue:[ | aLecture |
+			aLecture := Lecture new.
+			aLecture duration: aLectureDurationInteger.
+			aModule addAcademicUnit: aLecture ].
+
+	aRecitationDurationInteger > 0
+		ifTrue:[ | aRecitation |
+			aRecitation := Recitation new.
+			aRecitation duration: aRecitationDurationInteger.
+			aModule addAcademicUnit: aRecitation ].
+
+	aLabDurationInteger > 0
+		ifTrue:[ | aLaboratory |
+			aLaboratory := Laboratory new.
+			aLaboratory duration: aLabDurationInteger.
+			aModule addAcademicUnit: aLaboratory ].
+		
+	college addModule: aModule.
+	
+	latestNewModule := aModule.
+		! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
@@ -1985,7 +2295,7 @@ removeAssignment: anAssignment
 semester
 	^semester! !
 
-!TavorExample class methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:50:23'!
+!TavorExample class methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:36:15'!
 example
 
 	"self example"
@@ -2032,21 +2342,21 @@ example
 	
 	anAcademicProgram addAcademicTrack: anAcademicTrack.
 	
-	1 to:4 do:[:i | | anAcademicYear |
+	{ 'שנה 1' . 'שנה 2' . 'שנה 3' . 'שנה 4' } do:[ :eachYear | | anAcademicYear |
 		
 		anAcademicYear := AcademicYear new.
 		
-		anAcademicYear description: ('שנה {1}' format:{i}).
+		anAcademicYear description: eachYear.
 		
-		{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' } do:[:each | | aSemester |
+		{ 'סמסטר 1' . 'סמסטר 2' . 'סמסטר קיץ' } do:[:eachSemester | | aSemester |
 			
 			aSemester := Semester new.
 			
-			aSemester description: each.
+			aSemester description: eachSemester.
 			
 			anAcademicYear addSemester: aSemester.
 			
-			i = 2 and: each = 'סמסטר קיץ' 
+			eachYear = 'שנה 2' and: eachSemester = 'סמסטר קיץ' 
 				:: ifTrue:[
 					aSemester addModule: aModule] 		].
 		
@@ -2058,21 +2368,21 @@ example
 	
 	anAcademicProgram addAcademicTrack: anAcademicTrack.
 	
-	1 to:3 do:[:i | | anAcademicYear |
+	{ 'שנה 1' . 'שנה 2' . 'שנה 3'  } do:[:eachYear | | anAcademicYear |
 		
 		anAcademicYear := AcademicYear new.
 		
-		anAcademicYear description: ('שנה {1}' format:{i}).
+		anAcademicYear description: eachYear.
 		
-		{ 'סמסטר א' . 'סמסטר ב' } do:[:each | | aSemester |
+		{ 'סמסטר 1' . 'סמסטר 2' } do:[:eachSemester | | aSemester |
 			
 			aSemester := Semester new.
 			
-			aSemester description: each.
+			aSemester description: eachSemester.
 			
 			anAcademicYear addSemester: aSemester.
 
-			i = 1 and: each = 'סמסטר ב' 
+			eachYear = 'שנה 1' and: eachSemester = 'סמסטר 2' 
 				:: ifTrue:[
 					aSemester addModule: aModule] 		].
 		
@@ -2093,3 +2403,7 @@ example
 	
 	^aCollege
 	! !
+
+!RtoLSelectMultipleField methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:08:57'!
+inputMorphInstance
+	^ RtoLPluggableListMorphOfMany new! !
