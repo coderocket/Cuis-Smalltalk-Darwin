@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 29 December 2024 at 10:54:09 pm'!
+'From Cuis7.1 [latest update: #6676] on 1 January 2025 at 10:26:56 pm'!
 'Description '!
-!provides: 'CUA' 1 28!
+!provides: 'CUA' 1 29!
 SystemOrganization addCategory: #CUA!
 
 
@@ -130,7 +130,7 @@ menuNshortcutsSpecsFor: aMorph do: aBlock
 addMenu: aMenu
 	menus addFirst: aMenu! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 17:59:19'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:26:31'!
 buttonPressed: aMenuBarButton
 
 	| index |
@@ -150,7 +150,7 @@ buttonPressed: aMenuBarButton
 				w activeHand ifNotNil: [ :h |
 					h newMouseFocus: self ] ].
 		
-			menu popUpAt: aMenuBarButton morphPosition + (0 @ aMenuBarButton morphHeight) allowKeyboard: true. ]
+			menu popUpAt: aMenuBarButton morphPosition + (aMenuBarButton morphWidth - menu morphWidth @ aMenuBarButton morphHeight) allowKeyboard: true. ]
 	  		ifFalse:[
 			aMenuBarButton deselect].
 

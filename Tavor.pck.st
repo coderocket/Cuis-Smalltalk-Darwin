@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 29 December 2024 at 11:09:35 pm'!
+'From Cuis7.1 [latest update: #6676] on 1 January 2025 at 11:00:51 pm'!
 'Description '!
-!provides: 'Tavor' 1 129!
+!provides: 'Tavor' 1 141!
 !requires: 'CUA' 1 28 nil!
 !requires: 'LayoutAlgebra' 1 11 nil!
 SystemOrganization addCategory: #'Tavor-Model'!
@@ -138,6 +138,26 @@ RtoLSystemWindow subclass: #CollegeBrowser
 CollegeBrowser class
 	instanceVariableNames: ''!
 
+!classDefinition: #LecturerBrowser category: #'Tavor-Morphic'!
+RtoLSystemWindow subclass: #LecturerBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'LecturerBrowser class' category: #'Tavor-Morphic'!
+LecturerBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #ModuleBrowser category: #'Tavor-Morphic'!
+RtoLSystemWindow subclass: #ModuleBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'ModuleBrowser class' category: #'Tavor-Morphic'!
+ModuleBrowser class
+	instanceVariableNames: ''!
+
 !classDefinition: #CellItem category: #'Tavor-Morphic'!
 BoxedMorph subclass: #CellItem
 	instanceVariableNames: ''
@@ -260,7 +280,7 @@ College class
 
 !classDefinition: #CollegeModel category: #'Tavor-Model'!
 Object subclass: #CollegeModel
-	instanceVariableNames: 'college theProgram selectedPrograms theYear selectedYears theTrack selectedTracks theSemester selectedSemesters latestNewModule'
+	instanceVariableNames: 'college theProgram selectedPrograms theYear selectedYears theTrack selectedTracks theSemester selectedSemesters latestNewModule theSchool selectedSchools theEmployment selectedEmployments'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
@@ -316,6 +336,16 @@ Object subclass: #TavorExample
 	category: 'Tavor-Model'!
 !classDefinition: 'TavorExample class' category: #'Tavor-Model'!
 TavorExample class
+	instanceVariableNames: ''!
+
+!classDefinition: #TavorApplication category: #'Tavor-Morphic'!
+Object subclass: #TavorApplication
+	instanceVariableNames: 'model'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'TavorApplication class' category: #'Tavor-Morphic'!
+TavorApplication class
 	instanceVariableNames: ''!
 
 !classDefinition: #RtoLSelectMultipleField category: #'Tavor-Morphic'!
@@ -787,100 +817,7 @@ drawLabelOn: aCanvas
 		color: Theme current windowLabel
 		embossed: Theme current embossedTitles! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 21:34:19'!
-addModuleToAcademicProgramDialog
-
-	| mold programs tracks years semesters |
-	
-	mold := Mold new.
-	
-	programs := ListMultiModel with: model college programNames.
-
-	tracks := ListMultiModel with: model college trackNames.
-	
-	years := ListMultiModel with: model college academicYearNames.
-
-	semesters := ListMultiModel with: model college semesterNames.
-	
-	mold rightToLeft: true.
-	
-	(mold integerField)
-		label: 'קוד הקורס';
-		on: #propertyValue of: (ValueHolder new propertyValue: (model latestNewModule ifNotNil:[model latestNewModule code] ifNil:[nil]) ; yourself);
-		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'תוכניות לימודים';
-		on: #selectedIndexes of: programs;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'מסלול לימודים';
-		on: #selectedIndexes of: tracks;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'שנות לימוד';
-		on: #selectedIndexes of: years;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'סמסטרים';
-		on: #selectedIndexes of: semesters;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	
-	mold openDialog: 'הוסף קורס לתוכניות לימודים'.
-	
-	mold when: #edited send: #addModuleToAcademicProgram: to: model with: mold fields.
-	
-! !
-
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 19:44:27'!
-addNewModuleDialog
-
-	| mold |
-	
-	mold := Mold new.
-	
-	mold rightToLeft: true.
-	
-	(mold rtolStringField)
-		label: 'שם הקורס';
-		on: #propertyValue of: ValueHolder new;
-		beRequired.
-	(mold integerField)
-		label: 'קוד הקורס:';
-		on: #propertyValue of: ValueHolder new;
-		beRequired.
-	(mold integerField)
-		label: 'שעות הרצאה';
-		on: #propertyValue of: ValueHolder new;
-		beRequired.
-	(mold integerField)
-		label: 'שעות תרגול';
-		on: #propertyValue of: ValueHolder new;
-		beRequired.
-	(mold integerField)
-		label: 'שעות מעבדה';
-		on: #propertyValue of: ValueHolder new;
-		beRequired.
-	
-	mold openDialog: 'קורס חדש'.
-	
-	mold when: #edited send: #addNewModule: to: model with: mold fields.
-	
-! !
-
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:07:38'!
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:56:47'!
 buildMorphicWindow
 
 	| topPanel semesters years tracks programs bottomPanel |
@@ -902,42 +839,23 @@ buildMorphicWindow
 	self layoutMorph addMorph: (topPanel -1.0p | 0.4p </> (bottomPanel -1.0p | 0.6p)).
 	! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:56:43'!
-makeMenuBar
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:37:17'!
+buildMorphicWindow
 
-	| aMenuBar |
+	| topPanel bottomPanel schools employment |
 	
-	aMenuBar := MenuBar new.
+	schools := RtoLPluggableListMorphOfMany withModel: model listGetter: #schoolNames primarySelectionGetter: #schoolIndex primarySelectionSetter: #schoolIndex: listSelectionGetter: #schoolSelectionAt: listSelectionSetter: #schoolSelectionAt:put:.
+	
+	employment := RtoLPluggableListMorphOfMany withModel: model listGetter: #employmentNames primarySelectionGetter: #employmentIndex primarySelectionSetter: #employmentIndex: listSelectionGetter: #employmentSelectionAt: listSelectionSetter: #employmentSelectionAt:put:.
+	
+	topPanel := (employment - (1/2)p | 1p) <+> (schools - (1/2)p | 1p) .
+	
+	bottomPanel := PluggableTableMorph new.
+	
+	bottomPanel model: model ; table: #lecturers ; rightToLeft: true ; headerRow: true.
 
-	aMenuBar menusRightToLeft: { 
-	{ 'קובץ' . { 
-		{ 'חדש' . aMenuBar . #newAction }  . 
-		{ 'פתח ...' . aMenuBar . #openAction } . 
-		{ 'שמור' . aMenuBar . #saveAction } . 
-		{ 'שמור בשם ...' . aMenuBar . #saveAsAction } .
-		$| .
-		{ 'סגור' . aMenuBar . #exitAction } } } .  
-	{ 'עריכה' . {
-		{ 'גזור' . aMenuBar . #cutAction } .
-		{ 'הדבק' . aMenuBar . #pasteAction } } } .
-	{ 'תוכנית לימוד' . {
-		{ 'תוכנית לימוד חדשה ...' . aMenuBar . #cutAction } 
-		 } } .
-	{ 'קורס' . {
-		{ 'קורס חדש ...' . aMenuBar . #cutAction } .
-		{ 'הוסף קורס לתוכניות לימודים ...' . aMenuBar . #cutAction } .
-		{ 'הוסף קורס לרפרטואר מרצה ...' . aMenuBar . #cutAction } 
-		 } } .
-	{ 'מרצה' . {
-		{ 'מרצה חדשה ...' . aMenuBar . #cutAction } 
-		 } } .
-	{ 'חדר' . {
-		{ 'קמפוס חדש ...' . aMenuBar . #cutAction } .
-		{ 'חדר חדש ...' . aMenuBar . #cutAction } 
-		 } } .
-	{ 'עזרה' . { 
-		{ 'אודות' . aMenuBar . #aboutAction } } } } :: openInWorld morphPosition:0@0.
-! !
+	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (bottomPanel -1.0p | 0.7p)).
+	! !
 
 !CellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
 justDroppedInto: newOwnerMorph event: anEvent 
@@ -1531,6 +1449,10 @@ invariant
 	lecturers do: [:aLecturer | self assert: aLecturer college == self ].
 	! !
 
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:45:13'!
+lecturers
+	^lecturers! !
+
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 18:20:44'!
 moduleAt: aCodeInteger
 
@@ -1854,7 +1776,7 @@ latestNewModule
 
 	^latestNewModule ! !
 
-!CollegeModel methodsFor: 'initialization' stamp: 'DF 12/27/2024 19:22:07'!
+!CollegeModel methodsFor: 'initialization' stamp: 'DF 1/1/2025 21:39:13'!
 initialize
 
 	theProgram := 0.
@@ -1871,7 +1793,15 @@ initialize
 
 	theSemester:= 0.
 	
-	selectedSemesters := Set new.! !
+	selectedSemesters := Set new.
+	
+	theSchool := 0.
+	
+	selectedSchools := Set new.
+	
+	theEmployment := 0.
+	
+	selectedEmployments := Set new.! !
 
 !CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:26:46'!
 addModuleToAcademicProgram: fields
@@ -1956,6 +1886,77 @@ addNewModule: fields
 	
 	latestNewModule := aModule.
 		! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:00:20'!
+employmentIndex
+
+	^ theEmployment ! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:40:39'!
+employmentIndex: anIndex
+
+	theEmployment := anIndex! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:34:21'!
+employmentNames
+	^{ 'סגל בכיר' . 'סגל זוטר' . 'מרצה מן החוץ' }! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:40:55'!
+employmentSelectionAt: anIndex
+	
+	^ selectedEmployments includes: anIndex! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:41:13'!
+employmentSelectionAt: anIndex put: aBoolean
+
+	aBoolean 
+		ifTrue:[selectedEmployments add: anIndex]
+		ifFalse:[selectedEmployments remove: anIndex]
+
+! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:57:10'!
+lecturers
+
+	| table |
+	
+	table := OrderedCollection new.
+	
+	table add: { 'שעות משובצות' . 'אחוזי משרה' . 'שעות למשרה' . 'מעמד' . 'שם' }.
+	
+	college lecturers asOrderedCollection sort:[:x :y | x description <= y description ] :: do:[:eachLecturer |
+		table add: { '{1}' format:{18} :: reverse . '{1}%' format:{80} :: reverse . '24' reverse . 'מרצה מן החוץ' . eachLecturer description } ] .
+	
+	^table
+! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:35:21'!
+schoolIndex
+
+	^ theSchool! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:35:46'!
+schoolIndex: anIndex
+
+	theSchool := anIndex! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:33:43'!
+schoolNames
+	^{ 'בית הספר להנדסת תוכנה' . 'בית הספר להנדסה מכאנית' . 'בית הספר להנדסת תעשיה וניהול' . 'בית הספר להנדסת חשמל' . 'בית הספר להנדסה רפואית'  . 'היחידה למתמטיקה' . 'היחידה לפיזיקה' }! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:36:58'!
+schoolSelectionAt: anIndex
+	
+	^ selectedSchools includes: anIndex! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:38:14'!
+schoolSelectionAt: anIndex put: aBoolean
+
+	aBoolean 
+		ifTrue:[selectedSchools add: anIndex]
+		ifFalse:[selectedSchools remove: anIndex]
+
+! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
@@ -2403,6 +2404,223 @@ example
 	
 	^aCollege
 	! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:22:44'!
+addModuleToAcademicProgramDialog
+
+	| mold programs tracks years semesters aDialog position |
+	
+	mold := Mold new.
+	
+	programs := ListMultiModel with: model college programNames.
+
+	tracks := ListMultiModel with: model college trackNames.
+	
+	years := ListMultiModel with: model college academicYearNames.
+
+	semesters := ListMultiModel with: model college semesterNames.
+	
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד הקורס';
+		on: #propertyValue of: (ValueHolder new propertyValue: (model latestNewModule ifNotNil:[model latestNewModule code] ifNil:[nil]) ; yourself);
+		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'תוכניות לימודים';
+		on: #selectedIndexes of: programs;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'מסלול לימודים';
+		on: #selectedIndexes of: tracks;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'שנות לימוד';
+		on: #selectedIndexes of: years;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'סמסטרים';
+		on: #selectedIndexes of: semesters;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+
+	aDialog := mold openDialog: 'הוסף קורס לתוכניות לימודים'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addModuleToAcademicProgram: to: model with: mold fields.
+	
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:29:50'!
+addNewLecturerDialog
+
+	| mold position aDialog |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold rtolStringField)
+		label: 'שם המרצה';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+
+	(mold selectField) rightToLeft: true ;
+		label: 'מעמד מרצה';
+		on: #listIndex of: (ListModel with: `{'סגל בכיר' . 'סגל זוטר' . 'מורה מן החוץ' }`:: listIndex: 1) ;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'מרצה חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addNewLecturer: to: model with: mold fields.
+	
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:20:09'!
+addNewModuleDialog
+
+	| mold aDialog position |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold rtolStringField)
+		label: 'שם הקורס';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'קוד הקורס:';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'שעות הרצאה';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'שעות תרגול';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	(mold integerField)
+		label: 'שעות מעבדה';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'קורס חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addNewModule: to: model with: mold fields.
+	
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:51:47'!
+menuBar
+
+	| aMenuBar |
+	
+	aMenuBar := MenuBar new.
+
+	aMenuBar menusRightToLeft: { 
+	{ 'קובץ' . { 
+		{ 'חדש' . self . #newAction }  . 
+		{ 'פתח ...' . self . #openAction } . 
+		{ 'שמור' . self . #saveAction } . 
+		{ 'שמור בשם ...' . self . #saveAsAction } .
+		$| .
+		{'יבא תוכניות לימודים ...' . self . #importAction } .
+		{'יצא תוכנית לימודים ...' . self . #exportAction } .
+		$| .
+		{ 'סגור' . self . #exitAction } } } .  
+	{ 'עריכה' . {
+		{ 'ביטול' . self . #undoAction } .
+		{ 'ביצוע מחדש'. self . #redoAction } .
+		$| .
+		{ 'גזור' . self . #cutAction } .
+		{ 'העתק' . self . #copyAction } .
+		{ 'הדבק' . self . #pasteAction } } } .
+	{ 'תוכנית לימוד' . {
+		{'הצג תוכניות לימודים' . self . #openAcademicProgramBrowser } .
+		{ 'תוכנית לימוד חדשה ...' . self . #cutAction } 
+		 } } .
+	{ 'קורס' . {
+		{ 'קורס חדש ...' . self . #addNewModuleDialog } .
+		{ 'הוסף קורס לתוכניות לימודים ...' . self . #addModuleToAcademicProgramDialog } .
+		{ 'הוסף קורס לרפרטואר מרצה ...' . self . #cutAction } 
+		 } } .
+	{ 'מרצה' . {
+		{ 'הצג מרצים' . self .#openLecturerBrowser } .
+		{ 'מרצה חדשה ...' . self . #addNewLecturerDialog } 
+		 } } .
+	{ 'חדר' . {
+		{ 'קמפוס חדש ...' . self . #cutAction } .
+		{ 'חדר חדש ...' . self . #cutAction } 
+		 } } .
+	{ 'עזרה' . { 
+		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:52:38'!
+open
+
+	| aCollege |
+	
+	aCollege := TavorExample example.
+
+	aCollege invariant.
+
+	model := CollegeModel new.
+
+	model college: aCollege.
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:55:06'!
+openAcademicProgramBrowser
+
+	CollegeBrowser open: model label: 'תוכניות לימוד'.
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:58:25'!
+openLecturerBrowser
+
+	LecturerBrowser open: model label: 'מרצים'.
+! !
+
+!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:56:24'!
+open
+
+	| anApp |
+	
+	anApp := self new.
+
+	anApp menuBar.
+	
+	anApp open.
+! !
 
 !RtoLSelectMultipleField methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:08:57'!
 inputMorphInstance
