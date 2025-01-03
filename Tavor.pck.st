@@ -1,8 +1,10 @@
-'From Cuis7.1 [latest update: #6676] on 1 January 2025 at 11:00:51 pm'!
+'From Cuis7.1 [latest update: #6676] on 3 January 2025 at 11:03:50 pm'!
 'Description '!
-!provides: 'Tavor' 1 141!
+!provides: 'Tavor' 1 161!
 !requires: 'CUA' 1 28 nil!
 !requires: 'LayoutAlgebra' 1 11 nil!
+!requires: 'Neo-CSV-Core' 1 1 nil!
+!requires: 'UI-Mold' 1 30 nil!
 SystemOrganization addCategory: #'Tavor-Model'!
 SystemOrganization addCategory: #'Tavor-Morphic'!
 SystemOrganization addCategory: #Tavor!
@@ -116,6 +118,16 @@ PluggableScrollPane subclass: #PluggableTableMorph
 	category: 'Tavor-Morphic'!
 !classDefinition: 'PluggableTableMorph class' category: #'Tavor-Morphic'!
 PluggableTableMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #OpenFileDialog category: #'Tavor-Morphic'!
+SystemWindow subclass: #OpenFileDialog
+	instanceVariableNames: 'directory currentDirectoryEntryMorph theEntryIndex showHiddenFiles sortBy'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'OpenFileDialog class' category: #'Tavor-Morphic'!
+OpenFileDialog class
 	instanceVariableNames: ''!
 
 !classDefinition: #RtoLSystemWindow category: #'Tavor-Morphic'!
@@ -795,6 +807,110 @@ update: aSymbol
 			scroller at: rowIndex at:colIndex :: axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:rowIndex :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
 ! !
 
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 23:03:35'!
+buildMorphicWindow
+
+	|  top entries openButton cancelButton buttons dialog backButton upButton |
+	
+	backButton := PluggableButtonMorph model: nil action: nil.
+	backButton iconDrawSelector: #drawLeftIcon.
+	upButton := PluggableButtonMorph model: self action: #goUp.
+	upButton iconDrawSelector: #drawUpIcon.
+
+	currentDirectoryEntryMorph := directory pathName morph.
+	
+	currentDirectoryEntryMorph crAction: [ | dd |
+		dd := currentDirectoryEntryMorph contents asDirectoryEntry.
+		dd exists
+			ifTrue:[
+				directory := dd.
+				self changed: #entryNames ]
+			ifFalse:[
+				currentDirectoryEntryMorph contents: directory pathName ] ].
+	
+	top := ((backButton + upButton) - 128f @ (16@0) align:0) + currentDirectoryEntryMorph  |48f.
+	
+	entries :=  PluggableListMorph withModel: self listGetter: #entryNames indexGetter: #entryIndex indexSetter: #entryIndex:.
+	
+	entries doubleClickSelector: #recurse.
+	
+	openButton := PluggableButtonMorph model: nil action: nil label: 'Open'.
+	cancelButton := PluggableButtonMorph model: nil action: nil label: 'Cancel'.
+	
+	buttons := openButton - 96f / (cancelButton - 96f).
+	
+	dialog := top </> ( (entries -1p |1p ) + (buttons | 64f - 0.3p) ).
+	
+	self addMorph: dialog
+	! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:42:58'!
+entries
+
+	^directory children select: showHiddenFiles :: sort: sortBy 
+	
+! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:20:15'!
+entryIndex
+	^theEntryIndex ! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:23:43'!
+entryIndex: anInteger
+
+	theEntryIndex := anInteger.
+	
+	theEntryIndex = 0 ifTrue:[^self].
+	
+! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:42:48'!
+entryNames
+
+	^self entries collect:[:eachEntry | 
+		eachEntry name , 		(eachEntry isDirectory 			ifTrue:[ '/' ] ifFalse:['']) ]
+	
+! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:44:51'!
+goUp
+
+	directory parent ifNil:[^self].
+	
+	directory := directory parent. 
+	
+	currentDirectoryEntryMorph contents: directory pathName.
+	
+	self changed: #entryNames! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:44:00'!
+initialize
+
+	super initialize.
+	
+	directory := DirectoryEntry currentDirectory.
+	
+	theEntryIndex := 0.
+	
+	showHiddenFiles := [:x | x name size = 0 or: [ x name first ~= $.] ].
+	
+	sortBy := [:x :y | x name <= y name ].! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:44:31'!
+recurse
+
+	| child |
+	
+	theEntryIndex = 0 ifTrue:[^self].
+
+	child := self entries at: theEntryIndex.
+
+	child isDirectory 
+		ifTrue:[
+			directory := child.
+			currentDirectoryEntryMorph contents: directory pathName.
+			self changed: #entryNames ]! !
+
 !RtoLSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 23:07:55'!
 drawLabelOn: aCanvas
 
@@ -1418,6 +1534,79 @@ detachModule: aModule
 
 	modules remove: aModule! !
 
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 20:29:46'!
+import: aFileEntry
+
+	| aReadStream aCSVReader headers programIndex trackIndex academicYearIndex semesterIndex moduleCodeIndex moduleDescriptionIndex moduleLectureIndex moduleRecitationIndex moduleLabIndex  |
+
+	aReadStream := aFileEntry readStream.
+	
+	aCSVReader := NeoCSVReader on: aReadStream.
+	
+	headers := aCSVReader next withIndexDo:[:eachName :eachIndex | eachName -> eachIndex] :: asDictionary.
+	
+	programIndex := headers at: 'תוכנית לימודים'.
+
+	trackIndex := headers at: 'מסלול'.
+	
+	academicYearIndex := headers at: 'שנה'.
+	
+	semesterIndex := headers at: 'סמסטר'.
+	
+	moduleCodeIndex := headers at: 'קוד קורס'.
+	
+	moduleDescriptionIndex := headers at: 'שם קורס'.
+	
+	moduleLectureIndex := headers at: 'הרצאה'.
+	
+	moduleRecitationIndex := headers at: 'תרגול'.
+	
+	moduleLabIndex := headers at: 'מעבדה'.
+	
+	aCSVReader do:[:eachRow | | aProgram aTrack aYear aSemester aModule lectureDuration recitationDuration labDuration |
+		
+		aProgram := self programAt: (eachRow at: programIndex).
+		
+		aTrack := aProgram trackAt: (eachRow at: trackIndex). 
+		
+		aYear := aTrack academicYearAt: (eachRow at: academicYearIndex).
+		
+		aSemester := aYear semesterAt: (eachRow at: semesterIndex).
+		
+		aModule := Module new.
+		
+		aModule code: (eachRow at: moduleCodeIndex) ; description: (eachRow at: moduleDescriptionIndex).
+		
+		lectureDuration := (eachRow at: moduleLectureIndex).
+		
+		recitationDuration := (eachRow at: moduleRecitationIndex).
+		
+		labDuration := (eachRow at: moduleLabIndex).
+		
+		lectureDuration > 0 ifTrue:[ | aLecture |
+			aLecture := Lecture new.
+			
+			aLecture duration: lectureDuration.
+			
+			aModule addAcademicUnit: aLecture ].
+		
+		recitationDuration > 0 ifTrue:[ | aRecitation |
+			aRecitation := Recitation new.
+			
+			aRecitation duration: recitationDuration.
+			
+			aModule addAcademicUnit: aRecitation ].
+
+		labDuration > 0 ifTrue:[ | aLab |
+			aLab := Laboratory new.
+			
+			aLab duration: labDuration.
+			
+			aModule addAcademicUnit: aLab ].
+		
+		aSemester addModule: aModule ]
+		! !
+
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:17:17'!
 initialize
 
@@ -1842,10 +2031,10 @@ addModuleToAcademicProgram: fields
 	
 	! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 21:26:25'!
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 14:17:16'!
 addNewModule: fields
 
-	| aModule aLabDurationInteger aLectureDurationInteger aRecitationDurationInteger aStringDescription anIntegerCode |
+	| aModule aLabDurationInteger aLectureDurationInteger aRecitationDurationInteger aStringDescription anIntegerCode programNames semesterNames yearNames trackNames |
 	
 	aStringDescription := fields at:1 :: value.
 
@@ -1856,6 +2045,14 @@ addNewModule: fields
 	aRecitationDurationInteger := fields at:4 :: value.
 	
 	aLabDurationInteger := fields at:5 :: value.
+
+	programNames := fields at:6 :: value.
+
+	trackNames := fields at:7 :: value.
+	
+	yearNames := fields at:8 :: value.
+	
+	semesterNames := fields at:9 :: value.
 	
 	college moduleAt: anIntegerCode :: notNil 
 		ifTrue:[TavorError new messageText: 'לא ניתן ליצור קורס עם קוד קיים.' ; signal].
@@ -1883,6 +2080,10 @@ addNewModule: fields
 			aModule addAcademicUnit: aLaboratory ].
 		
 	college addModule: aModule.
+	
+	self addModuleToAcademicProgram: { anIntegerCode . programNames . trackNames . yearNames . semesterNames }.
+	
+	self changed: #modules.
 	
 	latestNewModule := aModule.
 		! !
@@ -2296,7 +2497,7 @@ removeAssignment: anAssignment
 semester
 	^semester! !
 
-!TavorExample class methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:36:15'!
+!TavorExample class methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 14:21:33'!
 example
 
 	"self example"
@@ -2349,7 +2550,7 @@ example
 		
 		anAcademicYear description: eachYear.
 		
-		{ 'סמסטר 1' . 'סמסטר 2' . 'סמסטר קיץ' } do:[:eachSemester | | aSemester |
+		{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' } do:[:eachSemester | | aSemester |
 			
 			aSemester := Semester new.
 			
@@ -2375,7 +2576,7 @@ example
 		
 		anAcademicYear description: eachYear.
 		
-		{ 'סמסטר 1' . 'סמסטר 2' } do:[:eachSemester | | aSemester |
+		{ 'סמסטר א' . 'סמסטר ב' } do:[:eachSemester | | aSemester |
 			
 			aSemester := Semester new.
 			
@@ -2383,7 +2584,7 @@ example
 			
 			anAcademicYear addSemester: aSemester.
 
-			eachYear = 'שנה 1' and: eachSemester = 'סמסטר 2' 
+			eachYear = 'שנה 1' and: eachSemester = 'סמסטר ב' 
 				:: ifTrue:[
 					aSemester addModule: aModule] 		].
 		
@@ -2498,10 +2699,18 @@ addNewLecturerDialog
 	
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:20:09'!
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 14:12:23'!
 addNewModuleDialog
 
-	| mold aDialog position |
+	| mold programs tracks years semesters aDialog position |
+
+	programs := ListMultiModel with: model college programNames.
+
+	tracks := ListMultiModel with: model college trackNames.
+	
+	years := ListMultiModel with: model college academicYearNames.
+
+	semesters := ListMultiModel with: model college semesterNames.
 	
 	mold := Mold new.
 	
@@ -2527,6 +2736,34 @@ addNewModuleDialog
 		label: 'שעות מעבדה';
 		on: #propertyValue of: ValueHolder new;
 		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'תוכניות לימודים';
+		on: #selectedIndexes of: programs;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'מסלולי לימודים';
+		on: #selectedIndexes of: tracks;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'שנות לימוד';
+		on: #selectedIndexes of: years;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectMultipleField new)
+		label: 'סמסטרים';
+		on: #selectedIndexes of: semesters;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
 	
 	position := UISupervisor ui activeHand morphPosition.
 	 
@@ -2538,7 +2775,33 @@ addNewModuleDialog
 	
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:51:47'!
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:06:31'!
+importAction
+
+	| dir top entries openButton cancelButton buttons dialog backButton upButton |
+	
+	dir := DirectoryEntry currentDirectory.
+
+	backButton := PluggableButtonMorph model: nil action: nil.
+	backButton iconDrawSelector: #drawLeftIcon.
+	upButton := PluggableButtonMorph model: nil action: nil.
+	upButton iconDrawSelector: #drawUpIcon.
+
+	top := ((backButton + upButton) - 128f @ (16@0) align:0) + (dir pathName morph)  |48f.
+	
+	entries :=  dir children collect:[:eachEntry | 
+		eachEntry name , 		(eachEntry isDirectory 			ifTrue:[ '/' ] ifFalse:['']) ] :: morph.
+	
+	openButton := PluggableButtonMorph model: nil action: nil label: 'Open'.
+	cancelButton := PluggableButtonMorph model: nil action: nil label: 'Cancel'.
+	
+	buttons := openButton - 96f / (cancelButton - 96f).
+	
+	dialog := top </> ( (entries -1p |1p ) + (buttons | 64f - 0.3p) ).
+	
+	dialog embeddedInMorphicWindowLabeled: 'Select File' :: openInWorld! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 20:52:02'!
 menuBar
 
 	| aMenuBar |
@@ -2580,6 +2843,7 @@ menuBar
 		{ 'קמפוס חדש ...' . self . #cutAction } .
 		{ 'חדר חדש ...' . self . #cutAction } 
 		 } } .
+	{ 'חלונות' . #showCollapsedWindows . self } . 
 	{ 'עזרה' . { 
 		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
 ! !
@@ -2604,11 +2868,45 @@ openAcademicProgramBrowser
 	CollegeBrowser open: model label: 'תוכניות לימוד'.
 ! !
 
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 20:50:20'!
+openFileDialog
+
+	| mold position aDialog |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold stringField)
+		on: #propertyValue of: (ValueHolder with: DirectoryEntry currentDirectory pathName);
+		beRequired.
+
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'בחר קובץ'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	! !
+
 !TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:58:25'!
 openLecturerBrowser
 
 	LecturerBrowser open: model label: 'מרצים'.
 ! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:45:52'!
+showCollapsedWindows
+
+	| windows menu |
+	
+	windows := UISupervisor ui submorphs select:[:each | each isKindOf: SystemWindow :: and: [each isCollapsed ] ].
+	
+	menu := MenuBarMenuMorph new.
+	menu color: Color white ; borderWidth: 1; borderColor: Color black.
+	windows do:[:eachWindow | 
+		(menu add: eachWindow label target: eachWindow action: #show) color: Theme current buttonLabel ].
+	
+	^menu! !
 
 !TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:56:24'!
 open

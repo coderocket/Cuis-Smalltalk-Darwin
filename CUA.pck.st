@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 1 January 2025 at 10:26:56 pm'!
+'From Cuis7.1 [latest update: #6676] on 2 January 2025 at 10:31:11 pm'!
 'Description '!
-!provides: 'CUA' 1 29!
+!provides: 'CUA' 1 36!
 SystemOrganization addCategory: #CUA!
 
 
@@ -14,14 +14,14 @@ Object subclass: #MenuBarModel
 MenuBarModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #Gap category: #CUA!
-BoxedMorph subclass: #Gap
-	instanceVariableNames: ''
+!classDefinition: #MenuGenerator category: #CUA!
+Object subclass: #MenuGenerator
+	instanceVariableNames: 'action target menu index'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CUA'!
-!classDefinition: 'Gap class' category: #CUA!
-Gap class
+!classDefinition: 'MenuGenerator class' category: #CUA!
+MenuGenerator class
 	instanceVariableNames: ''!
 
 !classDefinition: #ApplicationDesktop category: #CUA!
@@ -46,7 +46,7 @@ MenuBar class
 
 !classDefinition: #MenuBarMenuMorph category: #CUA!
 MenuMorph subclass: #MenuBarMenuMorph
-	instanceVariableNames: ''
+	instanceVariableNames: 'index'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CUA'!
@@ -99,17 +99,51 @@ saveAction
 saveAsAction
 	PopUpMenu inform: 'Save as'! !
 
-!Gap methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 21:54:14'!
-deselect
-! !
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 20:49:28'!
+action: aSymbol
+	action := aSymbol! !
 
-!Gap methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 22:03:16'!
-initialize
-	super initialize.
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:05:10'!
+close
+	menu ifNotNil:[menu close]! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:41:50'!
+index
+	^index! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:42:00'!
+index: anInteger
+	index := anInteger ! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:51:45'!
+morphPosition
+	^menu morphPosition! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:52:10'!
+morphPosition: aPoint
+	menu morphPosition: aPoint! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 22:30:20'!
+morphWidth
+
+	menu ifNil:[^0].
 	
-	color := Color transparent.
+	^menu morphWidth! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:49:56'!
+popUpAt: aPoint allowKeyboard: aBoolean
+
+	menu := target perform: action.
 	
-	borderWidth := 0.! !
+	menu popUpAt: aPoint allowKeyboard: aBoolean.
+		
+	menu index: index.
+	
+	! !
+
+!MenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 20:49:37'!
+target: anObject
+	target := anObject! !
 
 !ApplicationDesktop methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 13:56:12'!
 menuBarSpec
@@ -130,7 +164,7 @@ menuNshortcutsSpecsFor: aMorph do: aBlock
 addMenu: aMenu
 	menus addFirst: aMenu! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:26:31'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 22:28:35'!
 buttonPressed: aMenuBarButton
 
 	| index |
@@ -150,7 +184,9 @@ buttonPressed: aMenuBarButton
 				w activeHand ifNotNil: [ :h |
 					h newMouseFocus: self ] ].
 		
-			menu popUpAt: aMenuBarButton morphPosition + (aMenuBarButton morphWidth - menu morphWidth @ aMenuBarButton morphHeight) allowKeyboard: true. ]
+			menu popUpAt: aMenuBarButton morphPosition + (aMenuBarButton morphWidth - menu morphWidth  @ aMenuBarButton morphHeight) allowKeyboard: true.
+				
+			"menu morphPosition: menu morphPosition - (menu morphWidth@0)			" ]
 	  		ifFalse:[
 			aMenuBarButton deselect].
 
@@ -187,7 +223,7 @@ initialize
 	
 	menus := OrderedCollection new.! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 22:31:45'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:40:23'!
 menus: anOrderedCollection
 
 "
@@ -203,6 +239,7 @@ MenuBar menus: {
 		{ 'About' . model . #aboutAction } } } }.
 "
 	
+	| index |
 	self beRow.
 	
 	self removeAllMorphs.
@@ -218,14 +255,22 @@ MenuBar menus: {
 		button color: Color white.
 		self + button ].
 	
+	index := 1.
+	
 	anOrderedCollection do:[:each | | menu |
-		menu := MenuBarMenuMorph new.
-		menu color: Color white ; borderWidth: 1; borderColor: Color black.
-		(each at:2) do:[:item | 
-			item = $| 
-				ifTrue:[menu addLine]
-				ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ] ].
-		self addMenu: menu ] .
+		
+		each at:2 :: isKindOf: Symbol ::
+			ifTrue:[ 
+				menu := MenuGenerator new action: (each at:2) ; target: (each at:3) ; index: index ; yourself ]
+			ifFalse:[
+				menu := MenuBarMenuMorph new.
+				menu index: index; color: Color white ; borderWidth: 1; borderColor: Color black.
+				(each at:2) do:[:item | 
+					item = $| 
+						ifTrue:[menu addLine]
+						ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ] ] ].
+		self addMenu: menu. 
+		index := index + 1 ] .
 
 	self morphExtent: Display width @ self morphExtent y.
 	
@@ -233,16 +278,19 @@ MenuBar menus: {
 	
 ! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:53:43'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:03:12'!
 menusRightToLeft: anOrderedCollection
 	
 	self menus: 
 		(anOrderedCollection reverse collect:[:eachMenu |
-			{ eachMenu first reverse . 
-				(eachMenu second collect:[:eachEntry |
-					eachEntry  = $| 
-						ifTrue:[ eachEntry ]
-						ifFalse:[ { eachEntry at:1 :: reverse . eachEntry at:2 . eachEntry at:3 } ] ] ) } ] ).
+			eachMenu second isKindOf:Symbol ::
+				ifTrue:[ { eachMenu at:1 :: reverse . eachMenu at:2 . eachMenu at:3 } ]
+				ifFalse:[
+					{ eachMenu first reverse . 
+						(eachMenu second collect:[:eachEntry |
+							eachEntry  = $| 
+								ifTrue:[ eachEntry ]
+								ifFalse:[ { eachEntry at:1 :: reverse . eachEntry at:2 . eachEntry at:3 } ] ] ) } ] ]).
 				
 	self axisEdgeWeight: #rowRight.! !
 
@@ -258,7 +306,7 @@ pasteAction
 	aMorph editor paste.
 ! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:10:04'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:41:20'!
 popup: aPopupMenu closed: evt
 
 	| index button |
@@ -269,7 +317,7 @@ popup: aPopupMenu closed: evt
 	
 	index := 1.
 	
-	[index <= menus size and:[ menus at:index :: ~= aPopupMenu ] ] 
+	[index <= menus size and:[ menus at:index :: index ~= aPopupMenu index ] ] 
 		whileTrue:[index := index+1].
 	
 	button := submorphs at: index.
@@ -338,12 +386,14 @@ close
 	self delete. 
 ! !
 
-!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:09:09'!
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:10:04'!
 deleteIfPopUp: evt
 
 	super deleteIfPopUp: evt.	
 	
 	evt ifNil:[^self].
+	
+	prevMouseFocus ifNil:[^self].
 	
 	prevMouseFocus popup: self closed: evt 
 ! !
@@ -352,6 +402,14 @@ deleteIfPopUp: evt
 drawOn: aCanvas
 	
 		aCanvas fillRectangle: self localBounds color: color borderWidth: borderWidth borderStyleSymbol: #raised baseColorForBorder: borderColor ! !
+
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:40:54'!
+index
+	^index! !
+
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:40:02'!
+index: anInteger
+	index := anInteger! !
 
 !MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/12/2024 17:07:29'!
 open
