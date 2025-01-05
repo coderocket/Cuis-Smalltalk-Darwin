@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 4 January 2025 at 10:08:56 pm'!
+'From Cuis7.1 [latest update: #6676] on 5 January 2025 at 8:18:45 pm'!
 'Description '!
-!provides: 'Tavor' 1 176!
+!provides: 'Tavor' 1 185!
 !requires: 'CUA' 1 28 nil!
 !requires: 'LayoutAlgebra' 1 11 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
@@ -32,7 +32,7 @@ TabbedGroup class
 
 !classDefinition: #TableCell category: #'Tavor-Morphic'!
 LayoutMorph subclass: #TableCell
-	instanceVariableNames: 'row column'
+	instanceVariableNames: 'row column selected'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -42,7 +42,7 @@ TableCell class
 
 !classDefinition: #TableMorph category: #'Tavor-Morphic'!
 LayoutMorph subclass: #TableMorph
-	instanceVariableNames: 'numRows numColumns'
+	instanceVariableNames: 'numRows numColumns target'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -118,6 +118,16 @@ PluggableScrollPane subclass: #PluggableTableMorph
 	category: 'Tavor-Morphic'!
 !classDefinition: 'PluggableTableMorph class' category: #'Tavor-Morphic'!
 PluggableTableMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #EditModuleDialog category: #'Tavor-Morphic'!
+SystemWindow subclass: #EditModuleDialog
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'EditModuleDialog class' category: #'Tavor-Morphic'!
+EditModuleDialog class
 	instanceVariableNames: ''!
 
 !classDefinition: #OpenFileDialog category: #'Tavor-Morphic'!
@@ -490,6 +500,21 @@ column
 column: anInteger
 	column := anInteger ! !
 
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:11:07'!
+handlesMouseDown: aMouseButtonEvent
+	^true! !
+
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:00:05'!
+initialize
+	super initialize.
+	
+	selected := false! !
+
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:26:21'!
+mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
+
+	self triggerEvent: #clicked ! !
+
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:43'!
 row
 	^row! !
@@ -497,6 +522,22 @@ row
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:33'!
 row: anInteger
 	row := anInteger ! !
+
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:06:44'!
+select: aBoolean
+
+	selected := aBoolean.
+	
+	color := 
+	selected 
+		ifTrue:[Color r: 0.722 g: 0.890 b: 0.988]
+		ifFalse:[Color transparent].
+		
+	self redrawNeeded ! !
+
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:29:10'!
+selected
+	^selected! !
 
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:40:00'!
 wantsDroppedMorph: aMorph event: evt
@@ -527,7 +568,7 @@ at: row at: col
 
 	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 19:00:34'!
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:24:40'!
 build
 
 	| columns |
@@ -544,8 +585,12 @@ build
 		
 		aColumn color:Color transparent.
 		
-		1 to: numRows do:[ :rowIndex | 
-			rows add: (TableCell row: numRows - rowIndex + 1 column: numColumns - columnIndex + 1) ].
+		1 to: numRows 
+			do:[ :rowIndex | | aTableCell |
+				aTableCell := TableCell row: numRows - rowIndex + 1 column: numColumns - columnIndex + 1.
+				target 
+					ifNotNil:[aTableCell when: #clicked send: #clickedCell: to: target with: aTableCell ].
+				rows add: aTableCell.			 ].
 		
 		aColumn addAllMorphs: rows .
 		
@@ -570,10 +615,6 @@ initialize
 	
 	! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 15:08:15'!
-model: aTableModel
-	model := aTableModel ! !
-
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:09:03'!
 numColumns
 	^numColumns! !
@@ -589,6 +630,10 @@ numRows
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:42:39'!
 numRows: anInteger
 	numRows := anInteger ! !
+
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:24:51'!
+target: anObject
+	target := anObject! !
 
 !TableMorph class methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:48:35'!
 new
@@ -748,15 +793,31 @@ innerMorphClass
 innerMorphClass
 	^RtoLRightInnerListMorph! !
 
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:34:04'!
+clickedCell: aTableCell
+
+	aTableCell selected
+		ifTrue:[
+			1 to: scroller numColumns do:[ : columnIndex |			
+				scroller at: aTableCell row at: columnIndex :: select: false ] ]
+		ifFalse:[
+			1 to: scroller numColumns do:[ : columnIndex |			
+				scroller at: aTableCell row at: columnIndex :: select: true ] ]
+! !
+
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:58:54'!
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:59:31'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:27:43'!
 initialize
+	
 	super initialize.
+	
 	scroller morphWidth: extent x.
 
+	scroller target: self.
+	
 	rightToLeft := false.
 	headerRow := false.! !
 
@@ -772,7 +833,7 @@ rightToLeft: aBoolean
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 19:28:45'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:34:24'!
 update: aSymbol 
 
 	| nrows ncols header table |
@@ -809,21 +870,55 @@ update: aSymbol
 	2 to: nrows do:[:rowIndex |
 		1 to:ncols do:[:colIndex |
 			scroller at: rowIndex at:colIndex :: axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:rowIndex :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
-	
-	1 to:nrows do:[: rowIndex | | rowHeight |
-		
-		rowHeight := 8.
-		
-		1 to: ncols do:[:colIndex |
-			
-			rowHeight := rowHeight max: (scroller at: rowIndex at: colIndex :: minimumExtent y	) ]. 
-		
-		1 to: ncols do:[:colIndex |
-			
-			scroller at: rowIndex at:colIndex :: layoutSpec fixedHeight: rowHeight ] ].
 ! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 23:21:32'!
+!EditModuleDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 20:06:23'!
+buildMorphicWindow
+
+	| mold  left right dialog button |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold rtolStringField)
+		label: 'שם הקורס';
+		on: #propertyValue of: (ValueHolder with: model description);
+		beRequired.
+	(mold integerField)
+		label: 'קוד הקורס:';
+		on: #propertyValue of: (ValueHolder with: model code);
+		beRequired.
+	(mold integerField)
+		label: 'שעות הרצאה';
+		on: #propertyValue of: (ValueHolder with: (model unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		beRequired.
+	(mold integerField)
+		label: 'שעות תרגול';
+		on: #propertyValue of: (ValueHolder with: (model unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		beRequired.
+	(mold integerField)
+		label: 'שעות מעבדה';
+		on: #propertyValue of: (ValueHolder with: (model unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		beRequired.
+	
+	right := mold renderForms.
+	
+	left := PluggableTableMorph new.
+	
+	left  model: model ; table: #programs ; rightToLeft: true ; headerRow: true.
+	
+	button := PluggableButtonMorph model: nil action: nil label:'+ הוסף שורה' reverse.
+	
+	model changed: #programs.
+	
+	dialog := (left - 0.8p / (button align:1.0)) <+> (right - 0.2p).
+	
+	self addMorph: dialog.
+	
+! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 17:28:37'!
 buildMorphicWindow
 
 	|  top entries openButton cancelButton buttons dialog backButton upButton |
@@ -833,7 +928,7 @@ buildMorphicWindow
 	upButton := PluggableButtonMorph model: self action: #goUp.
 	upButton iconDrawSelector: #drawUpIcon.
 
-	currentDirectoryEntryMorph := directory pathName morph.
+	currentDirectoryEntryMorph := directory pathName edit.
 	
 	currentDirectoryEntryMorph crAction: [ | dd |
 		dd := currentDirectoryEntryMorph contents asDirectoryEntry.
@@ -985,7 +1080,7 @@ drawLabelOn: aCanvas
 		color: Theme current windowLabel
 		embossed: Theme current embossedTitles! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 22:01:29'!
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:49:10'!
 buildMorphicWindow
 
 	| topPanel semesters years tracks programs bottomPanel status |
@@ -1006,7 +1101,9 @@ buildMorphicWindow
 	
 	bottomPanel model: model ; table: #modules ; rightToLeft: true ; headerRow: true.
 
-	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p) | 0.8p)).
+	model changed: #modules.
+	
+	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p | 1.0p) | 0.8p)).
 	! !
 
 !LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:37:17'!
@@ -1300,9 +1397,9 @@ description
 	
 	^ 'תרגול' ! !
 
-!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 21:53:41'!
+!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:36:41'!
 points
-	^  duration / 2! !
+	^  duration * 0.5! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:09'!
 academicTrack
@@ -1588,7 +1685,7 @@ detachModule: aModule
 
 	modules remove: aModule! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 17:37:42'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:35:52'!
 import: aFileEntry
 
 	| aReadStream aCSVReader headers programIndex trackIndex academicYearIndex semesterIndex moduleCodeIndex moduleDescriptionIndex moduleLectureIndex moduleRecitationIndex moduleLabIndex  |
@@ -1631,7 +1728,7 @@ import: aFileEntry
 		
 		aModule := Module new.
 		
-		aModule code: (eachRow at: moduleCodeIndex) ; description: (eachRow at: moduleDescriptionIndex).
+		aModule code: (Number readFrom: (eachRow at: moduleCodeIndex)) ; description: (eachRow at: moduleDescriptionIndex).
 		
 		lectureDuration := Number readFrom: (eachRow at: moduleLectureIndex).
 		
@@ -1660,7 +1757,9 @@ import: aFileEntry
 			
 			aModule addAcademicUnit: aLab ].
 		
-		aSemester addModule: aModule ]
+		aSemester addModule: aModule.
+		
+		self addModule: aModule ]
 		! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:17:17'!
@@ -1788,7 +1887,7 @@ yearSelectionAt: anIndex
 
 	^ selectedYears anySatisfy:[:aYear | aYear description = yearDescription ]! !
 
-!CollegeModel methodsFor: 'years' stamp: 'DF 1/4/2025 22:05:23'!
+!CollegeModel methodsFor: 'years' stamp: 'DF 1/5/2025 18:53:40'!
 yearSelectionAt: anIndex put: aBoolean
 
 	| years yearDescription |
@@ -1803,11 +1902,11 @@ yearSelectionAt: anIndex put: aBoolean
 		ifFalse:[
 			selectedYears removeAll: years ].
 	
-	selectedSemesters removeAll.
-	
 	theSemester := 0.
 	
-	self changed: #semesterNames ; changed: #summary! !
+	selectedSemesters removeAll.
+		
+	self changed: #semesterNames; changed: #modules ; changed: #summary! !
 
 !CollegeModel methodsFor: 'years' stamp: 'DF 1/4/2025 19:38:53'!
 years
@@ -1934,7 +2033,7 @@ semesters
 	^ semesters
 ! !
 
-!CollegeModel methodsFor: 'modules' stamp: 'DF 1/4/2025 21:59:23'!
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/5/2025 18:45:53'!
 modules
 
 	| table |
@@ -1951,7 +2050,7 @@ modules
 	do:[:eachModule |
 			eachModule units asOrderedCollection sort:[:x :y | x description <= y description] :: 
 	do:[:eachUnit |
-		table add: { '{1}' format:{eachUnit points * 1.0} :: reverse . '{1}' format:{eachUnit duration} :: reverse . eachUnit description . eachModule description . '{1}' format:{ eachModule code } :: reverse . eachSemester description  . eachYear description } ] ] ] ].
+		table add: {eachUnit points . eachUnit duration . eachUnit description . eachModule description . '{1}' format:{ eachModule code } :: reverse . eachSemester description  . eachYear description } ] ] ] ].
 	
 	^table
 ! !
@@ -2224,7 +2323,7 @@ schoolSelectionAt: anIndex put: aBoolean
 
 ! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 22:06:47'!
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:44:36'!
 summary
 
 	| hours points modules |
@@ -2233,9 +2332,9 @@ summary
 	
 	modules ifEmpty:[^''] .
 	
-	hours := modules allButFirst inject: 0 into:[:acc :eachRow | acc + (Number readFrom:(eachRow at:2)) ].
+	hours := modules allButFirst inject: 0 into:[:acc :eachRow | acc + (eachRow at:2) ].
 		
-	points := modules allButFirst inject: 0 into:[:acc :eachRow | acc + (Number readFrom:(eachRow at:1)) ].
+	points := modules allButFirst inject: 0 into:[:acc :eachRow | acc + (eachRow at:1) ].
 	
 	^'סך הכול {1} שעות, {2} נקודות זכות.' format: { hours printString reverse . points printStringFractionDigits:1 :: reverse } :: reverse! !
 
@@ -2388,6 +2487,21 @@ invariant
 	units do: [:aUnit | self assert: aUnit module == self ].
 	! !
 
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:23:46'!
+programs
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
+	
+	semesters do:[:eachSemester |
+		table add: { eachSemester description . eachSemester academicYear description . eachSemester academicYear academicTrack description . eachSemester academicYear academicTrack program description } ].
+	
+	^table
+! !
+
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:21'!
 removeAcademicUnit: anAcademicUnit
 
@@ -2400,6 +2514,10 @@ removeAcademicUnit: anAcademicUnit
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:57:28'!
 semesters
 	^semesters ! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:20:32'!
+unitAt: aString
+	^ units detect:[:eachUnit | eachUnit description = aString ] ifNone:[nil]! !
 
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:51:51'!
 units
