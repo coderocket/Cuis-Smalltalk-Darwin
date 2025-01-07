@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 5 January 2025 at 8:18:45 pm'!
+'From Cuis7.1 [latest update: #6676] on 7 January 2025 at 6:41:23 pm'!
 'Description '!
-!provides: 'Tavor' 1 185!
+!provides: 'Tavor' 1 199!
 !requires: 'CUA' 1 28 nil!
 !requires: 'LayoutAlgebra' 1 11 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
@@ -112,7 +112,7 @@ RtoLPluggableListMorph class
 
 !classDefinition: #PluggableTableMorph category: #'Tavor-Morphic'!
 PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft'
+	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -302,7 +302,7 @@ College class
 
 !classDefinition: #CollegeModel category: #'Tavor-Model'!
 Object subclass: #CollegeModel
-	instanceVariableNames: 'college theProgram theYear selectedYears theTrack theSemester selectedSemesters latestNewModule theSchool selectedSchools theEmployment selectedEmployments'
+	instanceVariableNames: 'college theProgram theYear selectedYears theTrack theSemester selectedSemesters latestNewModule theSchool selectedSchools theEmployment selectedEmployments theUnit'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
@@ -368,6 +368,16 @@ Object subclass: #TavorApplication
 	category: 'Tavor-Morphic'!
 !classDefinition: 'TavorApplication class' category: #'Tavor-Morphic'!
 TavorApplication class
+	instanceVariableNames: ''!
+
+!classDefinition: #RtoLSelectField category: #'Tavor-Morphic'!
+SelectField subclass: #RtoLSelectField
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'RtoLSelectField class' category: #'Tavor-Morphic'!
+RtoLSelectField class
 	instanceVariableNames: ''!
 
 !classDefinition: #RtoLSelectMultipleField category: #'Tavor-Morphic'!
@@ -500,9 +510,10 @@ column
 column: anInteger
 	column := anInteger ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:11:07'!
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:32:38'!
 handlesMouseDown: aMouseButtonEvent
-	^true! !
+	
+	^aMouseButtonEvent mouseButton1Pressed ! !
 
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:00:05'!
 initialize
@@ -793,7 +804,7 @@ innerMorphClass
 innerMorphClass
 	^RtoLRightInnerListMorph! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:34:04'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:50:27'!
 clickedCell: aTableCell
 
 	aTableCell selected
@@ -802,14 +813,16 @@ clickedCell: aTableCell
 				scroller at: aTableCell row at: columnIndex :: select: false ] ]
 		ifFalse:[
 			1 to: scroller numColumns do:[ : columnIndex |			
-				scroller at: aTableCell row at: columnIndex :: select: true ] ]
+				scroller at: aTableCell row at: columnIndex :: select: true ].
+			selectRowMessage 
+				ifNotNil:[		model perform: selectRowMessage with: aTableCell row ] ]
 ! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:58:54'!
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:27:43'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:44'!
 initialize
 	
 	super initialize.
@@ -819,7 +832,9 @@ initialize
 	scroller target: self.
 	
 	rightToLeft := false.
-	headerRow := false.! !
+	headerRow := false.
+	
+! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:23:40'!
 innerMorphClass
@@ -828,6 +843,10 @@ innerMorphClass
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:59:11'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:26'!
+selectRowMessage: aSymbol
+	selectRowMessage := aSymbol! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:29:55'!
 table: aSymbol
@@ -872,45 +891,52 @@ update: aSymbol
 			scroller at: rowIndex at:colIndex :: axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:rowIndex :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
 ! !
 
-!EditModuleDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 20:06:23'!
+!EditModuleDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:40:07'!
+addModuleToAcademicProgramDialog
+	
+		TavorApplication addModule: model selectedUnit module ToAcademicProgramDialog: model.! !
+
+!EditModuleDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:27:23'!
 buildMorphicWindow
 
-	| mold  left right dialog button |
+	| mold module left right dialog button |
 	
 	mold := Mold new.
+	
+	module := model selectedUnit module.
 	
 	mold rightToLeft: true.
 	
 	(mold rtolStringField)
 		label: 'שם הקורס';
-		on: #propertyValue of: (ValueHolder with: model description);
+		on: #propertyValue of: (ValueHolder with: module description);
 		beRequired.
 	(mold integerField)
 		label: 'קוד הקורס:';
-		on: #propertyValue of: (ValueHolder with: model code);
+		on: #propertyValue of: (ValueHolder with: module code);
 		beRequired.
 	(mold integerField)
 		label: 'שעות הרצאה';
-		on: #propertyValue of: (ValueHolder with: (model unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		on: #propertyValue of: (ValueHolder with: (module unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	(mold integerField)
 		label: 'שעות תרגול';
-		on: #propertyValue of: (ValueHolder with: (model unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		on: #propertyValue of: (ValueHolder with: (module unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	(mold integerField)
 		label: 'שעות מעבדה';
-		on: #propertyValue of: (ValueHolder with: (model unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		on: #propertyValue of: (ValueHolder with: (module unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	
 	right := mold renderForms.
 	
 	left := PluggableTableMorph new.
 	
-	left  model: model ; table: #programs ; rightToLeft: true ; headerRow: true.
+	left  model: module ; table: #programs ; rightToLeft: true ; headerRow: true.
 	
-	button := PluggableButtonMorph model: nil action: nil label:'+ הוסף שורה' reverse.
+	button := PluggableButtonMorph model: self action: #addModuleToAcademicProgramDialog label:'+ הוסף שורה' reverse.
 	
-	model changed: #programs.
+	module changed: #programs.
 	
 	dialog := (left - 0.8p / (button align:1.0)) <+> (right - 0.2p).
 	
@@ -1080,7 +1106,7 @@ drawLabelOn: aCanvas
 		color: Theme current windowLabel
 		embossed: Theme current embossedTitles! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:49:10'!
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:02:57'!
 buildMorphicWindow
 
 	| topPanel semesters years tracks programs bottomPanel status |
@@ -1099,12 +1125,33 @@ buildMorphicWindow
 	
 	bottomPanel := PluggableTableMorph new.
 	
-	bottomPanel model: model ; table: #modules ; rightToLeft: true ; headerRow: true.
+	bottomPanel model: model ; table: #unitsTable ; rightToLeft: true ; headerRow: true.
+	
+	bottomPanel menuNshortcutsKey: #moduleMenuSpec.
+	
+	bottomPanel selectRowMessage: #selectUnit:.
 
 	model changed: #modules.
 	
 	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p | 1.0p) | 0.8p)).
 	! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:42:28'!
+moduleMenuSpec
+
+^ #(
+		#(0 		'קורס'						false)
+		#(10		'ערוך קורס ...' 						$g 	window 			openEditModuleDialog 				)
+		#(20		'-----' 		)
+		#(30		'הסר קורס' 						$c 	window 			removeModule )
+	).! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:15:29'!
+openEditModuleDialog
+
+	model selectedUnit ifNil:[^self].
+	
+	EditModuleDialog open: model label: 'עורך קורס'! !
 
 !LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:37:17'!
 buildMorphicWindow
@@ -2033,15 +2080,29 @@ semesters
 	^ semesters
 ! !
 
-!CollegeModel methodsFor: 'modules' stamp: 'DF 1/5/2025 18:45:53'!
-modules
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 18:05:26'!
+selectUnit: aUnitIndex
 
-	| table |
-
-	table := OrderedCollection new.
+	aUnitIndex = 0 
+		ifTrue:[
+			theUnit := nil.
+			^self].
 	
-	table add: { 'נז' . 'שעות' . 'סוג' . 'שם קורס' . 'קוד קורס' . 'סמסטר' . 'שנה' }.
+	theUnit := self units at: aUnitIndex - 1 :: at:1. "minus 1 to account for the header, see unitsTable"
+	
+	! !
 
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 18:05:54'!
+selectedUnit
+	^theUnit! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 17:45:05'!
+units
+
+	| units |
+
+	units := OrderedCollection new.
+	
 	selectedYears asOrderedCollection sort:[:x :y | x description <= y description ] :: 
 	do:	[:eachYear |		
 		eachYear semesters select:[:each | selectedSemesters includes:each ] :: asOrderedCollection sort:[:x :y | x description <= y description ] :: 
@@ -2050,7 +2111,25 @@ modules
 	do:[:eachModule |
 			eachModule units asOrderedCollection sort:[:x :y | x description <= y description] :: 
 	do:[:eachUnit |
-		table add: {eachUnit points . eachUnit duration . eachUnit description . eachModule description . '{1}' format:{ eachModule code } :: reverse . eachSemester description  . eachYear description } ] ] ] ].
+		units add: { eachUnit . eachSemester . eachYear } ] ] ] ].
+	
+	^units
+! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 17:46:06'!
+unitsTable
+
+	| table |
+
+	table := OrderedCollection new.
+	
+	table add: { 'נז' . 'שעות' . 'סוג' . 'שם קורס' . 'קוד קורס' . 'סמסטר' . 'שנה' }.
+
+	self units do:[:eachTuple | | unit semester year |
+		unit := eachTuple at:1.
+		semester := eachTuple at:2.
+		year := eachTuple at:3.
+		table add: {unit points . unit duration . unit description . unit module description . '{1}' format:{ unit module  code } :: reverse . semester description  . year description } ] .
 	
 	^table
 ! !
@@ -2069,7 +2148,7 @@ latestNewModule
 
 	^latestNewModule ! !
 
-!CollegeModel methodsFor: 'initialization' stamp: 'DF 1/4/2025 20:39:42'!
+!CollegeModel methodsFor: 'initialization' stamp: 'DF 1/7/2025 18:05:37'!
 initialize
 
 	theProgram := 0.
@@ -2090,7 +2169,10 @@ initialize
 	
 	theEmployment := 0.
 	
-	selectedEmployments := Set new.! !
+	selectedEmployments := Set new.
+	
+	theUnit := nil.
+	! !
 
 !CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:26:46'!
 addModuleToAcademicProgram: fields
@@ -2804,65 +2886,10 @@ example
 	^aCollege
 	! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:22:44'!
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:38:42'!
 addModuleToAcademicProgramDialog
 
-	| mold programs tracks years semesters aDialog position |
-	
-	mold := Mold new.
-	
-	programs := ListMultiModel with: model college programNames.
-
-	tracks := ListMultiModel with: model college trackNames.
-	
-	years := ListMultiModel with: model college academicYearNames.
-
-	semesters := ListMultiModel with: model college semesterNames.
-	
-	mold rightToLeft: true.
-	
-	(mold integerField)
-		label: 'קוד הקורס';
-		on: #propertyValue of: (ValueHolder new propertyValue: (model latestNewModule ifNotNil:[model latestNewModule code] ifNil:[nil]) ; yourself);
-		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'תוכניות לימודים';
-		on: #selectedIndexes of: programs;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'מסלול לימודים';
-		on: #selectedIndexes of: tracks;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'שנות לימוד';
-		on: #selectedIndexes of: years;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'סמסטרים';
-		on: #selectedIndexes of: semesters;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	
-	position := UISupervisor ui activeHand morphPosition.
-
-	aDialog := mold openDialog: 'הוסף קורס לתוכניות לימודים'.
-	
-	aDialog morphPosition: position - (aDialog morphWidth@0).
-	
-	mold when: #edited send: #addModuleToAcademicProgram: to: model with: mold fields.
-	
+	self class addModule: model latestNewModule ToAcademicProgramDialog: model.
 ! !
 
 !TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 17:19:35'!
@@ -3111,6 +3138,67 @@ showCollapsedWindows
 	
 	^menu! !
 
+!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:39:30'!
+addModule: aModule ToAcademicProgramDialog: model
+
+	| mold programs tracks years semesters aDialog position |
+	
+	mold := Mold new.
+	
+	programs := ListMultiModel with: model college programNames.
+
+	tracks := ListMultiModel with: model college trackNames.
+	
+	years := ListMultiModel with: model college academicYearNames.
+
+	semesters := ListMultiModel with: model college semesterNames.
+	
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד הקורס';
+		on: #propertyValue of: (ValueHolder new propertyValue: (aModule ifNil:[nil] ifNotNil:[aModule code]) ; yourself);
+		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
+		beRequired.
+	(mold fields add: RtoLSelectField new)
+		label: 'תוכנית לימודים';
+		on: #listIndex of: programs;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectField new)
+		label: 'מסלול לימודים';
+		on: #listIndex of: tracks;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectField new)
+		label: 'שנת לימוד';
+		on: #listIndex of: years;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: RtoLSelectField new)
+		label: 'סמסטר';
+		on: #listIndex of: semesters;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+
+	aDialog := mold openDialog: 'הוסף קורס לתוכניות לימודים'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addModuleToAcademicProgram: to: model with: mold fields.
+	
+! !
+
 !TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:56:24'!
 open
 
@@ -3123,6 +3211,26 @@ open
 	anApp open.
 ! !
 
+!RtoLSelectField methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:35:35'!
+inputMorphInstance
+	^ RtoLPluggableListMorph new! !
+
 !RtoLSelectMultipleField methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:08:57'!
 inputMorphInstance
 	^ RtoLPluggableListMorphOfMany new! !
+
+!MenuMorph methodsFor: '*Tavor' stamp: 'DF 1/7/2025 16:17:39'!
+rtolAdd: aString action: aSymbol
+
+	self rtolAdd: aString target: defaultTarget action: aSymbol  argumentList: #()! !
+
+!MenuMorph methodsFor: '*Tavor' stamp: 'DF 1/7/2025 16:16:12'!
+rtolAdd: aString target: target action: aSymbol argumentList: argList
+	"Append a menu item with the given label. If the item is selected, it will send the given selector to the target object with the given arguments. If the selector takes one more argument than the number of arguments in the given list, then the triggering event is supplied as as the last argument.  Answer the appended menu item."
+
+	| item |
+	item := MenuRightToLeftItemMorph new
+		contents: aString;
+		target: target selector: aSymbol arguments: argList asArray.
+	self addMorphBack: item.
+	^ item! !
