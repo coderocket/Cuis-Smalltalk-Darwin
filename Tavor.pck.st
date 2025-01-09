@@ -1,10 +1,12 @@
-'From Cuis7.1 [latest update: #6676] on 7 January 2025 at 6:41:23 pm'!
+'From Cuis7.1 [latest update: #6676] on 9 January 2025 at 9:34:49 pm'!
 'Description '!
-!provides: 'Tavor' 1 199!
-!requires: 'CUA' 1 28 nil!
-!requires: 'LayoutAlgebra' 1 11 nil!
+!provides: 'Tavor' 1 217!
+!requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
+!requires: 'Table' 1 0 nil!
+!requires: 'MenuBar' 1 0 nil!
 !requires: 'UI-Mold' 1 30 nil!
+!requires: 'LayoutAlgebra' 1 11 nil!
 SystemOrganization addCategory: #'Tavor-Model'!
 SystemOrganization addCategory: #'Tavor-Morphic'!
 SystemOrganization addCategory: #Tavor!
@@ -18,36 +20,6 @@ Error subclass: #TavorError
 	category: 'Tavor-Model'!
 !classDefinition: 'TavorError class' category: #'Tavor-Model'!
 TavorError class
-	instanceVariableNames: ''!
-
-!classDefinition: #TabbedGroup category: #'Tavor-Morphic'!
-LayoutMorph subclass: #TabbedGroup
-	instanceVariableNames: 'selected'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'TabbedGroup class' category: #'Tavor-Morphic'!
-TabbedGroup class
-	instanceVariableNames: ''!
-
-!classDefinition: #TableCell category: #'Tavor-Morphic'!
-LayoutMorph subclass: #TableCell
-	instanceVariableNames: 'row column selected'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'TableCell class' category: #'Tavor-Morphic'!
-TableCell class
-	instanceVariableNames: ''!
-
-!classDefinition: #TableMorph category: #'Tavor-Morphic'!
-LayoutMorph subclass: #TableMorph
-	instanceVariableNames: 'numRows numColumns target'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'TableMorph class' category: #'Tavor-Morphic'!
-TableMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #WeeklyTimeTable category: #'Tavor-Morphic'!
@@ -70,64 +42,34 @@ LayoutMorph subclass: #TextFieldSentence
 TextFieldSentence class
 	instanceVariableNames: ''!
 
-!classDefinition: #RtoLRightInnerListMorph category: #'Tavor-Morphic'!
-InnerListMorph subclass: #RtoLRightInnerListMorph
+!classDefinition: #CollegeBrowser category: #'Tavor-Morphic'!
+BidiSystemWindow subclass: #CollegeBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'RtoLRightInnerListMorph class' category: #'Tavor-Morphic'!
-RtoLRightInnerListMorph class
+!classDefinition: 'CollegeBrowser class' category: #'Tavor-Morphic'!
+CollegeBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #OffsetLabelMorph category: #'Tavor-Morphic'!
-LabelMorph subclass: #OffsetLabelMorph
+!classDefinition: #LecturerBrowser category: #'Tavor-Morphic'!
+BidiSystemWindow subclass: #LecturerBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'OffsetLabelMorph class' category: #'Tavor-Morphic'!
-OffsetLabelMorph class
+!classDefinition: 'LecturerBrowser class' category: #'Tavor-Morphic'!
+LecturerBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #RtoLPluggableListMorphOfMany category: #'Tavor-Morphic'!
-PluggableListMorphOfMany subclass: #RtoLPluggableListMorphOfMany
-	instanceVariableNames: ''
+!classDefinition: #ModuleBrowser category: #'Tavor-Morphic'!
+BidiSystemWindow subclass: #ModuleBrowser
+	instanceVariableNames: 'mold module'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'RtoLPluggableListMorphOfMany class' category: #'Tavor-Morphic'!
-RtoLPluggableListMorphOfMany class
-	instanceVariableNames: ''!
-
-!classDefinition: #RtoLPluggableListMorph category: #'Tavor-Morphic'!
-PluggableListMorph subclass: #RtoLPluggableListMorph
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'RtoLPluggableListMorph class' category: #'Tavor-Morphic'!
-RtoLPluggableListMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #PluggableTableMorph category: #'Tavor-Morphic'!
-PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'PluggableTableMorph class' category: #'Tavor-Morphic'!
-PluggableTableMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #EditModuleDialog category: #'Tavor-Morphic'!
-SystemWindow subclass: #EditModuleDialog
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'EditModuleDialog class' category: #'Tavor-Morphic'!
-EditModuleDialog class
+!classDefinition: 'ModuleBrowser class' category: #'Tavor-Morphic'!
+ModuleBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #OpenFileDialog category: #'Tavor-Morphic'!
@@ -138,56 +80,6 @@ SystemWindow subclass: #OpenFileDialog
 	category: 'Tavor-Morphic'!
 !classDefinition: 'OpenFileDialog class' category: #'Tavor-Morphic'!
 OpenFileDialog class
-	instanceVariableNames: ''!
-
-!classDefinition: #RtoLSystemWindow category: #'Tavor-Morphic'!
-SystemWindow subclass: #RtoLSystemWindow
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'RtoLSystemWindow class' category: #'Tavor-Morphic'!
-RtoLSystemWindow class
-	instanceVariableNames: ''!
-
-!classDefinition: #CollegeBrowser category: #'Tavor-Morphic'!
-RtoLSystemWindow subclass: #CollegeBrowser
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'CollegeBrowser class' category: #'Tavor-Morphic'!
-CollegeBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #LecturerBrowser category: #'Tavor-Morphic'!
-RtoLSystemWindow subclass: #LecturerBrowser
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'LecturerBrowser class' category: #'Tavor-Morphic'!
-LecturerBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #ModuleBrowser category: #'Tavor-Morphic'!
-RtoLSystemWindow subclass: #ModuleBrowser
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'ModuleBrowser class' category: #'Tavor-Morphic'!
-ModuleBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #CellItem category: #'Tavor-Morphic'!
-BoxedMorph subclass: #CellItem
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'CellItem class' category: #'Tavor-Morphic'!
-CellItem class
 	instanceVariableNames: ''!
 
 !classDefinition: #AcademicProgram category: #'Tavor-Model'!
@@ -370,285 +262,6 @@ Object subclass: #TavorApplication
 TavorApplication class
 	instanceVariableNames: ''!
 
-!classDefinition: #RtoLSelectField category: #'Tavor-Morphic'!
-SelectField subclass: #RtoLSelectField
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'RtoLSelectField class' category: #'Tavor-Morphic'!
-RtoLSelectField class
-	instanceVariableNames: ''!
-
-!classDefinition: #RtoLSelectMultipleField category: #'Tavor-Morphic'!
-SelectMultipleField subclass: #RtoLSelectMultipleField
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'RtoLSelectMultipleField class' category: #'Tavor-Morphic'!
-RtoLSelectMultipleField class
-	instanceVariableNames: ''!
-
-
-!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 23:14:58'!
-build: labelsAndMorphs
-
-	| buttons buttonColor |
-	
-	buttonColor := Theme current buttonColorFrom: Theme current defaultWindowColor.
-	
-	self removeAllMorphs.
-
-	buttons := LayoutMorph newRow.
-	
-	buttons doAdoptWidgetsColor.
-	 
-	1 to: labelsAndMorphs size do:[:i | | aButton |
-		aButton := PluggableButtonMorph model: self stateGetter: #selected: action: #select: label: (labelsAndMorphs at:i) key.
-		aButton color: buttonColor.
-		aButton actionArgument: i ; stateArgument: i.
-		buttons addMorph: aButton proportionalWidth:1.0 ].
-	
-	self addMorph: buttons fixedHeight: buttons minimumExtent y.
-	
-	labelsAndMorphs do:[:each | self addMorphUseAll: each value ].
-
-	1 to: labelsAndMorphs size - 1 do:[:i | 
-		labelsAndMorphs at:i :: value hide ].
-	
-	! !
-
-!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 22:44:36'!
-initialize
-
-	super initialize.
-	
-	selected := 1.! !
-
-!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 23:00:55'!
-select: aButtonIndex
-
-	submorphs at: selected  :: hide.
-
-	selected := aButtonIndex.
-	
-	submorphs at: aButtonIndex :: show.
-	
-	self redrawNeeded ! !
-
-!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 22:44:45'!
-selected: aButtonIndex
-	^aButtonIndex = selected ! !
-
-!TabbedGroup class methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 23:16:06'!
-example
-
-	| aBlue aGreen aTabbedGroup anOrange |
-
-	aBlue := BoxedMorph new.
-
-	aBlue color: Color blue.
-
-	aGreen := BoxedMorph new.
-
-	aGreen color: Color green.
-
-	anOrange := BoxedMorph new.
-
-	anOrange color: Color orange.
-
-	aTabbedGroup := TabbedGroup newColumn.
-
-	aTabbedGroup build: { 'first' -> aBlue . 'second' -> aGreen . 'third' -> anOrange }.
-
-	aTabbedGroup color:Color white.
-
-	aTabbedGroup openInWorld! !
-
-!TabbedGroup class methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:30:01'!
-example2
-
-	"self example2"
-	
-	| autumn spring summer  aTabbedGroup |
-
-	autumn := WeeklyTimeTable new.
-
-	spring := WeeklyTimeTable new.
-
-	summer := WeeklyTimeTable new.
-	
-	aTabbedGroup := TabbedGroup newColumn.
-
-	aTabbedGroup build: { 'autumn' -> autumn . 'spring' -> spring . 'summer' -> summer }.
-
-	aTabbedGroup color:Color white.
-
-	aTabbedGroup openInWorld! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:41:32'!
-acceptDroppingMorph: aMorph event: evt
-	
-	aMorph morphExtent: self morphExtent.
-	
-	self addMorph: aMorph proportionalWidth: 1.0.! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 20:31:25'!
-allowsMorphDrop
-	^true! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:05:50'!
-allowsSubmorphDrag
-	^row ~= 1 and:[column ~= 7]! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:46'!
-column
-	^column! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:40'!
-column: anInteger
-	column := anInteger ! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:32:38'!
-handlesMouseDown: aMouseButtonEvent
-	
-	^aMouseButtonEvent mouseButton1Pressed ! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:00:05'!
-initialize
-	super initialize.
-	
-	selected := false! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:26:21'!
-mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
-
-	self triggerEvent: #clicked ! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:43'!
-row
-	^row! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:33'!
-row: anInteger
-	row := anInteger ! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:06:44'!
-select: aBoolean
-
-	selected := aBoolean.
-	
-	color := 
-	selected 
-		ifTrue:[Color r: 0.722 g: 0.890 b: 0.988]
-		ifFalse:[Color transparent].
-		
-	self redrawNeeded ! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:29:10'!
-selected
-	^selected! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:40:00'!
-wantsDroppedMorph: aMorph event: evt
-	
-	^aMorph isKindOf: CellItem :: and: [column ~= 7] and: 	[row ~= 1]
-! !
-
-!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:22:14'!
-row: aRowIndex column: aColumnIndex
-
-	| aCell |
-	
-	aCell := self newRow.
-	
-	aCell row: aRowIndex; column: aColumnIndex.
-	aCell borderWidth:1 ; borderColor: (Color fromHexString:'#b8e3fc').
-	aCell color: Color transparent.
-
-	^aCell! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:53:06'!
-adjustExtent
-
-	self morphExtent: owner viewableExtent! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:54:01'!
-at: row at: col
-
-	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:24:40'!
-build
-
-	| columns |
-	
-	self removeAllMorphs.
-
-	columns := OrderedCollection new.
-	
-	1 to: numColumns do:[:columnIndex | | aColumn rows |
-		
-		rows := OrderedCollection new.
-		
-		aColumn := LayoutMorph newColumn.
-		
-		aColumn color:Color transparent.
-		
-		1 to: numRows 
-			do:[ :rowIndex | | aTableCell |
-				aTableCell := TableCell row: numRows - rowIndex + 1 column: numColumns - columnIndex + 1.
-				target 
-					ifNotNil:[aTableCell when: #clicked send: #clickedCell: to: target with: aTableCell ].
-				rows add: aTableCell.			 ].
-		
-		aColumn addAllMorphs: rows .
-		
-		aColumn layoutSpec proportionalHeight: 1.0.
-		
-		columns add: aColumn ].
-	
-	self addAllMorphs: columns.
-	
-	
-! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:45:12'!
-initialize
-
-	super initialize.
-	
-	numRows := 2.
-	
-	numColumns := 3.
-	
-	
-	! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:09:03'!
-numColumns
-	^numColumns! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:42:51'!
-numColumns: anInteger
-	numColumns := anInteger ! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:08:55'!
-numRows
-	^numRows! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:42:39'!
-numRows: anInteger
-	numRows := anInteger ! !
-
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:24:51'!
-target: anObject
-	target := anObject! !
-
-!TableMorph class methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:48:35'!
-new
-	^self newRow! !
 
 !WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:24:25'!
 acceptDroppingMorph: aMorph event: evt
@@ -758,162 +371,100 @@ initialize
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
-!RtoLRightInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:23:05'!
-draw: item atRow: row on: canvas
-	"display the given item at row row"
-	| f c len x |
-	
-	len := font widthOfString: item string.
-	
-	x := extent x - len.
-	
-	(item is: #Text)
-		ifTrue: [
-			f := font emphasized: (item emphasisAt: 1).
-			c := (item colorAt: 1) ifNil: [Theme current text]]
-		ifFalse: [ 
-			f := font.
-			c :=  Theme current text].
-	canvas
-		drawString: item string reverse
-		at: x @ (self drawYForRow: row)
-		font: f
-		color: c! !
-
-!OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 22:19:44'!
-drawOn: aCanvas
-
-	| origin |
-			
-	origin := rightToLeft 
-		ifTrue:[ (self morphWidth - borderWidth - (self fontToUse widthOfString: contents)) @ borderWidth]
-		ifFalse:[borderWidth @ borderWidth].
-	
-	aCanvas
-		drawString: (contents ifNil: [ '' ] ifNotNil:[ rightToLeft ifTrue:[contents reverse] ifFalse:[contents]])
-		at: origin- (0@extent y / 2)
-		font: self fontToUse
-		color: color.
-! !
-
-!RtoLPluggableListMorphOfMany methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:07:29'!
-innerMorphClass
-	^RtoLRightInnerListMorph! !
-
-!RtoLPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:07:29'!
-innerMorphClass
-	^RtoLRightInnerListMorph! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:50:27'!
-clickedCell: aTableCell
-
-	aTableCell selected
-		ifTrue:[
-			1 to: scroller numColumns do:[ : columnIndex |			
-				scroller at: aTableCell row at: columnIndex :: select: false ] ]
-		ifFalse:[
-			1 to: scroller numColumns do:[ : columnIndex |			
-				scroller at: aTableCell row at: columnIndex :: select: true ].
-			selectRowMessage 
-				ifNotNil:[		model perform: selectRowMessage with: aTableCell row ] ]
-! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:58:54'!
-headerRow: aBoolean
-	headerRow := aBoolean! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:44'!
-initialize
-	
-	super initialize.
-	
-	scroller morphWidth: extent x.
-
-	scroller target: self.
-	
-	rightToLeft := false.
-	headerRow := false.
-	
-! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:23:40'!
-innerMorphClass
-	^TableMorph! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:59:11'!
-rightToLeft: aBoolean
-	rightToLeft := aBoolean! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:26'!
-selectRowMessage: aSymbol
-	selectRowMessage := aSymbol! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:29:55'!
-table: aSymbol
-	getTable := aSymbol! !
-
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:34:24'!
-update: aSymbol 
-
-	| nrows ncols header table |
-
-	scroller removeAllMorphs.
-		
-	table := model perform: getTable.
-	
-	nrows := table size.
-	
-	nrows = 0 ifTrue:[^self].
-	
-	header := table first.
-	
-	ncols := header size.
-	
-	scroller morphHeight: extent y.
-	
-	scroller numRows: nrows ; numColumns: ncols; build.
-	
-	headerRow 
-		ifTrue:[ 
-			1 to: ncols do:[:colIndex | | aLabelMorph |
-				
-				aLabelMorph := LabelMorph contents: (table at:1 :: at:colIndex).
-				
-				aLabelMorph rightToLeft: rightToLeft.
-				
-				scroller at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		]
-		ifFalse:[
-			1 to:ncols do:[:colIndex |
-				scroller at: 1 at:colIndex ::  axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:1 :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
-			
-	2 to: nrows do:[:rowIndex |
-		1 to:ncols do:[:colIndex |
-			scroller at: rowIndex at:colIndex :: axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:rowIndex :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
-! !
-
-!EditModuleDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:40:07'!
-addModuleToAcademicProgramDialog
-	
-		TavorApplication addModule: model selectedUnit module ToAcademicProgramDialog: model.! !
-
-!EditModuleDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:27:23'!
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:04:55'!
 buildMorphicWindow
 
-	| mold module left right dialog button |
+	| topPanel semesters years tracks programs bottomPanel status |
 	
-	mold := Mold new.
+	semesters := BidiPluggableListMorphOfMany withModel: model listGetter: #semesterNames primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
 	
-	module := model selectedUnit module.
+	years := BidiPluggableListMorphOfMany withModel: model listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
+	
+	tracks := BidiPluggableListMorph withModel: model listGetter: #trackNames indexGetter: #trackIndex indexSetter: #trackIndex: .
+	
+	programs := BidiPluggableListMorph withModel: model listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
+	
+	topPanel := (semesters - (1/4)p | 1p) <+> (years - (1/4)p | 1p) <+> (tracks - (1/4)p | 1p) <+> (programs - (1/4)p | 1p).
+	
+	status := TextModelMorph textProvider: model textGetter: #summary.
+	
+	bottomPanel := PluggableTableMorph new.
+	
+	bottomPanel model: model ; table: #unitsTable ; rightToLeft: true ; headerRow: true.
+	
+	bottomPanel menuNshortcutsKey: #moduleMenuSpec.
+	
+	bottomPanel selectRowMessage: #selectUnit:.
+
+	model changed: #unitsTable.
+	
+	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p | 1.0p) | 0.8p)).
+	! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:16:03'!
+moduleMenuSpec
+
+^ #(
+		#(0 		'קורס'						false)
+		#(10		'ערוך קורס ...' 						$g 	window 			openEditModuleDialog 				)
+		#(20		'-----' 		)
+		#(30		'הסר קורס' 						$c 	window 			removeModuleFromSemester )
+	).! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:49:11'!
+openEditModuleDialog
+
+	model selectedUnit ifNil:[^self].
+	
+	ModuleBrowser new module: model selectedUnit module ; model: model ; buildMorphicWindow ; setLabel: 'ערוך קורס' ; openInWorld! !
+
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:16:19'!
+removeModuleFromSemester
+
+	model removeSelectedModuleFromSemester ! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 18:54:59'!
+buildMorphicWindow
+
+	| topPanel bottomPanel schools employment |
+	
+	schools := BidiPluggableListMorphOfMany withModel: model listGetter: #schoolNames primarySelectionGetter: #schoolIndex primarySelectionSetter: #schoolIndex: listSelectionGetter: #schoolSelectionAt: listSelectionSetter: #schoolSelectionAt:put:.
+	
+	employment := BidiPluggableListMorphOfMany withModel: model listGetter: #employmentNames primarySelectionGetter: #employmentIndex primarySelectionSetter: #employmentIndex: listSelectionGetter: #employmentSelectionAt: listSelectionSetter: #employmentSelectionAt:put:.
+	
+	topPanel := (employment - (1/2)p | 1p) <+> (schools - (1/2)p | 1p) .
+	
+	bottomPanel := PluggableTableMorph new.
+	
+	bottomPanel model: model ; table: #lecturers ; rightToLeft: true ; headerRow: true.
+
+	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (bottomPanel -1.0p | 0.7p)).
+	! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:45:58'!
+addModuleToAcademicProgramDialog
+	
+		TavorApplication addModule: module ToAcademicProgramDialog: model.! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:46:14'!
+buildMorphicWindow
+
+	| left right dialog button updateButton |
 	
 	mold rightToLeft: true.
 	
-	(mold rtolStringField)
-		label: 'שם הקורס';
-		on: #propertyValue of: (ValueHolder with: module description);
-		beRequired.
+	mold fields removeAll.
+	
 	(mold integerField)
 		label: 'קוד הקורס:';
 		on: #propertyValue of: (ValueHolder with: module code);
+		customize:[:widget :input :example | 
+			input color: Color lightGray; disableEditing 
+			];
+		beRequired.
+	(mold rtolStringField)
+		label: 'שם הקורס';
+		on: #propertyValue of: (ValueHolder with: module description);
 		beRequired.
 	(mold integerField)
 		label: 'שעות הרצאה';
@@ -928,7 +479,11 @@ buildMorphicWindow
 		on: #propertyValue of: (ValueHolder with: (module unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	
-	right := mold renderForms.
+	updateButton := PluggableButtonMorph model: self action:#updateModuleDetails label:'עדכן פרטים' reverse.
+	
+	right := LayoutMorph newColumn.
+	
+	right addMorph: mold renderForms | 0.5p; addMorph: updateButton.
 	
 	left := PluggableTableMorph new.
 	
@@ -943,6 +498,40 @@ buildMorphicWindow
 	self addMorph: dialog.
 	
 ! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:40:19'!
+initialize
+
+	super initialize.
+	
+	mold := Mold new.! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:45:40'!
+module: aModule
+	module := aModule! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:46:29'!
+updateModuleDetails
+
+	mold validate.
+	mold isValid 
+		ifTrue: [ | description lectureHours recitationHours labHours |
+			
+			mold save.
+
+			description := mold fields at: 2 :: value.
+			lectureHours := mold fields at:3 :: value.
+			recitationHours := mold fields at:4 :: value.
+			labHours := mold fields at:5 :: value.
+
+			module description: description.
+			
+			module updateAcademicUnit: 'הרצאה' duration: 			lectureHours.
+			module updateAcademicUnit: 'תרגול' duration: 			recitationHours.
+			module updateAcademicUnit: 'מעבדה' duration: 			labHours.
+			
+			model changed: #units.
+		]! !
 
 !OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 17:28:37'!
 buildMorphicWindow
@@ -1084,106 +673,6 @@ open: model start: aDirectoryEntry action: aSymbol label: aString
 	
 	^window! !
 
-!RtoLSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 23:07:55'!
-drawLabelOn: aCanvas
-
-	| x0 y0 f w availableW l |
-	f := Preferences at: #windowTitleFont.
-	x0 :=  f lineSpacing * 5 + borderWidth.
-	y0 := borderWidth * 6 // 10.
-	availableW := extent x - x0.
-	l := labelString.
-	w := f widthOfString: l.
-	x0 := (extent x - w) / 2.
-	[ w > availableW ] whileTrue: [
-		l := l squeezedTo: (1.0 * l size * availableW / w) truncated.
-		l isEmpty ifTrue: [ ^self ].
-		w := f widthOfString: l ].
-	aCanvas
-		drawString: l reverse
-		at: x0@y0
-		font: f
-		color: Theme current windowLabel
-		embossed: Theme current embossedTitles! !
-
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:02:57'!
-buildMorphicWindow
-
-	| topPanel semesters years tracks programs bottomPanel status |
-	
-	semesters := RtoLPluggableListMorphOfMany withModel: model listGetter: #semesterNames primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
-	
-	years := RtoLPluggableListMorphOfMany withModel: model listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
-	
-	tracks := RtoLPluggableListMorph withModel: model listGetter: #trackNames indexGetter: #trackIndex indexSetter: #trackIndex: .
-	
-	programs := RtoLPluggableListMorph withModel: model listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
-	
-	topPanel := (semesters - (1/4)p | 1p) <+> (years - (1/4)p | 1p) <+> (tracks - (1/4)p | 1p) <+> (programs - (1/4)p | 1p).
-	
-	status := TextModelMorph textProvider: model textGetter: #summary.
-	
-	bottomPanel := PluggableTableMorph new.
-	
-	bottomPanel model: model ; table: #unitsTable ; rightToLeft: true ; headerRow: true.
-	
-	bottomPanel menuNshortcutsKey: #moduleMenuSpec.
-	
-	bottomPanel selectRowMessage: #selectUnit:.
-
-	model changed: #modules.
-	
-	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p | 1.0p) | 0.8p)).
-	! !
-
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:42:28'!
-moduleMenuSpec
-
-^ #(
-		#(0 		'קורס'						false)
-		#(10		'ערוך קורס ...' 						$g 	window 			openEditModuleDialog 				)
-		#(20		'-----' 		)
-		#(30		'הסר קורס' 						$c 	window 			removeModule )
-	).! !
-
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:15:29'!
-openEditModuleDialog
-
-	model selectedUnit ifNil:[^self].
-	
-	EditModuleDialog open: model label: 'עורך קורס'! !
-
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:37:17'!
-buildMorphicWindow
-
-	| topPanel bottomPanel schools employment |
-	
-	schools := RtoLPluggableListMorphOfMany withModel: model listGetter: #schoolNames primarySelectionGetter: #schoolIndex primarySelectionSetter: #schoolIndex: listSelectionGetter: #schoolSelectionAt: listSelectionSetter: #schoolSelectionAt:put:.
-	
-	employment := RtoLPluggableListMorphOfMany withModel: model listGetter: #employmentNames primarySelectionGetter: #employmentIndex primarySelectionSetter: #employmentIndex: listSelectionGetter: #employmentSelectionAt: listSelectionSetter: #employmentSelectionAt:put:.
-	
-	topPanel := (employment - (1/2)p | 1p) <+> (schools - (1/2)p | 1p) .
-	
-	bottomPanel := PluggableTableMorph new.
-	
-	bottomPanel model: model ; table: #lecturers ; rightToLeft: true ; headerRow: true.
-
-	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (bottomPanel -1.0p | 0.7p)).
-	! !
-
-!CellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
-justDroppedInto: newOwnerMorph event: anEvent 
-
-	super justDroppedInto: newOwnerMorph event: anEvent.
-	
-	color := color alpha:1.0! !
-
-!CellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:34'!
-justGrabbedFrom: formerOwner
-
-	color := 	color alpha: 0.5.
-! !
-
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:25'!
 addAcademicTrack: anAcademicTrack
 
@@ -1217,13 +706,9 @@ description
 description: aString
 	description := aString! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:05:08'!
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:19'!
 detach
 
-	college ifNil:[^self].
-	
-	college detachAcademicProgram: self.
-	
 	college := nil! !
 
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:55'!
@@ -1358,13 +843,9 @@ description
 
 	self subclassResponsibility ! !
 
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:35'!
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:12'!
 detach
 
-	module ifNil:[^self].
-	 
-	module detachAcademicUnit: self.  
-	
 	module := nil.! !
 
 !AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:13:00'!
@@ -1414,6 +895,16 @@ removeLecturer: aLecturer
 	self detachLecturer: aLecturer.
 	
 	aLecturer detachAcademicUnit: self.! !
+
+!AcademicUnit class methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:31:40'!
+newFrom: aString
+
+	| aFactory |
+	
+	aFactory := { 'הרצאה' -> Lecture . 'תרגול' -> Recitation . 'מעבדה' -> Laboratory } asDictionary.
+	
+	^ aFactory at: aString ifPresent:[:creator | creator new ] ifAbsent:[TavorError new messageText:('יחידה אקדמית לא מוכרת {1}' format:{aString}) reverse ; signal ].
+! !
 
 !Laboratory methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:52:00'!
 description
@@ -1479,12 +970,8 @@ description
 description: aString
 	description := aString! !
 
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:56:03'!
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:30'!
 detach
-
-	track ifNil:[^self].
-	
-	track detachAcademicYear: self.
 	
 	track := nil.! !
 
@@ -1519,13 +1006,9 @@ semesterAt: aString
 semesters
 	^semesters! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:12:24'!
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:34'!
 detach
 
-	stencil ifNil:[^self].
-	
-	stencil detachAssignment: self.
-	
 	stencil := nil.! !
 
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:38'!
@@ -1588,13 +1071,9 @@ description
 description: aString
 	description := aString! !
 
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:35:08'!
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:39'!
 detach
 
-	college ifNil:[^self].
-	 
-	college detachCampus: self. 
-	
 	college := nil.! !
 
 !Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:33:35'!
@@ -1650,13 +1129,9 @@ code
 code: aString
 	code := aString! !
 
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:33:35'!
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:43'!
 detach
 
-	campus ifNil:[^self].
-	
-	campus detachClassroom: self. 
-	
 	campus := nil.! !
 
 !Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:03:14'!
@@ -1891,10 +1366,12 @@ removeLecturer: aLecturer
 	
 	self detachLecturer: aLecturer.! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:14:02'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:08:51'!
 removeModule: aModule
 
 	self assert: aModule college == self.
+	
+	aModule semesters do:[:eachSemester | eachSemester removeModule: aModule ].
 	
 	aModule detach.
 	
@@ -2065,36 +1542,51 @@ semesterSelectionAt: anIndex put: aBoolean
 		
 	self changed: #modules ; changed: #summary! !
 
-!CollegeModel methodsFor: 'semesters' stamp: 'DF 12/28/2024 15:04:01'!
+!CollegeModel methodsFor: 'semesters' stamp: 'DF 1/8/2025 20:18:25'!
 semesters
 	
-	| semesters years  |
+	| semesters   |
 	
 	semesters := Set new.
 	
-	years := selectedYears ifEmpty:[self years] ifNotEmpty:[selectedYears].
-	
-	years do:[:eachYear | 
+	selectedYears do:[:eachYear | 
 		semesters addAll: eachYear semesters ].
 	
 	^ semesters
 ! !
 
-!CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 18:05:26'!
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/9/2025 21:31:02'!
+removeSelectedModuleFromSemester
+
+	| aModule |
+	
+	theUnit ifNil:[^self].
+	
+	aModule := (theUnit at:1) module.
+	
+	theUnit at:2 :: removeModule: aModule.
+	
+	aModule changed: #programs.
+		
+	self changed: #units
+	
+! !
+
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/9/2025 21:14:20'!
 selectUnit: aUnitIndex
 
-	aUnitIndex = 0 
+	aUnitIndex <= 1 
 		ifTrue:[
 			theUnit := nil.
 			^self].
 	
-	theUnit := self units at: aUnitIndex - 1 :: at:1. "minus 1 to account for the header, see unitsTable"
+	theUnit := self units at: aUnitIndex - 1 . "minus 1 to account for the header, see unitsTable"
 	
 	! !
 
-!CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 18:05:54'!
+!CollegeModel methodsFor: 'modules' stamp: 'DF 1/9/2025 21:14:26'!
 selectedUnit
-	^theUnit! !
+	^theUnit at:1! !
 
 !CollegeModel methodsFor: 'modules' stamp: 'DF 1/7/2025 17:45:05'!
 units
@@ -2174,46 +1666,41 @@ initialize
 	theUnit := nil.
 	! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:26:46'!
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:33:46'!
 addModuleToAcademicProgram: fields
 
-	| anIntegerCode programNames aModule semesterNames yearNames trackNames |
+	| anIntegerCode programName aModule semesterName yearName trackName academicYear track program semester |
 	
 	anIntegerCode := fields at:1 :: value.
 	
-	programNames := fields at:2 :: value.
+	programName := fields at:2 :: value.
 
-	trackNames := fields at:3 :: value.
+	trackName := fields at:3 :: value.
 	
-	yearNames := fields at:4 :: value.
+	yearName := fields at:4 :: value.
 	
-	semesterNames := fields at:5 :: value.
+	semesterName := fields at:5 :: value.
 	
 	aModule := college moduleAt: anIntegerCode.
 	
-	programNames do:[:eachProgramName | | program | 
+	program := college programAt: programName. 
 		
-		program := college programAt: eachProgramName. 
+	track := program trackAt: trackName.
 		
-		trackNames do:[:eachTrackName | | track |
+	academicYear := track academicYearAt: yearName. 
 			
-			track := program trackAt: eachTrackName.
-		
-			yearNames do:[:eachYearName | | academicYear |
-			
-				academicYear := track academicYearAt: eachYearName. 
-			
-					semesterNames do:[:eachSemesterName | | semester |
+	semester := academicYear semesterAt: semesterName.
 				
-						semester := academicYear semesterAt: eachSemesterName.
-				
-						semester addModule: aModule ] ] ] ].
+	semester addModule: aModule.
 	
+	aModule changed: #programs.
+	
+	self changed: #units.
 	 
 	
 	! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 17:30:10'!
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 21:51:59'!
 addNewAcademicProgram: fields
 
 	| programName duration withDayTrack withEveningTrack anAcademicProgram |
@@ -2275,9 +1762,12 @@ addNewAcademicProgram: fields
 	
 	college addAcademicProgram: anAcademicProgram.
 	
-	self changed: #programs.! !
+	CollegeBrowser open: self label: 'תוכניות לימוד'.
+	
+	self changed: #programs ; changed: #trackNames; changed: #yearNames; changed:#semesterNames.
+	! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 14:17:16'!
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 22:06:43'!
 addNewModule: fields
 
 	| aModule aLabDurationInteger aLectureDurationInteger aRecitationDurationInteger aStringDescription anIntegerCode programNames semesterNames yearNames trackNames |
@@ -2332,6 +1822,8 @@ addNewModule: fields
 	self changed: #modules.
 	
 	latestNewModule := aModule.
+	
+	^aModule
 		! !
 
 !CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:00:20'!
@@ -2360,6 +1852,31 @@ employmentSelectionAt: anIndex put: aBoolean
 		ifTrue:[selectedEmployments add: anIndex]
 		ifFalse:[selectedEmployments remove: anIndex]
 
+! !
+
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 21:50:17'!
+import: aFileEntry
+
+	college import: aFileEntry.
+	
+	self programs notEmpty
+		ifTrue:[theProgram := 1].
+	
+	self tracks notEmpty
+		ifTrue:[theTrack := 1 ].
+		
+	selectedYears removeAll.
+	
+	selectedYears addAll: self years.
+	
+	theYear := selectedYears ifEmpty:[0] ifNotEmpty:[1].
+	
+	selectedSemesters addAll: self semesters.
+	
+	theSemester := selectedSemesters ifEmpty:[0] ifNotEmpty: [1].
+	
+	self changed: #programs ; changed: #trackNames ; changed: #yearNames ; changed: #semesterNames; changed: #units.
+	
 ! !
 
 !CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 21:57:10'!
@@ -2405,18 +1922,18 @@ schoolSelectionAt: anIndex put: aBoolean
 
 ! !
 
-!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:44:36'!
+!CollegeModel methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:07:23'!
 summary
 
-	| hours points modules |
+	| hours points units |
 	
-	modules := self modules.
+	units := self units collect:[:eachTuple | eachTuple at:1].
 	
-	modules ifEmpty:[^''] .
+	units ifEmpty:[^''] .
 	
-	hours := modules allButFirst inject: 0 into:[:acc :eachRow | acc + (eachRow at:2) ].
+	hours := units inject: 0 into:[:acc :eachUnit | acc + eachUnit duration ].
 		
-	points := modules allButFirst inject: 0 into:[:acc :eachRow | acc + (eachRow at:1) ].
+	points := units inject: 0 into:[:acc :eachUnit | acc + eachUnit points ].
 	
 	^'סך הכול {1} שעות, {2} נקודות זכות.' format: { hours printString reverse . points printStringFractionDigits:1 :: reverse } :: reverse! !
 
@@ -2533,13 +2050,9 @@ description
 description: aString
 	description := aString! !
 
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:38:25'!
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:08:31'!
 detach
 
-	college ifNil:[^self].
-	 
-	college detachModule: self.  
-	
 	college := nil.! !
 
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:35'!
@@ -2605,6 +2118,29 @@ unitAt: aString
 units
 	^units! !
 
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:35:19'!
+updateAcademicUnit: aString duration: anInteger
+
+	| aUnit |
+	
+	self assert: anInteger >= 0.
+		
+	aUnit := self unitAt: aString.
+	
+	aUnit isNil and:[ anInteger = 0] 
+		::ifTrue:[ ^self].
+		
+	aUnit 
+		ifNil:[
+			aUnit := AcademicUnit newFrom: aString.
+			self addAcademicUnit: aUnit].
+	
+	anInteger = 0
+		ifTrue:[
+			self removeAcademicUnit: aUnit ]
+		ifFalse:[
+			aUnit duration: anInteger ].! !
+
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:00:11'!
 academicYear
 	^academicYear ! !
@@ -2650,13 +2186,9 @@ description
 description: aString
 	description := aString! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:45:24'!
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:05'!
 detach
 
-	academicYear ifNil:[^self].
-	
-	academicYear detachSemester: self. 
-	
 	academicYear := nil.! !
 
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:55:00'!
@@ -2731,13 +2263,9 @@ description
 description: aString
 	description := aString! !
 
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:33:59'!
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:10'!
 detach
 
-	semester ifNil:[^self].
-	
-	semester detachStencil: self.
-	
 	semester := nil.! !
 
 !Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:24'!
@@ -2961,7 +2489,15 @@ addNewLecturerDialog
 	
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 14:12:23'!
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:26:25'!
+addNewModule: fields
+
+	model addNewModule: fields.
+	
+	model changed: #modules
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 22:08:29'!
 addNewModuleDialog
 
 	| mold programs tracks years semesters aDialog position |
@@ -2998,30 +2534,30 @@ addNewModuleDialog
 		label: 'שעות מעבדה';
 		on: #propertyValue of: ValueHolder new;
 		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'תוכניות לימודים';
-		on: #selectedIndexes of: programs;
+	(mold fields add: BidiSelectField new)
+		label: 'תוכנית לימודים';
+		on: #listIndex of: programs;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'מסלולי לימודים';
-		on: #selectedIndexes of: tracks;
+	(mold fields add: BidiSelectField new)
+		label: 'מסלול לימודים';
+		on: #listIndex of: tracks;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'שנות לימוד';
-		on: #selectedIndexes of: years;
+	(mold fields add: BidiSelectField new)
+		label: 'שנת לימוד';
+		on: #listIndex of: years;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: RtoLSelectMultipleField new)
-		label: 'סמסטרים';
-		on: #selectedIndexes of: semesters;
+	(mold fields add: BidiSelectField new)
+		label: 'סמסטר';
+		on: #listIndex of: semesters;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
@@ -3033,18 +2569,20 @@ addNewModuleDialog
 	
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 	
-	mold when: #edited send: #addNewModule: to: model with: mold fields.
+	mold when: #edited send: #addNewModule: to: self with: mold fields.
 	
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 16:58:28'!
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:50:18'!
 import: aFileEntry
 
 	lastImportDirectory := aFileEntry parent.
 	
-	model college import: aFileEntry .
+	model import: aFileEntry.
 	
-	CollegeBrowser open: model label: 'תוכניות לימוד'.! !
+"	CollegeBrowser open: model label: 'תוכניות לימוד'."
+	
+	! !
 
 !TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 17:11:08'!
 menuBar
@@ -3138,7 +2676,7 @@ showCollapsedWindows
 	
 	^menu! !
 
-!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:39:30'!
+!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:30:49'!
 addModule: aModule ToAcademicProgramDialog: model
 
 	| mold programs tracks years semesters aDialog position |
@@ -3160,28 +2698,28 @@ addModule: aModule ToAcademicProgramDialog: model
 		on: #propertyValue of: (ValueHolder new propertyValue: (aModule ifNil:[nil] ifNotNil:[aModule code]) ; yourself);
 		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
 		beRequired.
-	(mold fields add: RtoLSelectField new)
+	(mold fields add: BidiSelectField new)
 		label: 'תוכנית לימודים';
 		on: #listIndex of: programs;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: RtoLSelectField new)
+	(mold fields add: BidiSelectField new)
 		label: 'מסלול לימודים';
 		on: #listIndex of: tracks;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: RtoLSelectField new)
+	(mold fields add: BidiSelectField new)
 		label: 'שנת לימוד';
 		on: #listIndex of: years;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: RtoLSelectField new)
+	(mold fields add: BidiSelectField new)
 		label: 'סמסטר';
 		on: #listIndex of: semesters;
 		customize: [:widget :input :example | 
@@ -3210,14 +2748,6 @@ open
 	
 	anApp open.
 ! !
-
-!RtoLSelectField methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:35:35'!
-inputMorphInstance
-	^ RtoLPluggableListMorph new! !
-
-!RtoLSelectMultipleField methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:08:57'!
-inputMorphInstance
-	^ RtoLPluggableListMorphOfMany new! !
 
 !MenuMorph methodsFor: '*Tavor' stamp: 'DF 1/7/2025 16:17:39'!
 rtolAdd: aString action: aSymbol
