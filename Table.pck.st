@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 9 January 2025 at 6:57:51 pm'!
+'From Cuis7.1 [latest update: #6676] on 10 January 2025 at 8:44:00 pm'!
 'Description '!
-!provides: 'Table' 1 2!
+!provides: 'Table' 1 4!
 SystemOrganization addCategory: #Table!
 
 
@@ -340,7 +340,7 @@ drawOn: aCanvas
 		color: color.
 ! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 18:57:29'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:41:52'!
 clickedCell: aTableCell
 
 	headerRow and: [aTableCell row = 1] 
@@ -348,11 +348,10 @@ clickedCell: aTableCell
 		
 	aTableCell selected
 		ifTrue:[
-			1 to: scroller numColumns do:[ : columnIndex |			
-				scroller at: aTableCell row at: columnIndex :: select: false ] ]
+			self row: aTableCell row select: false
+		]
 		ifFalse:[
-			1 to: scroller numColumns do:[ : columnIndex |			
-				scroller at: aTableCell row at: columnIndex :: select: true ].
+			self row: aTableCell row select: true.
 			selectRowMessage 
 				ifNotNil:[		model perform: selectRowMessage with: aTableCell row ] ]
 ! !
@@ -382,6 +381,18 @@ innerMorphClass
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:59:11'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:41:04'!
+row: anIndex select: aBoolean
+
+	aBoolean
+		ifTrue:[
+			1 to: scroller numColumns do:[ : columnIndex |			
+				scroller at: anIndex at: columnIndex :: select: true ] ]
+		ifFalse:[
+			1 to: scroller numColumns do:[ : columnIndex |			
+				scroller at: anIndex at: columnIndex :: select: false ] ].
+! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:26'!
 selectRowMessage: aSymbol
