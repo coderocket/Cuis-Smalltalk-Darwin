@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 9 January 2025 at 9:34:49 pm'!
+'From Cuis7.1 [latest update: #6676] on 10 January 2025 at 9:02:55 pm'!
 'Description '!
-!provides: 'Tavor' 1 217!
+!provides: 'Tavor' 1 234!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -44,7 +44,7 @@ TextFieldSentence class
 
 !classDefinition: #CollegeBrowser category: #'Tavor-Morphic'!
 BidiSystemWindow subclass: #CollegeBrowser
-	instanceVariableNames: ''
+	instanceVariableNames: 'theProgram theTrack theYear theSemester selectedYears selectedSemesters theUnit'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -64,7 +64,7 @@ LecturerBrowser class
 
 !classDefinition: #ModuleBrowser category: #'Tavor-Morphic'!
 BidiSystemWindow subclass: #ModuleBrowser
-	instanceVariableNames: 'mold module'
+	instanceVariableNames: 'mold theProgram'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -255,7 +255,7 @@ TavorExample class
 !classDefinition: #TavorApplication category: #'Tavor-Morphic'!
 Object subclass: #TavorApplication
 	instanceVariableNames: 'model lastImportDirectory'
-	classVariableNames: ''
+	classVariableNames: 'TheApplication'
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
 !classDefinition: 'TavorApplication class' category: #'Tavor-Morphic'!
@@ -371,36 +371,6 @@ initialize
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:04:55'!
-buildMorphicWindow
-
-	| topPanel semesters years tracks programs bottomPanel status |
-	
-	semesters := BidiPluggableListMorphOfMany withModel: model listGetter: #semesterNames primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
-	
-	years := BidiPluggableListMorphOfMany withModel: model listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
-	
-	tracks := BidiPluggableListMorph withModel: model listGetter: #trackNames indexGetter: #trackIndex indexSetter: #trackIndex: .
-	
-	programs := BidiPluggableListMorph withModel: model listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
-	
-	topPanel := (semesters - (1/4)p | 1p) <+> (years - (1/4)p | 1p) <+> (tracks - (1/4)p | 1p) <+> (programs - (1/4)p | 1p).
-	
-	status := TextModelMorph textProvider: model textGetter: #summary.
-	
-	bottomPanel := PluggableTableMorph new.
-	
-	bottomPanel model: model ; table: #unitsTable ; rightToLeft: true ; headerRow: true.
-	
-	bottomPanel menuNshortcutsKey: #moduleMenuSpec.
-	
-	bottomPanel selectRowMessage: #selectUnit:.
-
-	model changed: #unitsTable.
-	
-	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p | 1.0p) | 0.8p)).
-	! !
-
 !CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:16:03'!
 moduleMenuSpec
 
@@ -411,17 +381,463 @@ moduleMenuSpec
 		#(30		'הסר קורס' 						$c 	window 			removeModuleFromSemester )
 	).! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:49:11'!
+!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:02:31'!
+update: aSymbol
+	self changed: aSymbol! !
+
+!CollegeBrowser methodsFor: 'programs' stamp: 'DF 1/10/2025 18:06:34'!
+programIndex
+	
+	^ theProgram! !
+
+!CollegeBrowser methodsFor: 'programs' stamp: 'DF 1/10/2025 18:50:56'!
+programIndex: anIndex
+
+	theProgram := anIndex.
+
+	theTrack := 0.
+	
+	theYear := 0.
+	
+	theSemester := 0.
+	
+	selectedYears removeAll.
+	
+	selectedSemesters removeAll.
+		
+	self changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #summary ; changed: #unitsTable! !
+
+!CollegeBrowser methodsFor: 'programs' stamp: 'DF 1/10/2025 18:07:02'!
+programs
+
+	^ model programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
+
+!CollegeBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:07:24'!
+trackIndex
+	
+	^ theTrack! !
+
+!CollegeBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:51:22'!
+trackIndex: anIndex
+
+	theTrack := anIndex.
+	
+	theYear := 0.
+	
+	theSemester := 0.
+	
+	selectedYears removeAll.
+	
+	selectedSemesters removeAll.	
+	
+	self changed: #yearNames; changed: #semesterNames	 ; changed: #summary; changed: #unitsTable! !
+
+!CollegeBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:07:33'!
+trackNames
+
+	^self tracks collect:[:each | each description] ! !
+
+!CollegeBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:07:39'!
+tracks
+	
+	theProgram 	= 0 ifTrue:[^{}].
+		
+	^self programs at: theProgram :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
+! !
+
+!CollegeBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:07:55'!
+semesterIndex
+	
+	^ theSemester! !
+
+!CollegeBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:04'!
+semesterIndex: anIndex
+
+	theSemester := anIndex! !
+
+!CollegeBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:09'!
+semesterNames
+
+	^ self semesters collect:[:each | each description ] :: asSet asOrderedCollection sort
+! !
+
+!CollegeBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:14'!
+semesterSelectionAt: anIndex
+	
+	| semesterDescription |
+	
+	semesterDescription := self semesterNames at: anIndex ifAbsent:[^false].
+
+	^ selectedSemesters anySatisfy:[:aSemester | aSemester description = semesterDescription ]! !
+
+!CollegeBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:52:08'!
+semesterSelectionAt: anIndex put: aBoolean
+
+	| semesters semesterDescription |
+	
+	semesterDescription := self semesterNames at: anIndex ifAbsent:[^self].
+	
+	semesters := self semesters select:[:eachSemester | eachSemester description = semesterDescription ].
+	
+	aBoolean 
+		ifTrue:[
+			selectedSemesters addAll: semesters ]
+		ifFalse:[
+			selectedSemesters removeAll: semesters ].
+		
+	self changed: #unitsTable ; changed: #summary! !
+
+!CollegeBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:24'!
+semesters
+	
+	| semesters   |
+	
+	semesters := Set new.
+	
+	selectedYears do:[:eachYear | 
+		semesters addAll: eachYear semesters ].
+	
+	^ semesters
+! !
+
+!CollegeBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 20:23:45'!
+selectEntitiesIn: aTuple 
+
+	" { a Semester . an AcademicYear . anAcademicTrack . an AcademicProgram } "
+	
+	theProgram := self programs find: (aTuple at: 4).
+	
+	theTrack := self tracks find: (aTuple at:3). 
+	
+	theYear := self years sort:[:x :y | x description <= y description ] :: find: (aTuple at:2).
+	
+	selectedYears add: (aTuple at:2).
+	
+	theSemester := self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: find:(aTuple at:1).
+	
+	selectedSemesters add: (aTuple at:1).
+	
+	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #summary ; changed: #unitsTable.
+	
+	! !
+
+!CollegeBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 18:08:50'!
+selectUnit: aUnitIndex
+
+	aUnitIndex <= 1 
+		ifTrue:[
+			theUnit := nil.
+			^self].
+	
+	theUnit := self units at: aUnitIndex - 1 . "minus 1 to account for the header, see unitsTable"
+	
+	! !
+
+!CollegeBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 18:08:57'!
+selectedUnit
+	^theUnit at:1! !
+
+!CollegeBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 18:11:13'!
+summary
+
+	| hours points units |
+	
+	units := self units collect:[:eachTuple | eachTuple at:1].
+	
+	units ifEmpty:[^''] .
+	
+	hours := units inject: 0 into:[:acc :eachUnit | acc + eachUnit duration ].
+		
+	points := units inject: 0 into:[:acc :eachUnit | acc + eachUnit points ].
+	
+	^'סך הכול {1} שעות, {2} נקודות זכות.' format: { hours printString reverse . points printStringFractionDigits:1 :: reverse } :: reverse! !
+
+!CollegeBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 18:09:01'!
+units
+
+	| units |
+
+	units := OrderedCollection new.
+	
+	selectedYears asOrderedCollection sort:[:x :y | x description <= y description ] :: 
+	do:	[:eachYear |		
+		eachYear semesters select:[:each | selectedSemesters includes:each ] :: asOrderedCollection sort:[:x :y | x description <= y description ] :: 
+	do:[:eachSemester | 
+		eachSemester modules asOrderedCollection sort:[:x :y | x code <= y code ] :: 
+	do:[:eachModule |
+			eachModule units asOrderedCollection sort:[:x :y | x description <= y description] :: 
+	do:[:eachUnit |
+		units add: { eachUnit . eachSemester . eachYear } ] ] ] ].
+	
+	^units
+! !
+
+!CollegeBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 18:09:04'!
+unitsTable
+
+	| table |
+
+	table := OrderedCollection new.
+	
+	table add: { 'נז' . 'שעות' . 'סוג' . 'שם קורס' . 'קוד קורס' . 'סמסטר' . 'שנה' }.
+
+	self units do:[:eachTuple | | unit semester year |
+		unit := eachTuple at:1.
+		semester := eachTuple at:2.
+		year := eachTuple at:3.
+		table add: {unit points . unit duration . unit description . unit module description . '{1}' format:{ unit module  code } :: reverse . semester description  . year description } ] .
+	
+	^table
+! !
+
+!CollegeBrowser methodsFor: 'initialization' stamp: 'DF 1/10/2025 18:09:42'!
+initialize
+
+	super initialize.
+	
+	theProgram := 0.
+	
+	theYear := 0.
+	
+	selectedYears := Set new.
+	
+	theTrack := 0.
+	
+	theSemester:= 0.
+	
+	selectedSemesters := Set new.
+	
+	theUnit := nil.
+	! !
+
+!CollegeBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:20'!
+yearIndex
+	
+	^ theYear! !
+
+!CollegeBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:24'!
+yearIndex: anIndex
+
+	theYear := anIndex! !
+
+!CollegeBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:28'!
+yearNames
+
+	^self years collect:[:each | each description ] :: asSet asOrderedCollection sort! !
+
+!CollegeBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:33'!
+yearSelectionAt: anIndex
+	
+	| yearDescription |
+	
+	yearDescription := self yearNames at: anIndex ifAbsent:[^false].
+
+	^ selectedYears anySatisfy:[:aYear | aYear description = yearDescription ]! !
+
+!CollegeBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 20:09:08'!
+yearSelectionAt: anIndex put: aBoolean
+
+	| years yearDescription |
+	
+	yearDescription := self yearNames at: anIndex ifAbsent:[^self].
+	
+	years := self years select:[:eachYear | eachYear description = yearDescription ].
+	
+	aBoolean 
+		ifTrue:[
+			selectedYears addAll: years ]
+		ifFalse:[
+			selectedYears removeAll: years ].
+	
+	theSemester := 0.
+	
+	selectedSemesters removeAll.
+		
+	self changed: #semesterNames; changed: #unitsTable ; changed: #summary ! !
+
+!CollegeBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:41'!
+years
+		
+	theTrack = 0 ifTrue:[^{}].
+	
+	^self tracks at: theTrack :: academicYears 
+! !
+
+!CollegeBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 18:52:22'!
+addModuleToAcademicProgram: fields
+
+	| anIntegerCode programName aModule semesterName yearName trackName academicYear track program semester |
+	
+	anIntegerCode := fields at:1 :: value.
+	
+	programName := fields at:2 :: value.
+
+	trackName := fields at:3 :: value.
+	
+	yearName := fields at:4 :: value.
+	
+	semesterName := fields at:5 :: value.
+	
+	aModule := model moduleAt: anIntegerCode.
+	
+	program := model programAt: programName. 
+		
+	track := program trackAt: trackName.
+		
+	academicYear := track academicYearAt: yearName. 
+			
+	semester := academicYear semesterAt: semesterName.
+				
+	semester addModule: aModule.
+	
+	aModule changed: #programs.
+	
+	self changed: #unitsTable.
+	 
+	
+	! !
+
+!CollegeBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 18:53:13'!
+addNewAcademicProgram: fields
+
+	| programName duration withDayTrack withEveningTrack anAcademicProgram |
+	
+	programName := fields at:1 :: value.
+	
+	duration := fields at:2 :: value.
+	
+	withDayTrack := fields at:3 :: value.
+	
+	withEveningTrack := fields at:4 :: value.
+	
+	model programAt: programName :: notNil
+		ifTrue:[TavorError new messageText: 'לא ניתן ליצור תוכנית אקדמית עם שם קיים.' ; signal].
+
+	anAcademicProgram := AcademicProgram new.
+	
+	anAcademicProgram description: programName.
+	
+	withDayTrack 
+		ifTrue:[ | aDayTrack |
+			aDayTrack := AcademicTrack new.
+			
+			aDayTrack description: 'מסלול יום'.
+			
+			1 to: duration do:[:eachYearIndex | | aYear |
+			
+				aYear := AcademicYear new.
+				aYear description: ('שנה {1}' format:{eachYearIndex}).
+			
+				{ 'סמסטר א' . 'סמסטר ב' } do:[:eachName | | aSemester |
+					aSemester := Semester new.
+					aSemester description: eachName.
+					aYear addSemester: aSemester ].
+				
+				aDayTrack addAcademicYear: aYear ].
+			
+			anAcademicProgram addAcademicTrack: aDayTrack ].
+
+	withEveningTrack 
+		ifTrue:[ | anEveningTrack |
+			anEveningTrack := AcademicTrack new.
+			
+			anEveningTrack description: 'מסלול ערב'.
+			
+			1 to: duration do:[:eachYearIndex | | aYear |
+			
+				aYear := AcademicYear new.
+				aYear description: ('שנה {1}' format:{eachYearIndex}).
+			
+				{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' } do:[:eachName | | aSemester |
+					aSemester := Semester new.
+					aSemester description: eachName.
+					aYear addSemester: aSemester ].
+				
+				anEveningTrack addAcademicYear: aYear ].
+			
+			anAcademicProgram addAcademicTrack: anEveningTrack ].
+	
+	model addAcademicProgram: anAcademicProgram.
+	
+	self changed: #programs ; changed: #trackNames; changed: #yearNames; changed:#semesterNames ; changed: #summary.
+	! !
+
+!CollegeBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 18:19:35'!
+import: aFileEntry
+
+	model import: aFileEntry.
+	
+	self programs notEmpty
+		ifTrue:[theProgram := 1].
+	
+	self tracks notEmpty
+		ifTrue:[theTrack := 1 ].
+		
+	selectedYears removeAll.
+	
+	selectedYears addAll: self years.
+	
+	theYear := selectedYears ifEmpty:[0] ifNotEmpty:[1].
+	
+	selectedSemesters addAll: self semesters.
+	
+	theSemester := selectedSemesters ifEmpty:[0] ifNotEmpty: [1].
+	
+	model changed: #programs ; changed: #trackNames ; changed: #yearNames ; changed: #semesterNames; changed: #unitsTable; changed: #summary.
+	
+! !
+
+!CollegeBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 19:56:23'!
 openEditModuleDialog
 
-	model selectedUnit ifNil:[^self].
+	theUnit ifNil:[^self].
 	
-	ModuleBrowser new module: model selectedUnit module ; model: model ; buildMorphicWindow ; setLabel: 'ערוך קורס' ; openInWorld! !
+	ModuleBrowser open: self selectedUnit module label: 'ערוך קורס' ! !
 
-!CollegeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:16:19'!
+!CollegeBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 18:21:52'!
 removeModuleFromSemester
 
-	model removeSelectedModuleFromSemester ! !
+	| aModule |
+	
+	theUnit ifNil:[^self].
+	
+	aModule := (theUnit at:1) module.
+	
+	theUnit at:2 :: removeModule: aModule.
+	
+	aModule changed: #programs.
+		
+	model changed: #unitsTable! !
+
+!CollegeBrowser methodsFor: 'GUI building' stamp: 'DF 1/10/2025 18:50:14'!
+buildMorphicWindow
+
+	| topPanel semesters years tracks programs bottomPanel status |
+	
+	semesters := BidiPluggableListMorphOfMany withModel: self listGetter: #semesterNames primarySelectionGetter: #semesterIndex primarySelectionSetter: #semesterIndex: listSelectionGetter: #semesterSelectionAt: listSelectionSetter: #semesterSelectionAt:put:.
+	
+	years := BidiPluggableListMorphOfMany withModel: self listGetter: #yearNames primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
+	
+	tracks := BidiPluggableListMorph withModel: self listGetter: #trackNames indexGetter: #trackIndex indexSetter: #trackIndex: .
+	
+	programs := BidiPluggableListMorph withModel: self listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
+	
+	topPanel := (semesters - (1/4)p | 1p) <+> (years - (1/4)p | 1p) <+> (tracks - (1/4)p | 1p) <+> (programs - (1/4)p | 1p).
+	
+	status := TextModelMorph textProvider: self textGetter: #summary.
+	
+	bottomPanel := PluggableTableMorph new.
+	
+	bottomPanel model: self ; table: #unitsTable ; rightToLeft: true ; headerRow: true.
+	
+	bottomPanel menuNshortcutsKey: #moduleMenuSpec.
+	
+	bottomPanel selectRowMessage: #selectUnit:.
+
+	self changed: #unitsTable.
+	
+	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (bottomPanel -1.0p | 1.0p) | 0.8p)).
+	! !
 
 !LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 18:54:59'!
 buildMorphicWindow
@@ -441,12 +857,12 @@ buildMorphicWindow
 	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (bottomPanel -1.0p | 0.7p)).
 	! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:45:58'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:55:05'!
 addModuleToAcademicProgramDialog
 	
-		TavorApplication addModule: module ToAcademicProgramDialog: model.! !
+		TavorApplication instance addModuleToAcademicProgramDialog: model.! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:46:14'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:58:30'!
 buildMorphicWindow
 
 	| left right dialog button updateButton |
@@ -457,26 +873,26 @@ buildMorphicWindow
 	
 	(mold integerField)
 		label: 'קוד הקורס:';
-		on: #propertyValue of: (ValueHolder with: module code);
+		on: #propertyValue of: (ValueHolder with: model code);
 		customize:[:widget :input :example | 
 			input color: Color lightGray; disableEditing 
 			];
 		beRequired.
 	(mold rtolStringField)
 		label: 'שם הקורס';
-		on: #propertyValue of: (ValueHolder with: module description);
+		on: #propertyValue of: (ValueHolder with: model description);
 		beRequired.
 	(mold integerField)
 		label: 'שעות הרצאה';
-		on: #propertyValue of: (ValueHolder with: (module unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		on: #propertyValue of: (ValueHolder with: (model unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	(mold integerField)
 		label: 'שעות תרגול';
-		on: #propertyValue of: (ValueHolder with: (module unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		on: #propertyValue of: (ValueHolder with: (model unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	(mold integerField)
 		label: 'שעות מעבדה';
-		on: #propertyValue of: (ValueHolder with: (module unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
+		on: #propertyValue of: (ValueHolder with: (model unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration]));
 		beRequired.
 	
 	updateButton := PluggableButtonMorph model: self action:#updateModuleDetails label:'עדכן פרטים' reverse.
@@ -487,11 +903,15 @@ buildMorphicWindow
 	
 	left := PluggableTableMorph new.
 	
-	left  model: module ; table: #programs ; rightToLeft: true ; headerRow: true.
+	left  model: self ; table: #programs ; rightToLeft: true ; headerRow: true.
+	
+	left menuNshortcutsKey: #moduleMenuSpec.
+	
+	left selectRowMessage: #selectProgram:.
 	
 	button := PluggableButtonMorph model: self action: #addModuleToAcademicProgramDialog label:'+ הוסף שורה' reverse.
 	
-	module changed: #programs.
+	self changed: #programs.
 	
 	dialog := (left - 0.8p / (button align:1.0)) <+> (right - 0.2p).
 	
@@ -506,11 +926,72 @@ initialize
 	
 	mold := Mold new.! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:45:40'!
-module: aModule
-	module := aModule! !
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:42:39'!
+moduleMenuSpec
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:46:29'!
+^ #(
+		#(0 		'תוכנית לימודים'						false)
+		#(10		'הראה תוכנית לימודים' 						$g 	window 			openCollegeBrowser 				)
+		#(20		'-----' 		)
+		#(30		'הסר מתוכנית הלימודים' 						$c 	window 			removeModuleFromSemester)
+	).! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:02:18'!
+openCollegeBrowser
+
+	| aCollegeBrowser |
+	
+	aCollegeBrowser := CollegeBrowser open: model college label: 'תוכניות לימוד'.
+	
+	aCollegeBrowser selectEntitiesIn: theProgram.
+	
+	
+	! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:51:34'!
+programs
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
+	
+	model programs do:[:eachTuple |
+		table add: (eachTuple collect:[:each | each description ]) ].
+	
+	^table
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:56:26'!
+removeModuleFromSemester
+	
+	theProgram ifNil:[^self].
+	
+	theProgram at:1 :: removeModule: model.
+	
+	self changed: #programs.
+		
+	model college changed: #unitsTable! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:59:43'!
+selectProgram: aProgramIndex
+
+	aProgramIndex <= 1 
+		ifTrue:[
+			theProgram := nil.
+			^self].
+	
+	theProgram := model programs at: aProgramIndex - 1 . "minus 1 to account for the header"
+	
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:59:06'!
+update: aSymbol
+
+	self changed: aSymbol! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:55:43'!
 updateModuleDetails
 
 	mold validate.
@@ -524,13 +1005,13 @@ updateModuleDetails
 			recitationHours := mold fields at:4 :: value.
 			labHours := mold fields at:5 :: value.
 
-			module description: description.
+			model description: description.
 			
-			module updateAcademicUnit: 'הרצאה' duration: 			lectureHours.
-			module updateAcademicUnit: 'תרגול' duration: 			recitationHours.
-			module updateAcademicUnit: 'מעבדה' duration: 			labHours.
+			model updateAcademicUnit: 'הרצאה' duration: 			lectureHours.
+			model updateAcademicUnit: 'תרגול' duration: 			recitationHours.
+			model updateAcademicUnit: 'מעבדה' duration: 			labHours.
 			
-			model changed: #units.
+			model college changed: #unitsTable ; changed: #summary.
 		]! !
 
 !OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 17:28:37'!
@@ -1555,23 +2036,6 @@ semesters
 	^ semesters
 ! !
 
-!CollegeModel methodsFor: 'modules' stamp: 'DF 1/9/2025 21:31:02'!
-removeSelectedModuleFromSemester
-
-	| aModule |
-	
-	theUnit ifNil:[^self].
-	
-	aModule := (theUnit at:1) module.
-	
-	theUnit at:2 :: removeModule: aModule.
-	
-	aModule changed: #programs.
-		
-	self changed: #units
-	
-! !
-
 !CollegeModel methodsFor: 'modules' stamp: 'DF 1/9/2025 21:14:20'!
 selectUnit: aUnitIndex
 
@@ -2082,17 +2546,15 @@ invariant
 	units do: [:aUnit | self assert: aUnit module == self ].
 	! !
 
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:23:46'!
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:51:54'!
 programs
 
 	| table |
 	
 	table := OrderedCollection new.
 
-	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
-	
 	semesters do:[:eachSemester |
-		table add: { eachSemester description . eachSemester academicYear description . eachSemester academicYear academicTrack description . eachSemester academicYear academicTrack program description } ].
+		table add: { eachSemester  . eachSemester academicYear  . eachSemester academicYear academicTrack  . eachSemester academicYear academicTrack program  } ].
 	
 	^table
 ! !
@@ -2414,101 +2876,177 @@ example
 	^aCollege
 	! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 18:38:42'!
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 21:02:31'!
+addModuleToAcademicProgram: fields
+
+	| anIntegerCode programName aModule semesterName yearName trackName academicYear track program semester |
+	
+	anIntegerCode := fields at:1 :: value.
+	
+	programName := fields at:2 :: value.
+
+	trackName := fields at:3 :: value.
+	
+	yearName := fields at:4 :: value.
+	
+	semesterName := fields at:5 :: value.
+	
+	aModule := model moduleAt: anIntegerCode.
+	
+	program := model programAt: programName. 
+		
+	track := program trackAt: trackName.
+		
+	academicYear := track academicYearAt: yearName. 
+			
+	semester := academicYear semesterAt: semesterName.
+				
+	semester addModule: aModule.
+	
+	aModule changed: #programs.
+	
+	model changed: #unitsTable.
+	 
+	
+	! !
+
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 19:31:52'!
 addModuleToAcademicProgramDialog
 
-	self class addModule: model latestNewModule ToAcademicProgramDialog: model.
+	self addModuleToAcademicProgramDialog: model latestNewModule.
+	
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 17:19:35'!
-addNewAcademicProgramDialog
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 19:37:05'!
+addModuleToAcademicProgramDialog: aModule
 
-	| mold position aDialog |
+	| mold programs tracks years semesters aDialog position |
 	
 	mold := Mold new.
 	
+	programs := ListMultiModel with: model  programNames.
+
+	tracks := ListMultiModel with: model  trackNames.
+	
+	years := ListMultiModel with: model  academicYearNames.
+
+	semesters := ListMultiModel with: model semesterNames.
+	
 	mold rightToLeft: true.
 	
-	(mold rtolStringField)
-		label: 'שם התוכנית';
-		on: #propertyValue of: ValueHolder new;
-		beRequired.
-
 	(mold integerField)
-		label: 'שנות לימוד';
-		on: #propertyValue of: (ValueHolder with:4);
+		label: 'קוד הקורס';
+		on: #propertyValue of: (ValueHolder new propertyValue: (aModule ifNil:[nil] ifNotNil:[aModule code]) ; yourself);
+		addCondition: [:input :value | model moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
 		beRequired.
-
-	(mold checkboxField )
-		label: 'מסלול יום' ;
-		on: #propertyValue of: (ValueHolder with: true).
-	
-	(mold checkboxField )
-		label: 'מסלול ערב' ;
-		on: #propertyValue of: (ValueHolder with: true).
-	
-	position := UISupervisor ui activeHand morphPosition.
-	 
-	aDialog := mold openDialog: 'תוכנית לימודים חדשה'.
-	
-	aDialog morphPosition: position - (aDialog morphWidth@0).
-	
-	mold when: #edited send: #addNewAcademicProgram: to: model with: mold fields.
-	
-! !
-
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:29:50'!
-addNewLecturerDialog
-
-	| mold position aDialog |
-	
-	mold := Mold new.
-	
-	mold rightToLeft: true.
-	
-	(mold rtolStringField)
-		label: 'שם המרצה';
-		on: #propertyValue of: ValueHolder new;
+	(mold fields add: BidiSelectField new)
+		label: 'תוכנית לימודים';
+		on: #listIndex of: programs;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
 		beRequired.
-
-	(mold selectField) rightToLeft: true ;
-		label: 'מעמד מרצה';
-		on: #listIndex of: (ListModel with: `{'סגל בכיר' . 'סגל זוטר' . 'מורה מן החוץ' }`:: listIndex: 1) ;
+	(mold fields add: BidiSelectField new)
+		label: 'מסלול לימודים';
+		on: #listIndex of: tracks;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: BidiSelectField new)
+		label: 'שנת לימוד';
+		on: #listIndex of: years;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold fields add: BidiSelectField new)
+		label: 'סמסטר';
+		on: #listIndex of: semesters;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
 	
 	position := UISupervisor ui activeHand morphPosition.
-	 
-	aDialog := mold openDialog: 'מרצה חדש'.
+
+	aDialog := mold openDialog: 'הוסף קורס לתוכניות לימודים'.
 	
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 	
-	mold when: #edited send: #addNewLecturer: to: model with: mold fields.
+	mold when: #edited send: #addModuleToAcademicProgram: to: self with: mold fields.
 	
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:26:25'!
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 19:12:57'!
 addNewModule: fields
 
-	model addNewModule: fields.
+	| aModule aLabDurationInteger aLectureDurationInteger aRecitationDurationInteger aStringDescription anIntegerCode programNames semesterNames yearNames trackNames |
 	
-	model changed: #modules
-! !
+	aStringDescription := fields at:1 :: value.
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 22:08:29'!
+	anIntegerCode := fields at:2 :: value.
+	
+	aLectureDurationInteger := fields at:3 :: value.
+	
+	aRecitationDurationInteger := fields at:4 :: value.
+	
+	aLabDurationInteger := fields at:5 :: value.
+
+	programNames := fields at:6 :: value.
+
+	trackNames := fields at:7 :: value.
+	
+	yearNames := fields at:8 :: value.
+	
+	semesterNames := fields at:9 :: value.
+	
+	model moduleAt: anIntegerCode :: notNil 
+		ifTrue:[TavorError new messageText: 'לא ניתן ליצור קורס עם קוד קיים.' ; signal].
+		
+	aModule := Module new.
+	
+	aModule code: anIntegerCode ; description: aStringDescription.
+	
+	aLectureDurationInteger > 0
+		ifTrue:[ | aLecture |
+			aLecture := Lecture new.
+			aLecture duration: aLectureDurationInteger.
+			aModule addAcademicUnit: aLecture ].
+
+	aRecitationDurationInteger > 0
+		ifTrue:[ | aRecitation |
+			aRecitation := Recitation new.
+			aRecitation duration: aRecitationDurationInteger.
+			aModule addAcademicUnit: aRecitation ].
+
+	aLabDurationInteger > 0
+		ifTrue:[ | aLaboratory |
+			aLaboratory := Laboratory new.
+			aLaboratory duration: aLabDurationInteger.
+			aModule addAcademicUnit: aLaboratory ].
+		
+	model addModule: aModule.
+	
+	self addModuleToAcademicProgram: { anIntegerCode . programNames . trackNames . yearNames . semesterNames }.
+	
+	model changed: #unitsTable.
+	
+	^aModule
+		! !
+
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 19:08:37'!
 addNewModuleDialog
 
 	| mold programs tracks years semesters aDialog position |
 
-	programs := ListMultiModel with: model college programNames.
+	programs := ListMultiModel with: model programNames.
 
-	tracks := ListMultiModel with: model college trackNames.
+	tracks := ListMultiModel with: model trackNames.
 	
-	years := ListMultiModel with: model college academicYearNames.
+	years := ListMultiModel with: model academicYearNames.
 
-	semesters := ListMultiModel with: model college semesterNames.
+	semesters := ListMultiModel with: model semesterNames.
 	
 	mold := Mold new.
 	
@@ -2573,6 +3111,142 @@ addNewModuleDialog
 	
 ! !
 
+!TavorApplication methodsFor: 'programs' stamp: 'DF 1/10/2025 18:58:02'!
+addNewAcademicProgram: fields
+
+	| programName duration withDayTrack withEveningTrack anAcademicProgram |
+	
+	programName := fields at:1 :: value.
+	
+	duration := fields at:2 :: value.
+	
+	withDayTrack := fields at:3 :: value.
+	
+	withEveningTrack := fields at:4 :: value.
+	
+	model programAt: programName :: notNil
+		ifTrue:[TavorError new messageText: 'לא ניתן ליצור תוכנית אקדמית עם שם קיים.' ; signal].
+
+	anAcademicProgram := AcademicProgram new.
+	
+	anAcademicProgram description: programName.
+	
+	withDayTrack 
+		ifTrue:[ | aDayTrack |
+			aDayTrack := AcademicTrack new.
+			
+			aDayTrack description: 'מסלול יום'.
+			
+			1 to: duration do:[:eachYearIndex | | aYear |
+			
+				aYear := AcademicYear new.
+				aYear description: ('שנה {1}' format:{eachYearIndex}).
+			
+				{ 'סמסטר א' . 'סמסטר ב' } do:[:eachName | | aSemester |
+					aSemester := Semester new.
+					aSemester description: eachName.
+					aYear addSemester: aSemester ].
+				
+				aDayTrack addAcademicYear: aYear ].
+			
+			anAcademicProgram addAcademicTrack: aDayTrack ].
+
+	withEveningTrack 
+		ifTrue:[ | anEveningTrack |
+			anEveningTrack := AcademicTrack new.
+			
+			anEveningTrack description: 'מסלול ערב'.
+			
+			1 to: duration do:[:eachYearIndex | | aYear |
+			
+				aYear := AcademicYear new.
+				aYear description: ('שנה {1}' format:{eachYearIndex}).
+			
+				{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' } do:[:eachName | | aSemester |
+					aSemester := Semester new.
+					aSemester description: eachName.
+					aYear addSemester: aSemester ].
+				
+				anEveningTrack addAcademicYear: aYear ].
+			
+			anAcademicProgram addAcademicTrack: anEveningTrack ].
+	
+	model addAcademicProgram: anAcademicProgram.
+	
+	CollegeBrowser open: model label: 'תוכניות לימוד'.
+	
+	model changed: #programs.
+	! !
+
+!TavorApplication methodsFor: 'programs' stamp: 'DF 1/10/2025 18:34:25'!
+addNewAcademicProgramDialog
+
+	| mold position aDialog |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold rtolStringField)
+		label: 'שם התוכנית';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+
+	(mold integerField)
+		label: 'שנות לימוד';
+		on: #propertyValue of: (ValueHolder with:4);
+		beRequired.
+
+	(mold checkboxField )
+		label: 'מסלול יום' ;
+		on: #propertyValue of: (ValueHolder with: true).
+	
+	(mold checkboxField )
+		label: 'מסלול ערב' ;
+		on: #propertyValue of: (ValueHolder with: true).
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'תוכנית לימודים חדשה'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addNewAcademicProgram: to: self with: mold fields.
+	
+! !
+
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 22:29:50'!
+addNewLecturerDialog
+
+	| mold position aDialog |
+	
+	mold := Mold new.
+	
+	mold rightToLeft: true.
+	
+	(mold rtolStringField)
+		label: 'שם המרצה';
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+
+	(mold selectField) rightToLeft: true ;
+		label: 'מעמד מרצה';
+		on: #listIndex of: (ListModel with: `{'סגל בכיר' . 'סגל זוטר' . 'מורה מן החוץ' }`:: listIndex: 1) ;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'מרצה חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addNewLecturer: to: model with: mold fields.
+	
+! !
+
 !TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:50:18'!
 import: aFileEntry
 
@@ -2631,7 +3305,7 @@ menuBar
 		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
 ! !
 
-!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 16:54:07'!
+!TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 18:15:10'!
 open
 
 	| aCollege |
@@ -2640,9 +3314,7 @@ open
 
 	aCollege invariant.
 
-	model := CollegeModel new.
-
-	model college: aCollege.
+	model := aCollege.
 ! !
 
 !TavorApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:55:06'!
@@ -2676,77 +3348,23 @@ showCollapsedWindows
 	
 	^menu! !
 
-!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:30:49'!
-addModule: aModule ToAcademicProgramDialog: model
+!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:24:09'!
+instance
 
-	| mold programs tracks years semesters aDialog position |
+	TheApplication 
+		ifNil:[
+			TheApplication := self new.
+			TheApplication menuBar.
+		].
 	
-	mold := Mold new.
-	
-	programs := ListMultiModel with: model college programNames.
-
-	tracks := ListMultiModel with: model college trackNames.
-	
-	years := ListMultiModel with: model college academicYearNames.
-
-	semesters := ListMultiModel with: model college semesterNames.
-	
-	mold rightToLeft: true.
-	
-	(mold integerField)
-		label: 'קוד הקורס';
-		on: #propertyValue of: (ValueHolder new propertyValue: (aModule ifNil:[nil] ifNotNil:[aModule code]) ; yourself);
-		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
-		beRequired.
-	(mold fields add: BidiSelectField new)
-		label: 'תוכנית לימודים';
-		on: #listIndex of: programs;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: BidiSelectField new)
-		label: 'מסלול לימודים';
-		on: #listIndex of: tracks;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: BidiSelectField new)
-		label: 'שנת לימוד';
-		on: #listIndex of: years;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	(mold fields add: BidiSelectField new)
-		label: 'סמסטר';
-		on: #listIndex of: semesters;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.
-	
-	position := UISupervisor ui activeHand morphPosition.
-
-	aDialog := mold openDialog: 'הוסף קורס לתוכניות לימודים'.
-	
-	aDialog morphPosition: position - (aDialog morphWidth@0).
-	
-	mold when: #edited send: #addModuleToAcademicProgram: to: model with: mold fields.
+	^TheApplication
 	
 ! !
 
-!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/1/2025 20:56:24'!
+!TavorApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:24:42'!
 open
 
-	| anApp |
-	
-	anApp := self new.
-
-	anApp menuBar.
-	
-	anApp open.
+	self instance menuBar ; open.	
 ! !
 
 !MenuMorph methodsFor: '*Tavor' stamp: 'DF 1/7/2025 16:17:39'!
