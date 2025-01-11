@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 8 January 2025 at 7:25:33 pm'!
+'From Cuis7.1 [latest update: #6676] on 11 January 2025 at 4:52:52 pm'!
 'Description '!
-!provides: 'MenuBar' 1 0!
+!provides: 'MenuBar' 1 4!
 SystemOrganization addCategory: 'MenuBar'!
 
 
@@ -42,16 +42,6 @@ MenuMorph subclass: #MenuBarMenuMorph
 	category: 'MenuBar'!
 !classDefinition: 'MenuBarMenuMorph class' category: 'MenuBar'!
 MenuBarMenuMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #MenuRightToLeftItemMorph category: 'MenuBar'!
-MenuItemMorph subclass: #MenuRightToLeftItemMorph
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MenuBar'!
-!classDefinition: 'MenuRightToLeftItemMorph class' category: 'MenuBar'!
-MenuRightToLeftItemMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #MenuBarButtonMorph category: 'MenuBar'!
@@ -198,7 +188,7 @@ initialize
 	
 	menus := OrderedCollection new.! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:40:23'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 13:17:46'!
 menus: anOrderedCollection
 
 "
@@ -236,7 +226,7 @@ MenuBar menus: {
 		
 		each at:2 :: isKindOf: Symbol ::
 			ifTrue:[ 
-				menu := MenuGenerator new action: (each at:2) ; target: (each at:3) ; index: index ; yourself ]
+				menu := DynamicMenuGenerator new action: (each at:2) ; target: (each at:3) ; index: index ; yourself ]
 			ifFalse:[
 				menu := MenuBarMenuMorph new.
 				menu index: index; color: Color white ; borderWidth: 1; borderColor: Color black.
@@ -253,7 +243,7 @@ MenuBar menus: {
 	
 ! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 21:03:12'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 16:36:35'!
 menusRightToLeft: anOrderedCollection
 	
 	self menus: 
@@ -265,7 +255,7 @@ menusRightToLeft: anOrderedCollection
 						(eachMenu second collect:[:eachEntry |
 							eachEntry  = $| 
 								ifTrue:[ eachEntry ]
-								ifFalse:[ { eachEntry at:1 :: reverse . eachEntry at:2 . eachEntry at:3 } ] ] ) } ] ]).
+								ifFalse:[ { eachEntry at:1  . eachEntry at:2 . eachEntry at:3 } ] ] ) } ] ]).
 				
 	self axisEdgeWeight: #rowRight.! !
 
@@ -344,12 +334,12 @@ new
 
 	^self newRow! !
 
-!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 22:01:44'!
+!MenuBarMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 12:52:03'!
 add: aString target: target action: aSymbol argumentList: argList
 	"Append a menu item with the given label. If the item is selected, it will send the given selector to the target object with the given arguments. If the selector takes one more argument than the number of arguments in the given list, then the triggering event is supplied as as the last argument.  Answer the appended menu item."
 
 	| item |
-	item := MenuRightToLeftItemMorph new
+	item := BidiMenuItemMorph new
 		contents: aString;
 		target: target selector: aSymbol arguments: argList asArray.
 	self addMorphBack: item.
@@ -391,36 +381,6 @@ open
 	self openInWorld.
 	
 ! !
-
-!MenuRightToLeftItemMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/16/2024 22:00:17'!
-drawOn: aCanvas 
-	| stringColor leftEdge magnifiedIcon len |
-
-	stringColor := color.
-	isSelected & isEnabled
-		ifTrue: [
-			aCanvas fillRectangle: self localBounds color: Theme current menuHighlight].
-	leftEdge := 0.
-
-	self hasMarker ifTrue: [
-		leftEdge := leftEdge + submorphs first morphWidth + 8 ].
-
-	icon ifNotNil: [
-		magnifiedIcon := self magnifiedIcon.
-		aCanvas image: magnifiedIcon at: leftEdge+1 @ (magnifiedIcon height *1//10).
-		leftEdge := magnifiedIcon width *12//10 + leftEdge].
-
-	len := font widthOfString: contents.
-	
-	aCanvas
-		drawString: contents
-		at: ( self morphWidth - len ) @ 1
-		font: self fontToUse
-		color: stringColor.
-	subMenu ifNotNil: [
-		aCanvas
-			image: self class subMenuMarker
-			at: extent x - self class subMenuMarker width @ (extent y - self class subMenuMarker height // 2) ]! !
 
 !MenuBarButtonMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 18:09:32'!
 deselect

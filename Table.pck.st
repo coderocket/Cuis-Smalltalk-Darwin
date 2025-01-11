@@ -1,12 +1,12 @@
-'From Cuis7.1 [latest update: #6676] on 10 January 2025 at 8:44:00 pm'!
+'From Cuis7.1 [latest update: #6676] on 11 January 2025 at 10:27:29 pm'!
 'Description '!
-!provides: 'Table' 1 4!
+!provides: 'Table' 1 11!
 SystemOrganization addCategory: #Table!
 
 
 !classDefinition: #TabbedGroup category: #Table!
 LayoutMorph subclass: #TabbedGroup
-	instanceVariableNames: 'selected'
+	instanceVariableNames: 'selected tabs'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
@@ -24,14 +24,34 @@ LayoutMorph subclass: #TableCell
 TableCell class
 	instanceVariableNames: ''!
 
+!classDefinition: #WeeklyTimeTableCell category: #Table!
+TableCell subclass: #WeeklyTimeTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Table'!
+!classDefinition: 'WeeklyTimeTableCell class' category: #Table!
+WeeklyTimeTableCell class
+	instanceVariableNames: ''!
+
 !classDefinition: #TableMorph category: #Table!
 LayoutMorph subclass: #TableMorph
-	instanceVariableNames: 'numRows numColumns target'
+	instanceVariableNames: 'numRows numColumns target cellFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
 !classDefinition: 'TableMorph class' category: #Table!
 TableMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #WeeklyTimeTable category: #Table!
+TableMorph subclass: #WeeklyTimeTable
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Table'!
+!classDefinition: 'WeeklyTimeTable class' category: #Table!
+WeeklyTimeTable class
 	instanceVariableNames: ''!
 
 !classDefinition: #OffsetLabelMorph category: #Table!
@@ -46,7 +66,7 @@ OffsetLabelMorph class
 
 !classDefinition: #PluggableTableMorph category: #Table!
 PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage'
+	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
@@ -65,7 +85,7 @@ TableCellItem class
 	instanceVariableNames: ''!
 
 
-!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 23:14:58'!
+!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:27:57'!
 build: labelsAndMorphs
 
 	| buttons buttonColor |
@@ -82,16 +102,19 @@ build: labelsAndMorphs
 		aButton := PluggableButtonMorph model: self stateGetter: #selected: action: #select: label: (labelsAndMorphs at:i) key.
 		aButton color: buttonColor.
 		aButton actionArgument: i ; stateArgument: i.
-		buttons addMorph: aButton proportionalWidth:1.0 ].
+		aButton layoutSpec proportionalWidth: 1.0.
+		buttons addMorph: aButton ].
 	
 	self addMorph: buttons fixedHeight: buttons minimumExtent y.
-	
-	labelsAndMorphs do:[:each | self addMorphUseAll: each value ].
 
-	1 to: labelsAndMorphs size - 1 do:[:i | 
+	tabs := LayoutMorph newColumn.
+		
+	labelsAndMorphs do:[:each | tabs addMorphUseAll: each value ].
+
+	1 to: labelsAndMorphs size do:[:i | 
 		labelsAndMorphs at:i :: value hide ].
 	
-	! !
+	self addMorph: tabs.! !
 
 !TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 22:44:36'!
 initialize
@@ -100,14 +123,18 @@ initialize
 	
 	selected := 1.! !
 
-!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 23:00:55'!
+!TabbedGroup methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:25:48'!
 select: aButtonIndex
 
-	submorphs at: selected  :: hide.
+	| n |
+	
+	n := tabs submorphs size + 1.
+	
+	tabs submorphs at: n - selected  :: hide.
 
 	selected := aButtonIndex.
 	
-	submorphs at: aButtonIndex :: show.
+	tabs submorphs at: n - aButtonIndex :: show.
 	
 	self redrawNeeded ! !
 
@@ -161,21 +188,6 @@ example2
 
 	aTabbedGroup openInWorld! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:41:32'!
-acceptDroppingMorph: aMorph event: evt
-	
-	aMorph morphExtent: self morphExtent.
-	
-	self addMorph: aMorph proportionalWidth: 1.0.! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 20:31:25'!
-allowsMorphDrop
-	^true! !
-
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:05:50'!
-allowsSubmorphDrag
-	^row ~= 1 and:[column ~= 7]! !
-
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:46'!
 column
 	^column! !
@@ -224,24 +236,39 @@ select: aBoolean
 selected
 	^selected! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:17:44'!
-wantsDroppedMorph: aMorph event: evt
-	
-	^aMorph isKindOf: TableCellItem :: and: [column ~= 7] and: 	[row ~= 1]
-! !
-
-!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:22:14'!
+!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:05:42'!
 row: aRowIndex column: aColumnIndex
 
 	| aCell |
 	
-	aCell := self newRow.
+	aCell := self newColumn.
 	
 	aCell row: aRowIndex; column: aColumnIndex.
 	aCell borderWidth:1 ; borderColor: (Color fromHexString:'#b8e3fc').
 	aCell color: Color transparent.
 
 	^aCell! !
+
+!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:52:54'!
+acceptDroppingMorph: aMorph event: evt
+	
+	aMorph morphExtent: self morphExtent.
+	
+	self addMorph: aMorph proportionalWidth: 1.0.! !
+
+!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:53:02'!
+allowsMorphDrop
+	^true! !
+
+!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:52:32'!
+allowsSubmorphDrag
+	^row ~= 1 and:[column ~= 7]! !
+
+!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:53:17'!
+wantsDroppedMorph: aMorph event: evt
+	
+	^aMorph isKindOf: TableCellItem :: and: [column ~= 7] and: 	[row ~= 1]
+! !
 
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:53:06'!
 adjustExtent
@@ -253,7 +280,7 @@ at: row at: col
 
 	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:24:40'!
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:51:00'!
 build
 
 	| columns |
@@ -272,7 +299,7 @@ build
 		
 		1 to: numRows 
 			do:[ :rowIndex | | aTableCell |
-				aTableCell := TableCell row: numRows - rowIndex + 1 column: numColumns - columnIndex + 1.
+				aTableCell := cellFactory row: numRows - rowIndex + 1 column: numColumns - columnIndex + 1.
 				target 
 					ifNotNil:[aTableCell when: #clicked send: #clickedCell: to: target with: aTableCell ].
 				rows add: aTableCell.			 ].
@@ -288,7 +315,11 @@ build
 	
 ! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 19:45:12'!
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:50:26'!
+cellFactory: aClass
+	cellFactory := aClass! !
+
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:50:36'!
 initialize
 
 	super initialize.
@@ -297,6 +328,7 @@ initialize
 	
 	numColumns := 3.
 	
+	cellFactory := TableCell.
 	
 	! !
 
@@ -324,6 +356,79 @@ target: anObject
 new
 	^self newRow! !
 
+!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:24:25'!
+acceptDroppingMorph: aMorph event: evt
+
+	1 to: numColumns - 1 do:[:columnIndex |
+		2 to: numRows - 1 do:[:rowIndex | | cell morphs |
+			
+			morphs := aMorph at: rowIndex at:columnIndex :: submorphs.
+			
+			cell := self at:rowIndex at:columnIndex.
+			
+			morphs do:[:each | cell addMorph: each ] ] ].
+	
+	aMorph delete! !
+
+!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:24:51'!
+allowsMorphDrop
+	^true! !
+
+!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:55:36'!
+initialize
+
+	super initialize.
+	
+	cellFactory := WeeklyTimeTableCell ! !
+
+!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:25:04'!
+wantsDroppedMorph: aMorph event: evt
+	
+	^aMorph isKindOf: TableMorph :: and: [numRows = aMorph numRows] and:[numColumns = aMorph numColumns]
+ ! !
+
+!WeeklyTimeTable class methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:27:45'!
+example
+
+	"self example"
+	
+	| aTableMorph |
+
+	aTableMorph := self new.
+	
+	aTableMorph morphExtent:800@600.
+
+	aTableMorph openInWorld.
+	! !
+
+!WeeklyTimeTable class methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:28:53'!
+new
+
+	| aTableMorph days |
+
+	aTableMorph := self newRow.
+
+	aTableMorph numRows: 17 ; numColumns:7.
+
+	aTableMorph color: Color white.
+
+	aTableMorph build.
+
+	days := { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' }.
+
+	1 to: 6 do:[:i | | label |
+		label := LabelMorph contents: (days at:i).
+		label layoutSpec offAxisEdgeWeight: 0.5.
+		aTableMorph at:1 at:i :: beColumn addMorph:  label. ].
+
+	8 to:23 do:[:h | | label |
+		label := OffsetLabelMorph contents:('{1}' format:{h}).
+		label layoutSpec offAxisEdgeWeight: 0.2.
+		aTableMorph at: h - 6 at:7 :: beColumn :: addMorph:  label. ].
+
+	^aTableMorph
+	! !
+
 !OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 22:19:44'!
 drawOn: aCanvas
 
@@ -339,6 +444,11 @@ drawOn: aCanvas
 		font: self fontToUse
 		color: color.
 ! !
+
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:54:35'!
+cellFactory: aClass
+
+	scroller cellFactory: aClass! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:41:52'!
 clickedCell: aTableCell
@@ -356,11 +466,52 @@ clickedCell: aTableCell
 				ifNotNil:[		model perform: selectRowMessage with: aTableCell row ] ]
 ! !
 
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 13:14:05'!
+getMenu
+	"Answer the right-click (contextual) menu."
+	"Spec for the menu and shortcut keys.
+	Each entry is
+		#(itemId 			'menu item label'    shortcut    receiverGetter    selector     iconOrNil(optional)    'helpText(optional)'    selectorArgument(optional))
+		- itemId is a number (integer or float). It specifies the position of the item in the menu, and is also an id, allowing for overrides and deletions.
+		- label is a string or symbol. Symbol means self updating menu entry. nil means just keyboard shortcut, no menu entry.
+		- shortcut is a Character or nil
+		- receiverGetter sent to the widget to get the actual receiver for selector.
+			Typically #window, #model or #editor. If nil, receiver is the widget itself.
+		- selector is #aSymbol. Usually no arguments, or one single argument in 8th entry. 
+			If a Number (multiple of 1000), indicates a subMenu. ItemsIds must be in range. See BrowserWindow>>#classListMenuSpec.
+			If nil, the menu entry is created but disabled. The keyboard shortcut is disabled too.
+		- icon may be nil. It is also optional (but must be there if there is help text)
+		- help text is optional
+		- selectorArgument is optional. If selector takes an argument, and selectorArgument is not provided, the argument is self.
+	Entries of size 2 are separators, unless first character is $X, meaning 'remove menu item'.
+	An entry of size 3 (usually with key 0 and at the first position), if present, tells a menu title, whether to #addStayUpIcons.
+	"
+
+	| menuNshortcutsSpecs itemSpec menu submenus |
+	menuNshortcutsSpecs := self allMenuNshortcutsSpecs.
+	menuNshortcutsSpecs ifEmpty: [ ^nil ].
+	
+	menu := menuFactory new.
+	rightToLeft ifTrue:[menu menuItemFactory: BidiMenuItemMorph ].
+	submenus := nil.
+	menuNshortcutsSpecs keys sorted do: [ :key |
+		itemSpec := menuNshortcutsSpecs at: key.
+		itemSpec size <= 2 ifTrue: [
+				self addLineTo: menu fromSpec: itemSpec submenus: submenus ]
+			ifFalse: [ itemSpec size = 3 ifTrue: [
+				self addTitleTo: menu fromSpec: itemSpec ]
+			ifFalse: [ itemSpec fifth isNumber ifTrue: [
+				submenus ifNil: [submenus := Dictionary new ].
+				self addSubmenuTo: menu fromSpec: itemSpec submenus: submenus ]
+			ifFalse: [
+				self addItemTo: menu fromSpec: itemSpec submenus: submenus ]]]].
+	^ menu! !
+
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:58:54'!
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:44'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 12:59:48'!
 initialize
 	
 	super initialize.
@@ -370,13 +521,20 @@ initialize
 	scroller target: self.
 	
 	rightToLeft := false.
+	
 	headerRow := false.
+	
+	menuFactory := MenuMorph.
 	
 ! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:23:40'!
 innerMorphClass
 	^TableMorph! !
+
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 12:59:36'!
+menuFactory: aClass
+	menuFactory := aClass! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:59:11'!
 rightToLeft: aBoolean
@@ -402,7 +560,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:34:24'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 22:16:33'!
 update: aSymbol 
 
 	| nrows ncols header table |
@@ -434,11 +592,14 @@ update: aSymbol
 				scroller at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		]
 		ifFalse:[
 			1 to:ncols do:[:colIndex |
-				scroller at: 1 at:colIndex ::  axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:1 :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
+				scroller at: 1 at:colIndex :: addMorph: (table at:1 :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
 			
 	2 to: nrows do:[:rowIndex |
-		1 to:ncols do:[:colIndex |
-			scroller at: rowIndex at:colIndex :: axisEdgeWeight: (rightToLeft ifTrue:[#rowRight] ifFalse:[#rowLeft]) :: addMorph: (table at:rowIndex :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
+		1 to:ncols do:[:colIndex | | cell items |
+			items := table at: rowIndex :: at:colIndex.
+			cell := scroller at: rowIndex at:colIndex.
+			items do:[:eachItem | 
+			cell addMorph: (eachItem morph rightToLeft: rightToLeft ; yourself )] ] ] .
 ! !
 
 !TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
