@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 8:25:09 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 10:50:58 pm'!
 'Description '!
-!provides: 'Tavor' 1 314!
+!provides: 'Tavor' 1 318!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -293,13 +293,19 @@ TavorApplication class
 	instanceVariableNames: ''!
 
 
-!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:38:44'!
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:48:55'!
 aboutToGrab: submorph
 
+	| aDuplicateMorph |
+	
 	submorph isKindOf: AssignmentMorph 
 		:: ifFalse:[^nil].
 	
-	^submorph duplicate model: submorph model ; expand ; yourself! !
+	aDuplicateMorph := submorph duplicate model: submorph model ; expand ; yourself.
+	
+	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
+	
+	^aDuplicateMorph ! !
 
 !AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:59:04'!
 allowsSubmorphDrag
@@ -311,7 +317,7 @@ aboutToBeGrabbedBy: aHand
 	^model index = 0 
 		ifTrue:[self] ifFalse:[nil]! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:23:49'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:16:09'!
 build
 
 	| aLabelMorph |
@@ -320,7 +326,7 @@ build
 	
 	self beColumn.
 	
-	aLabelMorph := LabelMorph contents: model description.
+	aLabelMorph := NarrowLabelMorph contents: model description.
 	
 	self color: (model expanded			 
 		ifTrue:[
@@ -330,6 +336,10 @@ build
 		ifFalse:[Color transparent]).	
 	
 	self addMorphUseAll: aLabelMorph! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:23:32'!
+clipsSubmorphs
+	^true! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:14:18'!
 expand
@@ -342,14 +352,18 @@ expand
 	
 	self color: (Color green alpha:0.3)! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:19:16'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:50:20'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	self assert: model index = 0.
 	
+	Transcript show: anEvent formerOwner class; cr.
+	
 	newOwnerMorph isWorldMorph 
 		ifTrue:[
-			model unassign.
+			anEvent formerOwner isKindOf: WeeklyTimeTableCell
+				::ifTrue:[ 
+					model unassign].
 			^self delete ].
 	
 	newOwnerMorph 	isKindOf: WeeklyTimeTableCell 
@@ -472,12 +486,18 @@ trackNames
 
 	^self tracks collect:[:each | each description] ! !
 
-!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 16:46:00'!
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/14/2025 22:01:12'!
 tracks
 	
+	| programs |
+	
 	programIndex 	= 0 ifTrue:[^{}].
+	
+	programs := self programs.
+	
+	programs ifEmpty:[^{}].
 		
-	^self programs at: programIndex :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
+	^programs at: programIndex :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
 ! !
 
 !AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 16:46:21'!
@@ -697,7 +717,7 @@ yearSelectionAt: anIndex put: aBoolean
 		
 	self changed: #semesterNames; changed: #unitsTable ; changed: #summary ! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:42:38'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/14/2025 22:01:33'!
 years
 	
 	| tracks |
@@ -705,6 +725,8 @@ years
 	trackIndex = 0 ifTrue:[^{}].
 	
 	tracks := self tracks.
+	
+	tracks ifEmpty:[^{}].
 	
 	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !

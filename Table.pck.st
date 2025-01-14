@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 8:25:07 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 10:32:37 pm'!
 'Description '!
-!provides: 'Table' 1 17!
+!provides: 'Table' 1 19!
 SystemOrganization addCategory: #Table!
 
 
@@ -62,6 +62,16 @@ TableMorph subclass: #WeeklyTimeTable
 	category: 'Table'!
 !classDefinition: 'WeeklyTimeTable class' category: #Table!
 WeeklyTimeTable class
+	instanceVariableNames: ''!
+
+!classDefinition: #NarrowLabelMorph category: #Table!
+LabelMorph subclass: #NarrowLabelMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Table'!
+!classDefinition: 'NarrowLabelMorph class' category: #Table!
+NarrowLabelMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #OffsetLabelMorph category: #Table!
@@ -455,6 +465,24 @@ new
 
 	^aTableMorph
 	! !
+
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:32:31'!
+drawOn: aCanvas
+
+	| aForm canvas |
+	
+	aForm := Form extent: self morphExtent depth: Display depth.
+	
+	canvas := MorphicCanvas onForm: aForm.
+	
+	super drawOn: canvas.
+	
+	aCanvas image: aForm at:0@0.! !
+
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:17:34'!
+minimumExtent
+
+	^ 0@0! !
 
 !OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 22:19:44'!
 drawOn: aCanvas
