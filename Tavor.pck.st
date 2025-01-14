@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 11 January 2025 at 10:27:27 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 8:25:09 pm'!
 'Description '!
-!provides: 'Tavor' 1 278!
+!provides: 'Tavor' 1 314!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -22,14 +22,24 @@ Error subclass: #TavorError
 TavorError class
 	instanceVariableNames: ''!
 
-!classDefinition: #ModuleTableCell category: #'Tavor-Morphic'!
-TableCell subclass: #ModuleTableCell
+!classDefinition: #AssignmentTableCell category: #'Tavor-Morphic'!
+TableCell subclass: #AssignmentTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
-!classDefinition: 'ModuleTableCell class' category: #'Tavor-Morphic'!
-ModuleTableCell class
+!classDefinition: 'AssignmentTableCell class' category: #'Tavor-Morphic'!
+AssignmentTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignmentMorph category: #'Tavor-Morphic'!
+TableCellItem subclass: #AssignmentMorph
+	instanceVariableNames: 'model'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'AssignmentMorph class' category: #'Tavor-Morphic'!
+AssignmentMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #TextFieldSentence category: #'Tavor-Morphic'!
@@ -44,7 +54,7 @@ TextFieldSentence class
 
 !classDefinition: #AcademicProgramBrowser category: #'Tavor-Morphic'!
 BidiSystemWindow subclass: #AcademicProgramBrowser
-	instanceVariableNames: 'theProgram theTrack theYear theSemester selectedYears selectedSemesters theUnit'
+	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex selectedYears selectedSemesters theUnit'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -74,7 +84,7 @@ ModuleBrowser class
 
 !classDefinition: #StencilBrowser category: #'Tavor-Morphic'!
 BidiSystemWindow subclass: #StencilBrowser
-	instanceVariableNames: 'theProgram theTrack theYear theSemester theStencil theAssignment'
+	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex stencilIndex theAssignment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -262,6 +272,16 @@ Object subclass: #TavorExample
 TavorExample class
 	instanceVariableNames: ''!
 
+!classDefinition: #AssignmentProxy category: #'Tavor-Morphic'!
+Object subclass: #AssignmentProxy
+	instanceVariableNames: 'assignment expanded index collision'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'AssignmentProxy class' category: #'Tavor-Morphic'!
+AssignmentProxy class
+	instanceVariableNames: ''!
+
 !classDefinition: #TavorApplication category: #'Tavor-Morphic'!
 Object subclass: #TavorApplication
 	instanceVariableNames: 'model lastImportDirectory'
@@ -273,14 +293,100 @@ TavorApplication class
 	instanceVariableNames: ''!
 
 
-!ModuleTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 22:22:07'!
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:38:44'!
 aboutToGrab: submorph
 
-	^BoxedMorph new! !
+	submorph isKindOf: AssignmentMorph 
+		:: ifFalse:[^nil].
+	
+	^submorph duplicate model: submorph model ; expand ; yourself! !
 
-!ModuleTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:59:04'!
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:59:04'!
 allowsSubmorphDrag
 	^row ~= 1 ! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 19:22:51'!
+aboutToBeGrabbedBy: aHand
+
+	^model index = 0 
+		ifTrue:[self] ifFalse:[nil]! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:23:49'!
+build
+
+	| aLabelMorph |
+	
+	self removeAllMorphs.
+	
+	self beColumn.
+	
+	aLabelMorph := LabelMorph contents: model description.
+	
+	self color: (model expanded			 
+		ifTrue:[
+			model collision
+				ifTrue:[Color red alpha: 0.3]
+				ifFalse:[ Color green alpha:0.3] 		]
+		ifFalse:[Color transparent]).	
+	
+	self addMorphUseAll: aLabelMorph! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:14:18'!
+expand
+
+	| code |
+	
+	code := '{1}' format:{model assignment unit module code} :: reverse.
+	
+	self submorphs first contents: ('{1} {2} {3}' format:{ code . model assignment unit module description . model assignment unit description }).
+	
+	self color: (Color green alpha:0.3)! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:19:16'!
+justDroppedInto: newOwnerMorph event: anEvent 
+
+	self assert: model index = 0.
+	
+	newOwnerMorph isWorldMorph 
+		ifTrue:[
+			model unassign.
+			^self delete ].
+	
+	newOwnerMorph 	isKindOf: WeeklyTimeTableCell 
+		:: ifTrue:[ 
+			model assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6			 ]! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 19:15:41'!
+justGrabbedFrom: formerOwner
+
+	| rows |
+	
+	self assert: model index = 0.
+	
+	formerOwner isKindOf: WeeklyTimeTableCell :: 
+		ifFalse:[^self].
+		
+	rows := formerOwner owner submorphs.
+
+	0 to: model duration - 2 	do:[:index |
+		
+		rows at: rows size - (formerOwner row + index) :: submorphs first delete ].
+	
+	color := 	color alpha: 0.5.
+! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:39:17'!
+model
+	^model! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:29:31'!
+model: anAssignment
+	model := anAssignment! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 19:08:52'!
+rightToLeft: aBoolean
+
+	submorphs first rightToLeft: aBoolean! !
 
 !TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 21:10:29'!
 build: aStringTemplate
@@ -324,30 +430,24 @@ initialize
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
+!AcademicProgramBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:51:13'!
+initialExtent
+	^ 1000 @ 620! !
+
 !AcademicProgramBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:02:31'!
 update: aSymbol
 	self changed: aSymbol! !
 
-!AcademicProgramBrowser methodsFor: 'programs' stamp: 'DF 1/10/2025 18:06:34'!
+!AcademicProgramBrowser methodsFor: 'programs' stamp: 'DF 1/12/2025 16:46:00'!
 programIndex
 	
-	^ theProgram! !
+	^ programIndex! !
 
-!AcademicProgramBrowser methodsFor: 'programs' stamp: 'DF 1/10/2025 18:50:56'!
+!AcademicProgramBrowser methodsFor: 'programs' stamp: 'DF 1/12/2025 16:47:25'!
 programIndex: anIndex
 
-	theProgram := anIndex.
+	programIndex := anIndex.
 
-	theTrack := 0.
-	
-	theYear := 0.
-	
-	theSemester := 0.
-	
-	selectedYears removeAll.
-	
-	selectedSemesters removeAll.
-		
 	self changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #summary ; changed: #unitsTable! !
 
 !AcademicProgramBrowser methodsFor: 'programs' stamp: 'DF 1/10/2025 18:07:02'!
@@ -355,23 +455,15 @@ programs
 
 	^ model programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
 
-!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:07:24'!
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 16:46:08'!
 trackIndex
 	
-	^ theTrack! !
+	^ trackIndex! !
 
-!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:51:22'!
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 16:49:01'!
 trackIndex: anIndex
 
-	theTrack := anIndex.
-	
-	theYear := 0.
-	
-	theSemester := 0.
-	
-	selectedYears removeAll.
-	
-	selectedSemesters removeAll.	
+	trackIndex := anIndex.
 	
 	self changed: #yearNames; changed: #semesterNames	 ; changed: #summary; changed: #unitsTable! !
 
@@ -380,104 +472,97 @@ trackNames
 
 	^self tracks collect:[:each | each description] ! !
 
-!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/10/2025 18:07:39'!
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 16:46:00'!
 tracks
 	
-	theProgram 	= 0 ifTrue:[^{}].
+	programIndex 	= 0 ifTrue:[^{}].
 		
-	^self programs at: theProgram :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
+	^self programs at: programIndex :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
 ! !
 
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:07:55'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 16:46:21'!
 semesterIndex
 	
-	^ theSemester! !
+	^ semesterIndex! !
 
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:04'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 16:46:21'!
 semesterIndex: anIndex
 
-	theSemester := anIndex! !
+	semesterIndex := anIndex! !
 
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:09'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:05:24'!
 semesterNames
 
-	^ self semesters collect:[:each | each description ] :: asSet asOrderedCollection sort
+	^ self semesters collect:[:each | each description ] :: asOrderedCollection sort
 ! !
 
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:14'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:06:58'!
 semesterSelectionAt: anIndex
 	
-	| semesterDescription |
-	
-	semesterDescription := self semesterNames at: anIndex ifAbsent:[^false].
+	^ selectedSemesters includes: anIndex! !
 
-	^ selectedSemesters anySatisfy:[:aSemester | aSemester description = semesterDescription ]! !
-
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:52:08'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:07:21'!
 semesterSelectionAt: anIndex put: aBoolean
 
-	| semesters semesterDescription |
-	
-	semesterDescription := self semesterNames at: anIndex ifAbsent:[^self].
-	
-	semesters := self semesters select:[:eachSemester | eachSemester description = semesterDescription ].
-	
 	aBoolean 
 		ifTrue:[
-			selectedSemesters addAll: semesters ]
+			selectedSemesters add: anIndex ]
 		ifFalse:[
-			selectedSemesters removeAll: semesters ].
+			selectedSemesters remove: anIndex ].
 		
 	self changed: #unitsTable ; changed: #summary! !
 
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/10/2025 18:08:24'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:04:52'!
 semesters
 	
-	| semesters   |
+	| semesters years |
 	
 	semesters := Set new.
 	
-	selectedYears do:[:eachYear | 
-		semesters addAll: eachYear semesters ].
+	years := self years.
 	
-	^ semesters
+	selectedYears do:[:index | 
+		index <= years size 
+			ifTrue:[	semesters addAll: (years at:index) semesters ] ].
+	
+	^ semesters 
 ! !
 
-!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 20:23:45'!
+!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/12/2025 17:10:44'!
 selectEntitiesIn: aTuple 
 
 	" { a Semester . an AcademicYear . anAcademicTrack . an AcademicProgram } "
 	
-	theProgram := self programs find: (aTuple at: 4).
+	programIndex := self programs find: (aTuple at: 4).
 	
-	theTrack := self tracks find: (aTuple at:3). 
+	trackIndex := self tracks find: (aTuple at:3). 
 	
-	theYear := self years sort:[:x :y | x description <= y description ] :: find: (aTuple at:2).
+	yearIndex := self years find: (aTuple at:2).
 	
-	selectedYears add: (aTuple at:2).
+	selectedYears := Set with: yearIndex.
 	
-	theSemester := self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: find:(aTuple at:1).
+	semesterIndex := self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: find:(aTuple at:1).
 	
-	selectedSemesters add: (aTuple at:1).
+	selectedSemesters := Set with: semesterIndex.
 	
 	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #summary ; changed: #unitsTable.
 	
 	! !
 
-!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/11/2025 13:49:02'!
+!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/12/2025 17:12:21'!
 selectFirstEntitiesIn: aProgram
 
-	theProgram := self programs find: aProgram.
+	programIndex := self programs find: aProgram.
 	
-	theTrack := 1. 
+	trackIndex := 1. 
 	
-	theYear := 1.
+	yearIndex := 1.
 	
-	selectedYears add: (self years sort:[:x :y | x description <= y description ] :: at: theYear).
+	selectedYears := Set with: yearIndex.
 	
-	theSemester := 1.
+	semesterIndex := 1.
 	
-	selectedSemesters add: (self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: at: theSemester).
+	selectedSemesters := Set with: semesterIndex.
 	
 	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #summary ; changed: #unitsTable.
 	
@@ -514,27 +599,29 @@ summary
 	
 	^'סך הכול {1} שעות, {2} נקודות זכות.' format: { hours printString reverse . points printStringFractionDigits:1 :: reverse } :: reverse! !
 
-!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/10/2025 18:09:01'!
+!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/12/2025 17:35:56'!
 units
 
-	| units |
+	| selectedNames semesterNames semesters units |
 
 	units := OrderedCollection new.
+
+	semesterNames := self semesterNames.
 	
-	selectedYears asOrderedCollection sort:[:x :y | x description <= y description ] :: 
-	do:	[:eachYear |		
-		eachYear semesters select:[:each | selectedSemesters includes:each ] :: asOrderedCollection sort:[:x :y | x description <= y description ] :: 
-	do:[:eachSemester | 
-		eachSemester modules asOrderedCollection sort:[:x :y | x code <= y code ] :: 
-	do:[:eachModule |
-			eachModule units asOrderedCollection sort:[:x :y | x description <= y description] :: 
-	do:[:eachUnit |
-		units add: { eachUnit . eachSemester . eachYear } ] ] ] ].
+	selectedNames := 	selectedSemesters select:[:index | index <= semesterNames size ] :: collect:[:index |
+semesterNames at: index ].
+	
+	semesters := self semesters select:[:eachSemester | selectedNames includes: eachSemester description].
+	
+	semesters do:[:eachSemester |	
+		eachSemester modules asOrderedCollection sort:[:x :y | x code <= y code ] :: do:[:eachModule |
+			eachModule units asOrderedCollection sort:[:x :y | x description <= y description] :: do:[:eachUnit |
+				units add: { eachUnit . eachSemester  } ] ] ].
 	
 	^units
 ! !
 
-!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/11/2025 19:13:19'!
+!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 1/12/2025 19:30:19'!
 unitsTable
 
 	| table |
@@ -546,90 +633,80 @@ unitsTable
 	self units do:[:eachTuple | | unit semester year |
 		unit := eachTuple at:1.
 		semester := eachTuple at:2.
-		year := eachTuple at:3.
+		year := semester academicYear.
 		table add: { 
 			{ '{1}' format:{unit points} :: reverse } .  
 			{ '{1}' format:{unit duration} :: reverse } . 
 			{ unit description } . 
 			{ unit module description } . 
-			{ '{1}' format:{ unit module code } :: reverse } .
+			{ '{1}' format: {unit module code} :: reverse } .
 			{ semester description }  . 
 			{ year description } } ] .
 	
 	^table
 ! !
 
-!AcademicProgramBrowser methodsFor: 'initialization' stamp: 'DF 1/10/2025 18:09:42'!
+!AcademicProgramBrowser methodsFor: 'initialization' stamp: 'DF 1/12/2025 16:46:21'!
 initialize
 
 	super initialize.
 	
-	theProgram := 0.
+	programIndex := 0.
 	
-	theYear := 0.
+	yearIndex := 0.
 	
 	selectedYears := Set new.
 	
-	theTrack := 0.
+	trackIndex := 0.
 	
-	theSemester:= 0.
+	semesterIndex:= 0.
 	
 	selectedSemesters := Set new.
 	
 	theUnit := nil.
 	! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:20'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 16:46:14'!
 yearIndex
 	
-	^ theYear! !
+	^ yearIndex! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:24'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 16:46:14'!
 yearIndex: anIndex
 
-	theYear := anIndex! !
+	yearIndex := anIndex! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:28'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 16:50:11'!
 yearNames
 
-	^self years collect:[:each | each description ] :: asSet asOrderedCollection sort! !
+	^self years collect:[:each | each description ] ! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:33'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:13:46'!
 yearSelectionAt: anIndex
 	
-	| yearDescription |
-	
-	yearDescription := self yearNames at: anIndex ifAbsent:[^false].
+	^ selectedYears includes: anIndex! !
 
-	^ selectedYears anySatisfy:[:aYear | aYear description = yearDescription ]! !
-
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 20:09:08'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 16:52:03'!
 yearSelectionAt: anIndex put: aBoolean
 
-	| years yearDescription |
-	
-	yearDescription := self yearNames at: anIndex ifAbsent:[^self].
-	
-	years := self years select:[:eachYear | eachYear description = yearDescription ].
-	
 	aBoolean 
 		ifTrue:[
-			selectedYears addAll: years ]
+			selectedYears add: anIndex ]
 		ifFalse:[
-			selectedYears removeAll: years ].
-	
-	theSemester := 0.
-	
-	selectedSemesters removeAll.
+			selectedYears remove: anIndex ].
 		
 	self changed: #semesterNames; changed: #unitsTable ; changed: #summary ! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/10/2025 18:10:41'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:42:38'!
 years
-		
-	theTrack = 0 ifTrue:[^{}].
 	
-	^self tracks at: theTrack :: academicYears 
+	| tracks |
+		
+	trackIndex = 0 ifTrue:[^{}].
+	
+	tracks := self tracks.
+	
+	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !
 
 !AcademicProgramBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 18:52:22'!
@@ -731,26 +808,26 @@ addNewAcademicProgram: fields
 	self changed: #programs ; changed: #trackNames; changed: #yearNames; changed:#semesterNames ; changed: #summary.
 	! !
 
-!AcademicProgramBrowser methodsFor: 'menus' stamp: 'DF 1/10/2025 18:19:35'!
+!AcademicProgramBrowser methodsFor: 'menus' stamp: 'DF 1/12/2025 16:46:21'!
 import: aFileEntry
 
 	model import: aFileEntry.
 	
 	self programs notEmpty
-		ifTrue:[theProgram := 1].
+		ifTrue:[programIndex := 1].
 	
 	self tracks notEmpty
-		ifTrue:[theTrack := 1 ].
+		ifTrue:[trackIndex := 1 ].
 		
 	selectedYears removeAll.
 	
 	selectedYears addAll: self years.
 	
-	theYear := selectedYears ifEmpty:[0] ifNotEmpty:[1].
+	yearIndex := selectedYears ifEmpty:[0] ifNotEmpty:[1].
 	
 	selectedSemesters addAll: self semesters.
 	
-	theSemester := selectedSemesters ifEmpty:[0] ifNotEmpty: [1].
+	semesterIndex := selectedSemesters ifEmpty:[0] ifNotEmpty: [1].
 	
 	model changed: #programs ; changed: #trackNames ; changed: #yearNames ; changed: #semesterNames; changed: #unitsTable; changed: #summary.
 	
@@ -788,7 +865,7 @@ removeModuleFromSemester
 		
 	model changed: #unitsTable! !
 
-!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 1/11/2025 22:18:58'!
+!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 1/12/2025 19:38:33'!
 buildMorphicWindow
 
 	| topPanel semesters years tracks programs unitsMorph status |
@@ -815,8 +892,6 @@ buildMorphicWindow
 	
 	unitsMorph menuFactory: BidiMenuMorph.
 	
-	unitsMorph cellFactory: ModuleTableCell.
-
 	self changed: #unitsTable.
 	
 	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (unitsMorph -1.0p | 1.0p) | 0.8p)).
@@ -999,28 +1074,24 @@ updateModuleDetails
 			model college changed: #unitsTable ; changed: #summary.
 		]! !
 
+!StencilBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:51:26'!
+initialExtent
+	^ 1000 @ 620! !
+
 !StencilBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:53:57'!
 update: aSymbol
 	self changed: aSymbol! !
 
-!StencilBrowser methodsFor: 'programs' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'programs' stamp: 'DF 1/12/2025 17:54:23'!
 programIndex
 	
-	^ theProgram! !
+	^ programIndex! !
 
-!StencilBrowser methodsFor: 'programs' stamp: 'DF 1/11/2025 18:24:04'!
+!StencilBrowser methodsFor: 'programs' stamp: 'DF 1/12/2025 17:54:23'!
 programIndex: anIndex
 
-	theProgram := anIndex.
+	programIndex := anIndex.
 
-	theTrack := 0.
-	
-	theYear := 0.
-	
-	theSemester := 0.
-	
-	theStencil := 0.
-			
 	self changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable! !
 
 !StencilBrowser methodsFor: 'programs' stamp: 'DF 1/11/2025 17:53:57'!
@@ -1028,21 +1099,15 @@ programs
 
 	^ model programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
 
-!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:53'!
 trackIndex
 	
-	^ theTrack! !
+	^ trackIndex! !
 
-!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/11/2025 18:24:24'!
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:53'!
 trackIndex: anIndex
 
-	theTrack := anIndex.
-	
-	theYear := 0.
-	
-	theSemester := 0.
-	
-	theStencil := 0.
+	trackIndex := anIndex.
 	
 	self changed: #yearNames; changed: #semesterNames	 ; changed: #stencilNames; changed: #assignmentsTable! !
 
@@ -1051,52 +1116,60 @@ trackNames
 
 	^self tracks collect:[:each | each description] ! !
 
-!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:23'!
 tracks
 	
-	theProgram 	= 0 ifTrue:[^{}].
+	programIndex 	= 0 ifTrue:[^{}].
 		
-	^self programs at: theProgram :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
+	^self programs at: programIndex :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
 ! !
 
-!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:58:20'!
 semesterIndex
 	
-	^ theSemester! !
+	^ semesterIndex! !
 
-!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/11/2025 18:26:50'!
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:58:20'!
 semesterIndex: anIndex
 
-	theSemester := anIndex.
-	
-	theStencil := 0.
+	semesterIndex := anIndex.
 	
 	self changed: #stencilNames; changed: #assignmentsTable! !
 
-!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:57:57'!
 semesterNames
 
-	^ self semesters collect:[:each | each description ] :: asSet asOrderedCollection sort
+	^ self semesters collect:[:each | each description ] :: asOrderedCollection sort
 ! !
 
-!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/11/2025 18:27:54'!
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 20:19:53'!
 semesters
 	
-	theYear = 0 ifTrue:[^{}].
+	| years |
 	
-	^self years at: theYear :: semesters asOrderedCollection sort:[:x :y | x description <= y description ].! !
+	yearIndex = 0 ifTrue:[^{}].
+	
+	years := self years.
+	
+	years ifEmpty:[^{}].
+	
+	^ years at: yearIndex ifAbsent:[years last] :: semesters ! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 18:49:58'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 18:21:58'!
 assignments
 
-	theStencil = 0 ifTrue:[^{}].
+	| stencils |
 	
-	^self stencils asOrderedCollection sort:[:x :y | x description <= y description ] :: at: theStencil :: assignments asOrderedCollection sort:[:x :y | 
-		x unit module description < y unit module description 
-		or: [ x unit module description = y unit module description 
-				and: [x unit description <= y unit description ] ]  ]! !
+	stencilIndex = 0 ifTrue:[^{}].
+	
+	stencils := self stencils asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	stencils ifEmpty:[^{}].
+	
+	^stencils at: stencilIndex :: assignments asOrderedCollection sort:[:x :y | x before:y ].
+! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 19:19:51'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 19:31:17'!
 assignmentsTable
 
 	| table |
@@ -1123,10 +1196,46 @@ assignmentsTable
 					lecturers collect:[:eachLecturer | 						eachLecturer description]  ]  .
 			{ eachAssignment unit description } .
 			{ eachAssignment unit module description } .
-			{ '{1}' format:{ eachAssignment unit module code } :: reverse } } ] .
+			{ AssignmentProxy new assignment: eachAssignment ; yourself } } ] .
 	
 	^table
 ! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/14/2025 20:22:44'!
+autumnWeekly
+
+	| table |
+	
+	table := OrderedCollection new.
+	
+	table add: { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' . '' }.
+	
+	8 to:23 do:[:i | | aRow |
+		
+		aRow := OrderedCollection new.
+		
+		1 to:6 do:[:j |
+			aRow add: OrderedCollection new ].
+		
+		aRow add: {'{1}' format:{i} :: reverse}.
+		
+		table add: aRow ].	
+	
+	self assignments do:[:eachAssignment | 
+	
+		eachAssignment day notNil and: [eachAssignment hour notNil] ::
+			ifTrue:[ | cell | 
+				0 to: eachAssignment unit duration -1 do:[:index | | proxy |
+				
+					cell := table at: 	eachAssignment hour + index - 6 :: at: 7 - eachAssignment day.
+					proxy := AssignmentProxy new index:index ; assignment: eachAssignment ; expand ; yourself.
+					cell notEmpty
+						ifTrue:[proxy collision: true].
+						
+					cell add: proxy ] ] ].
+	
+	^table
+	! !
 
 !StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 18:07:32'!
 selectAssignment: aUnitIndex
@@ -1140,35 +1249,35 @@ selectAssignment: aUnitIndex
 	
 	! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 18:06:34'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 17:58:20'!
 selectEntitiesIn: aTuple 
 
 	" { a Stencil. a Semester . an AcademicYear . anAcademicTrack . an AcademicProgram } "
 	
-	theProgram := self programs find: (aTuple at: 5).
+	programIndex := self programs find: (aTuple at: 5).
 	
-	theTrack := self tracks find: (aTuple at:4). 
+	trackIndex := self tracks find: (aTuple at:4). 
 	
-	theYear := self years sort:[:x :y | x description <= y description ] :: find: (aTuple at:3).
+	yearIndex := self years sort:[:x :y | x description <= y description ] :: find: (aTuple at:3).
 	
-	theSemester := self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: find:(aTuple at: 2).
+	semesterIndex := self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: find:(aTuple at: 2).
 		
 	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable.
 	
 	! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 18:05:47'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 17:59:40'!
 selectFirstEntitiesIn: aProgram
 
-	theProgram := self programs find: aProgram.
+	programIndex := self programs find: aProgram.
 	
-	theTrack := 1. 
+	trackIndex := 1. 
 	
-	theYear := 1.
+	yearIndex := 1.
 	
-	theSemester := 1.
+	semesterIndex := 1.
 
-	theStencil := 1.
+	stencilIndex := 1.
 		
 	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable.
 	
@@ -1178,30 +1287,30 @@ selectFirstEntitiesIn: aProgram
 selectedAssignment
 	^theAssignment at:1! !
 
-!StencilBrowser methodsFor: 'initialization' stamp: 'DF 1/11/2025 18:03:34'!
+!StencilBrowser methodsFor: 'initialization' stamp: 'DF 1/12/2025 17:59:40'!
 initialize
 
 	super initialize.
 	
-	theProgram := 0.
+	programIndex := 0.
 	
-	theYear := 0.
+	yearIndex := 0.
 	
-	theTrack := 0.
+	trackIndex := 0.
 	
-	theSemester:= 0.
+	semesterIndex:= 0.
 	
-	theStencil := 0.
+	stencilIndex := 0.
 	! !
 
-!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:03:09'!
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/12/2025 17:59:40'!
 stencilIndex
-	^theStencil! !
+	^stencilIndex! !
 
-!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:27:04'!
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/12/2025 17:59:40'!
 stencilIndex: anInteger
 
-	theStencil := anInteger.
+	stencilIndex := anInteger.
 	
 	self changed: #assignmentsTable! !
 
@@ -1210,41 +1319,49 @@ stencilNames
 
 	^self stencils collect:[:each | each description]  :: asOrderedCollection sort! !
 
-!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:02:51'!
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/12/2025 20:20:05'!
 stencils
 		
-	theSemester = 0 ifTrue:[^{}].
+	| semesters |
 	
-	^self semesters at: theSemester :: stencils 
+	semesterIndex = 0 ifTrue:[^{}].
+	
+	semesters := self semesters.
+	
+	semesters ifEmpty:[^{}].
+	
+	^semesters at: semesterIndex ifAbsent:[semesters last] :: stencils 
 ! !
 
-!StencilBrowser methodsFor: 'years' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:56:34'!
 yearIndex
 	
-	^ theYear! !
+	^ yearIndex! !
 
-!StencilBrowser methodsFor: 'years' stamp: 'DF 1/11/2025 18:27:30'!
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 18:00:16'!
 yearIndex: anIndex
 
-	theYear := anIndex.
-	
-	theSemester := 0.
-	
-	theStencil := 0.
+	yearIndex := anIndex.
 	
 	self changed: #semesterNames	 ; changed: #stencilNames; changed: #assignmentsTable! !
 
-!StencilBrowser methodsFor: 'years' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:55:45'!
 yearNames
 
-	^self years collect:[:each | each description ] :: asSet asOrderedCollection sort! !
+	^self years collect:[:each | each description ] ! !
 
-!StencilBrowser methodsFor: 'years' stamp: 'DF 1/11/2025 17:53:57'!
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 20:19:39'!
 years
-		
-	theTrack = 0 ifTrue:[^{}].
 	
-	^self tracks at: theTrack :: academicYears 
+	| tracks |
+		
+	trackIndex = 0 ifTrue:[^{}].
+	
+	tracks := self tracks.
+	
+	tracks ifEmpty:[^{}].
+	
+	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !
 
 !StencilBrowser methodsFor: 'menus' stamp: 'DF 1/11/2025 18:11:43'!
@@ -1346,26 +1463,26 @@ addNewAcademicProgram: fields
 	self changed: #programs ; changed: #trackNames; changed: #yearNames; changed:#semesterNames ; changed: #summary.
 	! !
 
-!StencilBrowser methodsFor: 'menus' stamp: 'DF 1/11/2025 18:11:43'!
+!StencilBrowser methodsFor: 'menus' stamp: 'DF 1/12/2025 17:58:20'!
 import: aFileEntry
 
 	model import: aFileEntry.
 	
 	self programs notEmpty
-		ifTrue:[theProgram := 1].
+		ifTrue:[programIndex := 1].
 	
 	self tracks notEmpty
-		ifTrue:[theTrack := 1 ].
+		ifTrue:[trackIndex := 1 ].
 		
 	selectedYears removeAll.
 	
 	selectedYears addAll: self years.
 	
-	theYear := selectedYears ifEmpty:[0] ifNotEmpty:[1].
+	yearIndex := selectedYears ifEmpty:[0] ifNotEmpty:[1].
 	
 	selectedSemesters addAll: self semesters.
 	
-	theSemester := selectedSemesters ifEmpty:[0] ifNotEmpty: [1].
+	semesterIndex := selectedSemesters ifEmpty:[0] ifNotEmpty: [1].
 	
 	model changed: #programs ; changed: #trackNames ; changed: #yearNames ; changed: #semesterNames; changed: #assignmentsTable; changed: #summary.
 	
@@ -1403,7 +1520,7 @@ removeModuleFromSemester
 		
 	model changed: #assignmentsTable! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/11/2025 21:55:04'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/12/2025 23:29:04'!
 buildMorphicWindow
 
 	| topPanel stencils semesters years tracks programs assignmentsMorph aTabbedGroup autumn spring |
@@ -1429,11 +1546,17 @@ buildMorphicWindow
 	assignmentsMorph selectRowMessage: #selectAssignment:.
 	
 	assignmentsMorph menuFactory: BidiMenuMorph.
+	
+	assignmentsMorph cellFactory: AssignmentTableCell.
 
 	self changed: #assignmentsTable.
 
-	autumn := WeeklyTimeTable new.
+	autumn := PluggableTableMorph new.
+	
+	autumn model: self ; table: #autumnWeekly ; rightToLeft: true ; headerRow: true.
 
+	autumn cellFactory: WeeklyTimeTableCell.
+	
 	spring := WeeklyTimeTable new.
 	
 	aTabbedGroup := TabbedGroup newColumn.
@@ -1930,6 +2053,13 @@ addLecturer: aLecturer
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:16:56'!
 attachLecturer: aLecturer
 	lecturers add: aLecturer ! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
+before: anAssignment
+
+	^ unit module description < anAssignment unit module description 
+	or: [ unit module description = anAssignment unit module description 
+			and: [unit description <= anAssignment unit description ] ]! !
 
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:14:03'!
 day
@@ -3387,6 +3517,92 @@ example
 	^aCollege
 	! !
 
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:18:58'!
+assignDay: aDayInteger hour: anHourInteger
+
+	assignment day: aDayInteger ; hour: anHourInteger.
+	assignment unit module college changed: #assignmentsTable ! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:11:26'!
+assignment
+	^assignment! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 19:31:41'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:23:28'!
+collision
+	^collision! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:22:33'!
+collision: aBoolean
+	collision := true! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:28:12'!
+description
+
+	| code |
+	
+	code := '{1}' format:{ assignment unit module code } :: reverse.
+	
+	^expanded
+		ifTrue:[
+			'{1} {2} {3}' format:{ code . assignment unit module description . assignment unit description } ]
+		ifFalse:[
+			code].
+	
+! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 19:07:51'!
+duration
+	^assignment unit duration! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:37:38'!
+expand
+	expanded := true! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:11:49'!
+expanded
+	^expanded! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:11:21'!
+index
+	^index! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:09:28'!
+index: anInteger
+	index := anInteger! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 20:22:41'!
+initialize
+
+	expanded := false.
+	
+	index := 0.
+	
+	collision := false.! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:12:39'!
+morph
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := AssignmentMorph newRow model:self ; build ; yourself.
+	
+	"expanded 
+		ifTrue:[anAssignmentMorph expand]."
+		
+	^anAssignmentMorph 
+	
+	! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:17:13'!
+unassign
+
+	assignment day: nil ;  hour: nil.	
+	assignment unit module college changed: #assignmentsTable.! !
+
 !TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 21:02:31'!
 addModuleToAcademicProgram: fields
 
@@ -3660,7 +3876,7 @@ openSearchModuleDialog
 
 ! !
 
-!TavorApplication methodsFor: 'programs' stamp: 'DF 1/11/2025 17:54:11'!
+!TavorApplication methodsFor: 'programs' stamp: 'DF 1/12/2025 20:01:27'!
 addNewAcademicProgram: fields
 
 	| programName duration withDayTrack withEveningTrack anAcademicProgram aCollegeBrowser |
@@ -3724,8 +3940,6 @@ addNewAcademicProgram: fields
 	
 	aCollegeBrowser := AcademicProgramBrowser open: model label: 'תוכניות לימוד'.
 	
-	self halt.
-	
 	aCollegeBrowser selectFirstEntitiesIn: anAcademicProgram.
 	
 	model changed: #programs.
@@ -3772,24 +3986,26 @@ addNewAcademicProgramDialog
 	
 ! !
 
-!TavorApplication methodsFor: 'programs' stamp: 'DF 1/11/2025 17:54:11'!
+!TavorApplication methodsFor: 'programs' stamp: 'DF 1/12/2025 20:51:36'!
 openAcademicProgramBrowser
 
-	AcademicProgramBrowser open: model label: 'תוכניות לימוד'.
+	AcademicProgramBrowser open: model label: 'תוכניות לימוד' 
 ! !
 
-!TavorApplication methodsFor: 'stencils' stamp: 'DF 1/11/2025 17:33:39'!
+!TavorApplication methodsFor: 'stencils' stamp: 'DF 1/12/2025 20:23:03'!
 addNewStencil: fields
 
-	| programName trackName yearName semesterName aStencil program track year semester |
+	| stencilCode programName trackName yearName semesterName aStencil program track year semester |
 	
-	programName := fields at:1 :: value.
-
-	trackName := fields at:2 :: value.
+	stencilCode := fields at:1 :: value.
 	
-	yearName := fields at:3 :: value.
+	programName := fields at:2 :: value.
 
-	semesterName := fields at:4 :: value.
+	trackName := fields at:3 :: value.
+	
+	yearName := fields at:4 :: value.
+
+	semesterName := fields at:5 :: value.
 	
 	program := model programAt: programName.	
 
@@ -3800,6 +4016,8 @@ addNewStencil: fields
 	semester := year semesterAt: semesterName.
 		
 	aStencil := Stencil new.
+	
+	aStencil description: ('תבנית {1}' format:{stencilCode}).
 	
 	semester modules do:[:eachModule | 
 		
@@ -3814,11 +4032,11 @@ addNewStencil: fields
 	semester addStencil: aStencil.
 	
 	
-			
+	model changed: #stencilNames		 
 			
 		! !
 
-!TavorApplication methodsFor: 'stencils' stamp: 'DF 1/11/2025 17:28:06'!
+!TavorApplication methodsFor: 'stencils' stamp: 'DF 1/12/2025 20:15:10'!
 addNewStencilDialog
 
 	| mold position aDialog programs tracks years semesters |
@@ -3835,6 +4053,11 @@ addNewStencilDialog
 
 	mold rightToLeft: true.
 	
+	(mold integerField)
+		label: 'קוד התבנית' ;
+		on: #propertyValue of: ValueHolder new;
+		beRequired.
+		
 	(mold fields add: BidiSelectField new)
 		rightToLeft: true;
 		label: 'תוכנית לימודים';
@@ -3850,7 +4073,7 @@ addNewStencilDialog
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
-		addCondition:[:input :value | model programAt: (mold fields at: 1) value :: trackAt: value :: notNil ] 
+		addCondition:[:input :value | model programAt: (mold fields at: 2) value :: trackAt: value :: notNil ] 
 		labeled: 'לא קיים מסלול כזה בתוכנית הלימודים שבחרת.';
 		beRequired.
 	(mold fields add: BidiSelectField new)
@@ -3861,8 +4084,8 @@ addNewStencilDialog
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		addCondition:[:input :value | | program track |
-			program := 		model programAt: (mold fields at: 1) value.
-			track := program trackAt: (mold fields at:2 ) value.
+			program := 		model programAt: (mold fields at: 2) value.
+			track := program trackAt: (mold fields at:3 ) value.
 			track notNil and: [track academicYearAt: value :: notNil ] ] 
 		labeled: 'שנת לימוד זו לא קיימת במסלול שבחרת.';
 		beRequired.
@@ -3874,9 +4097,9 @@ addNewStencilDialog
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		addCondition:[:input :value | | program track year |
-			program := 		model programAt: (mold fields at: 1) value.
-			track := program trackAt: (mold fields at:2 ) value.
-			year := track isNil ifTrue:[nil] ifFalse:[track academicYearAt: (mold fields at:3) value].
+			program := 		model programAt: (mold fields at: 2) value.
+			track := program trackAt: (mold fields at:3 ) value.
+			year := track isNil ifTrue:[nil] ifFalse:[track academicYearAt: (mold fields at:4) value].
 			track notNil and: [year notNil] and:[year semesterAt: value :: notNil ] ] 
 		labeled: 'סמסטר זה לא קיימת במסלול שבחרת.';
 		beRequired.

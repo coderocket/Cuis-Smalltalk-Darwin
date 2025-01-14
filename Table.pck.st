@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 11 January 2025 at 10:27:29 pm'!
+'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 8:25:07 pm'!
 'Description '!
-!provides: 'Table' 1 11!
+!provides: 'Table' 1 17!
 SystemOrganization addCategory: #Table!
 
 
@@ -16,7 +16,7 @@ TabbedGroup class
 
 !classDefinition: #TableCell category: #Table!
 LayoutMorph subclass: #TableCell
-	instanceVariableNames: 'row column selected'
+	instanceVariableNames: 'row column selected model'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
@@ -32,6 +32,16 @@ TableCell subclass: #WeeklyTimeTableCell
 	category: 'Table'!
 !classDefinition: 'WeeklyTimeTableCell class' category: #Table!
 WeeklyTimeTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #TableCellItem category: #Table!
+LayoutMorph subclass: #TableCellItem
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Table'!
+!classDefinition: 'TableCellItem class' category: #Table!
+TableCellItem class
 	instanceVariableNames: ''!
 
 !classDefinition: #TableMorph category: #Table!
@@ -66,22 +76,12 @@ OffsetLabelMorph class
 
 !classDefinition: #PluggableTableMorph category: #Table!
 PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory'
+	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
 !classDefinition: 'PluggableTableMorph class' category: #Table!
 PluggableTableMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #TableCellItem category: #Table!
-BoxedMorph subclass: #TableCellItem
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Table'!
-!classDefinition: 'TableCellItem class' category: #Table!
-TableCellItem class
 	instanceVariableNames: ''!
 
 
@@ -201,16 +201,22 @@ handlesMouseDown: aMouseButtonEvent
 	
 	^aMouseButtonEvent mouseButton1Pressed ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:00:05'!
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:25'!
 initialize
 	super initialize.
 	
-	selected := false! !
+	selected := false.
+	
+	model := ActiveModel new.! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:26:21'!
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:30'!
+model
+	^model! !
+
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:22:05'!
 mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
 
-	self triggerEvent: #clicked ! !
+	model triggerEvent: #clicked ! !
 
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:43'!
 row
@@ -264,10 +270,23 @@ allowsMorphDrop
 allowsSubmorphDrag
 	^row ~= 1 and:[column ~= 7]! !
 
-!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:53:17'!
+!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:59:14'!
 wantsDroppedMorph: aMorph event: evt
 	
-	^aMorph isKindOf: TableCellItem :: and: [column ~= 7] and: 	[row ~= 1]
+	^column ~= 7 and: 	[row ~= 1]
+! !
+
+!TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
+justDroppedInto: newOwnerMorph event: anEvent 
+
+	super justDroppedInto: newOwnerMorph event: anEvent.
+	
+	color := color alpha:1.0! !
+
+!TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 18:59:51'!
+justGrabbedFrom: formerOwner
+	
+	color := 	color alpha: 0.5.
 ! !
 
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:53:06'!
@@ -280,7 +299,7 @@ at: row at: col
 
 	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:51:00'!
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:52'!
 build
 
 	| columns |
@@ -301,7 +320,7 @@ build
 			do:[ :rowIndex | | aTableCell |
 				aTableCell := cellFactory row: numRows - rowIndex + 1 column: numColumns - columnIndex + 1.
 				target 
-					ifNotNil:[aTableCell when: #clicked send: #clickedCell: to: target with: aTableCell ].
+					ifNotNil:[aTableCell model when: #clicked send: #clickedCell: to: target with: aTableCell ].
 				rows add: aTableCell.			 ].
 		
 		aColumn addAllMorphs: rows .
@@ -374,6 +393,26 @@ acceptDroppingMorph: aMorph event: evt
 allowsMorphDrop
 	^true! !
 
+!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 22:42:42'!
+build
+
+	| days |
+	
+	super build.
+	
+	days := { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' }.
+
+	1 to: 6 do:[:i | | label |
+		label := LabelMorph contents: (days at:i).
+		label layoutSpec offAxisEdgeWeight: 0.5.
+		self at:1 at:i :: beColumn addMorph:  label. ].
+
+	8 to:23 do:[:h | | label |
+		label := OffsetLabelMorph contents:('{1}' format:{h}).
+		label layoutSpec offAxisEdgeWeight: 0.2.
+		self at: h - 6 at:7 :: beColumn :: addMorph:  label. ].
+! !
+
 !WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:55:36'!
 initialize
 
@@ -401,10 +440,10 @@ example
 	aTableMorph openInWorld.
 	! !
 
-!WeeklyTimeTable class methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:28:53'!
+!WeeklyTimeTable class methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 22:43:15'!
 new
 
-	| aTableMorph days |
+	| aTableMorph |
 
 	aTableMorph := self newRow.
 
@@ -413,18 +452,6 @@ new
 	aTableMorph color: Color white.
 
 	aTableMorph build.
-
-	days := { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' }.
-
-	1 to: 6 do:[:i | | label |
-		label := LabelMorph contents: (days at:i).
-		label layoutSpec offAxisEdgeWeight: 0.5.
-		aTableMorph at:1 at:i :: beColumn addMorph:  label. ].
-
-	8 to:23 do:[:h | | label |
-		label := OffsetLabelMorph contents:('{1}' format:{h}).
-		label layoutSpec offAxisEdgeWeight: 0.2.
-		aTableMorph at: h - 6 at:7 :: beColumn :: addMorph:  label. ].
 
 	^aTableMorph
 	! !
@@ -511,8 +538,10 @@ getMenu
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 12:59:48'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 22:22:11'!
 initialize
+
+	innerMorphClass := TableMorph.
 	
 	super initialize.
 	
@@ -526,11 +555,16 @@ initialize
 	
 	menuFactory := MenuMorph.
 	
+	
 ! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:23:40'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 21:53:07'!
 innerMorphClass
-	^TableMorph! !
+	^innerMorphClass ! !
+
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 21:53:00'!
+innerMorphClass: aClass
+	innerMorphClass := aClass! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 12:59:36'!
 menuFactory: aClass
@@ -560,7 +594,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 22:16:33'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:04:29'!
 update: aSymbol 
 
 	| nrows ncols header table |
@@ -591,8 +625,11 @@ update: aSymbol
 				
 				scroller at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		]
 		ifFalse:[
-			1 to:ncols do:[:colIndex |
-				scroller at: 1 at:colIndex :: addMorph: (table at:1 :: at:colIndex :: morph rightToLeft: rightToLeft ; yourself) ] ] .
+			1 to:ncols do:[:colIndex |  | cell items |
+			items := table at: 1 :: at:colIndex.
+			cell := scroller at: 1 at:colIndex.
+			items do:[:eachItem | 
+				cell addMorph: (eachItem morph rightToLeft: rightToLeft ; yourself) ] ] ].
 			
 	2 to: nrows do:[:rowIndex |
 		1 to:ncols do:[:colIndex | | cell items |
@@ -600,17 +637,4 @@ update: aSymbol
 			cell := scroller at: rowIndex at:colIndex.
 			items do:[:eachItem | 
 			cell addMorph: (eachItem morph rightToLeft: rightToLeft ; yourself )] ] ] .
-! !
-
-!TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
-justDroppedInto: newOwnerMorph event: anEvent 
-
-	super justDroppedInto: newOwnerMorph event: anEvent.
-	
-	color := color alpha:1.0! !
-
-!TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:34'!
-justGrabbedFrom: formerOwner
-
-	color := 	color alpha: 0.5.
 ! !
