@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 14 January 2025 at 10:32:37 pm'!
+'From Cuis7.1 [latest update: #6676] on 16 January 2025 at 5:44:39 pm'!
 'Description '!
-!provides: 'Table' 1 19!
+!provides: 'Table' 1 20!
 SystemOrganization addCategory: #Table!
 
 
@@ -92,6 +92,16 @@ PluggableScrollPane subclass: #PluggableTableMorph
 	category: 'Table'!
 !classDefinition: 'PluggableTableMorph class' category: #Table!
 PluggableTableMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #MorphProvider category: #Table!
+Object subclass: #MorphProvider
+	instanceVariableNames: 'object morphClass objectSetterMessage'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Table'!
+!classDefinition: 'MorphProvider class' category: #Table!
+MorphProvider class
 	instanceVariableNames: ''!
 
 
@@ -666,3 +676,25 @@ update: aSymbol
 			items do:[:eachItem | 
 			cell addMorph: (eachItem morph rightToLeft: rightToLeft ; yourself )] ] ] .
 ! !
+
+!MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:57'!
+morph
+	| aMorph |
+	
+	aMorph := morphClass new.
+	
+	aMorph perform: objectSetterMessage with: object.
+	
+	^aMorph! !
+
+!MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:40:33'!
+morphClass: aMorphClass
+	morphClass := aMorphClass ! !
+
+!MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:40:11'!
+object: anObject
+	object := anObject! !
+
+!MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:21'!
+objectSetterMessage: aSymbol
+	objectSetterMessage := aSymbol! !
