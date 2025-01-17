@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 16 January 2025 at 5:44:39 pm'!
+'From Cuis7.1 [latest update: #6676] on 17 January 2025 at 9:10:21 pm'!
 'Description '!
-!provides: 'Table' 1 20!
+!provides: 'Table' 1 22!
 SystemOrganization addCategory: #Table!
 
 
@@ -22,16 +22,6 @@ LayoutMorph subclass: #TableCell
 	category: 'Table'!
 !classDefinition: 'TableCell class' category: #Table!
 TableCell class
-	instanceVariableNames: ''!
-
-!classDefinition: #WeeklyTimeTableCell category: #Table!
-TableCell subclass: #WeeklyTimeTableCell
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Table'!
-!classDefinition: 'WeeklyTimeTableCell class' category: #Table!
-WeeklyTimeTableCell class
 	instanceVariableNames: ''!
 
 !classDefinition: #TableCellItem category: #Table!
@@ -275,27 +265,6 @@ row: aRowIndex column: aColumnIndex
 
 	^aCell! !
 
-!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:52:54'!
-acceptDroppingMorph: aMorph event: evt
-	
-	aMorph morphExtent: self morphExtent.
-	
-	self addMorph: aMorph proportionalWidth: 1.0.! !
-
-!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:53:02'!
-allowsMorphDrop
-	^true! !
-
-!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:52:32'!
-allowsSubmorphDrag
-	^row ~= 1 and:[column ~= 7]! !
-
-!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:59:14'!
-wantsDroppedMorph: aMorph event: evt
-	
-	^column ~= 7 and: 	[row ~= 1]
-! !
-
 !TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
@@ -308,6 +277,10 @@ justGrabbedFrom: formerOwner
 	
 	color := 	color alpha: 0.5.
 ! !
+
+!TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 14:10:12'!
+morphForGrabbing
+	^self! !
 
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:53:06'!
 adjustExtent
@@ -476,7 +449,7 @@ new
 	^aTableMorph
 	! !
 
-!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:32:31'!
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 13:44:01'!
 drawOn: aCanvas
 
 	| aForm canvas |
