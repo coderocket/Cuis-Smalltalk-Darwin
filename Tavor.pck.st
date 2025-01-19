@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 18 January 2025 at 10:14:57 pm'!
+'From Cuis7.1 [latest update: #6676] on 19 January 2025 at 9:15:03 pm'!
 'Description '!
-!provides: 'Tavor' 1 419!
+!provides: 'Tavor' 1 432!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -505,7 +505,7 @@ aboutToBeGrabbedBy: aHand
 	
 	^owner aboutToGrabAssignment: self! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 21:36:03'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 21:14:34'!
 build
 
 	| aLabelMorph |
@@ -516,14 +516,20 @@ build
 	
 	aLabelMorph := NarrowLabelMorph contents: model description.
 	
-	aLabelMorph morphExtent: aLabelMorph measureContents.
+	aLabelMorph morphWidth: aLabelMorph measureContents x.
 	
 	aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
-	
-	self color:
-		(model collision
+
+	aLabelMorph layoutSpec proportionalHeight: 1.0.	 
+
+	notSelectedColor := 
+		model collision
 			ifTrue:[Color red alpha: 0.3]
-			ifFalse:[notSelectedColor]).
+			ifFalse:[Color fromHexString: '#c7dbff' :: alpha:0.3	.].
+
+	selectedColor := notSelectedColor darker.
+	
+	self color: notSelectedColor.
 	
 	self addMorph: aLabelMorph.
 	
@@ -645,7 +651,7 @@ model
 model: anAssignment
 	model := anAssignment! !
 
-!TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 21:10:29'!
+!TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:01:45'!
 build: aStringTemplate
 
 	| index labelText morphs |
@@ -664,7 +670,7 @@ build: aStringTemplate
 		
 		morphs add:		 (LabelMorph contents: labelText).
 		
-		morphs add: (TextEntryMorph contents: (aStringTemplate copyFrom: each first + 1 to: each last - 1)).
+		morphs add: (BidiTextEntryMorph contents: (aStringTemplate copyFrom: each first + 1 to: each last - 1)).
 		
 		index := each last + 1].
 	
@@ -672,7 +678,7 @@ build: aStringTemplate
 	
 	rightToLeft ifTrue:[labelText := labelText reverse].
 	
-	morphs add: (LabelMorph contents: labelText).
+	morphs add: (BidiLabelMorph contents: labelText).
 	
 	rightToLeft ifFalse:[morphs := morphs reverse].
 	
@@ -1287,7 +1293,7 @@ rooms
 	
 	! !
 
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:08:33'!
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:26:50'!
 roomsTable
 
 	| table |
@@ -1298,10 +1304,10 @@ roomsTable
 	
 	self rooms do:[:eachRoom |
 		table add: {  
-			{ '{1}' format:{eachRoom capacity} :: reverse } . 
-			{ eachRoom code } . 
-			{ '{1}' format: { eachRoom floor } :: reverse } .
-			{ eachRoom campus description } } ] .
+			{ '{1}' format:{eachRoom capacity} :: asBidiUnicodeString } . 
+			{ eachRoom code R } . 
+			{ '{1}' format: { eachRoom floor }  } .
+			{ eachRoom campus description R } } ] .
 	
 	^table
 ! !
@@ -1339,7 +1345,7 @@ assignments
 	^table
 ! !
 
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:30:31'!
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:05:16'!
 buildMorphicWindow
 
 	| assignmentsMorph right dialog updateButton rankIndex |
@@ -1357,7 +1363,7 @@ buildMorphicWindow
 			input color: Color lightGray; disableEditing 
 			];
 		beRequired.
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'שם המרצה';
 		on: #propertyValue of: (ValueHolder with: model description);
 		beRequired.
@@ -1400,12 +1406,12 @@ buildMorphicWindow
 	
 ! !
 
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:23:32'!
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:11:11'!
 initialize
 
 	super initialize.
 	
-	mold := Mold new.! !
+	mold := BidiMold new.! !
 
 !LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:45:52'!
 updateLecturerDetails
@@ -1434,7 +1440,7 @@ addModuleToAcademicProgramDialog
 	
 		TavorApplication instance addModuleToAcademicProgramDialog: model.! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 16:52:33'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:05:22'!
 buildMorphicWindow
 
 	| programsMorph right dialog button updateButton |
@@ -1450,7 +1456,7 @@ buildMorphicWindow
 			input color: Color lightGray; disableEditing 
 			];
 		beRequired.
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'שם הקורס';
 		on: #propertyValue of: (ValueHolder with: model description);
 		beRequired.
@@ -1493,12 +1499,12 @@ buildMorphicWindow
 	
 ! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:40:19'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:11:16'!
 initialize
 
 	super initialize.
 	
-	mold := Mold new.! !
+	mold := BidiMold new.! !
 
 !ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 21:07:55'!
 moduleMenuSpec
@@ -1899,7 +1905,7 @@ assignments
 	^stencils at: stencilIndex :: assignments asOrderedCollection sort:[:x :y | x before:y ].
 ! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/17/2025 13:21:52'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/19/2025 20:39:15'!
 assignmentsTable
 
 	| table |
@@ -1912,21 +1918,21 @@ assignmentsTable
 		
 		table add: {
 			{ eachAssignment room 
-				ifNil:['לא משובץ'] 
-				ifNotNil:[:room | room description] } . 
+				ifNil:['לא משובץ' asBidi ] 
+				ifNotNil:[:room | room description asBidi ] } . 
 			{ eachAssignment hour 
-				ifNil:['לא משובץ'] 
-				ifNotNil:[:hour | '{1}' format:{hour} :: reverse] } . 
+				ifNil:['לא משובץ' asBidi ] 
+				ifNotNil:[:hour | '{1}' format:{hour} :: asBidi ] } . 
 			{ eachAssignment day 
-				ifNil:['לא משובץ'] 
-				ifNotNil:[:day | '{1}' format:{day} :: reverse ] } . 
+				ifNil:['לא משובץ' asBidi ] 
+				ifNotNil:[:day | '{1}' format:{day} :: asBidi ] } . 
 			eachAssignment lecturers 
 				ifEmpty:[ { LecturerProxy new assignment: eachAssignment } ]
 				ifNotEmpty:[			
 					eachAssignment lecturers 
 						collect:[:eachLecturer | 				LecturerProxy new assignment:eachAssignment ; lecturer: eachLecturer ]  ] .
-			{ eachAssignment unit description } .
-			{ eachAssignment unit module description } .
+			{ eachAssignment unit description asBidi } .
+			{ eachAssignment unit module description asBidi } .
 			{ AssignmentProxy new assignment: eachAssignment ; yourself } } ] .
 	
 	^table
@@ -2159,7 +2165,7 @@ buildMorphicWindow
 	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (aTabbedGroup -1.0p | 1.0p) | 0.8p)).
 	! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 17:28:37'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:21:32'!
 buildMorphicWindow
 
 	|  top entries openButton cancelButton buttons dialog backButton upButton |
@@ -2180,7 +2186,7 @@ buildMorphicWindow
 			ifFalse:[
 				currentDirectoryEntryMorph contents: directory pathName ] ].
 	
-	top := ((backButton + upButton) - 128f @ (16@0) align:0) + currentDirectoryEntryMorph  |48f.
+	top := ((backButton + upButton) - 128f @ (16@0) align:0) + (currentDirectoryEntryMorph - 800f) | 48f.
 	
 	entries :=  PluggableListMorph withModel: self listGetter: #entryNames indexGetter: #entryIndex indexSetter: #entryIndex:.
 	
@@ -2225,11 +2231,11 @@ entryIndex: anInteger
 	
 ! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:42:48'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 17:46:50'!
 entryNames
 
 	^self entries collect:[:eachEntry | 
-		eachEntry name , 		(eachEntry isDirectory 			ifTrue:[ '/' ] ifFalse:['']) ]
+		eachEntry name asUnicodeString R reorderBidiFileName , 		(eachEntry isDirectory 			ifTrue:[ '/' ] ifFalse:['']) ]
 	
 ! !
 
@@ -3845,12 +3851,12 @@ addModuleToAcademicProgramDialog
 	
 ! !
 
-!TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 19:37:05'!
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/19/2025 19:14:13'!
 addModuleToAcademicProgramDialog: aModule
 
 	| mold programs tracks years semesters aDialog position |
 	
-	mold := Mold new.
+	mold := BidiMold new.
 	
 	programs := ListMultiModel with: model  programNames.
 
@@ -3867,28 +3873,29 @@ addModuleToAcademicProgramDialog: aModule
 		on: #propertyValue of: (ValueHolder new propertyValue: (aModule ifNil:[nil] ifNotNil:[aModule code]) ; yourself);
 		addCondition: [:input :value | model moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
+		
+	(mold selectField)
 		label: 'תוכנית לימודים';
 		on: #listIndex of: programs;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
+	(mold selectField)
 		label: 'מסלול לימודים';
 		on: #listIndex of: tracks;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
+	(mold selectField)
 		label: 'שנת לימוד';
 		on: #listIndex of: years;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
+	(mold selectField)
 		label: 'סמסטר';
 		on: #listIndex of: semesters;
 		customize: [:widget :input :example | 
@@ -3963,7 +3970,7 @@ addNewModule: fields
 	^aModule
 		! !
 
-!TavorApplication methodsFor: 'modules' stamp: 'DF 1/11/2025 16:15:36'!
+!TavorApplication methodsFor: 'modules' stamp: 'DF 1/19/2025 20:18:05'!
 addNewModuleDialog
 
 	| mold programs tracks years semesters aDialog position |
@@ -3976,11 +3983,11 @@ addNewModuleDialog
 
 	semesters := ListMultiModel with: model semesterNames.
 	
-	mold := Mold new.
+	mold := BidiMold new.
 	
 	mold rightToLeft: true.
 	
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'שם הקורס';
 		on: #propertyValue of: ValueHolder new;
 		addCondition:[:input | model moduleNameAt: input :: isNil ] 
@@ -4016,26 +4023,25 @@ addNewModuleDialog
 			lec + rec + lab > 0  ]
 		labeled: 'קורס ללא שעות.' ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'תוכנית לימודים';
 		on: #listIndex of: programs;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'מסלול לימודים';
 		on: #listIndex of: tracks;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
-		addCondition:[:input :value | model programAt: (mold fields at: 6) value :: trackAt: value :: notNil ] 
+		addCondition:[:input :value | |program |
+			program := model programAt: (mold fields at: 6) value.
+			program notNil and:[ program trackAt: value :: notNil ] ]
 		labeled: 'לא קיים מסלול כזה בתוכנית הלימודים שבחרת.';
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'שנת לימוד';
 		on: #listIndex of: years;
 		customize: [:widget :input :example | 
@@ -4043,12 +4049,11 @@ addNewModuleDialog
 			] ;
 		addCondition:[:input :value | | program track |
 			program := 		model programAt: (mold fields at: 6) value.
-			track := program trackAt: (mold fields at:7 ) value.
+			track := program ifNil:[nil] ifNotNil:[program trackAt: (mold fields at:7 ) value].
 			track notNil and: [track academicYearAt: value :: notNil ] ] 
 		labeled: 'שנת לימוד זו לא קיימת במסלול שבחרת.';
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'סמסטר';
 		on: #listIndex of: semesters;
 		customize: [:widget :input :example | 
@@ -4056,10 +4061,10 @@ addNewModuleDialog
 			] ;
 		addCondition:[:input :value | | program track year |
 			program := 		model programAt: (mold fields at: 6) value.
-			track := program trackAt: (mold fields at:7 ) value.
-			year := track isNil ifTrue:[nil] ifFalse:[track academicYearAt: (mold fields at:8) value].
-			track notNil and: [year notNil] and:[year semesterAt: value :: notNil ] ] 
-		labeled: 'סמסטר זה לא קיימת במסלול שבחרת.';
+			track := program ifNil:[nil] ifNotNil:[program trackAt: (mold fields at:7 ) value].
+			year := track ifNil:[nil] ifNotNil:[track academicYearAt: (mold fields at:8) value].
+			year notNil and:[year semesterAt: value :: notNil ] ] 
+		labeled: 'סמסטר זה לא קיים במסלול שבחרת.';
 		beRequired.
 	
 	position := UISupervisor ui activeHand morphPosition.
@@ -4146,16 +4151,16 @@ addNewAcademicProgram: fields
 	model changed: #programs.
 	! !
 
-!TavorApplication methodsFor: 'programs' stamp: 'DF 1/11/2025 13:43:36'!
+!TavorApplication methodsFor: 'programs' stamp: 'DF 1/19/2025 19:05:41'!
 addNewAcademicProgramDialog
 
 	| mold position aDialog |
 	
-	mold := Mold new.
+	mold := BidiMold new.
 	
 	mold rightToLeft: true.
 	
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'שם התוכנית';
 		on: #propertyValue of: ValueHolder new;
 		addCondition: [:input| model programAt: input :: isNil ]  
@@ -4237,12 +4242,12 @@ addNewStencil: fields
 			
 		! !
 
-!TavorApplication methodsFor: 'stencils' stamp: 'DF 1/12/2025 20:15:10'!
+!TavorApplication methodsFor: 'stencils' stamp: 'DF 1/19/2025 19:54:04'!
 addNewStencilDialog
 
 	| mold position aDialog programs tracks years semesters |
 	
-	mold := Mold new.
+	mold := BidiMold new.
 
 	programs := ListMultiModel with: model programNames.
 
@@ -4259,16 +4264,14 @@ addNewStencilDialog
 		on: #propertyValue of: ValueHolder new;
 		beRequired.
 		
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'תוכנית לימודים';
 		on: #listIndex of: programs;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'מסלול לימודים';
 		on: #listIndex of: tracks;
 		customize: [:widget :input :example | 
@@ -4277,8 +4280,7 @@ addNewStencilDialog
 		addCondition:[:input :value | model programAt: (mold fields at: 2) value :: trackAt: value :: notNil ] 
 		labeled: 'לא קיים מסלול כזה בתוכנית הלימודים שבחרת.';
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'שנת לימוד';
 		on: #listIndex of: years;
 		customize: [:widget :input :example | 
@@ -4290,8 +4292,7 @@ addNewStencilDialog
 			track notNil and: [track academicYearAt: value :: notNil ] ] 
 		labeled: 'שנת לימוד זו לא קיימת במסלול שבחרת.';
 		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'סמסטר';
 		on: #listIndex of: semesters;
 		customize: [:widget :input :example | 
@@ -4346,12 +4347,12 @@ addNewLecturer: fields
 	
 	! !
 
-!TavorApplication methodsFor: 'schools' stamp: 'DF 1/16/2025 21:42:51'!
+!TavorApplication methodsFor: 'schools' stamp: 'DF 1/19/2025 19:06:08'!
 addNewLecturerDialog
 
 	| schools mold position aDialog |
 	
-	mold := Mold new.
+	mold := BidiMold new.
 	
 	mold rightToLeft: true.
 
@@ -4373,7 +4374,7 @@ addNewLecturerDialog
 		labeled: 'קיים מרצה עם מזהה זה.' ;
 		beRequired.
 	
-	(mold rtolStringField)
+	(mold stringField)
 		rightToLeft: true;
 		label: 'שם המרצה';
 		on: #propertyValue of: ValueHolder new;
@@ -4420,16 +4421,16 @@ addNewSchool: fields
 	
 	! !
 
-!TavorApplication methodsFor: 'schools' stamp: 'DF 1/16/2025 20:22:41'!
+!TavorApplication methodsFor: 'schools' stamp: 'DF 1/19/2025 19:06:50'!
 addNewSchoolDialog
 
 	| mold position aDialog |
 	
-	mold := Mold new.
+	mold := BidiMold new.
 	
 	mold rightToLeft: true.
 	
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'שם בית הספר';
 		on: #propertyValue of: ValueHolder new;
 		addCondition:[:input | model schoolAt: input :: isNil ] 
@@ -4471,16 +4472,16 @@ addNewCampus: fields
 	
 	model changed: #campusNames.! !
 
-!TavorApplication methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:36:39'!
+!TavorApplication methodsFor: 'campuses' stamp: 'DF 1/19/2025 19:05:52'!
 addNewCampusDialog
 
 	| mold position aDialog |
 	
-	mold := Mold new.
+	mold := BidiMold new.
 	
 	mold rightToLeft: true.
 	
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'שם הקמפוס';
 		on: #propertyValue of: ValueHolder new;
 		addCondition:[:input | model campusAt: input :: isNil ]  
@@ -4532,26 +4533,25 @@ addNewRoom: fields
 	model changed: #roomsTable
 	! !
 
-!TavorApplication methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:48:06'!
+!TavorApplication methodsFor: 'campuses' stamp: 'DF 1/19/2025 19:52:23'!
 addNewRoomDialog
 
 	| mold campuses aDialog position |
 
 	campuses := ListModel with: (model campuses asOrderedCollection sort:[:x :y | x description <= y description]).
 	
-	mold := Mold new. 
+	mold := BidiMold new. 
 	
 	mold rightToLeft: true.
 
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
+	(mold selectField)
 		label: 'קמפוס';
 		on: #listIndex of: campuses;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
 		beRequired.
-	(mold rtolStringField)
+	(mold stringField)
 		label: 'מזהה החדר';
 		on: #propertyValue of: ValueHolder new;
 		addCondition:[:input | | campus |

@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 17 January 2025 at 9:10:21 pm'!
+'From Cuis7.1 [latest update: #6676] on 19 January 2025 at 8:37:01 pm'!
 'Description '!
-!provides: 'Table' 1 22!
+!provides: 'Table' 1 26!
 SystemOrganization addCategory: #Table!
 
 
@@ -55,7 +55,7 @@ WeeklyTimeTable class
 	instanceVariableNames: ''!
 
 !classDefinition: #NarrowLabelMorph category: #Table!
-LabelMorph subclass: #NarrowLabelMorph
+BidiLabelMorph subclass: #NarrowLabelMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -65,7 +65,7 @@ NarrowLabelMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #OffsetLabelMorph category: #Table!
-LabelMorph subclass: #OffsetLabelMorph
+BidiLabelMorph subclass: #OffsetLabelMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -605,7 +605,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:04:29'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:15:40'!
 update: aSymbol 
 
 	| nrows ncols header table |
@@ -630,7 +630,7 @@ update: aSymbol
 		ifTrue:[ 
 			1 to: ncols do:[:colIndex | | aLabelMorph |
 				
-				aLabelMorph := LabelMorph contents: (table at:1 :: at:colIndex).
+				aLabelMorph := BidiLabelMorph contents: (table at:1 :: at:colIndex).
 				
 				aLabelMorph rightToLeft: rightToLeft.
 				
