@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 17 January 2025 at 9:10:21 pm'!
+'From Cuis7.1 [latest update: #6676] on 20 January 2025 at 11:29:15 pm'!
 'Description '!
-!provides: 'Table' 1 22!
+!provides: 'Table' 1 28!
 SystemOrganization addCategory: #Table!
 
 
@@ -55,7 +55,7 @@ WeeklyTimeTable class
 	instanceVariableNames: ''!
 
 !classDefinition: #NarrowLabelMorph category: #Table!
-LabelMorph subclass: #NarrowLabelMorph
+BidiLabelMorph subclass: #NarrowLabelMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -65,7 +65,7 @@ NarrowLabelMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #OffsetLabelMorph category: #Table!
-LabelMorph subclass: #OffsetLabelMorph
+BidiLabelMorph subclass: #OffsetLabelMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -76,7 +76,7 @@ OffsetLabelMorph class
 
 !classDefinition: #PluggableTableMorph category: #Table!
 PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass'
+	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass columnFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
@@ -92,6 +92,16 @@ Object subclass: #MorphProvider
 	category: 'Table'!
 !classDefinition: 'MorphProvider class' category: #Table!
 MorphProvider class
+	instanceVariableNames: ''!
+
+!classDefinition: #PluggableMorphFactory category: #Table!
+Object subclass: #PluggableMorphFactory
+	instanceVariableNames: 'formatter morphClass factoryMessage'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Table'!
+!classDefinition: 'PluggableMorphFactory class' category: #Table!
+PluggableMorphFactory class
 	instanceVariableNames: ''!
 
 
@@ -504,6 +514,10 @@ clickedCell: aTableCell
 				ifNotNil:[		model perform: selectRowMessage with: aTableCell row ] ]
 ! !
 
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:27:35'!
+columnFactory: aDictionary
+	columnFactory := aDictionary ! !
+
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 13:14:05'!
 getMenu
 	"Answer the right-click (contextual) menu."
@@ -549,7 +563,7 @@ getMenu
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 22:22:11'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 20:38:04'!
 initialize
 
 	innerMorphClass := TableMorph.
@@ -566,6 +580,7 @@ initialize
 	
 	menuFactory := MenuMorph.
 	
+	columnFactory := OrderedCollection new.
 	
 ! !
 
@@ -605,10 +620,10 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:04:29'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:29:54'!
 update: aSymbol 
 
-	| nrows ncols header table |
+	| start nrows ncols header table |
 
 	scroller removeAllMorphs.
 		
@@ -630,24 +645,21 @@ update: aSymbol
 		ifTrue:[ 
 			1 to: ncols do:[:colIndex | | aLabelMorph |
 				
-				aLabelMorph := LabelMorph contents: (table at:1 :: at:colIndex).
+				aLabelMorph := BidiLabelMorph contents: (table at:1 :: at:colIndex).
 				
 				aLabelMorph rightToLeft: rightToLeft.
 				
-				scroller at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		]
-		ifFalse:[
-			1 to:ncols do:[:colIndex |  | cell items |
-			items := table at: 1 :: at:colIndex.
-			cell := scroller at: 1 at:colIndex.
-			items do:[:eachItem | 
-				cell addMorph: (eachItem morph rightToLeft: rightToLeft ; yourself) ] ] ].
+				scroller at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		].
+
+	start := headerRow 		ifTrue:[ 	2] ifFalse:[			 1 ].
 			
-	2 to: nrows do:[:rowIndex |
-		1 to:ncols do:[:colIndex | | cell items |
+	start to: nrows do:[:rowIndex |
+		1 to:ncols do:[:colIndex | | cell items factory |
 			items := table at: rowIndex :: at:colIndex.
 			cell := scroller at: rowIndex at:colIndex.
+			factory := columnFactory at: colIndex ifAbsent:[PluggableMorphFactory new]. 
 			items do:[:eachItem | 
-			cell addMorph: (eachItem morph rightToLeft: rightToLeft ; yourself )] ] ] .
+			cell addMorph: (factory build: eachItem :: rightToLeft: rightToLeft ; yourself )] ] ] .
 ! !
 
 !MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:57'!
@@ -671,3 +683,29 @@ object: anObject
 !MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:21'!
 objectSetterMessage: aSymbol
 	objectSetterMessage := aSymbol! !
+
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:11:22'!
+build: anObject
+	
+	^morphClass perform: factoryMessage with: (formatter value: anObject)! !
+
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:54'!
+factoryMessage: aSymbol
+	factoryMessage := aSymbol! !
+
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:22'!
+formatter: aBlock
+	formatter := aBlock! !
+
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:13:43'!
+initialize
+
+	factoryMessage := #contents:.
+	
+	formatter := [:anObject | anObject displayStringOrText ].
+	
+	morphClass := BidiLabelMorph.! !
+
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:32'!
+morphClass: aMorphClass
+	morphClass := aMorphClass ! !
