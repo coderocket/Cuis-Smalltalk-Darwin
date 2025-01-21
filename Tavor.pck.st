@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 19 January 2025 at 9:15:03 pm'!
+'From Cuis7.1 [latest update: #6676] on 21 January 2025 at 9:23:05 am'!
 'Description '!
-!provides: 'Tavor' 1 432!
+!provides: 'Tavor' 1 437!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -74,7 +74,7 @@ TavorTableCellItem class
 
 !classDefinition: #AssignmentMorph category: #'Tavor-Morphic'!
 TavorTableCellItem subclass: #AssignmentMorph
-	instanceVariableNames: 'model'
+	instanceVariableNames: 'model index collision'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -84,7 +84,7 @@ AssignmentMorph class
 
 !classDefinition: #LecturerMorph category: #'Tavor-Morphic'!
 TavorTableCellItem subclass: #LecturerMorph
-	instanceVariableNames: 'model'
+	instanceVariableNames: 'assignment lecturer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
@@ -404,14 +404,14 @@ aboutToGrabAssignment: anAssignmentMorph
 	
 	^aDuplicateMorph ! !
 
-!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 20:19:45'!
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:26:18'!
 aboutToGrabLecturer: aLecturerMorph
 
 	self assert: (aLecturerMorph isKindOf: LecturerMorph).
 
-	aLecturerMorph model lecturer ifNil:[^nil].
+	aLecturerMorph lecturer ifNil:[^nil].
 	
-	aLecturerMorph model unassign.
+	aLecturerMorph unassign.
 	
 	^aLecturerMorph ! !
 
@@ -422,6 +422,15 @@ allowsMorphDrop
 !AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:59:04'!
 allowsSubmorphDrag
 	^row ~= 1 ! !
+
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:22:49'!
+assignmentInRow
+
+	| aColumn |
+	
+	aColumn := self owner owner submorphs at: 1 :: submorphs.
+	
+	^aColumn at: aColumn size - row + 1 :: submorphs at:1 :: model  ! !
 
 !AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 22:40:37'!
 wantsDroppedMorph: aMorph event: evt
@@ -438,14 +447,14 @@ aboutToGrabAssignment: anAssignmentMorph
 	
 	^anAssignmentMorph ! !
 
-!LecturerTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 20:22:41'!
+!LecturerTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:06:32'!
 aboutToGrabLecturer: aLecturerMorph
 
 	| aDuplicateMorph |
 	
 	aLecturerMorph color: Color transparent.
 	
-	aDuplicateMorph := aLecturerMorph duplicate model: aLecturerMorph model ; expand ; yourself.
+	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; expand ; yourself.
 	
 	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
 	
@@ -455,12 +464,12 @@ aboutToGrabLecturer: aLecturerMorph
 allowsSubmorphDrag
 	^row ~= 1 ! !
 
-!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 21:12:10'!
+!WeeklyTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:13:56'!
 aboutToGrabAssignment: anAssignmentMorph
 
 	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
 
-	anAssignmentMorph model unassign.
+	anAssignmentMorph unassign.
 	
 	^anAssignmentMorph ! !
 
@@ -498,23 +507,27 @@ rightToLeft: aBoolean
 
 	submorphs first rightToLeft: aBoolean! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 20:11:44'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:47:18'!
 aboutToBeGrabbedBy: aHand
 
-	model index = 0 ifFalse:[^nil].
+	index = 0 ifFalse:[^nil].
 	
 	^owner aboutToGrabAssignment: self! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 21:14:34'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:48:41'!
+assignDay: aDayInteger hour: anHourInteger
+
+	model day: aDayInteger ; hour: anHourInteger.
+	model unit module college changed: #assignmentsTable ! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:11:10'!
 build
 
 	| aLabelMorph |
 	
 	self removeAllMorphs.
 	
-	self beColumn.
-	
-	aLabelMorph := NarrowLabelMorph contents: model description.
+	aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
 	
 	aLabelMorph morphWidth: aLabelMorph measureContents x.
 	
@@ -523,7 +536,7 @@ build
 	aLabelMorph layoutSpec proportionalHeight: 1.0.	 
 
 	notSelectedColor := 
-		model collision
+		collision
 			ifTrue:[Color red alpha: 0.3]
 			ifFalse:[Color fromHexString: '#c7dbff' :: alpha:0.3	.].
 
@@ -535,45 +548,64 @@ build
 	
 	self axisEdgeWeight: 0.0! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:50:58'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:02'!
+collision: aBoolean
+	collision := aBoolean! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:22:07'!
 expand
 
-	| code |
+	| code label |
 	
-	code := '{1}' format:{model assignment unit module code} :: reverse.
+	code := '{1}' format:{model unit module code} :: reverse.
 	
-	self submorphs first contents: ('{1} {2} {3}' format:{ code . model assignment unit module description . model assignment unit description }).
+	label := self submorphs first.
 	
+	label  contents: ('{1} {2} {3}' format:{ code . model unit module description . model unit description }).
+	label morphWidth: label measureContents x.
+
 	self color: (Color fromHexString: '#c7dbff' :: alpha:0.25)! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 18:02:08'!
 handlesMouseOver: aMorphicEvent
 	^true! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 21:37:18'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:51:27'!
+index
+	^index! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:47:04'!
+index: anInteger
+	index := anInteger! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:08'!
 initialize
 
 	super initialize.
 	
+	index := 0.
+	
 	notSelectedColor := Color fromHexString: '#c7dbff' :: alpha:0.3	.
 	
-	selectedColor := notSelectedColor darker.! !
+	selectedColor := notSelectedColor darker.
+	
+	collision := false.! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 22:20:50'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:25:36'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
-	self assert: model index = 0.
+	self assert: index = 0.
 	
 	newOwnerMorph isWorldMorph 
 		ifTrue:[
 			anEvent formerOwner isKindOf: WeeklyTimeTableCell
 				::ifTrue:[ 
-					model unassign].
+					model unit module college changed: #assignmentsTable ].
 			^self delete ].
 	
 	newOwnerMorph 	isKindOf: WeeklyTimeTableCell 
 		:: ifTrue:[ 
-			model assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6			 ]! !
+			self assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6			 ]! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:39:17'!
 model
@@ -583,21 +615,84 @@ model
 model: anAssignment
 	model := anAssignment! !
 
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:24:10'!
+unassign
+
+	model day: nil ;  hour: nil.	
+
+! !
+
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:18:41'!
+fromTuple: aTuple
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := self newColumn.
+	
+	anAssignmentMorph index: (aTuple at:1).
+	anAssignmentMorph model: (aTuple at:2).
+	anAssignmentMorph collision: (aTuple at:3).
+	
+	anAssignmentMorph build ; expand.
+	
+	^anAssignmentMorph ! !
+
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:18:35'!
+new: anAssignment
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := self newColumn.
+	
+	anAssignmentMorph index: 0.
+	anAssignmentMorph model: anAssignment.
+	anAssignmentMorph collision: false.
+	
+	anAssignmentMorph build.
+	
+	^anAssignmentMorph ! !
+
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 20:13:50'!
 aboutToBeGrabbedBy: aHand
 
 	^owner aboutToGrabLecturer: self! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 14:36:17'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:41:06'!
+assign
+
+	self assert: assignment notNil ; assert: lecturer notNil.
+	
+	assignment addLecturer: lecturer.
+	
+	lecturer school college changed: #assignmentsTable.! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:19:15'!
+assign: anAssignment
+
+	self assert: assignment isNil; assert: anAssignment notNil ; assert: lecturer notNil.
+	
+	assignment := anAssignment.
+	
+	assignment addLecturer: lecturer.
+	
+	lecturer school college changed: #assignmentsTable.! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:42:41'!
+assignment
+	^assignment! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:44:30'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:45:08'!
 build
 
 	| aLabelMorph |
 	
 	self removeAllMorphs.
 	
-	self beColumn.
-	
-	aLabelMorph := NarrowLabelMorph contents: (model ifNil:['לא משובץ'] ifNotNil:[model description]).
+	aLabelMorph := NarrowLabelMorph contents: (lecturer ifNil:['לא משובץ'] ifNotNil:[lecturer description]).
 	
 	aLabelMorph morphExtent: aLabelMorph measureContents.
 	
@@ -627,29 +722,65 @@ initialize
 	
 	selectedColor := notSelectedColor darker.! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 14:27:47'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:20:00'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	newOwnerMorph isWorldMorph 
 		ifTrue:[
-			model changed.
+			lecturer school college changed: #assignmentsTable.
 			^self delete ].
 	
-	newOwnerMorph 	isKindOf: AssignmentTableCell 
-		:: ifTrue:[  
-			newOwnerMorph submorphs 
-				detect: [:eachMroph | eachMroph isKindOf: LecturerMorph :: and:[ eachMroph model assignment notNil] ] 
-				ifFound:[:aLecturerMorph |
-					model assignment: aLecturerMorph model assignment ; assign.] 
-				ifNone:[self delete]			 ]! !
+	newOwnerMorph 	isKindOf: AssignmentTableCell 		:: 
+		ifTrue:[  
+			self halt.
+			self assign: newOwnerMorph assignmentInRow]
+		ifFalse:[
+			self delete]			 ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 22:19:24'!
-model
-	^model! !
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:26:37'!
+lecturer
+	^lecturer! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 22:19:24'!
-model: anAssignment
-	model := anAssignment! !
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:44:39'!
+lecturer: aLecturer
+	lecturer := aLecturer! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:41:19'!
+unassign
+
+	self assert: lecturer notNil; assert: assignment notNil.
+	
+	assignment removeLecturer: lecturer.
+	
+	assignment := nil.
+	
+! !
+
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:02:27'!
+fromPair: aPair
+
+	| aLecturerMorph |
+	
+	aLecturerMorph := self newColumn.
+	
+	aLecturerMorph assignment: aPair first ; lecturer: aPair second.
+	
+	aLecturerMorph build.
+	
+	^aLecturerMorph! !
+
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:02:44'!
+new: aLecturer
+
+	| aLecturerMorph |
+	
+	aLecturerMorph := self newColumn.
+	
+	aLecturerMorph lecturer: aLecturer.
+	
+	aLecturerMorph build.
+	
+	^aLecturerMorph! !
 
 !TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:01:45'!
 build: aStringTemplate
@@ -1293,7 +1424,7 @@ rooms
 	
 	! !
 
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:26:50'!
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 20:45:01'!
 roomsTable
 
 	| table |
@@ -1304,10 +1435,10 @@ roomsTable
 	
 	self rooms do:[:eachRoom |
 		table add: {  
-			{ '{1}' format:{eachRoom capacity} :: asBidiUnicodeString } . 
-			{ eachRoom code R } . 
+			{ '{1}' format:{eachRoom capacity}  } . 
+			{ eachRoom code  } . 
 			{ '{1}' format: { eachRoom floor }  } .
-			{ eachRoom campus description R } } ] .
+			{ eachRoom campus description  } } ] .
 	
 	^table
 ! !
@@ -1612,7 +1743,7 @@ lecturers
 	^lecturers asOrderedCollection sort:[:x :y | x description <= y description ]
 			! !
 
-!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/17/2025 14:13:00'!
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/21/2025 08:58:54'!
 lecturersTable
 
 	| table |
@@ -1623,12 +1754,12 @@ lecturersTable
 	
 	self lecturers  :: do:[:eachLecturer |
 		table add: {  
-			{ '{1}' format:{eachLecturer assignments sum:[:eachAssignment | eachAssignment unit duration] ifEmpty:[0]} :: reverse } .  
-			{ '{1}' format:{eachLecturer quota} :: reverse } .  
-			{ LecturerProxy new lecturer: eachLecturer ; yourself } . 
-			{ '{1}' format:{ eachLecturer code } :: reverse } . 
+			{ eachLecturer assignments sum:[:eachAssignment | eachAssignment unit duration] ifEmpty:[0] } .  
+			{ eachLecturer quota } .  
+			{ eachLecturer } . 
+			{ eachLecturer code} . 
 			{ eachLecturer rank } .
-			{ eachLecturer school description } } ] .
+			{ eachLecturer school } } ] .
 	
 	^table
 ! !
@@ -1782,10 +1913,10 @@ initialize
 update: aSymbol
 	self changed: aSymbol! !
 
-!SchoolBrowser methodsFor: 'GUI building' stamp: 'DF 1/18/2025 12:56:41'!
+!SchoolBrowser methodsFor: 'GUI building' stamp: 'DF 1/21/2025 09:04:38'!
 buildMorphicWindow
 
-	| topPanel lecturersMorph schools employment |
+	| topPanel lecturersTable schools employment |
 	
 	schools := BidiPluggableListMorphOfMany withModel: self listGetter: #schoolNames primarySelectionGetter: #schoolIndex primarySelectionSetter: #schoolIndex: listSelectionGetter: #schoolSelectionAt: listSelectionSetter: #schoolSelectionAt:put:.
 	
@@ -1793,19 +1924,27 @@ buildMorphicWindow
 	
 	topPanel := (employment - (1/2)p | 1p) <+> (schools - (1/2)p | 1p) .
 	
-	lecturersMorph := PluggableTableMorph new.
+	lecturersTable := PluggableTableMorph new.
 	
-	lecturersMorph model: self ; table: #lecturersTable ; rightToLeft: true ; headerRow: true.
+	lecturersTable model: self ; table: #lecturersTable ; rightToLeft: true ; headerRow: true.
 	
-	lecturersMorph cellFactory: LecturerTableCell.
+	lecturersTable cellFactory: LecturerTableCell.
 	
-	lecturersMorph menuNshortcutsKey: #lecturerMenuSpec.
+	lecturersTable menuNshortcutsKey: #lecturerMenuSpec.
 	
-	lecturersMorph menuFactory: BidiMenuMorph.
+	lecturersTable menuFactory: BidiMenuMorph.
 	
-	lecturersMorph selectRowMessage: #selectLecturer:.
+	lecturersTable selectRowMessage: #selectLecturer:.
+	
+	lecturersTable columnFactory: {
+		1 -> (PluggableMorphFactory new formatter:[:aNumber | '{1}' format:{aNumber} ] ; yourself) .
+		2 -> (PluggableMorphFactory new formatter:[:aNumber | '{1}' format:{aNumber} ] ; yourself) .
+		3 ->  (PluggableMorphFactory new formatter:[:aLecturer | aLecturer ] ; morphClass: LecturerMorph ; factoryMessage: #new:; yourself) .
+		4 -> (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} ] ; yourself) .
+		5 -> (PluggableMorphFactory new) .
+		6 -> (PluggableMorphFactory new formatter:[:aSchool | aSchool description ] ; yourself) } asDictionary.
 
-	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (lecturersMorph -1.0p | 0.7p)).
+	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (lecturersTable -1.0p | 0.7p)).
 	
 	self changed: #lecturersTable.! !
 
@@ -1905,7 +2044,7 @@ assignments
 	^stencils at: stencilIndex :: assignments asOrderedCollection sort:[:x :y | x before:y ].
 ! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/19/2025 20:39:15'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/20/2025 21:51:29'!
 assignmentsTable
 
 	| table |
@@ -1917,23 +2056,15 @@ assignmentsTable
 	self assignments do:[:eachAssignment | 
 		
 		table add: {
-			{ eachAssignment room 
-				ifNil:['לא משובץ' asBidi ] 
-				ifNotNil:[:room | room description asBidi ] } . 
-			{ eachAssignment hour 
-				ifNil:['לא משובץ' asBidi ] 
-				ifNotNil:[:hour | '{1}' format:{hour} :: asBidi ] } . 
-			{ eachAssignment day 
-				ifNil:['לא משובץ' asBidi ] 
-				ifNotNil:[:day | '{1}' format:{day} :: asBidi ] } . 
+			{ eachAssignment room	 } . 
+			{ eachAssignment hour } . 
+			{ eachAssignment day  } . 
 			eachAssignment lecturers 
-				ifEmpty:[ { LecturerProxy new assignment: eachAssignment } ]
-				ifNotEmpty:[			
-					eachAssignment lecturers 
-						collect:[:eachLecturer | 				LecturerProxy new assignment:eachAssignment ; lecturer: eachLecturer ]  ] .
-			{ eachAssignment unit description asBidi } .
-			{ eachAssignment unit module description asBidi } .
-			{ AssignmentProxy new assignment: eachAssignment ; yourself } } ] .
+				collect:[:eachLecturer | { eachAssignment . eachLecturer }  ] .
+			{ eachAssignment unit } .
+			{ eachAssignment unit module } .
+			{ eachAssignment } 
+		} ] .
 	
 	^table
 ! !
@@ -1998,7 +2129,7 @@ springWeekly
 
 	^self weekly: 'סמסטר ב'! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/18/2025 22:13:16'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/20/2025 22:56:08'!
 weekly: aStringSemesterName
 
 	| table |
@@ -2014,7 +2145,7 @@ weekly: aStringSemesterName
 		1 to:6 do:[:j |
 			aRow add: OrderedCollection new ].
 		
-		aRow add: {MorphProvider new object: ('{1}' format:{i} :: reverse) ; morphClass: OffsetLabelMorph ;objectSetterMessage: #contents: ; yourself }.
+		aRow add: {i }.
 		
 		table add: aRow ].	
 	
@@ -2022,14 +2153,11 @@ weekly: aStringSemesterName
 	
 		eachAssignment day notNil and: [eachAssignment hour notNil] ::
 			ifTrue:[ | cell | 
-				0 to: eachAssignment unit duration -1 do:[:index | | proxy |
+				0 to: eachAssignment unit duration -1 do:[:index | 
 				
 					cell := table at: 	eachAssignment hour + index - 6 :: at: 7 - eachAssignment day.
-					proxy := AssignmentProxy new index:index ; assignment: eachAssignment ; expand ; yourself.
-					cell notEmpty
-						ifTrue:[proxy collision: true].
 						
-					cell add: proxy ] ] ].
+					cell add: { index . eachAssignment . cell notEmpty } ] ] ].
 	
 	^table
 	! !
@@ -2111,10 +2239,10 @@ years
 	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/18/2025 22:14:55'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/21/2025 09:02:59'!
 buildMorphicWindow
 
-	| topPanel stencils semesters years tracks programs assignmentsMorph aTabbedGroup autumn spring |
+	| topPanel stencils semesters years tracks programs assignmentsTable aTabbedGroup autumn spring semesterColumnFactory |
 	
 	stencils := BidiPluggableListMorph withModel: self listGetter: #stencilNames indexGetter: #stencilIndex indexSetter: #stencilIndex:.
 	
@@ -2128,18 +2256,28 @@ buildMorphicWindow
 	
 	topPanel := (stencils - (1/5)p | 1p) <+> (semesters - (1/5)p | 1p) <+> (years - (1/5)p | 1p) <+> (tracks - (1/5)p | 1p) <+> (programs - (1/5)p | 1p).
 	
-	assignmentsMorph := PluggableTableMorph new.
+	assignmentsTable := PluggableTableMorph new.
 	
-	assignmentsMorph model: self ; table: #assignmentsTable ; rightToLeft: true ; headerRow: true.
+	assignmentsTable model: self ; table: #assignmentsTable ; rightToLeft: true ; headerRow: true.
 	
 	"assignmentsMorph menuNshortcutsKey: #assignmentMenuSpec."
 	
-	assignmentsMorph selectRowMessage: #selectAssignment:.
+	assignmentsTable selectRowMessage: #selectAssignment:.
 	
-	assignmentsMorph menuFactory: BidiMenuMorph.
+	assignmentsTable menuFactory: BidiMenuMorph.
 	
-	assignmentsMorph cellFactory: AssignmentTableCell.
+	assignmentsTable cellFactory: AssignmentTableCell.
 
+	assignmentsTable columnFactory: { 
+		1 -> (PluggableMorphFactory new formatter:[:aRoom | aRoom ifNil:['לא משובץ'] ifNotNil:[aRoom description ] ] ; yourself) .
+		2 -> (PluggableMorphFactory new formatter:[:anHour | anHour ifNil:['לא משובץ'] ifNotNil:['{1}' format:{anHour}] ]; yourself) .
+		3 -> (PluggableMorphFactory new formatter:[:aDay | aDay ifNil:['לא משובץ'] ifNotNil:['{1}' format:{aDay}] ]; yourself) .
+		4 -> (PluggableMorphFactory new formatter:[:aPair  | aPair ] ; morphClass: LecturerMorph ; factoryMessage: #fromPair: ; yourself) .
+		5 -> (PluggableMorphFactory new formatter:[:aUnit | aUnit description ] ; yourself) .
+		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+		7 -> (PluggableMorphFactory new formatter:[:anAssignment | anAssignment ] ; morphClass: AssignmentMorph ; factoryMessage: #new: ; yourself) 
+		} asDictionary.
+		
 	self changed: #assignmentsTable.
 
 	autumn := PluggableTableMorph new.
@@ -2147,6 +2285,15 @@ buildMorphicWindow
 	autumn model: self ; table: #autumnWeekly ; rightToLeft: true ; headerRow: true.
 
 	autumn cellFactory: WeeklyTimeTableCell.
+	
+	semesterColumnFactory := Dictionary new.
+	
+	1 to:6 do:[:eachDay |
+		semesterColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
+	
+	semesterColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger}] ; morphClass: NarrowLabelMorph ; yourself).
+	
+	autumn columnFactory: semesterColumnFactory.
 	
 	spring := PluggableTableMorph new.
 	
@@ -2156,7 +2303,7 @@ buildMorphicWindow
 	
 	aTabbedGroup := TabbedGroup newColumn.
 
-	aTabbedGroup build: { 'מערכת סמסטר ב' reverse -> spring . 'מערכת סמסטר א' reverse -> autumn . 'רשימה' reverse -> assignmentsMorph }.
+	aTabbedGroup build: { 'מערכת סמסטר ב' reverse -> spring . 'מערכת סמסטר א' reverse -> autumn . 'רשימה' reverse -> assignmentsTable }.
 
 	aTabbedGroup color:Color white. 
 	
