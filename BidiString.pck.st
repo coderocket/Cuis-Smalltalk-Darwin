@@ -1,53 +1,166 @@
-'From Cuis7.3 [latest update: #6895] on 19 January 2025 at 5:28:29 pm'!
+'From Cuis7.3 [latest update: #6895] on 21 January 2025 at 5:53:27 pm'!
 'Description '!
 !provides: 'BidiString' 1 0!
 SystemOrganization addCategory: 'BidiString'!
 
 
-!classDefinition: #RtoLUnicodeString category: 'BidiString'!
-UnicodeString subclass: #RtoLUnicodeString
+!classDefinition: #BidiUnicodeString category: 'BidiString'!
+UnicodeString subclass: #BidiUnicodeString
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BidiString'!
-!classDefinition: 'RtoLUnicodeString class' category: 'BidiString'!
-RtoLUnicodeString class
+!classDefinition: 'BidiUnicodeString class' category: 'BidiString'!
+BidiUnicodeString class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiPluggableListMorph category: 'BidiString'!
+PluggableListMorph subclass: #BidiPluggableListMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BidiString'!
+!classDefinition: 'BidiPluggableListMorph class' category: 'BidiString'!
+BidiPluggableListMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiTextModelMorph category: 'BidiString'!
+TextModelMorph subclass: #BidiTextModelMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BidiString'!
+!classDefinition: 'BidiTextModelMorph class' category: 'BidiString'!
+BidiTextModelMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiInnerListMorph category: 'BidiString'!
+InnerListMorph subclass: #BidiInnerListMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BidiString'!
+!classDefinition: 'BidiInnerListMorph class' category: 'BidiString'!
+BidiInnerListMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiInnerTextMorph category: 'BidiString'!
+InnerTextMorph subclass: #BidiInnerTextMorph
+	instanceVariableNames: 'indentRight'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BidiString'!
+!classDefinition: 'BidiInnerTextMorph class' category: 'BidiString'!
+BidiInnerTextMorph class
 	instanceVariableNames: ''!
 
 
-!RtoLUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 12/30/2024 10:19:19'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 12/30/2024 18:32:16'!
 displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 
 	| aUnicodeString |
 	
-	aUnicodeString := UnicodeString newFrom: self reverse.
+	aUnicodeString := UnicodeString newFrom: self reorderBidi.
 	
 	aUnicodeString displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 ! !
 
-!RtoLUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 12/30/2024 10:19:45'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 12/30/2024 18:32:21'!
 displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color
 
 	| aUnicodeString |
 	
-	aUnicodeString := UnicodeString newFrom: self reverse.
+	aUnicodeString := UnicodeString newFrom: self reorderBidi.
 	
 	aUnicodeString displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color! !
 
-!RtoLUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 12/30/2024 10:14:53'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 12/30/2024 18:32:27'!
 printOn: aStream 
 	"Print inside string quotes, doubling inbedded quotes."
 
-	self reverse storeOn: aStream! !
+	self reorderBidi storeOn: aStream! !
 
-!UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 10:40:32'!
-R
-	^self asRtoLUnicodeString ! !
+!BidiPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 15:51:38'!
+indentRight: aBoolean
+	scroller indentRight: aBoolean! !
 
-!UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 10:27:22'!
-asRtoLUnicodeString
+!BidiPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 15:58:41'!
+innerMorphClass
+	^BidiInnerListMorph! !
 
-	^RtoLUnicodeString new appendToString: self.
+!BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 15:57:39'!
+draw: item atRow: row on: canvas
+	"display the given item at row row"
+	| f c x|
+	
+	x := indentRight ifTrue:[extent x - (font widthOfString: item string)] ifFalse:[0].
+	
+	(item is: #Text)
+		ifTrue: [
+			f := font emphasized: (item emphasisAt: 1).
+			c := (item colorAt: 1) ifNil: [Theme current text]]
+		ifFalse: [ 
+			f := font.
+			c :=  Theme current text].
+	canvas
+		drawString: item string
+		at: x @ (self drawYForRow: row)
+		font: f
+		color: c! !
+
+!BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 15:53:01'!
+indentRight: aBoolean
+	indentRight := aBoolean! !
+
+!BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 15:53:24'!
+initialize
+	
+	super initialize.
+	
+	indentRight := false.! !
+
+!BidiInnerTextMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 16:05:19'!
+drawOn: aCanvas
+	"Draw the receiver on a canvas"
+
+	false ifTrue: [ self debugDrawLineRectsOn: aCanvas ].  "show line rects for debugging"
+
+	aCanvas
+		drawTextComposition: self textComposition
+		at: `0@0`
+		extent: extent
+		color: color
+		selectionColor: (Theme current textHighlightFocused: self hasKeyboardFocus).
+
+	model actualContents isEmpty ifTrue: [
+		owner
+			valueOfProperty: #emptyTextDisplayMessage
+			ifPresentDo: [ :msg |
+				aCanvas
+					drawString: msg
+					at: `0@0`
+					font: nil
+					color: Theme current textEmptyDisplayMessage ]].! !
+
+!BidiInnerTextMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 16:05:31'!
+indentRight: aBoolean
+	indentRight := aBoolean! !
+
+!BidiInnerTextMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 16:05:44'!
+initialize
+	
+	super initialize.
+	
+	indentRight := false.! !
+
+!UnicodeString methodsFor: '*BidiString' stamp: 'DF 1/5/2025 15:42:55'!
+B
+	^self asBidiUnicodeString ! !
+
+!UnicodeString methodsFor: '*BidiString' stamp: 'DF 1/5/2025 15:42:36'!
+asBidiUnicodeString
+
+	^BidiUnicodeString new appendToString: self.
 ! !
 
 !UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 12:44:18'!
@@ -80,106 +193,90 @@ breakAtDelimiter: aDelimiterCharacter
 	
 	^parts	! !
 
-!UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 15:45:38'!
-reorder
+!UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 18:30:10'!
+reorderBidi
 
-	| current aCharacter aReadStream latin hebrew undecided parts |
+	| state aCharacter aReadStream aWriteStream  undecided parts |
 	
-	current := #undecided.
+	state := #undecided.
 
 	parts := OrderedCollection new.
-	
-	latin := WriteStream on: ''.
-	
-	hebrew := WriteStream on: ''.
 	
 	undecided := WriteStream on: ''.
 	
+	aWriteStream := WriteStream on:''.
+	
 	aReadStream := ReadStream on: self.
 
 	aCharacter := aReadStream next.
 	
-	self halt.
-	
 	[aCharacter notNil] 
 		whileTrue:[
-			aCharacter isLatinCharacter "we see a Latin (left to right) character "
-				ifTrue:[ 
-					current = #hebrew
-						ifTrue:[
-							parts add: hebrew contents reverse.
-							hebrew reset]
-						ifFalse:[
-					current = #undecided
-						ifTrue:[
-							latin nextPutAll: undecided contents.
-							undecided reset ] ].
-					current := #latin.
-					latin nextPut: aCharacter. ]
-				ifFalse:[
-			aCharacter isHebrewLetter 
+			state = #hebrew 
 				ifTrue:[
-					current = #latin
+					aCharacter isLatinCharacter 
 						ifTrue:[
-							parts add: latin contents.
-							latin reset]
-						ifFalse:[
-					current = #undecided
-						ifTrue:[
-							hebrew nextPutAll: undecided contents.
-							undecided reset ]].
-					current := #hebrew.
-					hebrew nextPut: aCharacter ]
+							parts add: aWriteStream contents reverse reverseParenthesis.
+							aWriteStream reset.
+							state := #latin ].
+					aWriteStream nextPut: aCharacter ]
 				ifFalse:[
-					current := #undecided.
-					undecided nextPut: aCharacter ]
-				].
-				aCharacter := aReadStream next.
-			].
-	
-	^parts
-							
+			state = #latin
+				ifTrue:[
+					aCharacter isHebrewLetter 
+						ifTrue:[
+							parts add: aWriteStream contents.
+							aWriteStream reset.
+							state := #hebrew.
+							aWriteStream nextPut: aCharacter ]
+						ifFalse:[
+					aCharacter isLatinCharacter 
+						ifTrue:[
+							aWriteStream nextPut: aCharacter]
+						ifFalse:[
+							undecided nextPut: aCharacter.
+							state := #undecided ] ] 
+				]
+				ifFalse:[
+					self assert: state = #undecided.
 					
-	! !
-
-!UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 14:14:19'!
-reorderBidi
-
-	| parts aReadStream aWriteStream aCharacter |
-	
-	parts := OrderedCollection new.
-	
-	aWriteStream := WriteStream on: ''.
-	
-	aReadStream := ReadStream on: self.
-
-	aCharacter := aReadStream next.
-		
-	[aCharacter notNil] 
-		whileTrue:[
-	
-			[aCharacter notNil and:[aCharacter isHebrewLetter not] and:[aCharacter ~= $ ] ]
-				whileTrue:[
-					aWriteStream nextPut: aCharacter.
-					aCharacter := aReadStream next. ].
-	
-			parts add: aWriteStream contents.
-			aWriteStream reset.
-	
-			[aCharacter notNil and:[aCharacter isHebrewLetter or:[ #( $_  $  ) includes: aCharacter  ] ] ]
-				whileTrue:[
-					aWriteStream nextPut: aCharacter.
-					aCharacter := aReadStream next ].
-		
-			parts add: aWriteStream contents reverse.
-			aWriteStream reset.
+					aCharacter isLatinCharacter 
+						ifTrue:[
+							aWriteStream nextPutAll: undecided contents.
+							undecided reset.
+							state := #latin.
+							aWriteStream nextPut: aCharacter]
+						ifFalse:[
+					aCharacter isHebrewLetter 
+						ifTrue:[
+							parts add: aWriteStream contents.
+							aWriteStream reset.
+							aWriteStream nextPutAll: undecided contents.
+							undecided reset.
+							state := #hebrew.
+							aWriteStream nextPut: aCharacter]
+						ifFalse:[
+							undecided nextPut: aCharacter]
+							] 
+					] 
+			].
+			aCharacter := aReadStream next.			
 		].
+	
+	state = #hebrew
+		ifTrue:[
+			parts add: aWriteStream contents reverse reverseParenthesis]
+		ifFalse:[
+			aWriteStream nextPutAll: undecided contents.
+			parts add: aWriteStream contents].
+
+	aWriteStream reset.
 	
 	parts reverse do:[:eachPart |
 		aWriteStream nextPutAll: eachPart].
-	
+		
 	^aWriteStream contents
-	! !
+! !
 
 !UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 12:47:04'!
 reorderBidiFileName
@@ -196,6 +293,17 @@ reorderBidiFileName
 		aWriteStream nextPut:$. ].
 	
 	^aWriteStream contents! !
+
+!UnicodeString methodsFor: '*BidiString' stamp: 'DF 12/30/2024 18:28:44'!
+reverseParenthesis
+
+	| conv |
+	
+	conv := `{ $( -> $) . $) -> $( . ${ -> $} . $} -> ${ . $[ -> $] . $] -> $[ } asDictionary`.
+	
+	^self collect:[:eachCharacter |
+		conv at: eachCharacter ifAbsent:[eachCharacter] ]
+	! !
 
 !Character methodsFor: '*BidiString' stamp: 'DF 12/30/2024 11:31:10'!
 isHebrewLetter
