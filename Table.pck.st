@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 20 January 2025 at 11:29:15 pm'!
+'From Cuis7.1 [latest update: #6676] on 21 January 2025 at 9:41:13 pm'!
 'Description '!
-!provides: 'Table' 1 28!
+!provides: 'Table' 1 31!
 SystemOrganization addCategory: #Table!
 
 
@@ -472,12 +472,12 @@ drawOn: aCanvas
 	
 	aCanvas image: aForm at:0@0.! !
 
-!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/14/2025 22:17:34'!
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:14:21'!
 minimumExtent
 
-	^ 0@0! !
+	^`0@0`! !
 
-!OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 22:19:44'!
+!OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:50:44'!
 drawOn: aCanvas
 
 	| origin |
@@ -487,7 +487,7 @@ drawOn: aCanvas
 		ifFalse:[borderWidth @ borderWidth].
 	
 	aCanvas
-		drawString: (contents ifNil: [ '' ] ifNotNil:[ rightToLeft ifTrue:[contents reverse] ifFalse:[contents]])
+		drawString: (contents ifNil: [ '' ])
 		at: origin- (0@extent y / 2)
 		font: self fontToUse
 		color: color.

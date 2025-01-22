@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 19 January 2025 at 8:38:59 pm'!
+'From Cuis7.1 [latest update: #6676] on 21 January 2025 at 9:40:53 pm'!
 'Description '!
-!provides: 'Bidi' 1 23!
+!provides: 'Bidi' 1 25!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -974,7 +974,7 @@ breakAtDelimiter: aDelimiterCharacter
 	
 	^parts	! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 15:45:38'!
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/21/2025 17:25:00'!
 reorder
 
 	| current aCharacter aReadStream latin hebrew undecided parts |
@@ -992,8 +992,6 @@ reorder
 	aReadStream := ReadStream on: self.
 
 	aCharacter := aReadStream next.
-	
-	self halt.
 	
 	[aCharacter notNil] 
 		whileTrue:[
@@ -1030,50 +1028,96 @@ reorder
 				].
 				aCharacter := aReadStream next.
 			].
-	
+	self halt.
 	^parts
 							
 					
 	! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 14:14:19'!
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 18:30:10'!
 reorderBidi
 
-	| parts aReadStream aWriteStream aCharacter |
+	| state aCharacter aReadStream aWriteStream  undecided parts |
 	
+	state := #undecided.
+
 	parts := OrderedCollection new.
 	
-	aWriteStream := WriteStream on: ''.
+	undecided := WriteStream on: ''.
+	
+	aWriteStream := WriteStream on:''.
 	
 	aReadStream := ReadStream on: self.
 
 	aCharacter := aReadStream next.
-		
+	
 	[aCharacter notNil] 
 		whileTrue:[
-	
-			[aCharacter notNil and:[aCharacter isHebrewLetter not] and:[aCharacter ~= $ ] ]
-				whileTrue:[
-					aWriteStream nextPut: aCharacter.
-					aCharacter := aReadStream next. ].
-	
-			parts add: aWriteStream contents.
-			aWriteStream reset.
-	
-			[aCharacter notNil and:[aCharacter isHebrewLetter or:[ #( $_  $  ) includes: aCharacter  ] ] ]
-				whileTrue:[
-					aWriteStream nextPut: aCharacter.
-					aCharacter := aReadStream next ].
-		
-			parts add: aWriteStream contents reverse.
-			aWriteStream reset.
+			state = #hebrew 
+				ifTrue:[
+					aCharacter isLatinCharacter 
+						ifTrue:[
+							parts add: aWriteStream contents reverse reverseParenthesis.
+							aWriteStream reset.
+							state := #latin ].
+					aWriteStream nextPut: aCharacter ]
+				ifFalse:[
+			state = #latin
+				ifTrue:[
+					aCharacter isHebrewLetter 
+						ifTrue:[
+							parts add: aWriteStream contents.
+							aWriteStream reset.
+							state := #hebrew.
+							aWriteStream nextPut: aCharacter ]
+						ifFalse:[
+					aCharacter isLatinCharacter 
+						ifTrue:[
+							aWriteStream nextPut: aCharacter]
+						ifFalse:[
+							undecided nextPut: aCharacter.
+							state := #undecided ] ] 
+				]
+				ifFalse:[
+					self assert: state = #undecided.
+					
+					aCharacter isLatinCharacter 
+						ifTrue:[
+							aWriteStream nextPutAll: undecided contents.
+							undecided reset.
+							state := #latin.
+							aWriteStream nextPut: aCharacter]
+						ifFalse:[
+					aCharacter isHebrewLetter 
+						ifTrue:[
+							parts add: aWriteStream contents.
+							aWriteStream reset.
+							aWriteStream nextPutAll: undecided contents.
+							undecided reset.
+							state := #hebrew.
+							aWriteStream nextPut: aCharacter]
+						ifFalse:[
+							undecided nextPut: aCharacter]
+							] 
+					] 
+			].
+			aCharacter := aReadStream next.			
 		].
+	
+	state = #hebrew
+		ifTrue:[
+			parts add: aWriteStream contents reverse reverseParenthesis]
+		ifFalse:[
+			aWriteStream nextPutAll: undecided contents.
+			parts add: aWriteStream contents].
+
+	aWriteStream reset.
 	
 	parts reverse do:[:eachPart |
 		aWriteStream nextPutAll: eachPart].
-	
+		
 	^aWriteStream contents
-	! !
+! !
 
 !UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 12:47:04'!
 reorderBidiFileName
@@ -1090,6 +1134,17 @@ reorderBidiFileName
 		aWriteStream nextPut:$. ].
 	
 	^aWriteStream contents! !
+
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 18:28:44'!
+reverseParenthesis
+
+	| conv |
+	
+	conv := `{ $( -> $) . $) -> $( . ${ -> $} . $} -> ${ . $[ -> $] . $] -> $[ } asDictionary`.
+	
+	^self collect:[:eachCharacter |
+		conv at: eachCharacter ifAbsent:[eachCharacter] ]
+	! !
 
 !Character methodsFor: '*Bidi' stamp: 'DF 12/30/2024 11:31:10'!
 isHebrewLetter
