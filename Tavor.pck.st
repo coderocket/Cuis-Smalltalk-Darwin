@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 22 January 2025 at 10:28:28 pm'!
+'From Cuis7.1 [latest update: #6676] on 23 January 2025 at 10:58:31 pm'!
 'Description '!
-!provides: 'Tavor' 1 468!
+!provides: 'Tavor' 1 475!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -95,7 +95,7 @@ AssignmentMorph class
 !classDefinition: #ClassroomMorph category: #'Tavor-Morphic'!
 TavorTableCellItem subclass: #ClassroomMorph
 	instanceVariableNames: 'assignment room'
-	classVariableNames: ''
+	classVariableNames: 'ClassroomImage'
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
 !classDefinition: 'ClassroomMorph class' category: #'Tavor-Morphic'!
@@ -105,7 +105,7 @@ ClassroomMorph class
 !classDefinition: #LecturerMorph category: #'Tavor-Morphic'!
 TavorTableCellItem subclass: #LecturerMorph
 	instanceVariableNames: 'assignment lecturer'
-	classVariableNames: ''
+	classVariableNames: 'LecturerImage'
 	poolDictionaries: ''
 	category: 'Tavor-Morphic'!
 !classDefinition: 'LecturerMorph class' category: #'Tavor-Morphic'!
@@ -556,24 +556,26 @@ assignDay: aDayInteger hour: anHourInteger
 	model day: aDayInteger ; hour: anHourInteger.
 	model unit module college changed: #assignmentsTable ! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:38:37'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:56:41'!
 build
 
 	| aLabelMorph |
 	
 	self removeAllMorphs.
 	
-	aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
+	model 
+		ifNotNil:[
+			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
 	
-	aLabelMorph morphWidth: aLabelMorph measureContents x.
+			aLabelMorph morphWidth: aLabelMorph measureContents x.
 	
-	aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
+			aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
 
-	aLabelMorph layoutSpec proportionalHeight: 1.0.	 
+			aLabelMorph layoutSpec proportionalHeight: 1.0.	 
+
+			self addMorph: aLabelMorph ].
 	
 	self updateColor.
-	
-	self addMorph: aLabelMorph.
 	
 	self axisEdgeWeight: 0.0! !
 
@@ -581,10 +583,12 @@ build
 collision: aBoolean
 	collision := aBoolean! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:52:40'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:58:14'!
 expand
 
 	| code label |
+	
+	model ifNil:[^self].
 	
 	code := '{1}' format:{model unit module code} :: asBidi.
 	
@@ -669,16 +673,17 @@ justDroppedInto: newOwnerMorph event: anEvent
 		ifFalse:[
 			self delete]			 ! !
 
-!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:18:41'!
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:57:11'!
 fromTuple: aTuple
 
 	| anAssignmentMorph |
 	
 	anAssignmentMorph := self newColumn.
-	
-	anAssignmentMorph index: (aTuple at:1).
-	anAssignmentMorph model: (aTuple at:2).
-	anAssignmentMorph collision: (aTuple at:3).
+
+	aTuple 
+		ifNotNil:[
+			anAssignmentMorph index: (aTuple at:1); model: (aTuple at:2); collision: (aTuple at:3)
+		].
 	
 	anAssignmentMorph build ; expand.
 	
@@ -718,14 +723,16 @@ assignment
 assignment: anAssignment
 	assignment := anAssignment ! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:33:15'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:23:48'!
 build
 
-	| aLabelMorph |
+	| aLabelMorph aString |
 	
 	self removeAllMorphs.
 	
-	aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{room code} :: asBidi).
+	aString := room ifNil:['לא משובץ'] ifNotNil:['{1}' format:{room code}].
+	
+	aLabelMorph := NarrowLabelMorph contents: aString asBidi.
 	
 	aLabelMorph morphWidth: aLabelMorph measureContents x.
 	
@@ -738,6 +745,19 @@ build
 	self axisEdgeWeight: 0.0.
 	
 	self color: notSelectedColor.! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:21:04'!
+drawOn: aCanvas
+
+	| aForm |
+	
+	super drawOn: aCanvas.
+	
+	aForm := ClassroomImage magnifyBy: 0.125.
+	
+	aCanvas image: aForm at: self morphExtent - aForm extent / 2.
+	
+	! !
 
 !ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:54:08'!
 expand
@@ -799,19 +819,28 @@ justDroppedInto: newOwnerMorph event: anEvent
 		ifFalse:[
 			self delete]			 ! !
 
-!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:30:20'!
-new: anClassroom
+!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:20:12'!
+initialize
 
-	| aClassroom |
+	"self initialize"
+
+	| aFileEntry |
+		
+	aFileEntry := '/home/davidf/src/Cuis-Smalltalk-Darwin/classroom.png' asFileEntry.
+
+	ClassroomImage := ImageReadWriter formFromFileEntry: aFileEntry.
+! !
+
+!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:24:10'!
+new: aClassroom
+
+	| aClassroomMorph |
 	
-	aClassroom := self newColumn.
+	aClassroomMorph := self newColumn.
 	
-	aClassroom room: anClassroom.
-	aClassroom assignment: nil.
+	aClassroomMorph room: aClassroom; assignment: nil; build.
 	
-	aClassroom build.
-	
-	^aClassroom ! !
+	^aClassroomMorph ! !
 
 !LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:13:04'!
 aboutToBeGrabbedBy: aHand
@@ -860,14 +889,14 @@ assignment
 assignment: anAssignment
 	assignment := anAssignment ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:45:08'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:18:26'!
 build
 
 	| aLabelMorph |
 	
 	self removeAllMorphs.
 	
-	aLabelMorph := NarrowLabelMorph contents: (lecturer ifNil:['לא משובץ'] ifNotNil:[lecturer description]).
+	aLabelMorph := NarrowLabelMorph contents: (lecturer ifNil:['לא משובץ' asBidi] ifNotNil:[lecturer description]).
 	
 	aLabelMorph morphExtent: aLabelMorph measureContents.
 	
@@ -878,6 +907,19 @@ build
 	self addMorph: aLabelMorph.
 	
 	self axisEdgeWeight: 0.0! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 21:47:46'!
+drawOn: aCanvas
+
+	| aForm |
+	
+	super drawOn: aCanvas.
+	
+	aForm := LecturerImage magnifyBy: 0.125.
+	
+	aCanvas image: aForm at: self morphExtent - aForm extent / 2.
+	
+	! !
 
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 22:20:37'!
 expand
@@ -910,6 +952,18 @@ unassign
 	
 	assignment := nil.
 	
+! !
+
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 21:44:51'!
+initialize
+
+	"self initialize"
+
+	| aFileEntry |
+		
+	aFileEntry := '/home/davidf/src/Cuis-Smalltalk-Darwin/mortar.png' asFileEntry.
+
+	LecturerImage := ImageReadWriter formFromFileEntry: aFileEntry.
 ! !
 
 !LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:02:44'!
@@ -4962,3 +5016,5 @@ rtolAdd: aString target: target action: aSymbol argumentList: argList
 		target: target selector: aSymbol arguments: argList asArray.
 	self addMorphBack: item.
 	^ item! !
+ClassroomMorph initialize!
+LecturerMorph initialize!

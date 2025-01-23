@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 January 2025 at 9:41:13 pm'!
+'From Cuis7.1 [latest update: #6676] on 23 January 2025 at 10:18:46 pm'!
 'Description '!
-!provides: 'Table' 1 31!
+!provides: 'Table' 1 34!
 SystemOrganization addCategory: #Table!
 
 
@@ -620,7 +620,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:29:54'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:17:38'!
 update: aSymbol 
 
 	| start nrows ncols header table |
@@ -658,6 +658,8 @@ update: aSymbol
 			items := table at: rowIndex :: at:colIndex.
 			cell := scroller at: rowIndex at:colIndex.
 			factory := columnFactory at: colIndex ifAbsent:[PluggableMorphFactory new]. 
+			items 
+				ifEmpty:[cell addMorph: factory buildEmpty].
 			items do:[:eachItem | 
 			cell addMorph: (factory build: eachItem :: rightToLeft: rightToLeft ; yourself )] ] ] .
 ! !
@@ -688,6 +690,11 @@ objectSetterMessage: aSymbol
 build: anObject
 	
 	^morphClass perform: factoryMessage with: (formatter value: anObject)! !
+
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:09:15'!
+buildEmpty
+
+	^morphClass perform: factoryMessage with: nil! !
 
 !PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:54'!
 factoryMessage: aSymbol
