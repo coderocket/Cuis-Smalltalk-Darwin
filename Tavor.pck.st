@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 23 January 2025 at 10:58:31 pm'!
+'From Cuis7.1 [latest update: #6676] on 24 January 2025 at 9:59:31 pm'!
 'Description '!
-!provides: 'Tavor' 1 475!
+!provides: 'Tavor' 1 479!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -265,7 +265,7 @@ AcademicYear class
 !classDefinition: #Assignment category: #'Tavor-Model'!
 Object subclass: #Assignment
 	instanceVariableNames: 'rooms day hour unit stencil lecturers'
-	classVariableNames: ''
+	classVariableNames: 'DayHebrewNames'
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
 !classDefinition: 'Assignment class' category: #'Tavor-Model'!
@@ -704,7 +704,7 @@ new: anAssignment
 	
 	^anAssignmentMorph ! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:07:57'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:57:25'!
 assign: anAssignment
 
 	self assert: assignment isNil; assert: anAssignment notNil ; assert: room notNil.
@@ -712,6 +712,8 @@ assign: anAssignment
 	assignment := anAssignment.
 	
 	assignment addClassroom: room.
+	
+	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
 	
 	room campus college changed: #assignmentsTable.! !
 
@@ -789,12 +791,14 @@ room
 room: aClassroom
 	room := aClassroom ! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:34:30'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:57:43'!
 unassign
 
 	self assert: room notNil; assert: assignment notNil.
 	
 	assignment removeClassroom: room.
+
+	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
 	
 	assignment := nil.
 	
@@ -861,16 +865,7 @@ justDroppedInto: newOwnerMorph event: anEvent
 		ifFalse:[
 			self delete]			 ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:41:06'!
-assign
-
-	self assert: assignment notNil ; assert: lecturer notNil.
-	
-	assignment addLecturer: lecturer.
-	
-	lecturer school college changed: #assignmentsTable.! !
-
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:19:15'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:44:20'!
 assign: anAssignment
 
 	self assert: assignment isNil; assert: anAssignment notNil ; assert: lecturer notNil.
@@ -878,6 +873,8 @@ assign: anAssignment
 	assignment := anAssignment.
 	
 	assignment addLecturer: lecturer.
+	
+	lecturer changed: #assignmentsTable.
 	
 	lecturer school college changed: #assignmentsTable.! !
 
@@ -943,7 +940,7 @@ lecturer
 lecturer: aLecturer
 	lecturer := aLecturer! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:41:19'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:44:27'!
 unassign
 
 	self assert: lecturer notNil; assert: assignment notNil.
@@ -952,6 +949,8 @@ unassign
 	
 	assignment := nil.
 	
+	lecturer changed: #assignmentsTable.
+
 ! !
 
 !LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 21:44:51'!
@@ -1668,7 +1667,7 @@ update: aSymbol
 
 	self changed: aSymbol! !
 
-!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:13:29'!
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/24/2025 21:58:58'!
 buildAssignmentsTable
 
 	| assignmentsTable  |
@@ -1683,6 +1682,11 @@ buildAssignmentsTable
 	
 	assignmentsTable menuFactory: BidiMenuMorph.
 	
+	assignmentsTable columnFactory: { 
+		1 -> (PluggableMorphFactory new formatter:[:aClassroom |  aClassroom campus description , ' ' , aClassroom code  ] ; yourself) .
+		5 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+	} asDictionary.
+		
 	^assignmentsTable 	
 ! !
 
@@ -1748,7 +1752,7 @@ buildMorphicWindow
 	
 ! !
 
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:29:38'!
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:41'!
 assignments
 
 	| table |
@@ -1760,18 +1764,12 @@ assignments
 	model assignments do:[:eachAssignment | 
 		
 		table add: {
-			{ eachAssignment room 
-				ifNil:['לא משובץ'] 
-				ifNotNil:[:room | room description] } . 
-			{ eachAssignment hour 
-				ifNil:['לא משובץ'] 
-				ifNotNil:[:hour | '{1}' format:{hour} :: reverse] } . 
-			{ eachAssignment day 
-				ifNil:['לא משובץ'] 
-				ifNotNil:[:day | '{1}' format:{day} :: reverse ] } . 
-			{ eachAssignment unit description } .
-			{ eachAssignment unit module description } .
-			{ '{1}' format: {eachAssignment unit module code} :: reverse } } ] .
+			eachAssignment rooms . 
+			{ eachAssignment hour } . 
+			{ eachAssignment dayHebrew } . 
+			{ eachAssignment unit }  .
+			{ eachAssignment unit module  } .
+			{ eachAssignment unit module code } } ] .
 	
 	^table
 ! !
@@ -1782,6 +1780,12 @@ initialize
 	super initialize.
 	
 	mold := BidiMold new.! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:46:05'!
+update: aSymbol
+
+	self changed: #assignments
+! !
 
 !LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:45:52'!
 updateLecturerDetails
@@ -2283,7 +2287,7 @@ assignments
 	^stencils at: stencilIndex :: assignments asOrderedCollection sort:[:x :y | x before:y ].
 ! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/22/2025 20:37:33'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/24/2025 21:53:45'!
 assignmentsTable
 
 	| table |
@@ -2297,7 +2301,7 @@ assignmentsTable
 		table add: {
 			 eachAssignment rooms			 . 
 			{ eachAssignment hour } . 
-			{ eachAssignment day  } . 
+			{ eachAssignment dayHebrew  } . 
 			eachAssignment lecturers 
 				"collect:[:eachLecturer | { eachAssignment . eachLecturer }  ]"  .
 			{ eachAssignment unit } .
@@ -3103,6 +3107,10 @@ day
 day: anInteger
 	day := anInteger ! !
 
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:20'!
+dayHebrew
+	^DayHebrewNames at: day! !
+
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:34'!
 detach
 
@@ -3147,6 +3155,13 @@ unit
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:06'!
 unit: anAcademicUnit
 	unit := anAcademicUnit ! !
+
+!Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
+initialize
+
+	"self initialize"
+	
+	DayHebrewNames := { 'א' . 'ב' . 'ג' . 'ד' . 'ה' . 'ו' . 'שבת' asBidi }.! !
 
 !Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:37'!
 addClassroom: aClassroom
@@ -5018,3 +5033,4 @@ rtolAdd: aString target: target action: aSymbol argumentList: argList
 	^ item! !
 ClassroomMorph initialize!
 LecturerMorph initialize!
+Assignment initialize!
