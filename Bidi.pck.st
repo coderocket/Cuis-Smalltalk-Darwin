@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 January 2025 at 9:40:53 pm'!
+'From Cuis7.1 [latest update: #6676] on 25 January 2025 at 8:28:05 pm'!
 'Description '!
-!provides: 'Bidi' 1 25!
+!provides: 'Bidi' 1 29!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -22,6 +22,26 @@ UnicodeString subclass: #BidiUnicodeString
 	category: 'Bidi'!
 !classDefinition: 'BidiUnicodeString class' category: #Bidi!
 BidiUnicodeString class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiUnicodeSymbol category: #Bidi!
+UnicodeSymbol subclass: #BidiUnicodeSymbol
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiUnicodeSymbol class' category: #Bidi!
+BidiUnicodeSymbol class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiBrowser category: #Bidi!
+Browser subclass: #BidiBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiBrowser class' category: #Bidi!
+BidiBrowser class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiLabelGroup category: #Bidi!
@@ -284,6 +304,36 @@ printOn: aStream
 	"Print inside string quotes, doubling inbedded quotes."
 
 	self reorderBidi storeOn: aStream! !
+
+!BidiUnicodeString class methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:43:27'!
+symbolClassToUse
+	"Answer the class to create symbols from us"
+	^BidiUnicodeSymbol! !
+
+!BidiUnicodeSymbol methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:04:13'!
+printOn: aStream 
+	"Print inside string quotes, doubling inbedded quotes."
+
+	self reorderBidi storeOn: aStream! !
+
+!BidiUnicodeSymbol methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:50:33'!
+species
+	^BidiUnicodeString! !
+
+!BidiBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:45:48'!
+newSystemCategoryNameIfNone: aNoneBlock
+
+	| newName |
+	
+	newName := self
+		request: 'New category name?'
+		initialAnswer: self newSystemCategoryNameInitialAnswer.
+	
+	self halt.
+	
+	^newName isEmpty
+		ifTrue: aNoneBlock 
+		ifFalse: [newName asBidiSymbol].! !
 
 !BidiLabelGroup methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:47:15'!
 initialize
@@ -938,6 +988,11 @@ asBidiUnicodeString
 asBidi
 	^self asBidiUnicodeString ! !
 
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/25/2025 19:24:44'!
+asBidiSymbol
+	"Answer the unique symbol whose characters are the characters of the string."
+	^self asBidiUnicodeString asSymbol ! !
+
 !UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/19/2025 17:40:02'!
 asBidiUnicodeString
 
@@ -973,66 +1028,6 @@ breakAtDelimiter: aDelimiterCharacter
 		].
 	
 	^parts	! !
-
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/21/2025 17:25:00'!
-reorder
-
-	| current aCharacter aReadStream latin hebrew undecided parts |
-	
-	current := #undecided.
-
-	parts := OrderedCollection new.
-	
-	latin := WriteStream on: ''.
-	
-	hebrew := WriteStream on: ''.
-	
-	undecided := WriteStream on: ''.
-	
-	aReadStream := ReadStream on: self.
-
-	aCharacter := aReadStream next.
-	
-	[aCharacter notNil] 
-		whileTrue:[
-			aCharacter isLatinCharacter "we see a Latin (left to right) character "
-				ifTrue:[ 
-					current = #hebrew
-						ifTrue:[
-							parts add: hebrew contents reverse.
-							hebrew reset]
-						ifFalse:[
-					current = #undecided
-						ifTrue:[
-							latin nextPutAll: undecided contents.
-							undecided reset ] ].
-					current := #latin.
-					latin nextPut: aCharacter. ]
-				ifFalse:[
-			aCharacter isHebrewLetter 
-				ifTrue:[
-					current = #latin
-						ifTrue:[
-							parts add: latin contents.
-							latin reset]
-						ifFalse:[
-					current = #undecided
-						ifTrue:[
-							hebrew nextPutAll: undecided contents.
-							undecided reset ]].
-					current := #hebrew.
-					hebrew nextPut: aCharacter ]
-				ifFalse:[
-					current := #undecided.
-					undecided nextPut: aCharacter ]
-				].
-				aCharacter := aReadStream next.
-			].
-	self halt.
-	^parts
-							
-					
-	! !
 
 !UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 18:30:10'!
 reorderBidi
@@ -1145,6 +1140,10 @@ reverseParenthesis
 	^self collect:[:eachCharacter |
 		conv at: eachCharacter ifAbsent:[eachCharacter] ]
 	! !
+
+!UnicodeSymbol methodsFor: '*Bidi' stamp: 'DF 1/25/2025 19:04:49'!
+asBidi
+	^BidiUnicodeSymbol new! !
 
 !Character methodsFor: '*Bidi' stamp: 'DF 12/30/2024 11:31:10'!
 isHebrewLetter
