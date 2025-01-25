@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 24 January 2025 at 9:59:31 pm'!
+'From Cuis7.1 [latest update: #6676] on 25 January 2025 at 10:49:42 pm'!
 'Description '!
-!provides: 'Tavor' 1 479!
+!provides: 'Tavor' 1 488!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -10,6 +10,11 @@
 SystemOrganization addCategory: #'Tavor-Model'!
 SystemOrganization addCategory: #'Tavor-Morphic'!
 SystemOrganization addCategory: #Tavor!
+SystemOrganization addCategory: #'Tavor-AcademicProgram'!
+SystemOrganization addCategory: #'Tavor-Campus'!
+SystemOrganization addCategory: #'Tavor-Application'!
+SystemOrganization addCategory: #'Tavor-Stencil'!
+SystemOrganization addCategory: #'Tavor-School'!
 
 
 !classDefinition: #TavorError category: #'Tavor-Model'!
@@ -32,44 +37,54 @@ TableCell subclass: #TavorTableCell
 TavorTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentTableCell category: #'Tavor-Morphic'!
-TavorTableCell subclass: #AssignmentTableCell
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'AssignmentTableCell class' category: #'Tavor-Morphic'!
-AssignmentTableCell class
-	instanceVariableNames: ''!
-
-!classDefinition: #ClassroomTableCell category: #'Tavor-Morphic'!
+!classDefinition: #ClassroomTableCell category: #'Tavor-Campus'!
 TavorTableCell subclass: #ClassroomTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'ClassroomTableCell class' category: #'Tavor-Morphic'!
+	category: 'Tavor-Campus'!
+!classDefinition: 'ClassroomTableCell class' category: #'Tavor-Campus'!
 ClassroomTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #LecturerTableCell category: #'Tavor-Morphic'!
+!classDefinition: #LecturerTableCell category: #'Tavor-School'!
 TavorTableCell subclass: #LecturerTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'LecturerTableCell class' category: #'Tavor-Morphic'!
+	category: 'Tavor-School'!
+!classDefinition: 'LecturerTableCell class' category: #'Tavor-School'!
 LecturerTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #WeeklyTimeTableCell category: #'Tavor-Morphic'!
+!classDefinition: #AssignmentTableCell category: #'Tavor-Stencil'!
+TavorTableCell subclass: #AssignmentTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Stencil'!
+!classDefinition: 'AssignmentTableCell class' category: #'Tavor-Stencil'!
+AssignmentTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #WeeklyTimeTableCell category: #'Tavor-Stencil'!
 TavorTableCell subclass: #WeeklyTimeTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'WeeklyTimeTableCell class' category: #'Tavor-Morphic'!
+	category: 'Tavor-Stencil'!
+!classDefinition: 'WeeklyTimeTableCell class' category: #'Tavor-Stencil'!
 WeeklyTimeTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerTimeTableCell category: #'Tavor-School'!
+WeeklyTimeTableCell subclass: #LecturerTimeTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-School'!
+!classDefinition: 'LecturerTimeTableCell class' category: #'Tavor-School'!
+LecturerTimeTableCell class
 	instanceVariableNames: ''!
 
 !classDefinition: #TavorTableCellItem category: #'Tavor-Morphic'!
@@ -82,34 +97,34 @@ TableCellItem subclass: #TavorTableCellItem
 TavorTableCellItem class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentMorph category: #'Tavor-Morphic'!
-TavorTableCellItem subclass: #AssignmentMorph
-	instanceVariableNames: 'model index collision'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'AssignmentMorph class' category: #'Tavor-Morphic'!
-AssignmentMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #ClassroomMorph category: #'Tavor-Morphic'!
+!classDefinition: #ClassroomMorph category: #'Tavor-Campus'!
 TavorTableCellItem subclass: #ClassroomMorph
 	instanceVariableNames: 'assignment room'
 	classVariableNames: 'ClassroomImage'
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'ClassroomMorph class' category: #'Tavor-Morphic'!
+	category: 'Tavor-Campus'!
+!classDefinition: 'ClassroomMorph class' category: #'Tavor-Campus'!
 ClassroomMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #LecturerMorph category: #'Tavor-Morphic'!
+!classDefinition: #LecturerMorph category: #'Tavor-School'!
 TavorTableCellItem subclass: #LecturerMorph
 	instanceVariableNames: 'assignment lecturer'
 	classVariableNames: 'LecturerImage'
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'LecturerMorph class' category: #'Tavor-Morphic'!
+	category: 'Tavor-School'!
+!classDefinition: 'LecturerMorph class' category: #'Tavor-School'!
 LecturerMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignmentMorph category: #'Tavor-Stencil'!
+TavorTableCellItem subclass: #AssignmentMorph
+	instanceVariableNames: 'model index collision enableGrabbing'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Stencil'!
+!classDefinition: 'AssignmentMorph class' category: #'Tavor-Stencil'!
+AssignmentMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #TextFieldSentence category: #'Tavor-Morphic'!
@@ -122,63 +137,83 @@ LayoutMorph subclass: #TextFieldSentence
 TextFieldSentence class
 	instanceVariableNames: ''!
 
-!classDefinition: #AcademicProgramBrowser category: #'Tavor-Morphic'!
+!classDefinition: #AcademicProgramBrowser category: #'Tavor-AcademicProgram'!
 BidiSystemWindow subclass: #AcademicProgramBrowser
 	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex selectedYears selectedSemesters unitIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'AcademicProgramBrowser class' category: #'Tavor-Morphic'!
+	category: 'Tavor-AcademicProgram'!
+!classDefinition: 'AcademicProgramBrowser class' category: #'Tavor-AcademicProgram'!
 AcademicProgramBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #CampusBrowser category: #'Tavor-Morphic'!
-BidiSystemWindow subclass: #CampusBrowser
-	instanceVariableNames: 'campusIndex floorIndex selectedFloors'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'CampusBrowser class' category: #'Tavor-Morphic'!
-CampusBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #LecturerBrowser category: #'Tavor-Morphic'!
-BidiSystemWindow subclass: #LecturerBrowser
-	instanceVariableNames: 'mold'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'LecturerBrowser class' category: #'Tavor-Morphic'!
-LecturerBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #ModuleBrowser category: #'Tavor-Morphic'!
+!classDefinition: #ModuleBrowser category: #'Tavor-AcademicProgram'!
 BidiSystemWindow subclass: #ModuleBrowser
 	instanceVariableNames: 'mold theProgram'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'ModuleBrowser class' category: #'Tavor-Morphic'!
+	category: 'Tavor-AcademicProgram'!
+!classDefinition: 'ModuleBrowser class' category: #'Tavor-AcademicProgram'!
 ModuleBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #SchoolBrowser category: #'Tavor-Morphic'!
+!classDefinition: #CampusBrowser category: #'Tavor-Campus'!
+BidiSystemWindow subclass: #CampusBrowser
+	instanceVariableNames: 'campusIndex floorIndex selectedFloors selectedRoomIndex'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Campus'!
+!classDefinition: 'CampusBrowser class' category: #'Tavor-Campus'!
+CampusBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #ClassroomTimeTable category: #'Tavor-Campus'!
+BidiSystemWindow subclass: #ClassroomTimeTable
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Campus'!
+!classDefinition: 'ClassroomTimeTable class' category: #'Tavor-Campus'!
+ClassroomTimeTable class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerBrowser category: #'Tavor-School'!
+BidiSystemWindow subclass: #LecturerBrowser
+	instanceVariableNames: 'mold'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-School'!
+!classDefinition: 'LecturerBrowser class' category: #'Tavor-School'!
+LecturerBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerTimeTable category: #'Tavor-School'!
+BidiSystemWindow subclass: #LecturerTimeTable
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-School'!
+!classDefinition: 'LecturerTimeTable class' category: #'Tavor-School'!
+LecturerTimeTable class
+	instanceVariableNames: ''!
+
+!classDefinition: #SchoolBrowser category: #'Tavor-School'!
 BidiSystemWindow subclass: #SchoolBrowser
 	instanceVariableNames: 'selectedSchools schoolIndex rankIndex selectedRanks selectedLecturerIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'SchoolBrowser class' category: #'Tavor-Morphic'!
+	category: 'Tavor-School'!
+!classDefinition: 'SchoolBrowser class' category: #'Tavor-School'!
 SchoolBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilBrowser category: #'Tavor-Morphic'!
+!classDefinition: #StencilBrowser category: #'Tavor-Stencil'!
 BidiSystemWindow subclass: #StencilBrowser
 	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex stencilIndex theAssignment'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'StencilBrowser class' category: #'Tavor-Morphic'!
+	category: 'Tavor-Stencil'!
+!classDefinition: 'StencilBrowser class' category: #'Tavor-Stencil'!
 StencilBrowser class
 	instanceVariableNames: ''!
 
@@ -190,6 +225,16 @@ SystemWindow subclass: #OpenFileDialog
 	category: 'Tavor-Morphic'!
 !classDefinition: 'OpenFileDialog class' category: #'Tavor-Morphic'!
 OpenFileDialog class
+	instanceVariableNames: ''!
+
+!classDefinition: #TavorApplication category: #'Tavor-Application'!
+Object subclass: #TavorApplication
+	instanceVariableNames: 'model lastImportDirectory'
+	classVariableNames: 'TheApplication'
+	poolDictionaries: ''
+	category: 'Tavor-Application'!
+!classDefinition: 'TavorApplication class' category: #'Tavor-Application'!
+TavorApplication class
 	instanceVariableNames: ''!
 
 !classDefinition: #AcademicProgram category: #'Tavor-Model'!
@@ -362,16 +407,6 @@ Object subclass: #TavorExample
 TavorExample class
 	instanceVariableNames: ''!
 
-!classDefinition: #TavorApplication category: #'Tavor-Morphic'!
-Object subclass: #TavorApplication
-	instanceVariableNames: 'model lastImportDirectory'
-	classVariableNames: 'TheApplication'
-	poolDictionaries: ''
-	category: 'Tavor-Morphic'!
-!classDefinition: 'TavorApplication class' category: #'Tavor-Morphic'!
-TavorApplication class
-	instanceVariableNames: ''!
-
 
 !TavorTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 21:10:56'!
 aboutToGrab: submorph
@@ -395,6 +430,51 @@ aboutToGrabClassroom: aClassroomMorph
 aboutToGrabLecturer: aLecturerMorph
 
 	self subclassResponsibility ! !
+
+!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:52:08'!
+aboutToGrabClassroom: aClassroomMorph
+
+	| aDuplicateMorph |
+	
+	aClassroomMorph color: Color transparent.
+	
+	aDuplicateMorph := aClassroomMorph duplicate room: aClassroomMorph room ; assignment: aClassroomMorph assignment ; expand ; yourself.
+	
+	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
+	
+	^aDuplicateMorph ! !
+
+!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:04:55'!
+allowsSubmorphDrag
+	^row ~= 1 ! !
+
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:04:34'!
+aboutToGrabAssignment: anAssignmentMorph
+
+	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
+
+	self halt.
+	
+	anAssignmentMorph model unassign.
+	
+	^anAssignmentMorph ! !
+
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/21/2025 09:06:32'!
+aboutToGrabLecturer: aLecturerMorph
+
+	| aDuplicateMorph |
+	
+	aLecturerMorph color: Color transparent.
+	
+	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; expand ; yourself.
+	
+	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
+	
+	^aDuplicateMorph ! !
+
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/16/2025 22:28:39'!
+allowsSubmorphDrag
+	^row ~= 1 ! !
 
 !AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:22:49'!
 assignmentInRow
@@ -458,51 +538,6 @@ allowsMorphDrop
 allowsSubmorphDrag
 	^row ~= 1 ! !
 
-!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:52:08'!
-aboutToGrabClassroom: aClassroomMorph
-
-	| aDuplicateMorph |
-	
-	aClassroomMorph color: Color transparent.
-	
-	aDuplicateMorph := aClassroomMorph duplicate room: aClassroomMorph room ; assignment: aClassroomMorph assignment ; expand ; yourself.
-	
-	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
-	
-	^aDuplicateMorph ! !
-
-!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:04:55'!
-allowsSubmorphDrag
-	^row ~= 1 ! !
-
-!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:04:34'!
-aboutToGrabAssignment: anAssignmentMorph
-
-	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
-
-	self halt.
-	
-	anAssignmentMorph model unassign.
-	
-	^anAssignmentMorph ! !
-
-!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/21/2025 09:06:32'!
-aboutToGrabLecturer: aLecturerMorph
-
-	| aDuplicateMorph |
-	
-	aLecturerMorph color: Color transparent.
-	
-	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; expand ; yourself.
-	
-	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
-	
-	^aDuplicateMorph ! !
-
-!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/16/2025 22:28:39'!
-allowsSubmorphDrag
-	^row ~= 1 ! !
-
 !WeeklyTimeTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/20/2025 23:13:56'!
 aboutToGrabAssignment: anAssignmentMorph
 
@@ -533,6 +568,14 @@ wantsDroppedMorph: aMorph event: evt
 	^aMorph isKindOf: AssignmentMorph 
 ! !
 
+!LecturerTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:24:57'!
+allowsMorphDrop
+	^false! !
+
+!LecturerTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:25:11'!
+allowsSubmorphDrag
+	^false! !
+
 !TavorTableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 22:36:58'!
 handlesMouseOver: aMorphicEvent
 	^true! !
@@ -549,160 +592,6 @@ mouseLeave: evt
 rightToLeft: aBoolean
 
 	submorphs first rightToLeft: aBoolean! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:41:17'!
-assignDay: aDayInteger hour: anHourInteger
-
-	model day: aDayInteger ; hour: anHourInteger.
-	model unit module college changed: #assignmentsTable ! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:56:41'!
-build
-
-	| aLabelMorph |
-	
-	self removeAllMorphs.
-	
-	model 
-		ifNotNil:[
-			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
-	
-			aLabelMorph morphWidth: aLabelMorph measureContents x.
-	
-			aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
-
-			aLabelMorph layoutSpec proportionalHeight: 1.0.	 
-
-			self addMorph: aLabelMorph ].
-	
-	self updateColor.
-	
-	self axisEdgeWeight: 0.0! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:02'!
-collision: aBoolean
-	collision := aBoolean! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:58:14'!
-expand
-
-	| code label |
-	
-	model ifNil:[^self].
-	
-	code := '{1}' format:{model unit module code} :: asBidi.
-	
-	label := self submorphs first.
-	
-	label  contents: ('{1} {2} {3}' format:{ code . model unit module description . model unit description }).
-	label morphWidth: label measureContents x.
-
-! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:51:27'!
-index
-	^index! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:47:04'!
-index: anInteger
-	index := anInteger! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:08'!
-initialize
-
-	super initialize.
-	
-	index := 0.
-	
-	notSelectedColor := Color fromHexString: '#c7dbff' :: alpha:0.3	.
-	
-	selectedColor := notSelectedColor darker.
-	
-	collision := false.! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:39:17'!
-model
-	^model! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:29:31'!
-model: anAssignment
-	model := anAssignment! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:24:10'!
-unassign
-
-	model day: nil ;  hour: nil.	
-
-! !
-
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:37:55'!
-updateColor
-
-	notSelectedColor := 
-		collision
-			ifTrue:[Color red alpha: 0.3]
-			ifFalse:[Color fromHexString: '#c7dbff' :: alpha:0.3	.].
-
-	selectedColor := notSelectedColor darker.
-
-	self color: notSelectedColor.
-! !
-
-!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/20/2025 22:47:18'!
-aboutToBeGrabbedBy: aHand
-
-	index = 0 ifFalse:[^nil].
-	
-	^owner aboutToGrabAssignment: self! !
-
-!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 22:28:20'!
-justDroppedInto: newOwnerMorph event: anEvent 
-
-	self assert: index = 0.
-	
-	newOwnerMorph isWorldMorph 
-		ifTrue:[
-			anEvent formerOwner isKindOf: WeeklyTimeTableCell
-				::ifTrue:[ 
-					model unit module college changed: #assignmentsTable ].
-			^self delete ].
-	
-	newOwnerMorph 	isKindOf: WeeklyTimeTableCell 
-		:: ifTrue:[ 
-			self assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6			 ]
-		ifFalse:[
-			self delete]			 ! !
-
-!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:57:11'!
-fromTuple: aTuple
-
-	| anAssignmentMorph |
-	
-	anAssignmentMorph := self newColumn.
-
-	aTuple 
-		ifNotNil:[
-			anAssignmentMorph index: (aTuple at:1); model: (aTuple at:2); collision: (aTuple at:3)
-		].
-	
-	anAssignmentMorph build ; expand.
-	
-	^anAssignmentMorph ! !
-
-!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:18:35'!
-new: anAssignment
-
-	| anAssignmentMorph |
-	
-	anAssignmentMorph := self newColumn.
-	
-	anAssignmentMorph index: 0.
-	anAssignmentMorph model: anAssignment.
-	anAssignmentMorph collision: false.
-	
-	anAssignmentMorph build.
-	
-	^anAssignmentMorph ! !
 
 !ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:57:25'!
 assign: anAssignment
@@ -977,6 +866,166 @@ new: aLecturer
 	aLecturerMorph build.
 	
 	^aLecturerMorph! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:41:17'!
+assignDay: aDayInteger hour: anHourInteger
+
+	model day: aDayInteger ; hour: anHourInteger.
+	model unit module college changed: #assignmentsTable ! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:56:41'!
+build
+
+	| aLabelMorph |
+	
+	self removeAllMorphs.
+	
+	model 
+		ifNotNil:[
+			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
+	
+			aLabelMorph morphWidth: aLabelMorph measureContents x.
+	
+			aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
+
+			aLabelMorph layoutSpec proportionalHeight: 1.0.	 
+
+			self addMorph: aLabelMorph ].
+	
+	self updateColor.
+	
+	self axisEdgeWeight: 0.0! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:02'!
+collision: aBoolean
+	collision := aBoolean! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:58:14'!
+expand
+
+	| code label |
+	
+	model ifNil:[^self].
+	
+	code := '{1}' format:{model unit module code} :: asBidi.
+	
+	label := self submorphs first.
+	
+	label  contents: ('{1} {2} {3}' format:{ code . model unit module description . model unit description }).
+	label morphWidth: label measureContents x.
+
+! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:51:27'!
+index
+	^index! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:47:04'!
+index: anInteger
+	index := anInteger! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:20:13'!
+initialize
+
+	super initialize.
+	
+	index := 0.
+	
+	notSelectedColor := Color fromHexString: '#c7dbff' :: alpha:0.3	.
+	
+	selectedColor := notSelectedColor darker.
+	
+	collision := false.
+	
+	enableGrabbing := true.! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:39:17'!
+model
+	^model! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:29:31'!
+model: anAssignment
+	model := anAssignment! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:24:10'!
+unassign
+
+	model day: nil ;  hour: nil.	
+
+! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 21:14:01'!
+updateColor
+
+	notSelectedColor := 
+		collision
+			ifTrue:[Color red alpha: 0.3]
+			ifFalse:[
+				model
+					ifNil:[Color transparent]
+					ifNotNil:[Color fromHexString: '#c7dbff' :: alpha:0.3	] 			].
+
+	selectedColor := notSelectedColor darker.
+
+	self color: notSelectedColor
+! !
+
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/25/2025 22:25:24'!
+aboutToBeGrabbedBy: aHand
+		
+	index = 0 ifFalse:[^nil].
+	
+	^owner aboutToGrabAssignment: self! !
+
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 22:28:20'!
+justDroppedInto: newOwnerMorph event: anEvent 
+
+	self assert: index = 0.
+	
+	newOwnerMorph isWorldMorph 
+		ifTrue:[
+			anEvent formerOwner isKindOf: WeeklyTimeTableCell
+				::ifTrue:[ 
+					model unit module college changed: #assignmentsTable ].
+			^self delete ].
+	
+	newOwnerMorph 	isKindOf: WeeklyTimeTableCell 
+		:: ifTrue:[ 
+			self assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6			 ]
+		ifFalse:[
+			self delete]			 ! !
+
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:25:33'!
+fromTuple: aTuple
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := self newColumn.
+
+	aTuple 
+		ifNotNil:[
+			anAssignmentMorph index: (aTuple at:1); model: (aTuple at:2); collision: (aTuple at:3).
+		].
+	
+	anAssignmentMorph build ; expand.
+
+			
+	^anAssignmentMorph ! !
+
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:18:35'!
+new: anAssignment
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := self newColumn.
+	
+	anAssignmentMorph index: 0.
+	anAssignmentMorph model: anAssignment.
+	anAssignmentMorph collision: false.
+	
+	anAssignmentMorph build.
+	
+	^anAssignmentMorph ! !
 
 !TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:01:45'!
 build: aStringTemplate
@@ -1495,320 +1544,6 @@ buildMorphicWindow
 	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (unitsMorph -1.0p | 1.0p) | 0.8p)).
 	! !
 
-!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:10:51'!
-buildMorphicWindow
-
-	| navigationPanel roomsTable |
-
-	navigationPanel := self buildNavigationPanel.
-	
-	roomsTable := self buildRoomsTable.
-	
-	self changed: #roomsTable.
-	
-	self layoutMorph addMorph: (navigationPanel -1.0p | 0.2p) </> (roomsTable -1.0p | 1.0p).
-	! !
-
-!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:08:30'!
-buildNavigationPanel
-
-	| floors campuses |
-
-	campuses := BidiPluggableListMorph withModel: self listGetter: #campusNames indexGetter: #campusIndex indexSetter: #campusIndex: .
-	
-	floors := BidiPluggableListMorphOfMany withModel: self listGetter: #floorNames primarySelectionGetter: #floorIndex primarySelectionSetter: #floorIndex: listSelectionGetter: #floorSelectionAt: listSelectionSetter: #floorSelectionAt:put:.
-	
-	^ (floors - (1/2)p | 1p) <+> (campuses - (1/2)p | 1p) .
-	
-! !
-
-!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:10:03'!
-buildRoomsTable
-
-	| roomsTable |
-
-	roomsTable := PluggableTableMorph new.
-	
-	roomsTable model: self ; table: #roomsTable ; rightToLeft: true ; headerRow: true.
-	
-	roomsTable cellFactory: ClassroomTableCell.
-	
-	roomsTable columnFactory: { 
-		2 -> (PluggableMorphFactory new formatter:[:aClassroom | aClassroom]; morphClass: ClassroomMorph ; factoryMessage: #new: yourself) } asDictionary.
-
-	"
-	roomsTable menuNshortcutsKey: #moduleMenuSpec.
-	
-	roomsTable selectRowMessage: #selectUnit:.
-	
-	roomsTable menuFactory: BidiMenuMorph.
-	"
-	^roomsTable	
-! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:53:02'!
-campusIndex
-
-	^campusIndex ! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:13:31'!
-campusIndex: anInteger
-
-	campusIndex := anInteger.
-	
-	self changed: #floorNames! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:30:16'!
-campusNames
-	^self campuses collect:[:eachCampus | eachCampus description ]! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:52:34'!
-campuses
-	^model campuses asOrderedCollection sort:[:x :y | x description <= y description ]! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:57:31'!
-floorIndex
-
-	^floorIndex ! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:57:41'!
-floorIndex: anInteger
-
-	floorIndex := anInteger.! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:42:36'!
-floorNames
-
-	^self floors collect:[:eachFloor | ('{1}'  format:{eachFloor}) ].! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:14:55'!
-floorSelectionAt: anIndex
-
-	^selectedFloors includes: anIndex! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:15:10'!
-floorSelectionAt:anIndex put: aBoolean
-
-	aBoolean
-		ifTrue:[
-			selectedFloors add: anIndex]
-		ifFalse:[
-			selectedFloors remove: anIndex ].
-		
-	self changed: #roomsTable
-		
-		! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:17:46'!
-floors
-
-	| campus |
-	
-	campusIndex = 0 ifTrue:[^{}].
-	
-	campus := self campuses at: campusIndex.
-	
-	^ campus floors! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:12:26'!
-initialize
-
-	super initialize.
-	
-	campusIndex := 0.
-	
-	floorIndex := 0.
-	
-	selectedFloors := Set new.! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:06:50'!
-rooms
-
-	| campus campusFloors floors |
-	
-	campusIndex = 0 ifTrue:[^{}].
-	
-	campus := self campuses at: campusIndex.
-	
-	campusFloors := campus floors.
-	
-	floors := Set new.
-	
-	selectedFloors do:[:eachIndex |
-		floors add: (campusFloors at: eachIndex) ].
-	
-	^campus rooms select:[:eachRoom | floors includes: eachRoom floor ].
-	
-	
-	
-	! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:24:20'!
-roomsTable
-
-	| table |
-	
-	table := OrderedCollection new.
-	
-	table add: { 'קיבולת' . 'קוד' . 'קומה' . 'קמפוס' }.
-	
-	self rooms do:[:eachRoom |
-		table add: {  
-			{ '{1}' format:{eachRoom capacity}  } . 
-			{ eachRoom } . 
-			{ '{1}' format: { eachRoom floor }  } .
-			{ eachRoom campus description  } } ] .
-	
-	^table
-! !
-
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:18:52'!
-update: aSymbol
-
-	self changed: aSymbol! !
-
-!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/24/2025 21:58:58'!
-buildAssignmentsTable
-
-	| assignmentsTable  |
-	
-	assignmentsTable := PluggableTableMorph new.
-	
-	assignmentsTable  model: self ; table: #assignments ; rightToLeft: true ; headerRow: true.
-	
-	assignmentsTable menuNshortcutsKey: #assignmentMenuSpec.
-	
-	assignmentsTable selectRowMessage: #selectAssignment:.
-	
-	assignmentsTable menuFactory: BidiMenuMorph.
-	
-	assignmentsTable columnFactory: { 
-		1 -> (PluggableMorphFactory new formatter:[:aClassroom |  aClassroom campus description , ' ' , aClassroom code  ] ; yourself) .
-		5 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
-	} asDictionary.
-		
-	^assignmentsTable 	
-! !
-
-!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:12:39'!
-buildDetailsPanel
-
-	| detailsPanel updateButton rankIndex |
-	
-	rankIndex := model school college lecturerRanks find: model rank.
-	
-	mold rightToLeft: true.
-	
-	mold fields removeAll.
-	
-	(mold integerField)
-		label: 'מזהה המרצה:';
-		on: #propertyValue of: (ValueHolder with: model code);
-		customize:[:widget :input :example | 
-			input color: Color lightGray; disableEditing 
-			];
-		beRequired.
-	(mold stringField)
-		label: 'שם המרצה';
-		on: #propertyValue of: (ValueHolder with: model description);
-		beRequired.
-	(mold fields add: BidiSelectField new)
-		rightToLeft: true;
-		label: 'מעמד מרצה';
-		on: #listIndex of: (ListModel with: model school college lecturerRanks :: listIndex: rankIndex) ;
-		customize: [:widget :input :example | 
-			input color: Color white ; borderWidth:1 ; borderColor: Color black.
-			] ;
-		beRequired.		
-	(mold integerField)
-		label: 'שעות למשרה';
-		on: #propertyValue of: (ValueHolder with: model quota);
-		addCondition:[:input :value | value > 0 ]
-		labeled: 'תן לנו לפחות שעה אחת.' ;
-		beRequired.
-	
-	updateButton := PluggableButtonMorph model: self action:#updateLecturerDetails label:'עדכן פרטים' reverse.
-	
-	detailsPanel := LayoutMorph newColumn.
-	
-	detailsPanel addMorph: mold renderForms | 0.5p; addMorph: updateButton.
-	
-	^detailsPanel! !
-
-!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:21:59'!
-buildMorphicWindow
-
-	| assignmentsTable detailsPanel dialog |
-	
-	detailsPanel := self buildDetailsPanel.
-	
-	assignmentsTable := self buildAssignmentsTable.
-	
-	self changed: #assignments.
-	
-	dialog := (assignmentsTable - 0.7p) <+> (detailsPanel - 0.3p).
-	
-	self addMorph: dialog.
-	
-! !
-
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:41'!
-assignments
-
-	| table |
-	
-	table := OrderedCollection new.
-
-	table add: { 'חדר' . 'שעה' . 'יום' . 'סוג' . 'שם קורס' . 'קוד קורס' }.
-
-	model assignments do:[:eachAssignment | 
-		
-		table add: {
-			eachAssignment rooms . 
-			{ eachAssignment hour } . 
-			{ eachAssignment dayHebrew } . 
-			{ eachAssignment unit }  .
-			{ eachAssignment unit module  } .
-			{ eachAssignment unit module code } } ] .
-	
-	^table
-! !
-
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:11:11'!
-initialize
-
-	super initialize.
-	
-	mold := BidiMold new.! !
-
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:46:05'!
-update: aSymbol
-
-	self changed: #assignments
-! !
-
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:45:52'!
-updateLecturerDetails
-
-	| description rank quota |
-
-	mold validate.
-	mold isValid ifFalse:[^self].
-	
-	mold save.
-	
-	description := mold fields at:2 :: value.
-	
-	rank := mold fields at:3 :: value.
-	
-	quota := mold fields at:4 :: value.
-	
-	model description: description; rank: rank; quota: quota.
-	
-	model changed: #assignments.
-	
-	model school college changed: #assignmentsTable.! !
-
 !ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:55:05'!
 addModuleToAcademicProgramDialog
 	
@@ -1968,6 +1703,504 @@ updateModuleDetails
 			model college changed: #unitsTable ; changed: #summary.
 		]! !
 
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:10:51'!
+buildMorphicWindow
+
+	| navigationPanel roomsTable |
+
+	navigationPanel := self buildNavigationPanel.
+	
+	roomsTable := self buildRoomsTable.
+	
+	self changed: #roomsTable.
+	
+	self layoutMorph addMorph: (navigationPanel -1.0p | 0.2p) </> (roomsTable -1.0p | 1.0p).
+	! !
+
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:08:30'!
+buildNavigationPanel
+
+	| floors campuses |
+
+	campuses := BidiPluggableListMorph withModel: self listGetter: #campusNames indexGetter: #campusIndex indexSetter: #campusIndex: .
+	
+	floors := BidiPluggableListMorphOfMany withModel: self listGetter: #floorNames primarySelectionGetter: #floorIndex primarySelectionSetter: #floorIndex: listSelectionGetter: #floorSelectionAt: listSelectionSetter: #floorSelectionAt:put:.
+	
+	^ (floors - (1/2)p | 1p) <+> (campuses - (1/2)p | 1p) .
+	
+! !
+
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/25/2025 22:44:34'!
+buildRoomsTable
+
+	| roomsTable |
+
+	roomsTable := PluggableTableMorph new.
+	
+	roomsTable model: self ; table: #roomsTable ; rightToLeft: true ; headerRow: true.
+
+	roomsTable selectRowMessage: #selectClassroom:.
+	
+	roomsTable cellFactory: ClassroomTableCell.
+
+	roomsTable menuFactory: BidiMenuMorph.
+
+	roomsTable menuNshortcutsKey: #menuSpec.
+	
+	roomsTable columnFactory: { 
+		2 -> (PluggableMorphFactory new formatter:[:aClassroom | aClassroom]; morphClass: ClassroomMorph ; factoryMessage: #new: yourself) } asDictionary.
+
+	"
+	roomsTable menuNshortcutsKey: #moduleMenuSpec.
+	
+	roomsTable selectRowMessage: #selectUnit:.
+	
+	roomsTable menuFactory: BidiMenuMorph.
+	"
+	^roomsTable	
+! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:53:02'!
+campusIndex
+
+	^campusIndex ! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:13:31'!
+campusIndex: anInteger
+
+	campusIndex := anInteger.
+	
+	self changed: #floorNames! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:30:16'!
+campusNames
+	^self campuses collect:[:eachCampus | eachCampus description ]! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:52:34'!
+campuses
+	^model campuses asOrderedCollection sort:[:x :y | x description <= y description ]! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:57:31'!
+floorIndex
+
+	^floorIndex ! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:57:41'!
+floorIndex: anInteger
+
+	floorIndex := anInteger.! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:42:36'!
+floorNames
+
+	^self floors collect:[:eachFloor | ('{1}'  format:{eachFloor}) ].! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:14:55'!
+floorSelectionAt: anIndex
+
+	^selectedFloors includes: anIndex! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:15:10'!
+floorSelectionAt:anIndex put: aBoolean
+
+	aBoolean
+		ifTrue:[
+			selectedFloors add: anIndex]
+		ifFalse:[
+			selectedFloors remove: anIndex ].
+		
+	self changed: #roomsTable
+		
+		! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:17:46'!
+floors
+
+	| campus |
+	
+	campusIndex = 0 ifTrue:[^{}].
+	
+	campus := self campuses at: campusIndex.
+	
+	^ campus floors! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:40:30'!
+initialize
+
+	super initialize.
+	
+	campusIndex := 0.
+	
+	floorIndex := 0.
+	
+	selectedFloors := Set new.
+	
+	selectedRoomIndex := 0.! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:37:04'!
+menuSpec
+
+^ #(
+		#(0 		'חדר'						false)
+		#(10		'מערכת שעות' 						$g 	window 			openTimeTable 				)
+		#(20		'ערוך פרטי חדר ...' 						$g 	window 			openEditDialog 				)
+		#(30		'-----' 		)
+		#(40		'הסר חדר' 						$c 	window 			removeRoom )
+	).! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:41:48'!
+openTimeTable
+
+	| aRoom |
+	
+	selectedRoomIndex <= 1 ifTrue:[^self].
+	
+	aRoom := 	self rooms at: selectedRoomIndex - 1.
+	
+	ClassroomTimeTable open: aRoom label: 'מערכת שעות לחדר' 
+	
+	! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:48:13'!
+rooms
+
+	| campus campusFloors floors |
+	
+	campusIndex = 0 ifTrue:[^{}].
+	
+	campus := self campuses at: campusIndex.
+	
+	campusFloors := campus floors.
+	
+	floors := Set new.
+	
+	selectedFloors do:[:eachIndex |
+		floors add: (campusFloors at: eachIndex) ].
+	
+	^campus rooms select:[:eachRoom | floors includes: eachRoom floor ] :: asOrderedCollection sort:[:x :y | 
+		x floor < y floor or:[x floor = y floor and:[x code <= y code] ] ].
+	
+	
+	
+	! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:24:20'!
+roomsTable
+
+	| table |
+	
+	table := OrderedCollection new.
+	
+	table add: { 'קיבולת' . 'קוד' . 'קומה' . 'קמפוס' }.
+	
+	self rooms do:[:eachRoom |
+		table add: {  
+			{ '{1}' format:{eachRoom capacity}  } . 
+			{ eachRoom } . 
+			{ '{1}' format: { eachRoom floor }  } .
+			{ eachRoom campus description  } } ] .
+	
+	^table
+! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:40:14'!
+selectClassroom: anIndex
+
+	selectedRoomIndex := anIndex! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:18:52'!
+update: aSymbol
+
+	self changed: aSymbol! !
+
+!ClassroomTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:32:21'!
+buildMorphicWindow
+
+	| semesterTimeTable |
+
+	semesterTimeTable := self buildSemesterTimeTable.
+	
+	self layoutMorph addMorph: (semesterTimeTable -1.0p |1.0p).
+	
+	self changed: #semesterTimeTable.	! !
+
+!ClassroomTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:30:37'!
+buildSemesterTimeTable
+
+	| semesterTimeTable semesterColumnFactory |
+
+	semesterTimeTable := PluggableTableMorph new.
+	
+	semesterTimeTable model: self ; table: #semesterTimeTable ; rightToLeft: true ; headerRow: true.
+
+	semesterTimeTable cellFactory: LecturerTimeTableCell.
+	
+	semesterColumnFactory := Dictionary new.
+	
+	1 to:6 do:[:eachDay |
+		semesterColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
+	
+	semesterColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} :: asBidi ] ; morphClass: OffsetLabelMorph ; yourself).
+	
+	semesterTimeTable columnFactory: semesterColumnFactory.
+	
+	^semesterTimeTable 
+! !
+
+!ClassroomTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:30:49'!
+semesterTimeTable
+
+	| semester table |
+	
+	semester := 'סמסטר א'.
+	
+	table := OrderedCollection new.
+	
+	table add: { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' . '' }.
+	
+	8 to:23 do:[:i | | aRow |
+		
+		aRow := OrderedCollection new.
+		
+		1 to:6 do:[:j |
+			aRow add: OrderedCollection new ].
+		
+		aRow add: {i }.
+		
+		table add: aRow ].	
+	
+	model assignments select:[:eachAssignment | eachAssignment stencil semester description = semester ] :: do:[:eachAssignment | 
+	
+		eachAssignment day notNil and: [eachAssignment hour notNil] ::
+			ifTrue:[ | cell | 
+				0 to: eachAssignment unit duration -1 do:[:index | 
+				
+					cell := table at: 	eachAssignment hour + index - 6 :: at: 7 - eachAssignment day.
+						
+					cell add: { index . eachAssignment . cell notEmpty  } ] ] ].
+	
+	^table
+	! !
+
+!ClassroomTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:31:22'!
+update: aSymbol
+	self changed: aSymbol! !
+
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/24/2025 21:58:58'!
+buildAssignmentsTable
+
+	| assignmentsTable  |
+	
+	assignmentsTable := PluggableTableMorph new.
+	
+	assignmentsTable  model: self ; table: #assignments ; rightToLeft: true ; headerRow: true.
+	
+	assignmentsTable menuNshortcutsKey: #assignmentMenuSpec.
+	
+	assignmentsTable selectRowMessage: #selectAssignment:.
+	
+	assignmentsTable menuFactory: BidiMenuMorph.
+	
+	assignmentsTable columnFactory: { 
+		1 -> (PluggableMorphFactory new formatter:[:aClassroom |  aClassroom campus description , ' ' , aClassroom code  ] ; yourself) .
+		5 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+	} asDictionary.
+		
+	^assignmentsTable 	
+! !
+
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:12:39'!
+buildDetailsPanel
+
+	| detailsPanel updateButton rankIndex |
+	
+	rankIndex := model school college lecturerRanks find: model rank.
+	
+	mold rightToLeft: true.
+	
+	mold fields removeAll.
+	
+	(mold integerField)
+		label: 'מזהה המרצה:';
+		on: #propertyValue of: (ValueHolder with: model code);
+		customize:[:widget :input :example | 
+			input color: Color lightGray; disableEditing 
+			];
+		beRequired.
+	(mold stringField)
+		label: 'שם המרצה';
+		on: #propertyValue of: (ValueHolder with: model description);
+		beRequired.
+	(mold fields add: BidiSelectField new)
+		rightToLeft: true;
+		label: 'מעמד מרצה';
+		on: #listIndex of: (ListModel with: model school college lecturerRanks :: listIndex: rankIndex) ;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.		
+	(mold integerField)
+		label: 'שעות למשרה';
+		on: #propertyValue of: (ValueHolder with: model quota);
+		addCondition:[:input :value | value > 0 ]
+		labeled: 'תן לנו לפחות שעה אחת.' ;
+		beRequired.
+	
+	updateButton := PluggableButtonMorph model: self action:#updateLecturerDetails label:'עדכן פרטים' reverse.
+	
+	detailsPanel := LayoutMorph newColumn.
+	
+	detailsPanel addMorph: mold renderForms | 0.5p; addMorph: updateButton.
+	
+	^detailsPanel! !
+
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:21:59'!
+buildMorphicWindow
+
+	| assignmentsTable detailsPanel dialog |
+	
+	detailsPanel := self buildDetailsPanel.
+	
+	assignmentsTable := self buildAssignmentsTable.
+	
+	self changed: #assignments.
+	
+	dialog := (assignmentsTable - 0.7p) <+> (detailsPanel - 0.3p).
+	
+	self addMorph: dialog.
+	
+! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:41'!
+assignments
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'חדר' . 'שעה' . 'יום' . 'סוג' . 'שם קורס' . 'קוד קורס' }.
+
+	model assignments do:[:eachAssignment | 
+		
+		table add: {
+			eachAssignment rooms . 
+			{ eachAssignment hour } . 
+			{ eachAssignment dayHebrew } . 
+			{ eachAssignment unit }  .
+			{ eachAssignment unit module  } .
+			{ eachAssignment unit module code } } ] .
+	
+	^table
+! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:11:11'!
+initialize
+
+	super initialize.
+	
+	mold := BidiMold new.! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:46:05'!
+update: aSymbol
+
+	self changed: #assignments
+! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:45:52'!
+updateLecturerDetails
+
+	| description rank quota |
+
+	mold validate.
+	mold isValid ifFalse:[^self].
+	
+	mold save.
+	
+	description := mold fields at:2 :: value.
+	
+	rank := mold fields at:3 :: value.
+	
+	quota := mold fields at:4 :: value.
+	
+	model description: description; rank: rank; quota: quota.
+	
+	model changed: #assignments.
+	
+	model school college changed: #assignmentsTable.! !
+
+!LecturerTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:32:42'!
+buildMorphicWindow
+
+	| semesterTimeTable |
+
+	semesterTimeTable := self buildSemesterTimeTable.
+	
+	self layoutMorph addMorph: (semesterTimeTable -1.0p |1.0p).
+	
+	self changed: #semesterTimeTable.	! !
+
+!LecturerTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:26:01'!
+buildSemesterTimeTable
+
+	| semesterTimeTable semesterColumnFactory |
+
+	semesterTimeTable := PluggableTableMorph new.
+	
+	semesterTimeTable model: self ; table: #semesterTimeTable ; rightToLeft: true ; headerRow: true.
+
+	semesterTimeTable cellFactory: LecturerTimeTableCell.
+	
+	semesterColumnFactory := Dictionary new.
+	
+	1 to:6 do:[:eachDay |
+		semesterColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
+	
+	semesterColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} :: asBidi ] ; morphClass: OffsetLabelMorph ; yourself).
+	
+	semesterTimeTable columnFactory: semesterColumnFactory.
+	
+	^semesterTimeTable 
+! !
+
+!LecturerTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:26:09'!
+semesterTimeTable
+
+	| semester table |
+	
+	semester := 'סמסטר א'.
+	
+	table := OrderedCollection new.
+	
+	table add: { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' . '' }.
+	
+	8 to:23 do:[:i | | aRow |
+		
+		aRow := OrderedCollection new.
+		
+		1 to:6 do:[:j |
+			aRow add: OrderedCollection new ].
+		
+		aRow add: {i }.
+		
+		table add: aRow ].	
+	
+	model assignments select:[:eachAssignment | eachAssignment stencil semester description = semester ] :: do:[:eachAssignment | 
+	
+		eachAssignment day notNil and: [eachAssignment hour notNil] ::
+			ifTrue:[ | cell | 
+				0 to: eachAssignment unit duration -1 do:[:index | 
+				
+					cell := table at: 	eachAssignment hour + index - 6 :: at: 7 - eachAssignment day.
+						
+					cell add: { index . eachAssignment . cell notEmpty  } ] ] ].
+	
+	^table
+	! !
+
+!LecturerTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:27:54'!
+update: aSymbol
+	self changed: aSymbol! !
+
 !SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/16/2025 21:59:59'!
 lecturers
 
@@ -2017,6 +2250,19 @@ openEditLecturerDialog
 	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
 	
 	LecturerBrowser open: aLecturer label: 'ערוך מרצה' 
+	
+	! !
+
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/25/2025 21:37:43'!
+openTimeTable
+
+	| aLecturer |
+	
+	selectedLecturerIndex <= 1 ifTrue:[^self].
+	
+	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
+	
+	LecturerTimeTable open: aLecturer label: 'מערכת שעות למרצה' 
 	
 	! !
 
@@ -2125,14 +2371,15 @@ selectedSchools
 	
 ! !
 
-!SchoolBrowser methodsFor: 'menu' stamp: 'DF 1/18/2025 12:52:56'!
+!SchoolBrowser methodsFor: 'menu' stamp: 'DF 1/25/2025 21:40:42'!
 lecturerMenuSpec
 
 ^ #(
 		#(0 		'מרצה'						false)
-		#(10		'ערוך פרטי מרצה ...' 						$g 	window 			openEditLecturerDialog 				)
-		#(20		'-----' 		)
-		#(30		'הסר מרצה' 						$c 	window 			removeLecturer )
+		#(10		'מערכת שעות' 						$g 	window 			openTimeTable 				)
+		#(20		'ערוך פרטי מרצה ...' 						$g 	window 			openEditLecturerDialog 				)
+		#(30		'-----' 		)
+		#(40		'הסר מרצה' 						$c 	window 			removeLecturer )
 	).! !
 
 !SchoolBrowser methodsFor: 'initialization' stamp: 'DF 1/18/2025 12:59:33'!
@@ -2706,1418 +2953,6 @@ open: model start: aDirectoryEntry action: aSymbol label: aString
 	window selectFileEntryAction: aSymbol.
 	
 	^window! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:25'!
-addAcademicTrack: anAcademicTrack
-
-	self assert: anAcademicTrack program isNil.
-	
-	self attachAcademicTrack: anAcademicTrack.
-	
-	anAcademicTrack program: self.! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:38'!
-attachAcademicTrack: anAcademicTrack
-
-	tracks add: anAcademicTrack ! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:46'!
-college 
-	^college! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:50'!
-college: aCollege
-
-	self assert: college isNil.
-	
-	college := aCollege.! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:27'!
-description
-	^description ! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:17'!
-description: aString
-	description := aString! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:19'!
-detach
-
-	college := nil! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:55'!
-detachAcademicTrack: anAcademicTrack
-
-	tracks remove: anAcademicTrack ! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:30'!
-displayStringOrText
-	^description! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:41'!
-initialize
-	tracks := Set new! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:15'!
-invariant
-
-	tracks do:[:eachTrack | eachTrack invariant ].
-
-	tracks do:[:eachTrack | eachTrack program == self ].
-	! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:02:54'!
-removeAcademicTrack: anAcademicTrack
-
-	self assert: anAcademicTrack program == self.
-	
-	self detachAcademicTrack: anAcademicTrack.
-	
-	anAcademicTrack detach.! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:21'!
-trackAt: aString
-
-	^ tracks detect:[:eachTrack | eachTrack description = aString] ifFound:[:aTrack | aTrack] ifNone:[nil]! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:29:57'!
-tracks
-	^tracks! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:50'!
-academicYearAt: aString
-
-	^ academicYears detect:[:eachYear | eachYear description = aString] ifFound:[:aYear | aYear] ifNone:[nil]! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 22:01:58'!
-academicYears
-	^academicYears ! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:54'!
-addAcademicYear: anAcademicYear
-
-	self assert: anAcademicYear academicTrack isNil.
-
-	self attachAcademicYear: anAcademicYear.
-	
-	anAcademicYear attachAcademicTrack: self.! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:05'!
-attachAcademicYear: anAcademicYear
-
-	academicYears add: anAcademicYear ! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:49:03'!
-description
-	^description! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:57'!
-description: aString
-	description := aString! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:17'!
-detachAcademicYear: anAcademicYear
-
-	academicYears remove: anAcademicYear ! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:37'!
-displayStringOrText
-	^description! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:20:32'!
-initialize
-
-	academicYears := OrderedCollection new.! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:13:26'!
-invariant
-
-	academicYears do: [:anAcademicYear | anAcademicYear invariant ].
-	
-	academicYears do: [:anAcademicYear | self assert: anAcademicYear academicTrack == self ].! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:52:30'!
-program
-	^program! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:52:16'!
-program: aProgram
-
-	self assert: program isNil.
-	
-	program := aProgram! !
-
-!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:53:55'!
-removeAcademicYear: anAcademicYear
-
-	self assert: anAcademicYear academicTrack == self.
-	
-	anAcademicYear detach.
-	
-	self detachAcademicYear: anAcademicYear.
-	
-	! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:15:20'!
-addLecturer: aLecturer
-
-	self attachLecturer: aLecturer.
-	
-	aLecturer attachAcademicUnit: self.
-	
-	! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:12:49'!
-attachLecturer: aLecturer
-
-	lecturers add: aLecturer! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:50:35'!
-description
-
-	self subclassResponsibility ! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:12'!
-detach
-
-	module := nil.! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:13:00'!
-detachLecturer: aLecturer
-
-	lecturers remove: aLecturer! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:58'!
-displayStringOrText
-	^self description ! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:45:10'!
-duration
-	^duration! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:45:05'!
-duration: anInteger
-	duration := anInteger! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:37:09'!
-initialize
-
-	lecturers := Set new! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:02:58'!
-invariant
-	^true! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:27:11'!
-module
-	^module! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:43:15'!
-module: aModule
-
-	self assert: module isNil.
-	
-	module := aModule! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:06'!
-points
-	self subclassResponsibility ! !
-
-!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:15:50'!
-removeLecturer: aLecturer
-
-	self detachLecturer: aLecturer.
-	
-	aLecturer detachAcademicUnit: self.! !
-
-!AcademicUnit class methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:31:40'!
-newFrom: aString
-
-	| aFactory |
-	
-	aFactory := { 'הרצאה' -> Lecture . 'תרגול' -> Recitation . 'מעבדה' -> Laboratory } asDictionary.
-	
-	^ aFactory at: aString ifPresent:[:creator | creator new ] ifAbsent:[TavorError new messageText:('יחידה אקדמית לא מוכרת {1}' format:{aString}) reverse ; signal ].
-! !
-
-!Laboratory methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:52:00'!
-description
-
-	self assert: module notNil.
-	
-	^ 'מעבדה'! !
-
-!Laboratory methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:20'!
-points
-	^ 0.7 * duration! !
-
-!Lecture methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:51:55'!
-description
-
-	self assert: module notNil.
-	
-	^ 'הרצאה'! !
-
-!Lecture methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:30'!
-points
-	^ duration! !
-
-!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:52:07'!
-description
-
-	self assert: module notNil.
-	
-	^ 'תרגול' ! !
-
-!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:36:41'!
-points
-	^  duration * 0.5! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:09'!
-academicTrack
-	^track! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:46:06'!
-addSemester: aSemester
-
-	self attachSemester: aSemester.
-	
-	aSemester attachAcademicYear: self.! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:40'!
-attachAcademicTrack: anAcademicTrack
-
-	self assert: track isNil.
-	
-	track := anAcademicTrack ! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:45:42'!
-attachSemester: aSemester
-
-	semesters add: aSemester.! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:29'!
-description
-	^description! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:22'!
-description: aString
-	description := aString! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:30'!
-detach
-	
-	track := nil.! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:44:47'!
-detachSemester: aSemester
-
-	semesters remove: aSemester.! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:32:04'!
-displayStringOrText
-	^description! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:09:36'!
-initialize
-
-	semesters := OrderedCollection new. ! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:06'!
-invariant
-
-	semesters do: [:aSemester | aSemester invariant ].
-
-	semesters do: [:aSemester | self assert: aSemester academicYear == self ].
-	! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:24:28'!
-semesterAt: aString
-
-	^ semesters detect:[:eachSemester | eachSemester description = aString] ifFound:[:aSemester | aSemester] ifNone:[nil]! !
-
-!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:05:06'!
-semesters
-	^semesters! !
-
-!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:28'!
-addLecturer: aLecturer
-
-	aLecturer attachAssignment: self.
-	
-	self attachLecturer: aLecturer.! !
-
-!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:16:56'!
-attachLecturer: aLecturer
-	lecturers add: aLecturer ! !
-
-!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:17:10'!
-detachLecturer: aLecturer
-	lecturers remove: aLecturer ! !
-
-!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:16:38'!
-lecturers
-	^lecturers! !
-
-!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:35'!
-removeLecturer: aLecturer
-
-	aLecturer detachAssignment: self.
-	
-	self detachLecturer: aLecturer.! !
-
-!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:28:29'!
-addClassroom: aClassroom
-
-	aClassroom attachAssignment: self.
-	
-	self attachClassroom: aClassroom.! !
-
-!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:29:05'!
-attachClassroom: aClassroom
-	rooms add: aClassroom ! !
-
-!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:28:48'!
-detachClassroom: aClassroom
-	rooms remove: aClassroom ! !
-
-!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:30:50'!
-removeClassroom: aClassroom
-
-	aClassroom detachAssignment: self.
-	
-	self detachClassroom: aClassroom.! !
-
-!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:32:35'!
-rooms
-	^rooms! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
-before: anAssignment
-
-	^ unit module description < anAssignment unit module description 
-	or: [ unit module description = anAssignment unit module description 
-			and: [unit description <= anAssignment unit description ] ]! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:14:03'!
-day
-	^day! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:06'!
-day: anInteger
-	day := anInteger ! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:20'!
-dayHebrew
-	^DayHebrewNames at: day! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:34'!
-detach
-
-	stencil := nil.! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:36:50'!
-hour
-	^hour! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:16'!
-hour: anInteger
-	hour := anInteger
-	! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:27:31'!
-initialize
-
-	lecturers := Set new.
-	
-	rooms := Set new.! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:38'!
-invariant
-
-	lecturer units includes: unit.! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:20'!
-stencil
-	^stencil! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:44'!
-stencil: aStencil
-
-	self assert: stencil isNil.
-	
-	stencil := aStencil.! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:47:12'!
-unit
-	^unit! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:06'!
-unit: anAcademicUnit
-	unit := anAcademicUnit ! !
-
-!Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
-initialize
-
-	"self initialize"
-	
-	DayHebrewNames := { 'א' . 'ב' . 'ג' . 'ד' . 'ה' . 'ו' . 'שבת' asBidi }.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:37'!
-addClassroom: aClassroom
-
-	self assert: aClassroom campus isNil.
-	
-	aClassroom campus: self.
-	
-	rooms add: aClassroom.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:13:13'!
-college
-	^college! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:11:57'!
-college: aCollege
-
-	self assert: college isNil.
-	
-	college := aCollege.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:55:32'!
-description
-	^description! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:55:24'!
-description: aString
-	description := aString! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:39'!
-detach
-
-	college := nil.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:33:35'!
-detachClassroom: aClassroom
-	
-	rooms remove: aClassroom.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:46:00'!
-displayStringOrText
-	^self description ! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:51'!
-firstFloor
-	^firstFloor! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:31'!
-firstFloor: anInteger
-	firstFloor := anInteger! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:04:52'!
-floors
-
-	^firstFloor to: lastFloor :: collect:[:i | i] :: reverse! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:28:12'!
-initialize
-
-	rooms := Set new.
-	
-	college := nil.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:17'!
-invariant
-
-	rooms do: [:aRoom | aRoom invariant ].
-
-	rooms do: [:aRoom | self assert: aRoom campus == self ].
-	! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:56'!
-lastFloor
-	^lastFloor! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:40'!
-lastFloor: anInteger
-	lastFloor := anInteger! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:25:26'!
-removeClassroom: aClassroom
-	
-	self assert: aClassroom campus == self.
-	
-	aClassroom detach.
-	
-	self detachClassroom: aClassroom.! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:32:52'!
-roomAt: aString
-
-	^rooms detect:[:eachRoom | eachRoom code = aString ] ifFound:[:aRoom | aRoom] ifNone:[nil]! !
-
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:05:38'!
-rooms
-	^rooms! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:16:55'!
-attachAssignment: anAssignment
-
-	assignments add: anAssignment! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:48'!
-campus
-	^campus! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:32'!
-campus: aCampus
-	campus := aCampus! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:11'!
-capacity
-	^capacity! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:00:58'!
-capacity: anInteger
-	capacity := anInteger! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:07'!
-code
-	^code! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:00:44'!
-code: aString
-	code := aString! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:43'!
-detach
-
-	campus := nil.! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:29:05'!
-detachAssignment: anAssignment
-
-	assignments remove: anAssignment! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:30:27'!
-floor
-	^floor! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:30:22'!
-floor: anInteger
-	floor := anInteger! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:52:57'!
-initAssignments
-
-	assignments := Set new.! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:16:37'!
-initialize
-	super initialize.
-	
-	assignments := Set new.! !
-
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:03:14'!
-invariant
-	^true! !
-
-!College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:17:06'!
-addAcademicProgram: anAcademicProgram
-
-	self assert: anAcademicProgram college isNil.
-	
-	anAcademicProgram college: self.
-	
-	programs add: anAcademicProgram! !
-
-!College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:18:51'!
-detachAcademicProgram: anAcademicProgram
-
-	programs remove: anAcademicProgram! !
-
-!College methodsFor: 'programs' stamp: 'DF 12/29/2024 20:21:54'!
-programAt: aString
-
-	^programs detect:[:eachProgram | eachProgram description = aString] ifFound:[:aProgram | aProgram] ifNone:[nil]! !
-
-!College methodsFor: 'programs' stamp: 'DF 12/29/2024 20:45:55'!
-programNames
-
-	^programs collect:[:each | each description ] :: asOrderedCollection sort
-! !
-
-!College methodsFor: 'programs' stamp: 'DF 12/27/2024 18:15:20'!
-programs
-	^programs! !
-
-!College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:19:24'!
-removeAcademicProgram: anAcademicProgram
-
-	self assert: anAcademicProgram college == self.
-	
-	anAcademicProgram detach.
-	
-	self detachAcademicProgram: anAcademicProgram.! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:01:06'!
-addSchool: aSchool
-
-	self assert: aSchool college isNil.
-	
-	aSchool college: self.
-	
-	schools add: aSchool! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:00:09'!
-detachSchool: aSchool
-
-	schools remove: aSchool ! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:34:07'!
-lecturerAt: anIntegerCode
-
-	^schools detect:[:eachSchool | 		eachSchool lecturerAt: anIntegerCode :: notNil ] 
-		ifFound:[:aSchool | 			aSchool lecturerAt: anIntegerCode ]
-		ifNone:[nil]! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:00:38'!
-removeSchool: aSchool
-
-	self assert: aSchool college == self.
-	
-	aSchool detach.
-	
-	self detachSchool: aSchool.! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 19:57:19'!
-schoolAt: aString
-
-	^schools detect:[:eachLecturer | eachLecturer description = aString ] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:25:55'!
-schools
-	^schools! !
-
-!College methodsFor: 'campuses' stamp: 'DF 12/27/2024 15:17:40'!
-addCampus: aCampus
-
-	self assert: aCampus college isNil.
-	
-	aCampus college: self.
-	
-	campuses add: aCampus! !
-
-!College methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:16:26'!
-campusAt: aString
-
-	^campuses detect:[:eachCampus | eachCampus description = aString ] ifFound:[:aCampus | aCampus] ifNone:[nil]! !
-
-!College methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:33:29'!
-campuses
-	^campuses! !
-
-!College methodsFor: 'campuses' stamp: 'DF 12/25/2024 22:35:02'!
-detachCampus: aCampus
-
-	campuses remove: aCampus! !
-
-!College methodsFor: 'campuses' stamp: 'DF 12/27/2024 15:13:36'!
-removeCampus: aCampus
-
-	self assert: aCampus college == self.
-	
-	aCampus detach.
-	
-	self detachCampus: aCampus.! !
-
-!College methodsFor: 'modules' stamp: 'DF 12/27/2024 15:18:08'!
-addModule: aModule
-
-	self assert: aModule college isNil.
-	
-	aModule college: self.
-	
-	modules add: aModule! !
-
-!College methodsFor: 'modules' stamp: 'DF 12/25/2024 22:38:09'!
-detachModule: aModule
-
-	modules remove: aModule! !
-
-!College methodsFor: 'modules' stamp: 'DF 12/29/2024 18:20:44'!
-moduleAt: aCodeInteger
-
-	^modules detect:[:eachModule | eachModule code = aCodeInteger ] ifFound:[:aModule | aModule] ifNone:[nil]! !
-
-!College methodsFor: 'modules' stamp: 'DF 1/11/2025 13:54:15'!
-moduleNameAt: aString
-
-	^modules detect:[:eachModule | eachModule description = aString ] ifFound:[:aModule | aModule] ifNone:[nil]! !
-
-!College methodsFor: 'modules' stamp: 'DF 1/9/2025 21:08:51'!
-removeModule: aModule
-
-	self assert: aModule college == self.
-	
-	aModule semesters do:[:eachSemester | eachSemester removeModule: aModule ].
-	
-	aModule detach.
-	
-	self detachModule: aModule.! !
-
-!College methodsFor: 'accessing' stamp: 'DF 12/27/2024 15:40:20'!
-description
-	^description! !
-
-!College methodsFor: 'accessing' stamp: 'DF 12/27/2024 15:40:15'!
-description: aString
-	description := aString! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:35:18'!
-academicYearNames
-
-	^{ 'שנה 1' . 'שנה 2' . 'שנה 3' . 'שנה 4' }! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:35:52'!
-import: aFileEntry
-
-	| aReadStream aCSVReader headers programIndex trackIndex academicYearIndex semesterIndex moduleCodeIndex moduleDescriptionIndex moduleLectureIndex moduleRecitationIndex moduleLabIndex  |
-
-	aReadStream := aFileEntry readStream.
-	
-	aCSVReader := NeoCSVReader on: aReadStream.
-	
-	headers := Dictionary new.
-	
-	aCSVReader next withIndexDo:[:eachName :eachIndex | headers at: eachName put: eachIndex].
-	
-	programIndex := headers at: 'תוכנית לימודים'.
-
-	trackIndex := headers at: 'מסלול'.
-	
-	academicYearIndex := headers at: 'שנה'.
-	
-	semesterIndex := headers at: 'סמסטר'.
-	
-	moduleCodeIndex := headers at: 'קוד קורס'.
-	
-	moduleDescriptionIndex := headers at: 'שם קורס'.
-	
-	moduleLectureIndex := headers at: 'הרצאה'.
-	
-	moduleRecitationIndex := headers at: 'תרגול'.
-	
-	moduleLabIndex := headers at: 'מעבדה'.
-	
-	aCSVReader do:[:eachRow | | aProgram aTrack aYear aSemester aModule lectureDuration recitationDuration labDuration |
-		
-		aProgram := self programAt: (eachRow at: programIndex).
-		
-		aTrack := aProgram trackAt: ('מסלול {1}' format: {eachRow at: trackIndex }).
-		
-		aYear := aTrack academicYearAt: ('שנה {1}' format: {eachRow at: academicYearIndex}).
-		
-		aSemester := aYear semesterAt: ('סמסטר {1}' format:{eachRow at: semesterIndex}).
-		
-		aModule := Module new.
-		
-		aModule code: (Number readFrom: (eachRow at: moduleCodeIndex)) ; description: (eachRow at: moduleDescriptionIndex).
-		
-		lectureDuration := Number readFrom: (eachRow at: moduleLectureIndex).
-		
-		recitationDuration := Number readFrom: (eachRow at: moduleRecitationIndex).
-		
-		labDuration := Number readFrom: (eachRow at: moduleLabIndex).
-		
-		lectureDuration > 0 ifTrue:[ | aLecture |
-			aLecture := Lecture new.
-			
-			aLecture duration: lectureDuration.
-			
-			aModule addAcademicUnit: aLecture ].
-		
-		recitationDuration > 0 ifTrue:[ | aRecitation |
-			aRecitation := Recitation new.
-			
-			aRecitation duration: recitationDuration.
-			
-			aModule addAcademicUnit: aRecitation ].
-
-		labDuration > 0 ifTrue:[ | aLab |
-			aLab := Laboratory new.
-			
-			aLab duration: labDuration.
-			
-			aModule addAcademicUnit: aLab ].
-		
-		aSemester addModule: aModule.
-		
-		self addModule: aModule ]
-		! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:56:53'!
-initialize
-
-	campuses := Set new.
-	
-	modules := Set new.
-	
-	schools := Set new.
-	
-	programs := Set new.! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:03:21'!
-invariant
-
-	programs do: [:anAcademicProgram | anAcademicProgram invariant ].
-
-	programs do: [:anAcademicProgram | self assert: anAcademicProgram college == self ].
-	
-	campuses do: [:aCampus | aCampus invariant ].
-
-	campuses do: [:aCampus | self assert: aCampus college == self ].
-
-	modules do: [:aModule | aModule invariant ].
-
-	modules do: [:aModule | self assert: aModule college == self ].
-
-	schools do: [:aSchool | aSchool invariant ].
-
-	schools do: [:aSchool | self assert: aSchool college == self ].
-	! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:22:58'!
-lecturerRanks
-
-	^`{'סגל בכיר' . 'סגל זוטר' . 'מורה מן החוץ' }` asOrderedCollection! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:34:54'!
-semesterNames
-
-	^{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' }! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:38:50'!
-trackNames
-
-	^{ 'מסלול יום' . 'מסלול ערב' . 'מסלול משולב' }! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
-addAcademicUnit: anAcademicUnit
-
-	self attachAcademicUnit: anAcademicUnit.
-	
-	anAcademicUnit attachLecturer: self.! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 13:25:24'!
-assignments
-	^assignments! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:13:36'!
-attachAcademicUnit: anAcademicUnit
-
-	units add: anAcademicUnit.
-! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:41:54'!
-attachAssignment: anAssignment
-
-	assignments add: anAssignment! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:34:28'!
-code
-	^code! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:34:23'!
-code: anInteger
-	code := anInteger! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:41:34'!
-description
-	^description! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:41:27'!
-description: aString
-	description := aString! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:14'!
-detach
-
-	school ifNil:[^self].
-	
-	school detachLecturer: self.
-	
-	school := nil. ! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:14:23'!
-detachAcademicUnit: anAcademicUnit
-
-	units remove: anAcademicUnit.
-! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:42:05'!
-detachAssignment: anAssignment
-
-	assignments remove: anAssignment! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:42:18'!
-initialize
-
-	units := Set new.
-	
-	assignments := Set new.! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:08:05'!
-invariant
-	true! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 14:38:26'!
-morph
-
-	^ LecturerMorph newRow model:self ; build ; yourself.
-! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:18:11'!
-quota
-	^quota! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:18:05'!
-quota: anInteger
-	quota := anInteger! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:15:03'!
-rank
-	^rank! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:14:58'!
-rank: aString
-	rank := aString! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:14:42'!
-removeUnit: anAcademicUnit
-
-	self detachAcademicUnit: anAcademicUnit.
-	
-	anAcademicUnit detachLecturer: self.! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:52:40'!
-school
-	^school! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:01'!
-school: aSchool
-
-	self assert: school isNil.
-	
-	school := aSchool! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:00'!
-units
-	^units! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
-addAcademicUnit: anAcademicUnit
-
-	self assert: anAcademicUnit module isNil.
-	
-	anAcademicUnit module: self.
-	
-	units add: anAcademicUnit ! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:54:17'!
-attachAcademicUnit: aUnit
-
-	units add: aUnit! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:53:58'!
-attachSemester: aSemester
-
-	semesters add: aSemester! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:15:08'!
-code
-	^code! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:14:59'!
-code: anInteger
-	code := anInteger! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:14:26'!
-college
-	^college! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:54:48'!
-college: aCollege
-
-	self assert: college isNil.
-	
-	college := aCollege! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:53:46'!
-description
-	^description! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:53:38'!
-description: aString
-	description := aString! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:08:31'!
-detach
-
-	college := nil.! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:35'!
-detachAcademicUnit: aUnit
-
-	units remove: aUnit! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:54:16'!
-detachSemester: aSemester
-
-	semesters remove: aSemester! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:51:07'!
-initialize
-
-	college := nil.
-	
-	units := Set new.
-	
-	semesters := Set new.! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:52'!
-invariant
-
-	units do: [:aUnit | aUnit invariant ].
-
-	units do: [:aUnit | self assert: aUnit module == self ].
-	! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:51:54'!
-programs
-
-	| table |
-	
-	table := OrderedCollection new.
-
-	semesters do:[:eachSemester |
-		table add: { eachSemester  . eachSemester academicYear  . eachSemester academicYear academicTrack  . eachSemester academicYear academicTrack program  } ].
-	
-	^table
-! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:21'!
-removeAcademicUnit: anAcademicUnit
-
-	self assert: anAcademicUnit module == self.
-	
-	anAcademicUnit detach.
-	
-	self detachAcademicUnit: anAcademicUnit ! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:57:28'!
-semesters
-	^semesters ! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:20:32'!
-unitAt: aString
-	^ units detect:[:eachUnit | eachUnit description = aString ] ifNone:[nil]! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:51:51'!
-units
-	^units! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:35:19'!
-updateAcademicUnit: aString duration: anInteger
-
-	| aUnit |
-	
-	self assert: anInteger >= 0.
-		
-	aUnit := self unitAt: aString.
-	
-	aUnit isNil and:[ anInteger = 0] 
-		::ifTrue:[ ^self].
-		
-	aUnit 
-		ifNil:[
-			aUnit := AcademicUnit newFrom: aString.
-			self addAcademicUnit: aUnit].
-	
-	anInteger = 0
-		ifTrue:[
-			self removeAcademicUnit: aUnit ]
-		ifFalse:[
-			aUnit duration: anInteger ].! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:11:27'!
-addLecturer: aLecturer
-
-	self assert: aLecturer school isNil.
-	
-	self attachLecturer: aLecturer. 
-	
-	aLecturer school: self.! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:50:34'!
-attachLecturer: aLecturer
-
-	lecturers add: aLecturer ! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:02'!
-college 
-	^college! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:48:40'!
-college: aCollege
-
-	self assert: college isNil.
-	
-	college := aCollege.! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:26'!
-description
-	^description ! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:37'!
-description: aString
-	description := aString! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:41'!
-detach
-
-	college := nil! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:51:03'!
-detachLecturer: aLecturer
-
-	lecturers remove: aLecturer ! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:48'!
-displayStringOrText
-	^description! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:57'!
-initialize
-	lecturers := Set new! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:13:55'!
-invariant
-
-	lecturers do:[:eachTrack | eachTrack invariant ].
-
-	lecturers do:[:eachTrack | eachTrack school == self ].
-	! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:12:02'!
-lecturerAt: anInteger
-
-		^lecturers detect:[:eachLecturer | eachLecturer code = anInteger] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:23:12'!
-lecturers
-	^lecturers! !
-
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:54:47'!
-removeLecturer: aLecturer
-
-	self assert: aLecturer school == self.
-	
-	self detachLecturer: aLecturer.
-	
-	aLecturer detach.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:00:11'!
-academicYear
-	^academicYear ! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 20:55:21'!
-addModule: aModule
-
-	aModule attachSemester: self.
-	
-	self attachModule: aModule.
-	
-	stencils do:[:eachStencil |
-
-			aModule units do:[:eachUnit | 						| anAssignment |
-				
-				eachStencil assignments do:[:x | 					self assert: (x unit ~= eachUnit) ].
-
-				anAssignment := Assignment new.
-		
-				anAssignment unit: eachUnit.
-			
-				eachStencil addAssignment: anAssignment ] ].
-		! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:31:03'!
-addStencil: aStencil
-	
-	self assert: aStencil semester isNil.
-	
-	aStencil attachSemester: self.
-	
-	self attachStencil: aStencil. ! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:43:56'!
-attachAcademicYear: anAcademicYear
-
-	self assert: academicYear isNil.
-	
-	academicYear := anAcademicYear ! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:52:20'!
-attachModule: aModule
-
-	modules add: aModule! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:31:50'!
-attachStencil: aStencil
-
-	stencils add: aStencil! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:37'!
-description
-	^description! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:42'!
-description: aString
-	description := aString! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:05'!
-detach
-
-	academicYear := nil.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:55:00'!
-detachModule: aModule
-
-	modules remove: aModule.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:32:27'!
-detachStencil: aStencil
-
-	stencils remove: aStencil! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:52:55'!
-initialize
-
-	stencils := Set new.
-	
-	modules := Set new.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:07:02'!
-invariant
-
-	stencils do: [:aStencil | aStencil invariant ].
-
-	stencils do: [:aStencil | self assert: aStencil semester == self ].
-	! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:31:36'!
-modules
-	^modules! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 21:01:12'!
-removeModule: aModule
-
-	stencils do:[:eachStencil |
-
-			aModule units do:[:eachUnit | 					
-				
-				eachStencil assignments select:[:eachAssignment | 					eachAssignment unit = eachUnit ] ::
-					do:[:eachAssignment |
-						eachStencil removeAssignment: eachAssignment ]				 ] ].
-
-	aModule detachSemester: self.
-	
-	self detachModule: aModule.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:32:58'!
-removeStencil: aStencil
-
-	self assert: aStencil semester == self.
-	
-	aStencil detach.
-	
-	self detachStencil: aStencil.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:02:44'!
-stencils
-	^stencils! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:28'!
-addAssignment: anAssignment
-
-	self assert: anAssignment stencil isNil.
-	
-	self attachAssignment: anAssignment.
-	
-	anAssignment stencil: self.! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:22:50'!
-assignments
-	^assignments! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:40'!
-attachAssignment: anAssignment
-
-	assignments add: anAssignment ! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:48'!
-attachSemester: aSemester
-
-	semester := aSemester ! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:25'!
-description
-	^description! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:34'!
-description: aString
-	description := aString! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:10'!
-detach
-
-	semester := nil.! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:24'!
-detachAssignment: anAssignment
-
-	self assert: anAssignment stencil == self.
-	
-	assignments remove: anAssignment
-	! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:32'!
-initialize
-
-	assignments := Set new! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:07:18'!
-invariant
-
-	assignments do: [:anAssignment | anAssignment invariant ].
-
-	assignments do: [:anAssignment | self assert: anAssignment stencil == self ].
-	
-	assignments do: [:anAssignment | self assert: anAssignment unit module semesters includes: semester  ].
-	! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:46:47'!
-removeAssignment: anAssignment
-
-	self assert: anAssignment stencil == self.
-	
-	anAssignment detach.
-	
-	self detachAssignment: anAssignment
-	! !
-
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:57'!
-semester
-	^semester! !
 
 !TavorApplication methodsFor: 'modules' stamp: 'DF 1/10/2025 21:02:31'!
 addModuleToAcademicProgram: fields
@@ -5015,6 +3850,1422 @@ open
 
 	self instance menuBar ; open.	
 ! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:25'!
+addAcademicTrack: anAcademicTrack
+
+	self assert: anAcademicTrack program isNil.
+	
+	self attachAcademicTrack: anAcademicTrack.
+	
+	anAcademicTrack program: self.! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:38'!
+attachAcademicTrack: anAcademicTrack
+
+	tracks add: anAcademicTrack ! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:46'!
+college 
+	^college! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:50'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege.! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:27'!
+description
+	^description ! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:17'!
+description: aString
+	description := aString! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:19'!
+detach
+
+	college := nil! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:55'!
+detachAcademicTrack: anAcademicTrack
+
+	tracks remove: anAcademicTrack ! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:30'!
+displayStringOrText
+	^description! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:41'!
+initialize
+	tracks := Set new! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:15'!
+invariant
+
+	tracks do:[:eachTrack | eachTrack invariant ].
+
+	tracks do:[:eachTrack | eachTrack program == self ].
+	! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:02:54'!
+removeAcademicTrack: anAcademicTrack
+
+	self assert: anAcademicTrack program == self.
+	
+	self detachAcademicTrack: anAcademicTrack.
+	
+	anAcademicTrack detach.! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:21'!
+trackAt: aString
+
+	^ tracks detect:[:eachTrack | eachTrack description = aString] ifFound:[:aTrack | aTrack] ifNone:[nil]! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:29:57'!
+tracks
+	^tracks! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:50'!
+academicYearAt: aString
+
+	^ academicYears detect:[:eachYear | eachYear description = aString] ifFound:[:aYear | aYear] ifNone:[nil]! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 22:01:58'!
+academicYears
+	^academicYears ! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:54'!
+addAcademicYear: anAcademicYear
+
+	self assert: anAcademicYear academicTrack isNil.
+
+	self attachAcademicYear: anAcademicYear.
+	
+	anAcademicYear attachAcademicTrack: self.! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:05'!
+attachAcademicYear: anAcademicYear
+
+	academicYears add: anAcademicYear ! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:49:03'!
+description
+	^description! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:57'!
+description: aString
+	description := aString! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:21:17'!
+detachAcademicYear: anAcademicYear
+
+	academicYears remove: anAcademicYear ! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:37'!
+displayStringOrText
+	^description! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:20:32'!
+initialize
+
+	academicYears := OrderedCollection new.! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:13:26'!
+invariant
+
+	academicYears do: [:anAcademicYear | anAcademicYear invariant ].
+	
+	academicYears do: [:anAcademicYear | self assert: anAcademicYear academicTrack == self ].! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:52:30'!
+program
+	^program! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:52:16'!
+program: aProgram
+
+	self assert: program isNil.
+	
+	program := aProgram! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:53:55'!
+removeAcademicYear: anAcademicYear
+
+	self assert: anAcademicYear academicTrack == self.
+	
+	anAcademicYear detach.
+	
+	self detachAcademicYear: anAcademicYear.
+	
+	! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:15:20'!
+addLecturer: aLecturer
+
+	self attachLecturer: aLecturer.
+	
+	aLecturer attachAcademicUnit: self.
+	
+	! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:12:49'!
+attachLecturer: aLecturer
+
+	lecturers add: aLecturer! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:50:35'!
+description
+
+	self subclassResponsibility ! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:12'!
+detach
+
+	module := nil.! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:13:00'!
+detachLecturer: aLecturer
+
+	lecturers remove: aLecturer! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:58'!
+displayStringOrText
+	^self description ! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:45:10'!
+duration
+	^duration! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:45:05'!
+duration: anInteger
+	duration := anInteger! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:37:09'!
+initialize
+
+	lecturers := Set new! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:02:58'!
+invariant
+	^true! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:27:11'!
+module
+	^module! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:43:15'!
+module: aModule
+
+	self assert: module isNil.
+	
+	module := aModule! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:06'!
+points
+	self subclassResponsibility ! !
+
+!AcademicUnit methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:15:50'!
+removeLecturer: aLecturer
+
+	self detachLecturer: aLecturer.
+	
+	aLecturer detachAcademicUnit: self.! !
+
+!AcademicUnit class methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:31:40'!
+newFrom: aString
+
+	| aFactory |
+	
+	aFactory := { 'הרצאה' -> Lecture . 'תרגול' -> Recitation . 'מעבדה' -> Laboratory } asDictionary.
+	
+	^ aFactory at: aString ifPresent:[:creator | creator new ] ifAbsent:[TavorError new messageText:('יחידה אקדמית לא מוכרת {1}' format:{aString}) reverse ; signal ].
+! !
+
+!Laboratory methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:52:00'!
+description
+
+	self assert: module notNil.
+	
+	^ 'מעבדה'! !
+
+!Laboratory methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:20'!
+points
+	^ 0.7 * duration! !
+
+!Lecture methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:51:55'!
+description
+
+	self assert: module notNil.
+	
+	^ 'הרצאה'! !
+
+!Lecture methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:17:30'!
+points
+	^ duration! !
+
+!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 17:52:07'!
+description
+
+	self assert: module notNil.
+	
+	^ 'תרגול' ! !
+
+!Recitation methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:36:41'!
+points
+	^  duration * 0.5! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:09'!
+academicTrack
+	^track! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:46:06'!
+addSemester: aSemester
+
+	self attachSemester: aSemester.
+	
+	aSemester attachAcademicYear: self.! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 19:55:40'!
+attachAcademicTrack: anAcademicTrack
+
+	self assert: track isNil.
+	
+	track := anAcademicTrack ! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:45:42'!
+attachSemester: aSemester
+
+	semesters add: aSemester.! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:29'!
+description
+	^description! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:22'!
+description: aString
+	description := aString! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:30'!
+detach
+	
+	track := nil.! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:44:47'!
+detachSemester: aSemester
+
+	semesters remove: aSemester.! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:32:04'!
+displayStringOrText
+	^description! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:09:36'!
+initialize
+
+	semesters := OrderedCollection new. ! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:06'!
+invariant
+
+	semesters do: [:aSemester | aSemester invariant ].
+
+	semesters do: [:aSemester | self assert: aSemester academicYear == self ].
+	! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:24:28'!
+semesterAt: aString
+
+	^ semesters detect:[:eachSemester | eachSemester description = aString] ifFound:[:aSemester | aSemester] ifNone:[nil]! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:05:06'!
+semesters
+	^semesters! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:28'!
+addLecturer: aLecturer
+
+	aLecturer attachAssignment: self.
+	
+	self attachLecturer: aLecturer.! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:16:56'!
+attachLecturer: aLecturer
+	lecturers add: aLecturer ! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:17:10'!
+detachLecturer: aLecturer
+	lecturers remove: aLecturer ! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:16:38'!
+lecturers
+	^lecturers! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:35'!
+removeLecturer: aLecturer
+
+	aLecturer detachAssignment: self.
+	
+	self detachLecturer: aLecturer.! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:28:29'!
+addClassroom: aClassroom
+
+	aClassroom attachAssignment: self.
+	
+	self attachClassroom: aClassroom.! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:29:05'!
+attachClassroom: aClassroom
+	rooms add: aClassroom ! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:28:48'!
+detachClassroom: aClassroom
+	rooms remove: aClassroom ! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:30:50'!
+removeClassroom: aClassroom
+
+	aClassroom detachAssignment: self.
+	
+	self detachClassroom: aClassroom.! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:32:35'!
+rooms
+	^rooms! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
+before: anAssignment
+
+	^ unit module description < anAssignment unit module description 
+	or: [ unit module description = anAssignment unit module description 
+			and: [unit description <= anAssignment unit description ] ]! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:14:03'!
+day
+	^day! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:06'!
+day: anInteger
+	day := anInteger ! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:20'!
+dayHebrew
+	^DayHebrewNames at: day! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:34'!
+detach
+
+	stencil := nil.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:36:50'!
+hour
+	^hour! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:16'!
+hour: anInteger
+	hour := anInteger
+	! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:27:31'!
+initialize
+
+	lecturers := Set new.
+	
+	rooms := Set new.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:38'!
+invariant
+
+	lecturer units includes: unit.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:20'!
+stencil
+	^stencil! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:44'!
+stencil: aStencil
+
+	self assert: stencil isNil.
+	
+	stencil := aStencil.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:47:12'!
+unit
+	^unit! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:06'!
+unit: anAcademicUnit
+	unit := anAcademicUnit ! !
+
+!Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
+initialize
+
+	"self initialize"
+	
+	DayHebrewNames := { 'א' . 'ב' . 'ג' . 'ד' . 'ה' . 'ו' . 'שבת' asBidi }.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:37'!
+addClassroom: aClassroom
+
+	self assert: aClassroom campus isNil.
+	
+	aClassroom campus: self.
+	
+	rooms add: aClassroom.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:13:13'!
+college
+	^college! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:11:57'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:55:32'!
+description
+	^description! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:55:24'!
+description: aString
+	description := aString! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:39'!
+detach
+
+	college := nil.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:33:35'!
+detachClassroom: aClassroom
+	
+	rooms remove: aClassroom.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:46:00'!
+displayStringOrText
+	^self description ! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:51'!
+firstFloor
+	^firstFloor! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:31'!
+firstFloor: anInteger
+	firstFloor := anInteger! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:04:52'!
+floors
+
+	^firstFloor to: lastFloor :: collect:[:i | i] :: reverse! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:28:12'!
+initialize
+
+	rooms := Set new.
+	
+	college := nil.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:17'!
+invariant
+
+	rooms do: [:aRoom | aRoom invariant ].
+
+	rooms do: [:aRoom | self assert: aRoom campus == self ].
+	! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:56'!
+lastFloor
+	^lastFloor! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:40'!
+lastFloor: anInteger
+	lastFloor := anInteger! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:25:26'!
+removeClassroom: aClassroom
+	
+	self assert: aClassroom campus == self.
+	
+	aClassroom detach.
+	
+	self detachClassroom: aClassroom.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:32:52'!
+roomAt: aString
+
+	^rooms detect:[:eachRoom | eachRoom code = aString ] ifFound:[:aRoom | aRoom] ifNone:[nil]! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:05:38'!
+rooms
+	^rooms! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:49:23'!
+assignments
+	^assignments ! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:16:55'!
+attachAssignment: anAssignment
+
+	assignments add: anAssignment! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:48'!
+campus
+	^campus! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:32'!
+campus: aCampus
+	campus := aCampus! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:11'!
+capacity
+	^capacity! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:00:58'!
+capacity: anInteger
+	capacity := anInteger! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:07'!
+code
+	^code! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:00:44'!
+code: aString
+	code := aString! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:43'!
+detach
+
+	campus := nil.! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:29:05'!
+detachAssignment: anAssignment
+
+	assignments remove: anAssignment! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:30:27'!
+floor
+	^floor! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:30:22'!
+floor: anInteger
+	floor := anInteger! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:52:57'!
+initAssignments
+
+	assignments := Set new.! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:16:37'!
+initialize
+	super initialize.
+	
+	assignments := Set new.! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:03:14'!
+invariant
+	^true! !
+
+!College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:17:06'!
+addAcademicProgram: anAcademicProgram
+
+	self assert: anAcademicProgram college isNil.
+	
+	anAcademicProgram college: self.
+	
+	programs add: anAcademicProgram! !
+
+!College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:18:51'!
+detachAcademicProgram: anAcademicProgram
+
+	programs remove: anAcademicProgram! !
+
+!College methodsFor: 'programs' stamp: 'DF 12/29/2024 20:21:54'!
+programAt: aString
+
+	^programs detect:[:eachProgram | eachProgram description = aString] ifFound:[:aProgram | aProgram] ifNone:[nil]! !
+
+!College methodsFor: 'programs' stamp: 'DF 12/29/2024 20:45:55'!
+programNames
+
+	^programs collect:[:each | each description ] :: asOrderedCollection sort
+! !
+
+!College methodsFor: 'programs' stamp: 'DF 12/27/2024 18:15:20'!
+programs
+	^programs! !
+
+!College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:19:24'!
+removeAcademicProgram: anAcademicProgram
+
+	self assert: anAcademicProgram college == self.
+	
+	anAcademicProgram detach.
+	
+	self detachAcademicProgram: anAcademicProgram.! !
+
+!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:01:06'!
+addSchool: aSchool
+
+	self assert: aSchool college isNil.
+	
+	aSchool college: self.
+	
+	schools add: aSchool! !
+
+!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:00:09'!
+detachSchool: aSchool
+
+	schools remove: aSchool ! !
+
+!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:34:07'!
+lecturerAt: anIntegerCode
+
+	^schools detect:[:eachSchool | 		eachSchool lecturerAt: anIntegerCode :: notNil ] 
+		ifFound:[:aSchool | 			aSchool lecturerAt: anIntegerCode ]
+		ifNone:[nil]! !
+
+!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:00:38'!
+removeSchool: aSchool
+
+	self assert: aSchool college == self.
+	
+	aSchool detach.
+	
+	self detachSchool: aSchool.! !
+
+!College methodsFor: 'schools' stamp: 'DF 1/16/2025 19:57:19'!
+schoolAt: aString
+
+	^schools detect:[:eachLecturer | eachLecturer description = aString ] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
+
+!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:25:55'!
+schools
+	^schools! !
+
+!College methodsFor: 'campuses' stamp: 'DF 12/27/2024 15:17:40'!
+addCampus: aCampus
+
+	self assert: aCampus college isNil.
+	
+	aCampus college: self.
+	
+	campuses add: aCampus! !
+
+!College methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:16:26'!
+campusAt: aString
+
+	^campuses detect:[:eachCampus | eachCampus description = aString ] ifFound:[:aCampus | aCampus] ifNone:[nil]! !
+
+!College methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:33:29'!
+campuses
+	^campuses! !
+
+!College methodsFor: 'campuses' stamp: 'DF 12/25/2024 22:35:02'!
+detachCampus: aCampus
+
+	campuses remove: aCampus! !
+
+!College methodsFor: 'campuses' stamp: 'DF 12/27/2024 15:13:36'!
+removeCampus: aCampus
+
+	self assert: aCampus college == self.
+	
+	aCampus detach.
+	
+	self detachCampus: aCampus.! !
+
+!College methodsFor: 'modules' stamp: 'DF 12/27/2024 15:18:08'!
+addModule: aModule
+
+	self assert: aModule college isNil.
+	
+	aModule college: self.
+	
+	modules add: aModule! !
+
+!College methodsFor: 'modules' stamp: 'DF 12/25/2024 22:38:09'!
+detachModule: aModule
+
+	modules remove: aModule! !
+
+!College methodsFor: 'modules' stamp: 'DF 12/29/2024 18:20:44'!
+moduleAt: aCodeInteger
+
+	^modules detect:[:eachModule | eachModule code = aCodeInteger ] ifFound:[:aModule | aModule] ifNone:[nil]! !
+
+!College methodsFor: 'modules' stamp: 'DF 1/11/2025 13:54:15'!
+moduleNameAt: aString
+
+	^modules detect:[:eachModule | eachModule description = aString ] ifFound:[:aModule | aModule] ifNone:[nil]! !
+
+!College methodsFor: 'modules' stamp: 'DF 1/9/2025 21:08:51'!
+removeModule: aModule
+
+	self assert: aModule college == self.
+	
+	aModule semesters do:[:eachSemester | eachSemester removeModule: aModule ].
+	
+	aModule detach.
+	
+	self detachModule: aModule.! !
+
+!College methodsFor: 'accessing' stamp: 'DF 12/27/2024 15:40:20'!
+description
+	^description! !
+
+!College methodsFor: 'accessing' stamp: 'DF 12/27/2024 15:40:15'!
+description: aString
+	description := aString! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:35:18'!
+academicYearNames
+
+	^{ 'שנה 1' . 'שנה 2' . 'שנה 3' . 'שנה 4' }! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:35:52'!
+import: aFileEntry
+
+	| aReadStream aCSVReader headers programIndex trackIndex academicYearIndex semesterIndex moduleCodeIndex moduleDescriptionIndex moduleLectureIndex moduleRecitationIndex moduleLabIndex  |
+
+	aReadStream := aFileEntry readStream.
+	
+	aCSVReader := NeoCSVReader on: aReadStream.
+	
+	headers := Dictionary new.
+	
+	aCSVReader next withIndexDo:[:eachName :eachIndex | headers at: eachName put: eachIndex].
+	
+	programIndex := headers at: 'תוכנית לימודים'.
+
+	trackIndex := headers at: 'מסלול'.
+	
+	academicYearIndex := headers at: 'שנה'.
+	
+	semesterIndex := headers at: 'סמסטר'.
+	
+	moduleCodeIndex := headers at: 'קוד קורס'.
+	
+	moduleDescriptionIndex := headers at: 'שם קורס'.
+	
+	moduleLectureIndex := headers at: 'הרצאה'.
+	
+	moduleRecitationIndex := headers at: 'תרגול'.
+	
+	moduleLabIndex := headers at: 'מעבדה'.
+	
+	aCSVReader do:[:eachRow | | aProgram aTrack aYear aSemester aModule lectureDuration recitationDuration labDuration |
+		
+		aProgram := self programAt: (eachRow at: programIndex).
+		
+		aTrack := aProgram trackAt: ('מסלול {1}' format: {eachRow at: trackIndex }).
+		
+		aYear := aTrack academicYearAt: ('שנה {1}' format: {eachRow at: academicYearIndex}).
+		
+		aSemester := aYear semesterAt: ('סמסטר {1}' format:{eachRow at: semesterIndex}).
+		
+		aModule := Module new.
+		
+		aModule code: (Number readFrom: (eachRow at: moduleCodeIndex)) ; description: (eachRow at: moduleDescriptionIndex).
+		
+		lectureDuration := Number readFrom: (eachRow at: moduleLectureIndex).
+		
+		recitationDuration := Number readFrom: (eachRow at: moduleRecitationIndex).
+		
+		labDuration := Number readFrom: (eachRow at: moduleLabIndex).
+		
+		lectureDuration > 0 ifTrue:[ | aLecture |
+			aLecture := Lecture new.
+			
+			aLecture duration: lectureDuration.
+			
+			aModule addAcademicUnit: aLecture ].
+		
+		recitationDuration > 0 ifTrue:[ | aRecitation |
+			aRecitation := Recitation new.
+			
+			aRecitation duration: recitationDuration.
+			
+			aModule addAcademicUnit: aRecitation ].
+
+		labDuration > 0 ifTrue:[ | aLab |
+			aLab := Laboratory new.
+			
+			aLab duration: labDuration.
+			
+			aModule addAcademicUnit: aLab ].
+		
+		aSemester addModule: aModule.
+		
+		self addModule: aModule ]
+		! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:56:53'!
+initialize
+
+	campuses := Set new.
+	
+	modules := Set new.
+	
+	schools := Set new.
+	
+	programs := Set new.! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:03:21'!
+invariant
+
+	programs do: [:anAcademicProgram | anAcademicProgram invariant ].
+
+	programs do: [:anAcademicProgram | self assert: anAcademicProgram college == self ].
+	
+	campuses do: [:aCampus | aCampus invariant ].
+
+	campuses do: [:aCampus | self assert: aCampus college == self ].
+
+	modules do: [:aModule | aModule invariant ].
+
+	modules do: [:aModule | self assert: aModule college == self ].
+
+	schools do: [:aSchool | aSchool invariant ].
+
+	schools do: [:aSchool | self assert: aSchool college == self ].
+	! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:22:58'!
+lecturerRanks
+
+	^`{'סגל בכיר' . 'סגל זוטר' . 'מורה מן החוץ' }` asOrderedCollection! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:34:54'!
+semesterNames
+
+	^{ 'סמסטר א' . 'סמסטר ב' . 'סמסטר קיץ' }! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:38:50'!
+trackNames
+
+	^{ 'מסלול יום' . 'מסלול ערב' . 'מסלול משולב' }! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
+addAcademicUnit: anAcademicUnit
+
+	self attachAcademicUnit: anAcademicUnit.
+	
+	anAcademicUnit attachLecturer: self.! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 13:25:24'!
+assignments
+	^assignments! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:13:36'!
+attachAcademicUnit: anAcademicUnit
+
+	units add: anAcademicUnit.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:41:54'!
+attachAssignment: anAssignment
+
+	assignments add: anAssignment! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:34:28'!
+code
+	^code! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:34:23'!
+code: anInteger
+	code := anInteger! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:41:34'!
+description
+	^description! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:41:27'!
+description: aString
+	description := aString! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:14'!
+detach
+
+	school ifNil:[^self].
+	
+	school detachLecturer: self.
+	
+	school := nil. ! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:14:23'!
+detachAcademicUnit: anAcademicUnit
+
+	units remove: anAcademicUnit.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:42:05'!
+detachAssignment: anAssignment
+
+	assignments remove: anAssignment! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:42:18'!
+initialize
+
+	units := Set new.
+	
+	assignments := Set new.! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:08:05'!
+invariant
+	true! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 14:38:26'!
+morph
+
+	^ LecturerMorph newRow model:self ; build ; yourself.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:18:11'!
+quota
+	^quota! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:18:05'!
+quota: anInteger
+	quota := anInteger! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:15:03'!
+rank
+	^rank! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:14:58'!
+rank: aString
+	rank := aString! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:14:42'!
+removeUnit: anAcademicUnit
+
+	self detachAcademicUnit: anAcademicUnit.
+	
+	anAcademicUnit detachLecturer: self.! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:52:40'!
+school
+	^school! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:01'!
+school: aSchool
+
+	self assert: school isNil.
+	
+	school := aSchool! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:00'!
+units
+	^units! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
+addAcademicUnit: anAcademicUnit
+
+	self assert: anAcademicUnit module isNil.
+	
+	anAcademicUnit module: self.
+	
+	units add: anAcademicUnit ! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:54:17'!
+attachAcademicUnit: aUnit
+
+	units add: aUnit! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:53:58'!
+attachSemester: aSemester
+
+	semesters add: aSemester! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:15:08'!
+code
+	^code! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:14:59'!
+code: anInteger
+	code := anInteger! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:14:26'!
+college
+	^college! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:54:48'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:53:46'!
+description
+	^description! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:53:38'!
+description: aString
+	description := aString! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 21:08:31'!
+detach
+
+	college := nil.! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:35'!
+detachAcademicUnit: aUnit
+
+	units remove: aUnit! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:54:16'!
+detachSemester: aSemester
+
+	semesters remove: aSemester! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:51:07'!
+initialize
+
+	college := nil.
+	
+	units := Set new.
+	
+	semesters := Set new.! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:52'!
+invariant
+
+	units do: [:aUnit | aUnit invariant ].
+
+	units do: [:aUnit | self assert: aUnit module == self ].
+	! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:51:54'!
+programs
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	semesters do:[:eachSemester |
+		table add: { eachSemester  . eachSemester academicYear  . eachSemester academicYear academicTrack  . eachSemester academicYear academicTrack program  } ].
+	
+	^table
+! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:44:21'!
+removeAcademicUnit: anAcademicUnit
+
+	self assert: anAcademicUnit module == self.
+	
+	anAcademicUnit detach.
+	
+	self detachAcademicUnit: anAcademicUnit ! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:57:28'!
+semesters
+	^semesters ! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 18:20:32'!
+unitAt: aString
+	^ units detect:[:eachUnit | eachUnit description = aString ] ifNone:[nil]! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:51:51'!
+units
+	^units! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:35:19'!
+updateAcademicUnit: aString duration: anInteger
+
+	| aUnit |
+	
+	self assert: anInteger >= 0.
+		
+	aUnit := self unitAt: aString.
+	
+	aUnit isNil and:[ anInteger = 0] 
+		::ifTrue:[ ^self].
+		
+	aUnit 
+		ifNil:[
+			aUnit := AcademicUnit newFrom: aString.
+			self addAcademicUnit: aUnit].
+	
+	anInteger = 0
+		ifTrue:[
+			self removeAcademicUnit: aUnit ]
+		ifFalse:[
+			aUnit duration: anInteger ].! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:11:27'!
+addLecturer: aLecturer
+
+	self assert: aLecturer school isNil.
+	
+	self attachLecturer: aLecturer. 
+	
+	aLecturer school: self.! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:50:34'!
+attachLecturer: aLecturer
+
+	lecturers add: aLecturer ! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:02'!
+college 
+	^college! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:48:40'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege.! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:26'!
+description
+	^description ! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:37'!
+description: aString
+	description := aString! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:41'!
+detach
+
+	college := nil! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:51:03'!
+detachLecturer: aLecturer
+
+	lecturers remove: aLecturer ! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:48'!
+displayStringOrText
+	^description! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:57'!
+initialize
+	lecturers := Set new! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:13:55'!
+invariant
+
+	lecturers do:[:eachTrack | eachTrack invariant ].
+
+	lecturers do:[:eachTrack | eachTrack school == self ].
+	! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:12:02'!
+lecturerAt: anInteger
+
+		^lecturers detect:[:eachLecturer | eachLecturer code = anInteger] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:23:12'!
+lecturers
+	^lecturers! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:54:47'!
+removeLecturer: aLecturer
+
+	self assert: aLecturer school == self.
+	
+	self detachLecturer: aLecturer.
+	
+	aLecturer detach.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:00:11'!
+academicYear
+	^academicYear ! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 20:55:21'!
+addModule: aModule
+
+	aModule attachSemester: self.
+	
+	self attachModule: aModule.
+	
+	stencils do:[:eachStencil |
+
+			aModule units do:[:eachUnit | 						| anAssignment |
+				
+				eachStencil assignments do:[:x | 					self assert: (x unit ~= eachUnit) ].
+
+				anAssignment := Assignment new.
+		
+				anAssignment unit: eachUnit.
+			
+				eachStencil addAssignment: anAssignment ] ].
+		! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:31:03'!
+addStencil: aStencil
+	
+	self assert: aStencil semester isNil.
+	
+	aStencil attachSemester: self.
+	
+	self attachStencil: aStencil. ! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:43:56'!
+attachAcademicYear: anAcademicYear
+
+	self assert: academicYear isNil.
+	
+	academicYear := anAcademicYear ! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:52:20'!
+attachModule: aModule
+
+	modules add: aModule! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:31:50'!
+attachStencil: aStencil
+
+	stencils add: aStencil! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:37'!
+description
+	^description! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:42'!
+description: aString
+	description := aString! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:05'!
+detach
+
+	academicYear := nil.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:55:00'!
+detachModule: aModule
+
+	modules remove: aModule.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:32:27'!
+detachStencil: aStencil
+
+	stencils remove: aStencil! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:52:55'!
+initialize
+
+	stencils := Set new.
+	
+	modules := Set new.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:07:02'!
+invariant
+
+	stencils do: [:aStencil | aStencil invariant ].
+
+	stencils do: [:aStencil | self assert: aStencil semester == self ].
+	! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:31:36'!
+modules
+	^modules! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 21:01:12'!
+removeModule: aModule
+
+	stencils do:[:eachStencil |
+
+			aModule units do:[:eachUnit | 					
+				
+				eachStencil assignments select:[:eachAssignment | 					eachAssignment unit = eachUnit ] ::
+					do:[:eachAssignment |
+						eachStencil removeAssignment: eachAssignment ]				 ] ].
+
+	aModule detachSemester: self.
+	
+	self detachModule: aModule.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:32:58'!
+removeStencil: aStencil
+
+	self assert: aStencil semester == self.
+	
+	aStencil detach.
+	
+	self detachStencil: aStencil.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:02:44'!
+stencils
+	^stencils! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:28'!
+addAssignment: anAssignment
+
+	self assert: anAssignment stencil isNil.
+	
+	self attachAssignment: anAssignment.
+	
+	anAssignment stencil: self.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:22:50'!
+assignments
+	^assignments! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:40'!
+attachAssignment: anAssignment
+
+	assignments add: anAssignment ! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:48'!
+attachSemester: aSemester
+
+	semester := aSemester ! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:25'!
+description
+	^description! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:34'!
+description: aString
+	description := aString! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:10'!
+detach
+
+	semester := nil.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:24'!
+detachAssignment: anAssignment
+
+	self assert: anAssignment stencil == self.
+	
+	assignments remove: anAssignment
+	! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:32'!
+initialize
+
+	assignments := Set new! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:07:18'!
+invariant
+
+	assignments do: [:anAssignment | anAssignment invariant ].
+
+	assignments do: [:anAssignment | self assert: anAssignment stencil == self ].
+	
+	assignments do: [:anAssignment | self assert: anAssignment unit module semesters includes: semester  ].
+	! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:46:47'!
+removeAssignment: anAssignment
+
+	self assert: anAssignment stencil == self.
+	
+	anAssignment detach.
+	
+	self detachAssignment: anAssignment
+	! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:57'!
+semester
+	^semester! !
 
 !MenuMorph methodsFor: '*Tavor' stamp: 'DF 1/7/2025 16:17:39'!
 rtolAdd: aString action: aSymbol
