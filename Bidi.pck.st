@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 25 January 2025 at 8:28:05 pm'!
+'From Cuis7.1 [latest update: #6676] on 26 January 2025 at 1:39:15 pm'!
 'Description '!
-!provides: 'Bidi' 1 29!
+!provides: 'Bidi' 1 39!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -16,7 +16,7 @@ BidiMoldExample class
 
 !classDefinition: #BidiUnicodeString category: #Bidi!
 UnicodeString subclass: #BidiUnicodeString
-	instanceVariableNames: ''
+	instanceVariableNames: 'writingDirection'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
@@ -64,14 +64,14 @@ MenuMorph subclass: #BidiMenuMorph
 BidiMenuMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #BidiRightInnerListMorph category: #Bidi!
-InnerListMorph subclass: #BidiRightInnerListMorph
+!classDefinition: #BidiInnerListMorph category: #Bidi!
+InnerListMorph subclass: #BidiInnerListMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
-!classDefinition: 'BidiRightInnerListMorph class' category: #Bidi!
-BidiRightInnerListMorph class
+!classDefinition: 'BidiInnerListMorph class' category: #Bidi!
+BidiInnerListMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiLabelMorph category: #Bidi!
@@ -272,22 +272,26 @@ twoRightToLeft
 		beRequired.
 	mold openDialog: 'דוגמה שניה'! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:09:51'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:30:42'!
+asBidiUnicodeString
+	^self! !
+
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:26:29'!
 displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 
 	| aUnicodeString |
 	
-	aUnicodeString := UnicodeString newFrom: self reorderBidi.
+	aUnicodeString := UnicodeString newFrom: (self reorderBidi: writingDirection).
 	
 	aUnicodeString displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 ! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:09:49'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:26:37'!
 displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color
 
 	| aUnicodeString |
 	
-	aUnicodeString := UnicodeString newFrom: self reorderBidi.
+	aUnicodeString := UnicodeString newFrom: (self reorderBidi: writingDirection).
 	
 	aUnicodeString displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color! !
 
@@ -295,26 +299,42 @@ displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aT
 edit
 	^BidiTextEntryMorph contents: self! !
 
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 10:56:50'!
+initialize
+
+	super initialize.
+	
+	writingDirection := #leftToRight! !
+
 !BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:24:27'!
 morph
 	^BidiLabelMorph contents: self! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 17:53:44'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:26:46'!
 printOn: aStream 
 	"Print inside string quotes, doubling inbedded quotes."
 
-	self reorderBidi storeOn: aStream! !
+	self reorderBidi:writingDirection :: storeOn: aStream! !
+
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:35:13'!
+writingDirection
+	^writingDirection! !
+
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:36:13'!
+writingDirection: aSymbol
+
+	writingDirection := aSymbol! !
 
 !BidiUnicodeString class methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:43:27'!
 symbolClassToUse
 	"Answer the class to create symbols from us"
 	^BidiUnicodeSymbol! !
 
-!BidiUnicodeSymbol methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:04:13'!
+!BidiUnicodeSymbol methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:27:20'!
 printOn: aStream 
 	"Print inside string quotes, doubling inbedded quotes."
 
-	self reorderBidi storeOn: aStream! !
+	self reorderBidi: #leftToRight :: storeOn: aStream! !
 
 !BidiUnicodeSymbol methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:50:33'!
 species
@@ -440,7 +460,7 @@ initialize
 menuItemFactory: aClass
 	menuItemFactory := aClass! !
 
-!BidiRightInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:28:59'!
+!BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:57'!
 draw: item atRow: row on: canvas
 	"display the given item at row row"
 	| f c len x |
@@ -457,12 +477,12 @@ draw: item atRow: row on: canvas
 			f := font.
 			c :=  Theme current text].
 	canvas
-		drawString: item string asBidiUnicodeString 
+		drawString: (item string asBidiUnicodeString writingDirection:#rightToLeft :: yourself)
 		at: x @ (self drawYForRow: row)
 		font: f
 		color: c! !
 
-!BidiLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:10:17'!
+!BidiLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:28:46'!
 drawOn: aCanvas
 
 	| origin |
@@ -472,7 +492,7 @@ drawOn: aCanvas
 		ifFalse:[borderWidth @ borderWidth].
 	
 	aCanvas
-		drawString: (contents ifNil: [ '' ] ifNotNil:[ rightToLeft ifTrue:[contents asBidiUnicodeString  ] ifFalse:[contents]])
+		drawString: (contents ifNil: [ '' ] ifNotNil:[ rightToLeft ifTrue:[contents asBidi] ifFalse:[contents]])
 		at: origin
 		font: self fontToUse
 		color: color.
@@ -523,13 +543,13 @@ drawOn: aCanvas
 			image: self class subMenuMarker
 			at: extent x - self class subMenuMarker width @ (extent y - self class subMenuMarker height // 2) ]! !
 
-!BidiPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:30:30'!
+!BidiPluggableListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:27'!
 innerMorphClass
-	^BidiRightInnerListMorph! !
+	^BidiInnerListMorph! !
 
-!BidiPluggableListMorphOfMany methodsFor: 'as yet unclassified' stamp: 'DF 1/8/2025 19:30:30'!
+!BidiPluggableListMorphOfMany methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:27'!
 innerMorphClass
-	^BidiRightInnerListMorph! !
+	^BidiInnerListMorph! !
 
 !BidiSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 23:07:55'!
 drawLabelOn: aCanvas
@@ -726,10 +746,6 @@ inputMorphInstance
 	
 	^ aTextEntryMorph ! !
 
-!BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:08:50'!
-rightToLeft: aBoolean
-	rightToLeft := aBoolean! !
-
 !BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:06:48'!
 validateInput
 	errors := OrderedCollection new.
@@ -872,14 +888,12 @@ initialize
 	
 	rightToLeft := false.! !
 
-!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:21:57'!
+!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:38:22'!
 integerField
 	
 	| anIntegerField |
 	
 	anIntegerField := BidiIntegerField new.
-	
-	anIntegerField rightToLeft: rightToLeft .
 	
 	^fields add: anIntegerField ! !
 
@@ -961,14 +975,12 @@ selectMultiField
 	
 	^fields add: aField.! !
 
-!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:04:37'!
+!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:38:14'!
 stringField
 	
 	| aField |
 	
 	aField := BidiField new.
-	
-	aField rightToLeft: rightToLeft.
 	
 	^fields add: aField! !
 
@@ -993,10 +1005,16 @@ asBidiSymbol
 	"Answer the unique symbol whose characters are the characters of the string."
 	^self asBidiUnicodeString asSymbol ! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/19/2025 17:40:02'!
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/26/2025 12:36:55'!
 asBidiUnicodeString
 
-	^BidiUnicodeString new appendToString: self.
+	| aBidiUnicodeString |
+	
+	aBidiUnicodeString := BidiUnicodeString new appendToString: self.
+	
+	aBidiUnicodeString writingDirection: #leftToRight.
+	
+	^aBidiUnicodeString 
 ! !
 
 !UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 12:44:18'!
@@ -1029,10 +1047,10 @@ breakAtDelimiter: aDelimiterCharacter
 	
 	^parts	! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 18:30:10'!
-reorderBidi
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/26/2025 12:33:50'!
+reorderBidi: aWritingDirection
 
-	| state aCharacter aReadStream aWriteStream  undecided parts |
+	| state aCharacter aReadStream aWriteStream  undecided parts pts |
 	
 	state := #undecided.
 
@@ -1047,15 +1065,26 @@ reorderBidi
 	aCharacter := aReadStream next.
 	
 	[aCharacter notNil] 
-		whileTrue:[
+		whileTrue:[ 
 			state = #hebrew 
 				ifTrue:[
 					aCharacter isLatinCharacter 
 						ifTrue:[
 							parts add: aWriteStream contents reverse reverseParenthesis.
 							aWriteStream reset.
-							state := #latin ].
-					aWriteStream nextPut: aCharacter ]
+							state := #latin.
+							aWriteStream nextPut: aCharacter ]
+						ifFalse:[ 
+							aCharacter isHebrewLetter
+								ifTrue:[
+									aWriteStream nextPut: aCharacter]
+								ifFalse:[ 
+									aWritingDirection = #leftToRight
+										ifTrue:[
+											undecided nextPut: aCharacter.
+											state := #undecided ]
+										ifFalse:[
+											aWriteStream nextPut: aCharacter] ]]					 ]
 				ifFalse:[
 			state = #latin
 				ifTrue:[
@@ -1070,23 +1099,33 @@ reorderBidi
 						ifTrue:[
 							aWriteStream nextPut: aCharacter]
 						ifFalse:[
-							undecided nextPut: aCharacter.
-							state := #undecided ] ] 
+							aWritingDirection = #rightToLeft
+								ifTrue:[
+									undecided nextPut: aCharacter.
+									state := #undecided ]
+								ifFalse:[
+									aWriteStream nextPut: aCharacter] ] ] 
 				]
 				ifFalse:[
 					self assert: state = #undecided.
 					
 					aCharacter isLatinCharacter 
-						ifTrue:[
-							aWriteStream nextPutAll: undecided contents.
+						ifTrue:[ 
+							aWritingDirection = #leftToRight
+								ifTrue:[
+									parts add: aWriteStream contents reverse.
+									aWriteStream reset].
+							aWriteStream nextPutAll: undecided contents									.
 							undecided reset.
 							state := #latin.
-							aWriteStream nextPut: aCharacter]
+							aWriteStream nextPut: aCharacter ]
 						ifFalse:[
 					aCharacter isHebrewLetter 
 						ifTrue:[
-							parts add: aWriteStream contents.
-							aWriteStream reset.
+							aWritingDirection = #rightToLeft
+								ifTrue:[
+									parts add: aWriteStream contents.
+									aWriteStream reset].
 							aWriteStream nextPutAll: undecided contents.
 							undecided reset.
 							state := #hebrew.
@@ -1098,7 +1137,7 @@ reorderBidi
 			].
 			aCharacter := aReadStream next.			
 		].
-	
+
 	state = #hebrew
 		ifTrue:[
 			parts add: aWriteStream contents reverse reverseParenthesis]
@@ -1107,14 +1146,17 @@ reorderBidi
 			parts add: aWriteStream contents].
 
 	aWriteStream reset.
-	
-	parts reverse do:[:eachPart |
+			
+	pts := aWritingDirection = #rightToLeft 
+			ifTrue:[parts reverse] ifFalse:[parts].
+			
+	pts do:[:eachPart |
 		aWriteStream nextPutAll: eachPart].
 		
 	^aWriteStream contents
 ! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 12:47:04'!
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/26/2025 11:26:20'!
 reorderBidiFileName
 
 	| aWriteStream parts |
@@ -1124,7 +1166,7 @@ reorderBidiFileName
 	aWriteStream := WriteStream on:''.
 	
 	parts do:[:eachPart |
-		aWriteStream nextPutAll: eachPart asUnicodeString reorderBidi ]
+		aWriteStream nextPutAll: (eachPart asUnicodeString reorderBidi: #rightToLeft) ]
 	separatedBy:[
 		aWriteStream nextPut:$. ].
 	
