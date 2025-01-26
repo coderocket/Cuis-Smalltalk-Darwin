@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 23 January 2025 at 10:18:46 pm'!
+'From Cuis7.1 [latest update: #6676] on 26 January 2025 at 9:02:04 pm'!
 'Description '!
-!provides: 'Table' 1 34!
+!provides: 'Table' 1 42!
 SystemOrganization addCategory: #Table!
 
 
@@ -216,24 +216,25 @@ column
 column: anInteger
 	column := anInteger ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:32:38'!
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:59:19'!
 handlesMouseDown: aMouseButtonEvent
 	
 	^aMouseButtonEvent mouseButton1Pressed ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:25'!
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:21:55'!
 initialize
 	super initialize.
 	
 	selected := false.
 	
-	model := ActiveModel new.! !
+	model := ActiveModel new.
+! !
 
 !TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:30'!
 model
 	^model! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:22:05'!
+!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:02:48'!
 mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
 
 	model triggerEvent: #clicked ! !
@@ -302,7 +303,7 @@ at: row at: col
 
 	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:52'!
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:21:28'!
 build
 
 	| columns |
@@ -341,7 +342,7 @@ build
 cellFactory: aClass
 	cellFactory := aClass! !
 
-!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:50:36'!
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:22:47'!
 initialize
 
 	super initialize.
@@ -351,7 +352,6 @@ initialize
 	numColumns := 3.
 	
 	cellFactory := TableCell.
-	
 	! !
 
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:09:03'!
@@ -459,23 +459,50 @@ new
 	^aTableMorph
 	! !
 
-!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 13:44:01'!
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 16:54:02'!
 drawOn: aCanvas
 
-	| aForm canvas |
+	| aForm canvas x |
 	
-	aForm := Form extent: self morphExtent depth: Display depth.
+	aForm := Form extent: self morphExtent +(2@0) depth: Display depth.
 	
 	canvas := MorphicCanvas onForm: aForm.
 	
 	super drawOn: canvas.
 	
-	aCanvas image: aForm at:0@0.! !
+	x := rightToLeft 
+		ifTrue:[
+			self measureContents x  - self morphWidth / 2 min: 0.
+			]
+		ifFalse:[
+			self morphWidth - self measureContents x / 2 max: 0.
+		].
+	aCanvas image: aForm at:x@0.
 
-!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:14:21'!
+	
+! !
+
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 16:29:14'!
+fitContents
+	
+	self morphExtent: self measureContents ! !
+
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:58:30'!
+initialize
+
+	super initialize.
+	
+	self layoutSpec proportionalHeight: 1.0 ; proportionalWidth:1.0. 
+
+	layoutSpec offAxisEdgeWeight: 0.5.
+	
+	self lock:true.
+! !
+
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 19:16:47'!
 minimumExtent
 
-	^`0@0`! !
+	^0@ self measureContents y! !
 
 !OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:50:44'!
 drawOn: aCanvas
@@ -563,7 +590,7 @@ getMenu
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 20:38:04'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:23:11'!
 initialize
 
 	innerMorphClass := TableMorph.
@@ -581,7 +608,6 @@ initialize
 	menuFactory := MenuMorph.
 	
 	columnFactory := OrderedCollection new.
-	
 ! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 21:53:07'!
@@ -620,7 +646,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:17:38'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:22:41'!
 update: aSymbol 
 
 	| start nrows ncols header table |
@@ -661,7 +687,7 @@ update: aSymbol
 			items 
 				ifEmpty:[cell addMorph: factory buildEmpty].
 			items do:[:eachItem | 
-			cell addMorph: (factory build: eachItem :: rightToLeft: rightToLeft ; yourself )] ] ] .
+				cell addMorph: (factory build: eachItem :: rightToLeft: rightToLeft ; yourself )] ] ] .
 ! !
 
 !MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:57'!
@@ -704,14 +730,14 @@ factoryMessage: aSymbol
 formatter: aBlock
 	formatter := aBlock! !
 
-!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:13:43'!
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:55:33'!
 initialize
 
 	factoryMessage := #contents:.
 	
 	formatter := [:anObject | anObject displayStringOrText ].
 	
-	morphClass := BidiLabelMorph.! !
+	morphClass := NarrowLabelMorph.! !
 
 !PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:32'!
 morphClass: aMorphClass
