@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 26 January 2025 at 9:02:04 pm'!
+'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 10:21:14 pm'!
 'Description '!
-!provides: 'Table' 1 42!
+!provides: 'Table' 1 60!
 SystemOrganization addCategory: #Table!
 
 
@@ -16,8 +16,8 @@ TabbedGroup class
 
 !classDefinition: #TableCell category: #Table!
 LayoutMorph subclass: #TableCell
-	instanceVariableNames: 'row column selected model'
-	classVariableNames: ''
+	instanceVariableNames: 'row column selected model border tableBorderWidth tableBorderColor'
+	classVariableNames: 'Bottom Left Right Top'
 	poolDictionaries: ''
 	category: 'Table'!
 !classDefinition: 'TableCell class' category: #Table!
@@ -76,7 +76,7 @@ OffsetLabelMorph class
 
 !classDefinition: #PluggableTableMorph category: #Table!
 PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass columnFactory'
+	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass columnFactory getMarkers'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
@@ -208,46 +208,121 @@ example2
 
 	aTabbedGroup openInWorld! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:46'!
-column
-	^column! !
+!TableCell methodsFor: 'table borders' stamp: 'DF 1/27/2025 18:27:53'!
+border
+	^border! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:40'!
-column: anInteger
-	column := anInteger ! !
+!TableCell methodsFor: 'table borders' stamp: 'DF 1/27/2025 18:25:01'!
+border: anIndex set: aBoolean
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:59:19'!
-handlesMouseDown: aMouseButtonEvent
-	
-	^aMouseButtonEvent mouseButton1Pressed ! !
+	aBoolean 
+		ifTrue:[
+			border := border bitOr: anIndex
+		]
+		ifFalse:[
+			border := border bitAnd: anIndex bitInvert
+		]
+	! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:21:55'!
+!TableCell methodsFor: 'table borders' stamp: 'DF 1/27/2025 18:49:56'!
+tableBorderColor
+	^tableBorderColor ! !
+
+!TableCell methodsFor: 'table borders' stamp: 'DF 1/27/2025 18:49:47'!
+tableBorderColor: aColor
+	tableBorderColor := aColor! !
+
+!TableCell methodsFor: 'table borders' stamp: 'DF 1/27/2025 18:49:37'!
+tableBorderWidth
+	^tableBorderWidth ! !
+
+!TableCell methodsFor: 'table borders' stamp: 'DF 1/27/2025 18:49:29'!
+tableBorderWidth: anInteger
+	tableBorderWidth := anInteger! !
+
+!TableCell methodsFor: 'initialization' stamp: 'DF 1/27/2025 18:52:42'!
 initialize
 	super initialize.
 	
 	selected := false.
 	
 	model := ActiveModel new.
-! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 23:21:30'!
-model
-	^model! !
+	border := 0.
+	
+	tableBorderColor := Color red.
+	
+	tableBorderWidth := 4.! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:02:48'!
+!TableCell methodsFor: 'event handling testing' stamp: 'DF 1/26/2025 20:59:19'!
+handlesMouseDown: aMouseButtonEvent
+	
+	^aMouseButtonEvent mouseButton1Pressed ! !
+
+!TableCell methodsFor: 'events' stamp: 'DF 1/26/2025 20:02:48'!
 mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
 
 	model triggerEvent: #clicked ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:43'!
+!TableCell methodsFor: 'drawing' stamp: 'DF 1/27/2025 20:51:20'!
+drawBordersOn: aCanvas
+
+	| rect |
+	
+	rect := 0@0 extent: self morphExtent.
+
+	aCanvas strokeWidth: tableBorderWidth color: tableBorderColor strokeDashArray: #(10 10) strokeDashArrayOffset: 0.0 do: [
+	
+		border bitAnd: Top :: ~= 0
+			ifTrue:[
+				aCanvas 		moveTo: rect topLeft ; 				lineTo: rect topRight ].
+		
+		border bitAnd: Right :: ~= 0
+			ifTrue:[
+				aCanvas moveTo: rect topRight ; lineTo: rect bottomRight].
+
+		border bitAnd: Bottom :: ~= 0
+			ifTrue:[
+				aCanvas moveTo: rect bottomLeft ; lineTo: rect bottomRight].
+	
+		border bitAnd: Left :: ~= 0
+			ifTrue:[
+				aCanvas moveTo: rect topLeft ; lineTo: rect bottomLeft ] ]
+! !
+
+!TableCell methodsFor: 'drawing' stamp: 'DF 1/27/2025 18:47:22'!
+drawOn: aCanvas
+
+	super drawOn: aCanvas.
+	self drawBordersOn: aCanvas
+	
+	! !
+
+!TableCell methodsFor: 'drawing' stamp: 'DF 1/27/2025 19:56:17'!
+requiresVectorCanvas
+	^true! !
+
+!TableCell methodsFor: 'accessing' stamp: 'DF 12/24/2024 17:09:46'!
+column
+	^column! !
+
+!TableCell methodsFor: 'accessing' stamp: 'DF 12/24/2024 17:09:40'!
+column: anInteger
+	column := anInteger ! !
+
+!TableCell methodsFor: 'accessing' stamp: 'DF 1/12/2025 23:21:30'!
+model
+	^model! !
+
+!TableCell methodsFor: 'accessing' stamp: 'DF 12/24/2024 17:09:43'!
 row
 	^row! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 17:09:33'!
+!TableCell methodsFor: 'accessing' stamp: 'DF 12/24/2024 17:09:33'!
 row: anInteger
 	row := anInteger ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:06:44'!
+!TableCell methodsFor: 'accessing' stamp: 'DF 1/5/2025 19:06:44'!
 select: aBoolean
 
 	selected := aBoolean.
@@ -259,9 +334,34 @@ select: aBoolean
 		
 	self redrawNeeded ! !
 
-!TableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/5/2025 19:29:10'!
+!TableCell methodsFor: 'accessing' stamp: 'DF 1/5/2025 19:29:10'!
 selected
 	^selected! !
+
+!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 18:26:27'!
+bottom
+	^Bottom! !
+
+!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 18:20:53'!
+initialize
+
+	"self initialize"
+	
+	Top := 1.
+	
+	Right := 2.
+	
+	Bottom := 4.
+	
+	Left := 8.! !
+
+!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 18:26:34'!
+left
+	^Left! !
+
+!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 18:26:22'!
+right
+	^Right! !
 
 !TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 19:05:42'!
 row: aRowIndex column: aColumnIndex
@@ -275,6 +375,10 @@ row: aRowIndex column: aColumnIndex
 	aCell color: Color transparent.
 
 	^aCell! !
+
+!TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 18:26:14'!
+top
+	^Top! !
 
 !TableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 12/22/2024 21:56:47'!
 justDroppedInto: newOwnerMorph event: anEvent 
@@ -302,6 +406,29 @@ adjustExtent
 at: row at: col
 
 	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
+
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 19:32:38'!
+borderAround: aRectangle set: aBoolean
+
+	| startRow startColumn endRow endColumn |
+	
+	startRow := aRectangle origin x.
+	startColumn := aRectangle origin y.
+	endRow := aRectangle corner x.
+	endColumn := aRectangle corner y.
+	
+	startColumn to: endColumn do:[:columnIndex |
+		self at: startRow at:columnIndex :: border: TableCell top set: aBoolean ].
+	
+	startRow to: endRow do:[:rowIndex |
+		self at: rowIndex at: endColumn :: border: TableCell right set: aBoolean ].
+
+	startColumn to: endColumn do:[:columnIndex |
+		self at: endRow at:columnIndex :: border: TableCell bottom set: aBoolean ].
+
+	startRow to:endRow do:[:rowIndex |
+		self at: rowIndex at: startColumn :: border: TableCell left set: aBoolean ].
+! !
 
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:21:28'!
 build
@@ -499,10 +626,10 @@ initialize
 	self lock:true.
 ! !
 
-!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 19:16:47'!
+!NarrowLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:58:44'!
 minimumExtent
 
-	^0@ self measureContents y! !
+	^0@ 0"self measureContents y"! !
 
 !OffsetLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:50:44'!
 drawOn: aCanvas
@@ -618,6 +745,10 @@ innerMorphClass
 innerMorphClass: aClass
 	innerMorphClass := aClass! !
 
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:20:25'!
+markers: aSymbol
+	getMarkers := aSymbol! !
+
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 12:59:36'!
 menuFactory: aClass
 	menuFactory := aClass! !
@@ -646,7 +777,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:22:41'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:21:10'!
 update: aSymbol 
 
 	| start nrows ncols header table |
@@ -688,6 +819,13 @@ update: aSymbol
 				ifEmpty:[cell addMorph: factory buildEmpty].
 			items do:[:eachItem | 
 				cell addMorph: (factory build: eachItem :: rightToLeft: rightToLeft ; yourself )] ] ] .
+	
+	getMarkers ifNotNil:[ | rectangles |
+		rectangles := model perform: getMarkers. 
+		rectangles do:[:eachRectangle |
+			scroller borderAround: eachRectangle set: true ] ]
+	
+	
 ! !
 
 !MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:57'!
@@ -742,3 +880,4 @@ initialize
 !PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:32'!
 morphClass: aMorphClass
 	morphClass := aMorphClass ! !
+TableCell initialize!

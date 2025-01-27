@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 26 January 2025 at 9:02:24 pm'!
+'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 10:25:40 pm'!
 'Description '!
-!provides: 'Tavor' 1 522!
+!provides: 'Tavor' 1 537!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -460,7 +460,7 @@ FreeDayViolation class
 
 !classDefinition: #OverlapViolation category: #'Tavor-Model'!
 Violation subclass: #OverlapViolation
-	instanceVariableNames: 'assignments'
+	instanceVariableNames: 'assignments overlap'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Tavor-Model'!
@@ -954,7 +954,7 @@ assignDay: aDayInteger hour: anHourInteger
 	model day: aDayInteger ; hour: anHourInteger.
 	model unit module college changed: #assignmentsTable ! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 16:35:58'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:58:12'!
 build
 
 	| aLabelMorph |
@@ -965,7 +965,6 @@ build
 		ifNotNil:[
 			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
 	
-
 			self addMorph: aLabelMorph ].
 	
 	self updateColor.
@@ -1046,10 +1045,12 @@ updateColor
 	self color: notSelectedColor
 ! !
 
-!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/25/2025 22:25:24'!
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/27/2025 19:19:11'!
 aboutToBeGrabbedBy: aHand
 		
 	index = 0 ifFalse:[^nil].
+	
+	model ifNil:[^nil].
 	
 	^owner aboutToGrabAssignment: self! !
 
@@ -2009,7 +2010,7 @@ openTimeTable
 	
 	! !
 
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:48:13'!
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 23:03:12'!
 rooms
 
 	| campus campusFloors floors |
@@ -2026,7 +2027,7 @@ rooms
 		floors add: (campusFloors at: eachIndex) ].
 	
 	^campus rooms select:[:eachRoom | floors includes: eachRoom floor ] :: asOrderedCollection sort:[:x :y | 
-		x floor < y floor or:[x floor = y floor and:[x code <= y code] ] ].
+		x floor > y floor or:[x floor = y floor and:[x code <= y code] ] ].
 	
 	
 	
@@ -2595,21 +2596,19 @@ semesters
 	
 	^ years at: yearIndex ifAbsent:[years last] :: semesters ! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 18:21:58'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:52:32'!
 assignments
 
-	| stencils |
+	| stencil |
 	
-	stencilIndex = 0 ifTrue:[^{}].
+	stencil := self stencil.
 	
-	stencils := self stencils asOrderedCollection sort:[:x :y | x description <= y description ].
+	stencil ifNil:[^{}].
 	
-	stencils ifEmpty:[^{}].
-	
-	^stencils at: stencilIndex :: assignments asOrderedCollection sort:[:x :y | x before:y ].
+	^stencil assignments asOrderedCollection sort:[:x :y | x before:y ].
 ! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/24/2025 21:53:45'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:48:52'!
 assignmentsTable
 
 	| table |
@@ -2624,8 +2623,7 @@ assignmentsTable
 			 eachAssignment rooms			 . 
 			{ eachAssignment hour } . 
 			{ eachAssignment dayHebrew  } . 
-			eachAssignment lecturers 
-				"collect:[:eachLecturer | { eachAssignment . eachLecturer }  ]"  .
+			eachAssignment lecturers .
 			{ eachAssignment unit } .
 			{ eachAssignment unit module } .
 			{ eachAssignment } 
@@ -2684,12 +2682,24 @@ selectFirstEntitiesIn: aProgram
 selectedAssignment
 	^theAssignment at:1! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/21/2025 18:20:24'!
-semesterTimeTable
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:35:05'!
+stencil
 
-	| semester table |
+	| stencils |
 	
-	semester := self semesters at: semesterIndex ifAbsent:[nil].
+	stencilIndex = 0 ifTrue:[^nil].
+	
+	stencils := self stencils asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	stencils ifEmpty:[^nil].
+	
+	^stencils at: stencilIndex 
+! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:55:32'!
+stencilTimeTable
+
+	| table |
 	
 	table := OrderedCollection new.
 	
@@ -2706,7 +2716,7 @@ semesterTimeTable
 		
 		table add: aRow ].	
 	
-	self assignments select:[:eachAssignment | eachAssignment stencil semester = semester ] :: do:[:eachAssignment | 
+	self assignments do:[:eachAssignment | 
 	
 		eachAssignment day notNil and: [eachAssignment hour notNil] ::
 			ifTrue:[ | cell | 
@@ -2718,6 +2728,19 @@ semesterTimeTable
 	
 	^table
 	! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 22:10:55'!
+stencilViolations
+
+	| stencil violations |
+	
+	stencil := self stencil.
+	
+	stencil ifNil:[^{}].
+	
+	violations := stencil check.
+	
+	^ violations collect:[:each | each overlap translatedBy: (-6@ -7) :: scaledBy: (1@-1) ]! !
 
 !StencilBrowser methodsFor: 'initialization' stamp: 'DF 1/12/2025 17:59:40'!
 initialize
@@ -2825,7 +2848,7 @@ buildAssignmentsTable
 		
 	^assignmentsTable ! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:25:38'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/27/2025 21:51:17'!
 buildMorphicWindow
 
 	| navigationPanel assignmentsTable aTabbedGroup semesterTimeTable |
@@ -2836,7 +2859,7 @@ buildMorphicWindow
 			
 	self changed: #assignmentsTable.
 
-	semesterTimeTable := self buildSemesterTimeTable.
+	semesterTimeTable := self buildStencilTimeTable.
 	
 	aTabbedGroup := TabbedGroup newColumn.
 
@@ -2867,27 +2890,29 @@ buildNavigationPanel
 	^(stencils - (1/5)p | 1p) <+> (semesters - (1/5)p | 1p) <+> (years - (1/5)p | 1p) <+> (tracks - (1/5)p | 1p) <+> (programs - (1/5)p | 1p).
 ! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:24:25'!
-buildSemesterTimeTable
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/27/2025 22:22:25'!
+buildStencilTimeTable
 
-	| semesterTimeTable semesterColumnFactory |
+	| stencilTimeTable stencilColumnFactory |
 
-	semesterTimeTable := PluggableTableMorph new.
+	stencilTimeTable := PluggableTableMorph new.
 	
-	semesterTimeTable model: self ; table: #semesterTimeTable ; rightToLeft: true ; headerRow: true.
+	stencilTimeTable model: self ; table: #stencilTimeTable ; rightToLeft: true ; headerRow: true.
 
-	semesterTimeTable cellFactory: WeeklyTimeTableCell.
+	stencilTimeTable cellFactory: WeeklyTimeTableCell.
 	
-	semesterColumnFactory := Dictionary new.
+	stencilTimeTable markers: #stencilViolations.
+	
+	stencilColumnFactory := Dictionary new.
 	
 	1 to:6 do:[:eachDay |
-		semesterColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
+		stencilColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
 	
-	semesterColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} :: asBidi ] ; morphClass: OffsetLabelMorph ; yourself).
+	stencilColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} :: asBidi ] ; morphClass: OffsetLabelMorph ; yourself).
 	
-	semesterTimeTable columnFactory: semesterColumnFactory.
+	stencilTimeTable columnFactory: stencilColumnFactory.
 	
-	^semesterTimeTable ! !
+	^stencilTimeTable ! !
 
 !OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:21:32'!
 buildMorphicWindow
@@ -4591,18 +4616,18 @@ initialize
 violations
 	^violations! !
 
-!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:38:18'!
-check: aStencil
+!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 21:37:36'!
+check: aResource
 
 	violations removeAll.
 	
-	self checkOverlap: aStencil.! !
+	self checkOverlap: aResource.! !
 
-!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:37:43'!
+!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:25:20'!
 checkOverlap: aResource
 
 	aResource assignments 
-		remove:[:eachAssignment | eachAssignment day isNil] :: 
+		reject:[:eachAssignment | eachAssignment day isNil] :: 
 		groupBy:[:anAssignment | anAssignment day ] :: 
 		do:[:eachDay | 		| dailyAssignments |
 		
@@ -4618,7 +4643,7 @@ checkOverlap: aResource
 					overlap := x interval intersect: y interval.
 					
 					overlap ifNotEmpty: [
-						violations add: (OverlapViolation between: x and: y) ] ] ] ]. 
+						violations add: (OverlapViolation overlap: (overlap first @ x day corner: overlap last - 1 @ x day) between: x and: y) ] ] ] ]. 
 ! !
 
 !ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:38:37'!
@@ -5440,6 +5465,17 @@ attachSemester: aSemester
 
 	semester := aSemester ! !
 
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 21:59:25'!
+check
+
+	| aResourceRule |
+	
+	aResourceRule := ResourceRule new.
+	
+	aResourceRule check: self.
+	
+	^aResourceRule violations.! !
+
 !Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:25'!
 description
 	^description! !
@@ -5498,14 +5534,24 @@ stencil: aStencil
 assignments: aSet 
 	assignments := aSet ! !
 
-!OverlapViolation class methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:10:05'!
-between: anAssignment and: anotherAssignment
+!OverlapViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:00:04'!
+overlap
+	^overlap! !
+
+!OverlapViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:38:32'!
+overlap: anInterval
+	overlap := anInterval! !
+
+!OverlapViolation class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:41:11'!
+overlap: aRectangle between: anAssignment and: anotherAssignment
 
 	| anOverlapViolation |
 	
 	anOverlapViolation := self new.
 	
 	anOverlapViolation assignments: (Set with: anAssignment with: anotherAssignment).
+	
+	anOverlapViolation overlap: aRectangle.
 	
 	^anOverlapViolation ! !
 

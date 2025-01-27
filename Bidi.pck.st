@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 26 January 2025 at 1:39:15 pm'!
+'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 7:58:55 pm'!
 'Description '!
-!provides: 'Bidi' 1 39!
+!provides: 'Bidi' 1 40!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -276,14 +276,14 @@ twoRightToLeft
 asBidiUnicodeString
 	^self! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:26:29'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 19:58:36'!
 displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 
 	| aUnicodeString |
 	
 	aUnicodeString := UnicodeString newFrom: (self reorderBidi: writingDirection).
 	
-	aUnicodeString displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
+	^aUnicodeString displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 ! !
 
 !BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:26:37'!
