@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 21 January 2025 at 9:40:53 pm'!
+'From Cuis7.3 [latest update: #6895] on 23 January 2025 at 11:00:04 am'!
 'Description '!
-!provides: 'Bidi' 1 25!
+!provides: 'Bidi' 1 28!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -24,6 +24,16 @@ UnicodeString subclass: #BidiUnicodeString
 BidiUnicodeString class
 	instanceVariableNames: ''!
 
+!classDefinition: #BidiWriteStream category: #Bidi!
+WriteStream subclass: #BidiWriteStream
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiWriteStream class' category: #Bidi!
+BidiWriteStream class
+	instanceVariableNames: ''!
+
 !classDefinition: #BidiLabelGroup category: #Bidi!
 LabelGroup subclass: #BidiLabelGroup
 	instanceVariableNames: ''
@@ -42,16 +52,6 @@ MenuMorph subclass: #BidiMenuMorph
 	category: 'Bidi'!
 !classDefinition: 'BidiMenuMorph class' category: #Bidi!
 BidiMenuMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #BidiRightInnerListMorph category: #Bidi!
-InnerListMorph subclass: #BidiRightInnerListMorph
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Bidi'!
-!classDefinition: 'BidiRightInnerListMorph class' category: #Bidi!
-BidiRightInnerListMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiLabelMorph category: #Bidi!
@@ -112,6 +112,16 @@ TextEntryMorph subclass: #BidiTextEntryMorph
 	category: 'Bidi'!
 !classDefinition: 'BidiTextEntryMorph class' category: #Bidi!
 BidiTextEntryMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiRightInnerListMorph category: #Bidi!
+InnerListMorph subclass: #BidiRightInnerListMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiRightInnerListMorph class' category: #Bidi!
+BidiRightInnerListMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiField category: #Bidi!
@@ -285,6 +295,13 @@ printOn: aStream
 
 	self reorderBidi storeOn: aStream! !
 
+!BidiWriteStream methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 10:59:21'!
+nextPut: aCharacter
+
+	^aCharacter isBidiControl 
+		ifTrue:[aCharacter]
+		ifFalse:[super nextPut: aCharacter]! !
+
 !BidiLabelGroup methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:47:15'!
 initialize
 
@@ -389,28 +406,6 @@ initialize
 !BidiMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 13:02:05'!
 menuItemFactory: aClass
 	menuItemFactory := aClass! !
-
-!BidiRightInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:28:59'!
-draw: item atRow: row on: canvas
-	"display the given item at row row"
-	| f c len x |
-	
-	len := font widthOfString: item string.
-	
-	x := extent x - len.
-	
-	(item is: #Text)
-		ifTrue: [
-			f := font emphasized: (item emphasisAt: 1).
-			c := (item colorAt: 1) ifNil: [Theme current text]]
-		ifFalse: [ 
-			f := font.
-			c :=  Theme current text].
-	canvas
-		drawString: item string asBidiUnicodeString 
-		at: x @ (self drawYForRow: row)
-		font: f
-		color: c! !
 
 !BidiLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:10:17'!
 drawOn: aCanvas
@@ -612,6 +607,28 @@ initialize
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:07'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!BidiRightInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:28:59'!
+draw: item atRow: row on: canvas
+	"display the given item at row row"
+	| f c len x |
+	
+	len := font widthOfString: item string.
+	
+	x := extent x - len.
+	
+	(item is: #Text)
+		ifTrue: [
+			f := font emphasized: (item emphasisAt: 1).
+			c := (item colorAt: 1) ifNil: [Theme current text]]
+		ifFalse: [ 
+			f := font.
+			c :=  Theme current text].
+	canvas
+		drawString: item string asBidiUnicodeString 
+		at: x @ (self drawYForRow: row)
+		font: f
+		color: c! !
 
 !BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:05:41'!
 beRequired: aStringOrBlock 
@@ -974,67 +991,7 @@ breakAtDelimiter: aDelimiterCharacter
 	
 	^parts	! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/21/2025 17:25:00'!
-reorder
-
-	| current aCharacter aReadStream latin hebrew undecided parts |
-	
-	current := #undecided.
-
-	parts := OrderedCollection new.
-	
-	latin := WriteStream on: ''.
-	
-	hebrew := WriteStream on: ''.
-	
-	undecided := WriteStream on: ''.
-	
-	aReadStream := ReadStream on: self.
-
-	aCharacter := aReadStream next.
-	
-	[aCharacter notNil] 
-		whileTrue:[
-			aCharacter isLatinCharacter "we see a Latin (left to right) character "
-				ifTrue:[ 
-					current = #hebrew
-						ifTrue:[
-							parts add: hebrew contents reverse.
-							hebrew reset]
-						ifFalse:[
-					current = #undecided
-						ifTrue:[
-							latin nextPutAll: undecided contents.
-							undecided reset ] ].
-					current := #latin.
-					latin nextPut: aCharacter. ]
-				ifFalse:[
-			aCharacter isHebrewLetter 
-				ifTrue:[
-					current = #latin
-						ifTrue:[
-							parts add: latin contents.
-							latin reset]
-						ifFalse:[
-					current = #undecided
-						ifTrue:[
-							hebrew nextPutAll: undecided contents.
-							undecided reset ]].
-					current := #hebrew.
-					hebrew nextPut: aCharacter ]
-				ifFalse:[
-					current := #undecided.
-					undecided nextPut: aCharacter ]
-				].
-				aCharacter := aReadStream next.
-			].
-	self halt.
-	^parts
-							
-					
-	! !
-
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 12/30/2024 18:30:10'!
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/23/2025 10:59:57'!
 reorderBidi
 
 	| state aCharacter aReadStream aWriteStream  undecided parts |
@@ -1045,7 +1002,7 @@ reorderBidi
 	
 	undecided := WriteStream on: ''.
 	
-	aWriteStream := WriteStream on:''.
+	aWriteStream := BidiWriteStream on:''.
 	
 	aReadStream := ReadStream on: self.
 
@@ -1146,12 +1103,24 @@ reverseParenthesis
 		conv at: eachCharacter ifAbsent:[eachCharacter] ]
 	! !
 
-!Character methodsFor: '*Bidi' stamp: 'DF 12/30/2024 11:31:10'!
+!Character methodsFor: '*Bidi' stamp: 'DF 1/23/2025 10:56:05'!
+isBidiControl
+
+"LRI	U+2066	LEFT‑TO‑RIGHT ISOLATE	Treat the following text as isolated and left-to-right."
+"RLI	U+2067	RIGHT‑TO‑LEFT ISOLATE	Treat the following text as isolated and right-to-left."
+
+^ self codePoint = 16r2066 or:[ self codePoint = 16r2067 ]! !
+
+!Character methodsFor: '*Bidi' stamp: 'DF 1/23/2025 10:47:00'!
 isHebrewLetter
 
-^ self >= $א and: [self <= $ת ]! !
+"RLI	U+2067	RIGHT‑TO‑LEFT ISOLATE	Treat the following text as isolated and right-to-left."
 
-!Character methodsFor: '*Bidi' stamp: 'DF 12/30/2024 14:53:39'!
+^ self codePoint = 16r2067 or: [self >= $א and: [self <= $ת ] ]! !
+
+!Character methodsFor: '*Bidi' stamp: 'DF 1/23/2025 10:48:11'!
 isLatinCharacter
 
-^ self isAlphaNumeric and: [self codePoint < 128]! !
+"LRI	U+2066	LEFT‑TO‑RIGHT ISOLATE	Treat the following text as isolated and left-to-right."
+
+^ self codePoint = 16r2067 or:[self isAlphaNumeric and: [self codePoint < 128] ]! !
