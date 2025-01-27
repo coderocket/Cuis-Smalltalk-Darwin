@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 7:58:55 pm'!
+'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 10:58:08 pm'!
 'Description '!
-!provides: 'Bidi' 1 40!
+!provides: 'Bidi' 1 41!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -32,6 +32,16 @@ UnicodeSymbol subclass: #BidiUnicodeSymbol
 	category: 'Bidi'!
 !classDefinition: 'BidiUnicodeSymbol class' category: #Bidi!
 BidiUnicodeSymbol class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiWriteStream category: #Bidi!
+WriteStream subclass: #BidiWriteStream
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiWriteStream class' category: #Bidi!
+BidiWriteStream class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiBrowser category: #Bidi!
@@ -132,6 +142,26 @@ TextEntryMorph subclass: #BidiTextEntryMorph
 	category: 'Bidi'!
 !classDefinition: 'BidiTextEntryMorph class' category: #Bidi!
 BidiTextEntryMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiSimpleEditor category: #Bidi!
+SimpleEditor subclass: #BidiSimpleEditor
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiSimpleEditor class' category: #Bidi!
+BidiSimpleEditor class
+	instanceVariableNames: ''!
+
+!classDefinition: #TestBidi category: #Bidi!
+TestCase subclass: #TestBidi
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'TestBidi class' category: #Bidi!
+TestBidi class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiField category: #Bidi!
@@ -286,14 +316,14 @@ displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: 
 	^aUnicodeString displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 ! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 11:26:37'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:55:21'!
 displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color
 
 	| aUnicodeString |
 	
 	aUnicodeString := UnicodeString newFrom: (self reorderBidi: writingDirection).
 	
-	aUnicodeString displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color! !
+	^aUnicodeString displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color! !
 
 !BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:17:40'!
 edit
@@ -339,6 +369,13 @@ printOn: aStream
 !BidiUnicodeSymbol methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:50:33'!
 species
 	^BidiUnicodeString! !
+
+!BidiWriteStream methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 10:59:21'!
+nextPut: aCharacter
+
+	^aCharacter isBidiControl 
+		ifTrue:[aCharacter]
+		ifFalse:[super nextPut: aCharacter]! !
 
 !BidiBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 19:45:48'!
 newSystemCategoryNameIfNone: aNoneBlock
@@ -615,7 +652,7 @@ displayTextCursorAtX: x top: top bottom: bottom emphasis: anEmphasis on: aCanvas
 		]
 ! !
 
-!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:22:49'!
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:00:50'!
 drawOn: aCanvas
 
 	aCanvas
@@ -630,7 +667,7 @@ drawOn: aCanvas
 	self hasTextCursor ifTrue: [ self drawTextCursorOn: aCanvas ].
 	
 	aCanvas
-		drawString: (rightToLeft ifTrue:[contents asBidiUnicodeString ] ifFalse:[contents])
+		drawString: (rightToLeft ifTrue:[contents asBidiUnicodeString writingDirection: #rightToLeft ] ifFalse:[contents])
 		at: (rightToLeft ifTrue:[self morphWidth - self textOffset x - (self fontToUse widthOfString: contents) @ self textOffset y] ifFalse:[self textOffset])
 		font: self fontToUse
 		color: color.
@@ -672,16 +709,83 @@ drawTextCursorOn: aCanvas
 			emphasis: emphasis 
 			on: aCanvas ]! !
 
-!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:19'!
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:00:25'!
 initialize
 
 	super initialize.
 	
-	rightToLeft := false.! !
+	rightToLeft := false. ! !
+
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:12:17'!
+installEditor
+	"Install an editor for my contents.  This constitutes 'hasFocus'.
+	If priorEditor is not nil, then initialize the new editor from its state.
+	We may want to rework this so it actually uses the prior editor."
+
+	editor := BidiSimpleEditor new morph: self.
+	editor changeString: contents.
+	self redrawNeeded.
+	^editor! !
 
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:07'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:12:32'!
+defaultMenuSpec
+	"Spec for the menu and shortcut keys for the regular text editors.
+	See coment at Morph >> #getMenu
+	"
+	^
+	#(
+		#(120	'Copy (c)' 	$c 	editor 	copySelection 	copyIcon 	'Copy selection to the Clipboard')
+		#(130	'Cut (x)' 		$x 	editor 	cut 				cutIcon 	'Cut selection and store it in the Clipboard')
+		#(140	'Paste (v)' 	$v 	editor 	paste 			pasteIcon 	'Paste Clipboard contents')
+		#(150 '-----')
+		#(160 'RLM (r)' 		$r 	editor 	insertRLM 		nil 			'Insert a zero width character that forces the next character to be treated as a right-to-left character')
+		#(170 'LRM (l)' 		$l 	editor 	insertLRM 		nil 			'Insert a zero width character that forces the next character to be treated as a left-to-right character')
+		
+		"Keyboard shortcuts only"
+		#(999 	nil 			$a 	editor 	selectAll 		nil 			'Select all')
+	).
+! !
+
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:32:49'!
+insertLRM
+self halt.
+	self addString: 'a'. "Character LRM asString."! !
+
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:14:10'!
+insertRLM
+	self addString: Character RLM asString.! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:51:43'!
+testEnglishHebrewLTR
+	
+	self assert: ('English with Hebrew (טקסט בעברית) text.' asBidi  reorderBidi: #leftToRight)  = 'English with Hebrew (תירבעב טסקט) text.' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:55:31'!
+testHebrew
+	self assert: ('טקסט בעברית' asBidi  reorderBidi: #rightToLeft) equals: 'תירבעב טסקט'.
+	
+	self assert: ('טקסט: נקודותיים' asBidi  reorderBidi: #rightToLeft) equals: 'םייתודוקנ :טסקט' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:50:10'!
+testHebrewEnglishRTL
+	self assert: ('טקסט בעברית עם אנגלית (English) בסוגריים' asBidi  reorderBidi: #rightToLeft) equals:  'םיירגוסב (English) תילגנא םע תירבעב טסקט' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:54:04'!
+testHebrewIntegersRTL
+	
+	self assert:  ('טקסט בעברית עם מספרים 1, 2, 3, 19, 135' asBidi  reorderBidi: #rightToLeft) equals:  '1, 2, 3, 19, 135 םירפסמ םע תירבעב טסקט' .
+	
+	self assert: ('טקסט בעברית עם מספרים 12-17 וגם 20-22' asBidi  reorderBidi: #rightToLeft)   equals: '20-22 םגו 12-17 םירפסמ םע תירבעב טסקט' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:57:33'!
+testHebrewNegativeNumberRTL
+	
+	self assert: ('טקסט מספר נקודה צפה ', Character LRM asString, '-12.137' asBidi  reorderBidi: #rightToLeft)  = '-12.137 הפצ הדוקנ רפסמ טסקט' .
+! !
 
 !BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:05:41'!
 beRequired: aStringOrBlock 
@@ -1047,7 +1151,7 @@ breakAtDelimiter: aDelimiterCharacter
 	
 	^parts	! !
 
-!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/26/2025 12:33:50'!
+!UnicodeString methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:28:00'!
 reorderBidi: aWritingDirection
 
 	| state aCharacter aReadStream aWriteStream  undecided parts pts |
@@ -1058,7 +1162,7 @@ reorderBidi: aWritingDirection
 	
 	undecided := WriteStream on: ''.
 	
-	aWriteStream := WriteStream on:''.
+	aWriteStream := BidiWriteStream on:''.
 	
 	aReadStream := ReadStream on: self.
 
@@ -1187,12 +1291,25 @@ reverseParenthesis
 asBidi
 	^BidiUnicodeSymbol new! !
 
-!Character methodsFor: '*Bidi' stamp: 'DF 12/30/2024 11:31:10'!
+!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:39:19'!
+isBidiControl
+
+"LRM	U+200E	LEFT‑TO‑RIGHT MARK		Left-to-right zero-width character."
+"RLM	U+200F	RIGHT‑TO‑LEFT MARK		Right-to-left zero-width non-Arabic character."
+"ALM	U+061C	ARABIC LETTER MARK	Right-to-left zero-width Arabic character."
+
+^ self codePoint = 16r200E or:[ self codePoint = 16r200F ] or:[self codePoint = 16r061C]! !
+
+!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:39:55'!
 isHebrewLetter
 
-^ self >= $א and: [self <= $ת ]! !
+"RLM	U+200F	RIGHT‑TO‑LEFT MARK		Right-to-left zero-width non-Arabic character."
 
-!Character methodsFor: '*Bidi' stamp: 'DF 12/30/2024 14:53:39'!
+^ self codePoint = 16r200F or: [self >= $א and: [self <= $ת ] ]! !
+
+!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:40:25'!
 isLatinCharacter
 
-^ self isAlphaNumeric and: [self codePoint < 128]! !
+"LRM	U+200E	LEFT‑TO‑RIGHT MARK		Left-to-right zero-width character."
+
+^ self codePoint = 16r200E or:[self isAlphaNumeric and: [self codePoint < 128] ]! !
