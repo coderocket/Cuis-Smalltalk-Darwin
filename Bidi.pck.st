@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 27 January 2025 at 3:31:01 pm'!
+'From Cuis7.3 [latest update: #6895] on 27 January 2025 at 4:38:09 pm'!
 'Description '!
-!provides: 'Bidi' 1 40!
+!provides: 'Bidi' 1 47!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -126,7 +126,7 @@ BidiSystemWindow class
 
 !classDefinition: #BidiTextEntryMorph category: #Bidi!
 TextEntryMorph subclass: #BidiTextEntryMorph
-	instanceVariableNames: ''
+	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
@@ -142,6 +142,26 @@ InnerListMorph subclass: #BidiInnerListMorph
 	category: 'Bidi'!
 !classDefinition: 'BidiInnerListMorph class' category: #Bidi!
 BidiInnerListMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiSimpleEditor category: #Bidi!
+SimpleEditor subclass: #BidiSimpleEditor
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiSimpleEditor class' category: #Bidi!
+BidiSimpleEditor class
+	instanceVariableNames: ''!
+
+!classDefinition: #TestBidi category: #Bidi!
+TestCase subclass: #TestBidi
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'TestBidi class' category: #Bidi!
+TestBidi class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiField category: #Bidi!
@@ -610,7 +630,7 @@ displayTextCursorAtX: x top: top bottom: bottom emphasis: anEmphasis on: aCanvas
 		]
 ! !
 
-!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:22:49'!
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:00:50'!
 drawOn: aCanvas
 
 	aCanvas
@@ -625,7 +645,7 @@ drawOn: aCanvas
 	self hasTextCursor ifTrue: [ self drawTextCursorOn: aCanvas ].
 	
 	aCanvas
-		drawString: (rightToLeft ifTrue:[contents asBidiUnicodeString ] ifFalse:[contents])
+		drawString: (rightToLeft ifTrue:[contents asBidiUnicodeString writingDirection: #rightToLeft ] ifFalse:[contents])
 		at: (rightToLeft ifTrue:[self morphWidth - self textOffset x - (self fontToUse widthOfString: contents) @ self textOffset y] ifFalse:[self textOffset])
 		font: self fontToUse
 		color: color.
@@ -667,12 +687,23 @@ drawTextCursorOn: aCanvas
 			emphasis: emphasis 
 			on: aCanvas ]! !
 
-!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:19'!
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:00:25'!
 initialize
 
 	super initialize.
 	
-	rightToLeft := false.! !
+	rightToLeft := false. ! !
+
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:12:17'!
+installEditor
+	"Install an editor for my contents.  This constitutes 'hasFocus'.
+	If priorEditor is not nil, then initialize the new editor from its state.
+	We may want to rework this so it actually uses the prior editor."
+
+	editor := BidiSimpleEditor new morph: self.
+	editor changeString: contents.
+	self redrawNeeded.
+	^editor! !
 
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:07'!
 rightToLeft: aBoolean
@@ -699,6 +730,62 @@ draw: item atRow: row on: canvas
 		at: x @ (self drawYForRow: row)
 		font: f
 		color: c! !
+
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:12:32'!
+defaultMenuSpec
+	"Spec for the menu and shortcut keys for the regular text editors.
+	See coment at Morph >> #getMenu
+	"
+	^
+	#(
+		#(120	'Copy (c)' 	$c 	editor 	copySelection 	copyIcon 	'Copy selection to the Clipboard')
+		#(130	'Cut (x)' 		$x 	editor 	cut 				cutIcon 	'Cut selection and store it in the Clipboard')
+		#(140	'Paste (v)' 	$v 	editor 	paste 			pasteIcon 	'Paste Clipboard contents')
+		#(150 '-----')
+		#(160 'RLM (r)' 		$r 	editor 	insertRLM 		nil 			'Insert a zero width character that forces the next character to be treated as a right-to-left character')
+		#(170 'LRM (l)' 		$l 	editor 	insertLRM 		nil 			'Insert a zero width character that forces the next character to be treated as a left-to-right character')
+		
+		"Keyboard shortcuts only"
+		#(999 	nil 			$a 	editor 	selectAll 		nil 			'Select all')
+	).
+! !
+
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:32:49'!
+insertLRM
+self halt.
+	self addString: 'a'. "Character LRM asString."! !
+
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:14:10'!
+insertRLM
+	self addString: Character RLM asString.! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:51:43'!
+testEnglishHebrewLTR
+	
+	self assert: ('English with Hebrew (טקסט בעברית) text.' asBidi  reorderBidi: #leftToRight)  = 'English with Hebrew (תירבעב טסקט) text.' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:55:31'!
+testHebrew
+	self assert: ('טקסט בעברית' asBidi  reorderBidi: #rightToLeft) equals: 'תירבעב טסקט'.
+	
+	self assert: ('טקסט: נקודותיים' asBidi  reorderBidi: #rightToLeft) equals: 'םייתודוקנ :טסקט' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:50:10'!
+testHebrewEnglishRTL
+	self assert: ('טקסט בעברית עם אנגלית (English) בסוגריים' asBidi  reorderBidi: #rightToLeft) equals:  'םיירגוסב (English) תילגנא םע תירבעב טסקט' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:54:04'!
+testHebrewIntegersRTL
+	
+	self assert:  ('טקסט בעברית עם מספרים 1, 2, 3, 19, 135' asBidi  reorderBidi: #rightToLeft) equals:  '1, 2, 3, 19, 135 םירפסמ םע תירבעב טסקט' .
+	
+	self assert: ('טקסט בעברית עם מספרים 12-17 וגם 20-22' asBidi  reorderBidi: #rightToLeft)   equals: '20-22 םגו 12-17 םירפסמ םע תירבעב טסקט' .! !
+
+!TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:57:33'!
+testHebrewNegativeNumberRTL
+	
+	self assert: ('טקסט מספר נקודה צפה ', Character LRM asString, '-12.137' asBidi  reorderBidi: #rightToLeft)  = '-12.137 הפצ הדוקנ רפסמ טסקט' .
+! !
 
 !BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:05:41'!
 beRequired: aStringOrBlock 
@@ -1204,24 +1291,37 @@ reverseParenthesis
 asBidi
 	^BidiUnicodeSymbol new! !
 
-!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:23:42'!
+!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:39:19'!
 isBidiControl
 
-"LRI	U+2066	LEFT‑TO‑RIGHT ISOLATE	Treat the following text as isolated and left-to-right."
-"RLI	U+2067	RIGHT‑TO‑LEFT ISOLATE	Treat the following text as isolated and right-to-left."
+"LRM	U+200E	LEFT‑TO‑RIGHT MARK		Left-to-right zero-width character."
+"RLM	U+200F	RIGHT‑TO‑LEFT MARK		Right-to-left zero-width non-Arabic character."
+"ALM	U+061C	ARABIC LETTER MARK	Right-to-left zero-width Arabic character."
 
-^ self codePoint = 16r2066 or:[ self codePoint = 16r2067 ]! !
+^ self codePoint = 16r200E or:[ self codePoint = 16r200F ] or:[self codePoint = 16r061C]! !
 
-!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:24:35'!
+!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:39:55'!
 isHebrewLetter
 
-"RLI	U+2067	RIGHT‑TO‑LEFT ISOLATE	Treat the following text as isolated and right-to-left."
+"RLM	U+200F	RIGHT‑TO‑LEFT MARK		Right-to-left zero-width non-Arabic character."
 
-^ self codePoint = 16r2067 or: [self >= $א and: [self <= $ת ] ]! !
+^ self codePoint = 16r200F or: [self >= $א and: [self <= $ת ] ]! !
 
-!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:24:45'!
+!Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:40:25'!
 isLatinCharacter
 
-"LRI	U+2066	LEFT‑TO‑RIGHT ISOLATE	Treat the following text as isolated and left-to-right."
+"LRM	U+200E	LEFT‑TO‑RIGHT MARK		Left-to-right zero-width character."
 
-^ self codePoint = 16r2067 or:[self isAlphaNumeric and: [self codePoint < 128] ]! !
+^ self codePoint = 16r200E or:[self isAlphaNumeric and: [self codePoint < 128] ]! !
+
+!Character class methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:41:56'!
+ALM
+	^Character codePoint: 16r061C! !
+
+!Character class methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:41:42'!
+LRM
+	^Character codePoint: 16r200E ! !
+
+!Character class methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:41:49'!
+RLM
+	^Character codePoint: 16r200F! !
