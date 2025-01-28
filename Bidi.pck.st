@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 28 January 2025 at 10:42:52 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 January 2025 at 11:21:48 pm'!
 'Description '!
-!provides: 'Bidi' 1 42!
+!provides: 'Bidi' 1 43!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -306,24 +306,30 @@ twoRightToLeft
 asBidiUnicodeString
 	^self! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 19:58:36'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 16:05:32'!
 displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
 
-	| aUnicodeString |
+	| aUnicodeString b e |
 	
 	aUnicodeString := UnicodeString newFrom: (self reorderBidi: writingDirection).
 	
-	^aUnicodeString displayOnBitBltCanvasEngine: engine from: firstIndex to: lastIndex at: p1 font: font color: aColor
+	b := firstIndex min: aUnicodeString size.
+	e := lastIndex min: aUnicodeString size.
+	
+	^aUnicodeString displayOnBitBltCanvasEngine: engine from: b to: e at: p1 font: font color: aColor
 ! !
 
-!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:55:21'!
+!BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 16:09:26'!
 displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color
 
-	| aUnicodeString |
+	| aUnicodeString b e |
 	
 	aUnicodeString := UnicodeString newFrom: (self reorderBidi: writingDirection).
+
+	b := startIndex min: aUnicodeString size.
+	e := stopIndex min: aUnicodeString size.
 	
-	^aUnicodeString displayOnVectorEngine: engine from: startIndex to: stopIndex at: aPoint font: aTrueTypeFont color: color! !
+	^aUnicodeString displayOnVectorEngine: engine from: b to: e at: aPoint font: aTrueTypeFont color: color! !
 
 !BidiUnicodeString methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:17:40'!
 edit
@@ -750,14 +756,17 @@ defaultMenuSpec
 	).
 ! !
 
-!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:32:49'!
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 14:56:34'!
 insertLRM
-self halt.
-	self addString: 'a'. "Character LRM asString."! !
+	markIndex := pointIndex.
+	self addString: Character LRM asBidiUnicodeString. 
+	morph updateFromContents.! !
 
-!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:14:10'!
+!BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 14:55:55'!
 insertRLM
-	self addString: Character RLM asString.! !
+	markIndex := pointIndex.
+	self addString: Character RLM asBidiUnicodeString. 
+	morph updateFromContents.! !
 
 !TestBidi methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 15:51:43'!
 testEnglishHebrewLTR
@@ -1290,6 +1299,10 @@ reverseParenthesis
 !UnicodeSymbol methodsFor: '*Bidi' stamp: 'DF 1/25/2025 19:04:49'!
 asBidi
 	^BidiUnicodeSymbol new! !
+
+!Character methodsFor: '*Bidi' stamp: 'DF 1/28/2025 14:58:52'!
+asBidiUnicodeString
+	^self asString asBidi! !
 
 !Character methodsFor: '*Bidi' stamp: 'DF 1/27/2025 15:39:19'!
 isBidiControl
