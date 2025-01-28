@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 10:58:08 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 January 2025 at 10:42:52 pm'!
 'Description '!
-!provides: 'Bidi' 1 41!
+!provides: 'Bidi' 1 42!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -588,7 +588,7 @@ innerMorphClass
 innerMorphClass
 	^BidiInnerListMorph! !
 
-!BidiSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 23:07:55'!
+!BidiSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:42:13'!
 drawLabelOn: aCanvas
 
 	| x0 y0 f w availableW l |
@@ -604,7 +604,7 @@ drawLabelOn: aCanvas
 		l isEmpty ifTrue: [ ^self ].
 		w := f widthOfString: l ].
 	aCanvas
-		drawString: l reverse
+		drawString: l asBidi
 		at: x0@y0
 		font: f
 		color: Theme current windowLabel
