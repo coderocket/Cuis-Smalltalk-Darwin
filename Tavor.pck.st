@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 10:25:40 pm'!
+'From Cuis7.1 [latest update: #6676] on 28 January 2025 at 11:15:39 pm'!
 'Description '!
-!provides: 'Tavor' 1 537!
+!provides: 'Tavor' 1 547!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -653,11 +653,11 @@ allowsSubmorphDrag
 handlesMouseOver: aMorphicEvent
 	^true! !
 
-!TavorTableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:45:54'!
+!TavorTableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:30:43'!
 mouseEnter: evt
 	self color: selectedColor! !
 
-!TavorTableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:45:50'!
+!TavorTableCellItem methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:30:47'!
 mouseLeave: evt
 	self color: notSelectedColor! !
 
@@ -814,7 +814,7 @@ aboutToBeGrabbedBy: aHand
 
 	^owner aboutToGrabLecturer: self! !
 
-!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/21/2025 18:47:40'!
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/28/2025 22:54:48'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	newOwnerMorph isWorldMorph 
@@ -823,7 +823,7 @@ justDroppedInto: newOwnerMorph event: anEvent
 			^self delete ].
 	
 	newOwnerMorph 	isKindOf: AssignmentTableCell 		:: 
-		ifTrue:[  
+		ifTrue:[  self halt.
 			self assign: newOwnerMorph assignmentInRow]
 		ifFalse:[
 			self delete]			 ! !
@@ -954,7 +954,7 @@ assignDay: aDayInteger hour: anHourInteger
 	model day: aDayInteger ; hour: anHourInteger.
 	model unit module college changed: #assignmentsTable ! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:58:12'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:17:01'!
 build
 
 	| aLabelMorph |
@@ -962,7 +962,8 @@ build
 	self removeAllMorphs.
 	
 	model 
-		ifNotNil:[
+		ifNotNil:[ 
+
 			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
 	
 			self addMorph: aLabelMorph ].
@@ -975,7 +976,7 @@ build
 collision: aBoolean
 	collision := aBoolean! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:58:14'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:42:53'!
 expand
 
 	| code label |
@@ -999,7 +1000,7 @@ index
 index: anInteger
 	index := anInteger! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:20:13'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:54:17'!
 initialize
 
 	super initialize.
@@ -1012,7 +1013,13 @@ initialize
 	
 	collision := false.
 	
-	enableGrabbing := true.! !
+	enableGrabbing := true.
+	
+	borderColor := Color white.
+	
+	borderWidth := 1.
+	
+	self color: Color transparent.! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:39:17'!
 model
@@ -1029,21 +1036,36 @@ unassign
 
 ! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 21:14:01'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:59:59'!
 updateColor
 
 	notSelectedColor := 
-		collision
+		"collision
 			ifTrue:[Color red alpha: 0.3]
-			ifFalse:[
+			ifFalse:["
 				model
 					ifNil:[Color transparent]
-					ifNotNil:[Color fromHexString: '#c7dbff' :: alpha:0.3	] 			].
+					ifNotNil:[Color fromHexString: '#c7dbff' :: alpha:0.3	] 			"]".
 
 	selectedColor := notSelectedColor darker.
 
-	self color: notSelectedColor
+	color := notSelectedColor.
+	
+	self redrawNeeded.
 ! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 23:02:23'!
+widget
+	| aMorph |
+	
+	aMorph := owner.
+	
+	[aMorph isNil or:[aMorph isKindOf: PluggableTableMorph ] ]
+		whileFalse:[
+			aMorph := aMorph owner
+		].
+	
+	^aMorph! !
 
 !AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/27/2025 19:19:11'!
 aboutToBeGrabbedBy: aHand
@@ -1054,7 +1076,7 @@ aboutToBeGrabbedBy: aHand
 	
 	^owner aboutToGrabAssignment: self! !
 
-!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 22:28:20'!
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/28/2025 23:03:03'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	self assert: index = 0.
@@ -1066,7 +1088,7 @@ justDroppedInto: newOwnerMorph event: anEvent
 					model unit module college changed: #assignmentsTable ].
 			^self delete ].
 	
-	newOwnerMorph 	isKindOf: WeeklyTimeTableCell 
+	newOwnerMorph 	isKindOf: WeeklyTimeTableCell :: and:[self widget model stencil = model stencil ] 
 		:: ifTrue:[ 
 			self assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6			 ]
 		ifFalse:[
@@ -1997,16 +2019,18 @@ menuSpec
 		#(40		'הסר חדר' 						$c 	window 			removeRoom )
 	).! !
 
-!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:53:10'!
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:42:37'!
 openTimeTable
 
-	| aRoom |
+	| aRoom  |
 	
 	selectedRoomIndex <= 1 ifTrue:[^self].
 	
 	aRoom := 	self rooms at: selectedRoomIndex - 1.
 	
-	ResourceTimeTable open: aRoom label: 'מערכת שעות לחדר' 
+	ResourceTimeTable open: aRoom label: ('מערכת שעות לחדר: {1} {2}' format:{ aRoom campus description . aRoom code} :: asBidi writingDirection:#rightToLeft ) .
+	
+	aRoom changed: nil
 	
 	! !
 
@@ -2062,25 +2086,24 @@ update: aSymbol
 
 	self changed: aSymbol! !
 
-!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:32:21'!
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:22:50'!
 buildMorphicWindow
 
-	| semesterTimeTable |
+	| timeTable |
 
-	semesterTimeTable := self buildSemesterTimeTable.
+	timeTable := self buildYearlyTimeTable.
 	
-	self layoutMorph addMorph: (semesterTimeTable -1.0p |1.0p).
-	
-	self changed: #semesterTimeTable.	! !
+	self layoutMorph addMorph: (timeTable -1.0p |1.0p).
+! !
 
-!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:54:08'!
-buildSemesterTimeTable
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:12'!
+buildSemesterTimeTable: aSymbolSemesterMessage
 
 	| semesterTimeTable semesterColumnFactory |
 
 	semesterTimeTable := PluggableTableMorph new.
 	
-	semesterTimeTable model: self ; table: #semesterTimeTable ; rightToLeft: true ; headerRow: true.
+	semesterTimeTable model: self ; table: aSymbolSemesterMessage ; rightToLeft: true ; headerRow: true.
 
 	semesterTimeTable cellFactory: ResourceTimeTableCell.
 	
@@ -2096,12 +2119,29 @@ buildSemesterTimeTable
 	^semesterTimeTable 
 ! !
 
-!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:30:49'!
-semesterTimeTable
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:29:06'!
+buildYearlyTimeTable
 
-	| semester table |
+	| aTabbedGroup s1 s2 s3 |
 	
-	semester := 'סמסטר א'.
+	s1 := self buildSemesterTimeTable: #semesterTimeTable1.
+	s2 := self buildSemesterTimeTable: #semesterTimeTable2.
+	s3 := self buildSemesterTimeTable: #semesterTimeTable3.
+	
+	aTabbedGroup := TabbedGroup newColumn.
+
+	aTabbedGroup build: { 'סמסטר קיץ' reverse -> s3 . 'סמסטר ב' reverse -> s2 . 'סמסטר א' reverse -> s1 }.
+
+	aTabbedGroup color:Color white. 
+	
+	aTabbedGroup select:3.
+
+	^aTabbedGroup ! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:23:17'!
+semesterTimeTable: aStringSemesterName
+
+	|  table |
 	
 	table := OrderedCollection new.
 	
@@ -2118,7 +2158,7 @@ semesterTimeTable
 		
 		table add: aRow ].	
 	
-	model assignments select:[:eachAssignment | eachAssignment stencil semester description = semester ] :: do:[:eachAssignment | 
+	model assignments select:[:eachAssignment | eachAssignment stencil semester description = aStringSemesterName ] :: do:[:eachAssignment | 
 	
 		eachAssignment day notNil and: [eachAssignment hour notNil] ::
 			ifTrue:[ | cell | 
@@ -2131,8 +2171,24 @@ semesterTimeTable
 	^table
 	! !
 
-!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:31:22'!
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:36'!
+semesterTimeTable1
+
+	^self semesterTimeTable: 'סמסטר א'! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:43'!
+semesterTimeTable2
+
+	^self semesterTimeTable: 'סמסטר ב'! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:50'!
+semesterTimeTable3
+
+	^self semesterTimeTable: 'סמסטר קיץ'! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:29:36'!
 update: aSymbol
+
 	self changed: aSymbol! !
 
 !LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/24/2025 21:58:58'!
@@ -2329,7 +2385,7 @@ openEditLecturerDialog
 	
 	! !
 
-!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/26/2025 12:55:12'!
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/28/2025 22:28:51'!
 openTimeTable
 
 	| aLecturer |
@@ -2338,14 +2394,24 @@ openTimeTable
 	
 	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
 	
-	ResourceTimeTable open: aLecturer label: 'מערכת שעות למרצה' 
+	ResourceTimeTable open: aLecturer label: 'מערכת שעות למרצה: ', aLecturer description.
+	
+	aLecturer changed: nil
 	
 	! !
 
-!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/18/2025 12:58:11'!
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/28/2025 22:36:39'!
 selectLecturer: anIntegerIndex
 
-	selectedLecturerIndex := anIntegerIndex 
+	| aLecturer |
+	
+	selectedLecturerIndex := anIntegerIndex.
+	
+	selectedLecturerIndex <= 1 ifTrue:[^self].
+	
+	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
+	
+	self setLabel: 'מרצה: ', aLecturer description.
 	
 	! !
 
@@ -4623,7 +4689,7 @@ check: aResource
 	
 	self checkOverlap: aResource.! !
 
-!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:25:20'!
+!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 23:14:22'!
 checkOverlap: aResource
 
 	aResource assignments 
@@ -4642,7 +4708,7 @@ checkOverlap: aResource
 				
 					overlap := x interval intersect: y interval.
 					
-					overlap ifNotEmpty: [
+					overlap isEmptySet ifFalse: [ 
 						violations add: (OverlapViolation overlap: (overlap first @ x day corner: overlap last - 1 @ x day) between: x and: y) ] ] ] ]. 
 ! !
 
@@ -5555,10 +5621,14 @@ overlap: aRectangle between: anAssignment and: anotherAssignment
 	
 	^anOverlapViolation ! !
 
-!Interval methodsFor: '*Tavor-sets' stamp: 'DF 1/26/2025 18:00:04'!
+!Interval methodsFor: '*Tavor-sets' stamp: 'DF 1/28/2025 23:09:31'!
 intersect: anInterval
-
+	
 	^(start max: anInterval first) to: (stop min: anInterval last)! !
+
+!Interval methodsFor: '*Tavor-sets' stamp: 'DF 1/28/2025 23:15:25'!
+isEmptySet
+	^stop <= start! !
 
 !MenuMorph methodsFor: '*Tavor' stamp: 'DF 1/7/2025 16:17:39'!
 rtolAdd: aString action: aSymbol
