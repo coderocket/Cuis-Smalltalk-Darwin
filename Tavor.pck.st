@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 29 January 2025 at 3:14:34 pm'!
+'From Cuis7.3 [latest update: #6895] on 30 January 2025 at 1:56:57 pm'!
 'Description '!
-!provides: 'Tavor' 1 549!
+!provides: 'Tavor' 1 550!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -110,7 +110,7 @@ ClassroomMorph class
 
 !classDefinition: #LecturerMorph category: #'Tavor-School'!
 TavorTableCellItem subclass: #LecturerMorph
-	instanceVariableNames: 'assignment lecturer'
+	instanceVariableNames: 'lecturer'
 	classVariableNames: 'LecturerImage'
 	poolDictionaries: ''
 	category: 'Tavor-School'!
@@ -136,6 +136,16 @@ LayoutMorph subclass: #TextFieldSentence
 	category: 'Tavor-Morphic'!
 !classDefinition: 'TextFieldSentence class' category: #'Tavor-Morphic'!
 TextFieldSentence class
+	instanceVariableNames: ''!
+
+!classDefinition: #StencilLabel category: #'Tavor-Stencil'!
+NarrowLabelMorph subclass: #StencilLabel
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Stencil'!
+!classDefinition: 'StencilLabel class' category: #'Tavor-Stencil'!
+StencilLabel class
 	instanceVariableNames: ''!
 
 !classDefinition: #AcademicProgramBrowser category: #'Tavor-AcademicProgram'!
@@ -513,25 +523,23 @@ allowsSubmorphDrag
 minimumExtent
 	^`0@78`! !
 
-!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:04:34'!
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:20:00'!
 aboutToGrabAssignment: anAssignmentMorph
 
 	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
-
-	self halt.
 	
 	anAssignmentMorph model unassign.
 	
 	^anAssignmentMorph ! !
 
-!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/21/2025 09:06:32'!
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:09:02'!
 aboutToGrabLecturer: aLecturerMorph
 
 	| aDuplicateMorph |
 	
 	aLecturerMorph color: Color transparent.
 	
-	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; expand ; yourself.
+	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; yourself.
 	
 	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
 	
@@ -577,29 +585,25 @@ aboutToGrabAssignment: anAssignmentMorph
 	
 	^aDuplicateMorph ! !
 
-!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:59:26'!
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:20:15'!
 aboutToGrabClassroom: aClassroomMorph
 
 	self assert: (aClassroomMorph isKindOf: ClassroomMorph).
 
 	aClassroomMorph room ifNil:[^nil].
 	
-	aClassroomMorph assignment: self assignmentInRow.
-	
-	aClassroomMorph unassign.
+	aClassroomMorph unassign: self assignmentInRow.
 	
 	^aClassroomMorph ! !
 
-!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:48:59'!
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:05:03'!
 aboutToGrabLecturer: aLecturerMorph
 
 	self assert: (aLecturerMorph isKindOf: LecturerMorph).
 
 	aLecturerMorph lecturer ifNil:[^nil].
 	
-	aLecturerMorph assignment: self assignmentInRow.
-	
-	aLecturerMorph unassign.
+	aLecturerMorph unassign: self assignmentInRow.
 	
 	^aLecturerMorph ! !
 
@@ -666,16 +670,14 @@ rightToLeft: aBoolean
 
 	submorphs first rightToLeft: aBoolean! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:57:25'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:26'!
 assign: anAssignment
 
-	self assert: assignment isNil; assert: anAssignment notNil ; assert: room notNil.
+	self assert: anAssignment notNil ; assert: room notNil.
 	
-	assignment := anAssignment.
+	anAssignment addClassroom: room.
 	
-	assignment addClassroom: room.
-	
-	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
+	anAssignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
 	
 	room campus college changed: #assignmentsTable.! !
 
@@ -687,7 +689,7 @@ assignment
 assignment: anAssignment
 	assignment := anAssignment ! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:23:48'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:21:33'!
 build
 
 	| aLabelMorph aString |
@@ -707,6 +709,9 @@ build
 	self addMorph: aLabelMorph.
 	
 	self axisEdgeWeight: 0.0.
+
+	room ifNil:[
+		aLabelMorph color: (Color fromHexString:'#cccccc')].
 	
 	self color: notSelectedColor.! !
 
@@ -736,12 +741,12 @@ expand
 
 ! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:56:25'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:24:48'!
 initialize
 
 	super initialize.
 	
-	notSelectedColor := Color fromHexString: '#e6fcea' :: alpha:0.3	.
+	notSelectedColor := Color fromHexString: '#fcfcdc' :: alpha:0.3	.
 	
 	selectedColor := notSelectedColor darker.
 ! !
@@ -764,6 +769,17 @@ unassign
 	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
 	
 	assignment := nil.
+	
+! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:46'!
+unassign: anAssignment
+
+	self assert: room notNil.
+	
+	anAssignment removeClassroom: room.
+
+	anAssignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
 	
 ! !
 
@@ -798,14 +814,16 @@ initialize
 	ClassroomImage := ImageReadWriter formFromFileEntry: aFileEntry.
 ! !
 
-!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:24:10'!
+!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:25:31'!
 new: aClassroom
 
 	| aClassroomMorph |
 	
 	aClassroomMorph := self newColumn.
 	
-	aClassroomMorph room: aClassroom; assignment: nil; build.
+	aClassroomMorph room: aClassroom; build.
+
+	aClassroom notNil ifTrue:[aClassroomMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
 	
 	^aClassroomMorph ! !
 
@@ -814,7 +832,7 @@ aboutToBeGrabbedBy: aHand
 
 	^owner aboutToGrabLecturer: self! !
 
-!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/28/2025 22:54:48'!
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 18:44:46'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	newOwnerMorph isWorldMorph 
@@ -823,23 +841,23 @@ justDroppedInto: newOwnerMorph event: anEvent
 			^self delete ].
 	
 	newOwnerMorph 	isKindOf: AssignmentTableCell 		:: 
-		ifTrue:[  self halt.
+		ifTrue:[  
 			self assign: newOwnerMorph assignmentInRow]
 		ifFalse:[
 			self delete]			 ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:44:20'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:01:36'!
 assign: anAssignment
 
-	self assert: assignment isNil; assert: anAssignment notNil ; assert: lecturer notNil.
+	self assert: anAssignment notNil ; assert: lecturer notNil.
 	
-	assignment := anAssignment.
-	
-	assignment addLecturer: lecturer.
+	anAssignment addLecturer: lecturer.
 	
 	lecturer changed: #assignmentsTable.
 	
-	lecturer school college changed: #assignmentsTable.! !
+	lecturer school college changed: #assignmentsTable.
+	
+! !
 
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:42:41'!
 assignment
@@ -849,7 +867,7 @@ assignment
 assignment: anAssignment
 	assignment := anAssignment ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:58:41'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:17:32'!
 build
 
 	| aLabelMorph |
@@ -861,12 +879,18 @@ build
 	aLabelMorph morphExtent: aLabelMorph measureContents.
 	
 	aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
+	
+	lecturer ifNil:[
+		aLabelMorph color: (Color fromHexString:'#cccccc')].
 		
 	self color: notSelectedColor.
 	
 	self addMorph: aLabelMorph.
 	
-	self axisEdgeWeight: 0.0! !
+	self axisEdgeWeight: 0.0.
+	
+	
+! !
 
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:26:27'!
 drawOn: aCanvas
@@ -923,6 +947,17 @@ unassign
 
 ! !
 
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:04:47'!
+unassign: anAssignment
+
+	self assert: lecturer notNil; assert: anAssignment notNil.
+	
+	anAssignment removeLecturer: lecturer.
+	
+	lecturer changed: #assignmentsTable.
+
+! !
+
 !LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 21:44:51'!
 initialize
 
@@ -935,7 +970,7 @@ initialize
 	LecturerImage := ImageReadWriter formFromFileEntry: aFileEntry.
 ! !
 
-!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:02:44'!
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:14:58'!
 new: aLecturer
 
 	| aLecturerMorph |
@@ -946,12 +981,34 @@ new: aLecturer
 	
 	aLecturerMorph build.
 	
+	aLecturer notNil ifTrue:[aLecturerMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
+	
 	^aLecturerMorph! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 18:41:17'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 21:53:07'!
 assignDay: aDayInteger hour: anHourInteger
 
-	model day: aDayInteger ; hour: anHourInteger.
+	| college interval hh tt |
+	
+	college := model unit module college.
+	
+	interval :=  college availableHoursForDay: aDayInteger.
+	
+	model unit duration > interval size ifTrue:[^self]. "don't assign if the duration cannot fit in the availabe hours for the given day"
+	
+	hh := anHourInteger max: interval first.
+	
+	self assert: hh >= interval first.
+	
+	hh := anHourInteger min: interval last.
+	
+	self assert: hh <= interval last.
+	
+	tt := hh + model unit duration - interval last max: 0.
+	
+	hh := hh - tt.
+		
+	model day: aDayInteger ; hour: hh.
 	model unit module college changed: #assignmentsTable ! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:17:01'!
@@ -1000,14 +1057,14 @@ index
 index: anInteger
 	index := anInteger! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:54:17'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:23:17'!
 initialize
 
 	super initialize.
 	
 	index := 0.
 	
-	notSelectedColor := Color fromHexString: '#c7dbff' :: alpha:0.3	.
+	notSelectedColor := Color fromHexString: '#fcfcdc' :: alpha:0.3	..
 	
 	selectedColor := notSelectedColor darker.
 	
@@ -1036,16 +1093,13 @@ unassign
 
 ! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:59:59'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:24:02'!
 updateColor
 
 	notSelectedColor := 
-		"collision
-			ifTrue:[Color red alpha: 0.3]
-			ifFalse:["
-				model
-					ifNil:[Color transparent]
-					ifNotNil:[Color fromHexString: '#c7dbff' :: alpha:0.3	] 			"]".
+		model
+			ifNil:[Color transparent]
+			ifNotNil:[Color fromHexString: '#fcfcdc' :: alpha:0.3	].
 
 	selectedColor := notSelectedColor darker.
 
@@ -1111,7 +1165,7 @@ fromTuple: aTuple
 			
 	^anAssignmentMorph ! !
 
-!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:18:35'!
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:28:58'!
 new: anAssignment
 
 	| anAssignmentMorph |
@@ -1123,6 +1177,8 @@ new: anAssignment
 	anAssignmentMorph collision: false.
 	
 	anAssignmentMorph build.
+
+	anAssignment notNil ifTrue:[anAssignmentMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
 	
 	^anAssignmentMorph ! !
 
@@ -1167,6 +1223,18 @@ initialize
 !TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 20:54:58'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!StencilLabel class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 20:11:03'!
+contents: anInteger
+
+	| aLabel |			
+
+	aLabel := anInteger 
+		ifNil:[ 
+			NarrowLabelMorph contents: 'לא משובץ' :: color: (Color fromHexString:'#cccccc'); yourself ] 
+		ifNotNil:[
+			NarrowLabelMorph contents:('{1}' format:{anInteger})].
+	^aLabel ! !
 
 !AcademicProgramBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 22:12:08'!
 initialExtent
@@ -2885,7 +2953,7 @@ years
 	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:23:37'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/29/2025 20:11:38'!
 buildAssignmentsTable
 
 	| assignmentsTable |
@@ -2904,8 +2972,8 @@ buildAssignmentsTable
 
 	assignmentsTable columnFactory: { 
 		1 -> (PluggableMorphFactory new formatter:[:aClassroom | aClassroom]; morphClass: ClassroomMorph ; factoryMessage: #new: yourself) .
-		2 -> (PluggableMorphFactory new formatter:[:anHour | anHour ifNil:['לא משובץ'] ifNotNil:['{1}' format:{anHour}] ]; yourself) .
-		3 -> (PluggableMorphFactory new formatter:[:aDay | aDay ifNil:['לא משובץ'] ifNotNil:['{1}' format:{aDay}] ]; yourself) .
+		2 -> (PluggableMorphFactory new formatter:[:anInteger | anInteger]; morphClass:StencilLabel; yourself) .
+		3 -> (PluggableMorphFactory new formatter:[:aDay | aDay ]; morphClass: StencilLabel; yourself) .
 		4 -> (PluggableMorphFactory new formatter:[:aLecturer  | aLecturer ] ; morphClass: LecturerMorph ; factoryMessage: #new: ; yourself) .
 		5 -> (PluggableMorphFactory new formatter:[:aUnit | aUnit description ] ; yourself) .
 		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
@@ -4999,6 +5067,17 @@ description: aString
 academicYearNames
 
 	^{ 'שנה 1' . 'שנה 2' . 'שנה 3' . 'שנה 4' }! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 20:52:31'!
+availableHoursForDay: aDayInteger
+
+	self assert: aDayInteger >=1 ; assert: aDayInteger <=6.
+	
+	aDayInteger = 6
+		ifTrue:[^ 8 to: 14 ]
+		ifFalse:[^ 8 to: 23 ]
+	
+	! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 14:16:29'!
 importAcademicProgram: aFileEntry
