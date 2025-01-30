@@ -1,11 +1,11 @@
-'From Cuis7.1 [latest update: #6676] on 28 January 2025 at 11:15:39 pm'!
+'From Cuis7.3 [latest update: #6895] on 29 January 2025 at 3:14:34 pm'!
 'Description '!
-!provides: 'Tavor' 1 547!
+!provides: 'Tavor' 1 549!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
 !requires: 'MenuBar' 1 0 nil!
-!requires: 'UI-Mold' 1 30 nil!
+!requires: 'UI-Mold' 1 17 nil!
 !requires: 'LayoutAlgebra' 1 11 nil!
 SystemOrganization addCategory: #'Tavor-Model'!
 SystemOrganization addCategory: #'Tavor-Morphic'!
@@ -2980,7 +2980,7 @@ buildStencilTimeTable
 	
 	^stencilTimeTable ! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:21:32'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 11:24:30'!
 buildMorphicWindow
 
 	|  top entries openButton cancelButton buttons dialog backButton upButton |
@@ -2990,7 +2990,7 @@ buildMorphicWindow
 	upButton := PluggableButtonMorph model: self action: #goUp.
 	upButton iconDrawSelector: #drawUpIcon.
 
-	currentDirectoryEntryMorph := directory pathName edit.
+	currentDirectoryEntryMorph := directory pathName asBidi edit.
 	
 	currentDirectoryEntryMorph crAction: [ | dd |
 		dd := currentDirectoryEntryMorph contents asDirectoryEntry.
@@ -3046,11 +3046,11 @@ entryIndex: anInteger
 	
 ! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:43:52'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 11:25:40'!
 entryNames
 
 	^self entries collect:[:eachEntry | 
-		eachEntry name asUnicodeString asBidi reorderBidiFileName , 		(eachEntry isDirectory 			ifTrue:[ '/' ] ifFalse:['']) ]
+		eachEntry name asUnicodeString asBidi reorderBidiFileName , 		(eachEntry isDirectoryEntry 			ifTrue:[ '/' ] ifFalse:['']) ]
 	
 ! !
 
@@ -3078,7 +3078,7 @@ initialize
 	
 	sortBy := [:x :y | x name <= y name ].! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:44:31'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 11:27:37'!
 recurse
 
 	| child |
@@ -3087,7 +3087,7 @@ recurse
 
 	child := self entries at: theEntryIndex.
 
-	child isDirectory 
+	child isDirectoryEntry 
 		ifTrue:[
 			directory := child.
 			currentDirectoryEntryMorph contents: directory pathName.
