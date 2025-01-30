@@ -1,6 +1,7 @@
-'From Cuis7.1 [latest update: #6676] on 27 January 2025 at 10:21:14 pm'!
+'From Cuis7.3 [latest update: #6895] on 29 January 2025 at 11:03:47 am'!
 'Description '!
-!provides: 'Table' 1 60!
+!provides: 'Table' 1 62!
+!requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
 
