@@ -1,6 +1,7 @@
-'From Cuis7.1 [latest update: #6676] on 28 January 2025 at 11:21:48 pm'!
+'From Cuis7.3 [latest update: #6895] on 29 January 2025 at 10:58:02 am'!
 'Description '!
-!provides: 'Bidi' 1 43!
+!provides: 'Bidi' 1 44!
+!requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
 
@@ -74,16 +75,6 @@ MenuMorph subclass: #BidiMenuMorph
 BidiMenuMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #BidiInnerListMorph category: #Bidi!
-InnerListMorph subclass: #BidiInnerListMorph
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Bidi'!
-!classDefinition: 'BidiInnerListMorph class' category: #Bidi!
-BidiInnerListMorph class
-	instanceVariableNames: ''!
-
 !classDefinition: #BidiLabelMorph category: #Bidi!
 LabelMorph subclass: #BidiLabelMorph
 	instanceVariableNames: 'rightToLeft'
@@ -142,6 +133,16 @@ TextEntryMorph subclass: #BidiTextEntryMorph
 	category: 'Bidi'!
 !classDefinition: 'BidiTextEntryMorph class' category: #Bidi!
 BidiTextEntryMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiInnerListMorph category: #Bidi!
+InnerListMorph subclass: #BidiInnerListMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiInnerListMorph class' category: #Bidi!
+BidiInnerListMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiSimpleEditor category: #Bidi!
@@ -503,28 +504,6 @@ initialize
 menuItemFactory: aClass
 	menuItemFactory := aClass! !
 
-!BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:57'!
-draw: item atRow: row on: canvas
-	"display the given item at row row"
-	| f c len x |
-	
-	len := font widthOfString: item string.
-	
-	x := extent x - len.
-	
-	(item is: #Text)
-		ifTrue: [
-			f := font emphasized: (item emphasisAt: 1).
-			c := (item colorAt: 1) ifNil: [Theme current text]]
-		ifFalse: [ 
-			f := font.
-			c :=  Theme current text].
-	canvas
-		drawString: (item string asBidiUnicodeString writingDirection:#rightToLeft :: yourself)
-		at: x @ (self drawYForRow: row)
-		font: f
-		color: c! !
-
 !BidiLabelMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:28:46'!
 drawOn: aCanvas
 
@@ -736,6 +715,28 @@ installEditor
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:07'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:57'!
+draw: item atRow: row on: canvas
+	"display the given item at row row"
+	| f c len x |
+	
+	len := font widthOfString: item string.
+	
+	x := extent x - len.
+	
+	(item is: #Text)
+		ifTrue: [
+			f := font emphasized: (item emphasisAt: 1).
+			c := (item colorAt: 1) ifNil: [Theme current text]]
+		ifFalse: [ 
+			f := font.
+			c :=  Theme current text].
+	canvas
+		drawString: (item string asBidiUnicodeString writingDirection:#rightToLeft :: yourself)
+		at: x @ (self drawYForRow: row)
+		font: f
+		color: c! !
 
 !BidiSimpleEditor methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:12:32'!
 defaultMenuSpec
