@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 12:16:09 pm'!
+'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 1:08:58 pm'!
 'Description '!
-!provides: 'Bidi' 1 46!
+!provides: 'Bidi' 1 48!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -582,6 +582,26 @@ innerMorphClass
 !BidiPluggableListMorphOfMany methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:27'!
 innerMorphClass
 	^BidiInnerListMorph! !
+
+!BidiSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:08:05'!
+createMenuButton 
+
+	| aForm |
+	
+	aForm := Theme current haloDuplicateIcon.
+
+	aForm := aForm asFormOfDepth: Display depth.
+
+	aForm := aForm asColorFormOfDepth: 8.
+
+	aForm colors: { Color green . Color white }.
+
+	aForm  := aForm asFormOfDepth: Display depth.
+	
+	^ (PluggableButtonMorph model: self action: #duplicateWindow)
+		icon:  aForm;
+		setBalloonText: 'שכפל את החלון הנוכחי';
+		morphExtent: Theme current titleBarButtonsExtent! !
 
 !BidiSystemWindow methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:42:13'!
 drawLabelOn: aCanvas
