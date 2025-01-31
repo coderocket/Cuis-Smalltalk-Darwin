@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 29 January 2025 at 11:03:47 am'!
+'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 12:22:03 pm'!
 'Description '!
-!provides: 'Table' 1 62!
+!provides: 'Table' 1 63!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -544,12 +544,11 @@ build
 		self at: h - 6 at:7 :: beColumn :: addMorph:  label. ].
 ! !
 
-!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:55:36'!
+!WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 12:20:50'!
 initialize
 
 	super initialize.
-	
-	cellFactory := WeeklyTimeTableCell ! !
+! !
 
 !WeeklyTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 18:25:04'!
 wantsDroppedMorph: aMorph event: evt
