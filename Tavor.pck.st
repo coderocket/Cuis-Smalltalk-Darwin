@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 30 January 2025 at 1:56:57 pm'!
+'From Cuis7.1 [latest update: #6712] on 31 January 2025 at 12:03:31 pm'!
 'Description '!
-!provides: 'Tavor' 1 550!
+!provides: 'Tavor' 1 551!
 !requires: 'Bidi' 1 0 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'Table' 1 0 nil!
@@ -26,6 +26,16 @@ Error subclass: #TavorError
 	category: 'Tavor-Model'!
 !classDefinition: 'TavorError class' category: #'Tavor-Model'!
 TavorError class
+	instanceVariableNames: ''!
+
+!classDefinition: #QuietTheme category: #'Tavor-Morphic'!
+Theme subclass: #QuietTheme
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Tavor-Morphic'!
+!classDefinition: 'QuietTheme class' category: #'Tavor-Morphic'!
+QuietTheme class
 	instanceVariableNames: ''!
 
 !classDefinition: #TavorTableCell category: #'Tavor-Morphic'!
@@ -478,6 +488,44 @@ Violation subclass: #OverlapViolation
 OverlapViolation class
 	instanceVariableNames: ''!
 
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:15:58'!
+background
+	^ `Color fromHexString:'#aaaaaa'`! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 20:18:53'!
+defaultWindowColor
+	^ `Color fromHexString:'#bbbbbb'`! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:20:41'!
+embossedButtonLabels
+	"Currently only apply to rounded buttons!!"
+
+	^false! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:20:51'!
+embossedTitles
+	^false! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:18:16'!
+menu
+	^ `Color white`! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:39:35'!
+paneBackgroundFrom: aColor
+	^ Color white! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:37:21'!
+textPane
+	^ `Color white`! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:21:26'!
+useTaskbar
+	^false! !
+
+!QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:35:20'!
+useUniformColors
+	^true! !
 
 !TavorTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:27:44'!
 aboutToGrab: submorph
