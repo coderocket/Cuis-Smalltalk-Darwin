@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 29 January 2025 at 10:58:02 am'!
+'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 12:16:09 pm'!
 'Description '!
-!provides: 'Bidi' 1 44!
+!provides: 'Bidi' 1 46!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -123,6 +123,16 @@ SystemWindow subclass: #BidiSystemWindow
 	category: 'Bidi'!
 !classDefinition: 'BidiSystemWindow class' category: #Bidi!
 BidiSystemWindow class
+	instanceVariableNames: ''!
+
+!classDefinition: #BidiPluggableDialogPanel category: #Bidi!
+PluggableDialogPanel subclass: #BidiPluggableDialogPanel
+	instanceVariableNames: 'rightToLeft'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiPluggableDialogPanel class' category: #Bidi!
+BidiPluggableDialogPanel class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiTextEntryMorph category: #Bidi!
@@ -595,6 +605,35 @@ drawLabelOn: aCanvas
 		color: Theme current windowLabel
 		embossed: Theme current embossedTitles! !
 
+!BidiPluggableDialogPanel methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 11:45:46'!
+initialize
+
+	super initialize.
+	
+	rightToLeft := false.
+! !
+
+!BidiPluggableDialogPanel methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 11:45:23'!
+newButtonArea
+"Return the morph where the buttons are layed out"
+	buttonArea := LayoutMorph newRow ::
+		separation: 8@0;
+		axisEdgeWeight: (rightToLeft ifTrue:[#rowLeft] ifFalse:[#rowRight]);
+		addMorph: (PluggableButtonMorph
+			model: actionOnButton 
+			action: #value
+			label: buttonLabel ).
+	actionOnAltButton ifNotNil: [
+		buttonArea addMorph: (PluggableButtonMorph 
+			model: actionOnAltButton 
+			action: #value
+			label: altButtonLabel)].
+	^ buttonArea ! !
+
+!BidiPluggableDialogPanel methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 11:45:29'!
+rightToLeft: aBoolean
+	rightToLeft := aBoolean! !
+
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:59:47'!
 displayTextCursorAtX: x top: top bottom: bottom emphasis: anEmphasis on: aCanvas
 	| textCursorColor x1 isBold isItalic x0 h w halfW r d |
@@ -1028,11 +1067,11 @@ newPane
 	pane buildMorphicWindow .
 	^ pane! !
 
-!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:51:30'!
+!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 11:45:07'!
 openDialog: title
 	| panel |
 	panel := nil.
-	panel := PluggableDialogPanel new.
+	panel := BidiPluggableDialogPanel new.
 	panel rightToLeft: rightToLeft.
 	
 	panel model: self ;
@@ -1327,3 +1366,11 @@ isLatinCharacter
 "LRM	U+200E	LEFT‑TO‑RIGHT MARK		Left-to-right zero-width character."
 
 ^ self codePoint = 16r200E or:[self isAlphaNumeric and: [self codePoint < 128] ]! !
+
+!Character class methodsFor: '*Bidi' stamp: 'DF 1/31/2025 12:15:51'!
+LRM
+	^Character codePoint: 16r200E! !
+
+!Character class methodsFor: '*Bidi' stamp: 'DF 1/31/2025 12:15:45'!
+RLM
+	^Character codePoint: 16r200F! !
