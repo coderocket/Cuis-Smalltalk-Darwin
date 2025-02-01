@@ -1,56 +1,56 @@
-'From Cuis7.1 [latest update: #6676] on 11 January 2025 at 4:52:52 pm'!
+'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 1:43:31 pm'!
 'Description '!
-!provides: 'MenuBar' 1 4!
-SystemOrganization addCategory: 'MenuBar'!
+!provides: 'MenuBar' 1 5!
+SystemOrganization addCategory: #MenuBar!
 
 
-!classDefinition: #DynamicMenuGenerator category: 'MenuBar'!
+!classDefinition: #DynamicMenuGenerator category: #MenuBar!
 Object subclass: #DynamicMenuGenerator
 	instanceVariableNames: 'action target menu index'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MenuBar'!
-!classDefinition: 'DynamicMenuGenerator class' category: 'MenuBar'!
+!classDefinition: 'DynamicMenuGenerator class' category: #MenuBar!
 DynamicMenuGenerator class
 	instanceVariableNames: ''!
 
-!classDefinition: #MenuBarModel category: 'MenuBar'!
+!classDefinition: #MenuBarModel category: #MenuBar!
 Object subclass: #MenuBarModel
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MenuBar'!
-!classDefinition: 'MenuBarModel class' category: 'MenuBar'!
+!classDefinition: 'MenuBarModel class' category: #MenuBar!
 MenuBarModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #MenuBar category: 'MenuBar'!
+!classDefinition: #MenuBar category: #MenuBar!
 LayoutMorph subclass: #MenuBar
 	instanceVariableNames: 'menus'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MenuBar'!
-!classDefinition: 'MenuBar class' category: 'MenuBar'!
+!classDefinition: 'MenuBar class' category: #MenuBar!
 MenuBar class
 	instanceVariableNames: ''!
 
-!classDefinition: #MenuBarMenuMorph category: 'MenuBar'!
+!classDefinition: #MenuBarMenuMorph category: #MenuBar!
 MenuMorph subclass: #MenuBarMenuMorph
 	instanceVariableNames: 'index'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MenuBar'!
-!classDefinition: 'MenuBarMenuMorph class' category: 'MenuBar'!
+!classDefinition: 'MenuBarMenuMorph class' category: #MenuBar!
 MenuBarMenuMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #MenuBarButtonMorph category: 'MenuBar'!
+!classDefinition: #MenuBarButtonMorph category: #MenuBar!
 PluggableButtonMorph subclass: #MenuBarButtonMorph
 	instanceVariableNames: 'state'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MenuBar'!
-!classDefinition: 'MenuBarButtonMorph class' category: 'MenuBar'!
+!classDefinition: 'MenuBarButtonMorph class' category: #MenuBar!
 MenuBarButtonMorph class
 	instanceVariableNames: ''!
 
@@ -243,15 +243,15 @@ MenuBar menus: {
 	
 ! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 16:36:35'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:37:04'!
 menusRightToLeft: anOrderedCollection
 	
 	self menus: 
 		(anOrderedCollection reverse collect:[:eachMenu |
 			eachMenu second isKindOf:Symbol ::
-				ifTrue:[ { eachMenu at:1 :: reverse . eachMenu at:2 . eachMenu at:3 } ]
+				ifTrue:[ { eachMenu at:1 :: asBidi writingDirection: #rightToLeft . eachMenu at:2 . eachMenu at:3 } ]
 				ifFalse:[
-					{ eachMenu first reverse . 
+					{ eachMenu first asBidi writingDirection: #rightToLeft . 
 						(eachMenu second collect:[:eachEntry |
 							eachEntry  = $| 
 								ifTrue:[ eachEntry ]

@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 1:08:58 pm'!
+'From Cuis7.3 [latest update: #7041] on 1 February 2025 at 9:37:19 pm'!
 'Description '!
-!provides: 'Bidi' 1 48!
+!provides: 'Bidi' 1 53!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -135,6 +135,16 @@ PluggableDialogPanel subclass: #BidiPluggableDialogPanel
 BidiPluggableDialogPanel class
 	instanceVariableNames: ''!
 
+!classDefinition: #BidiPluggablePane category: #Bidi!
+PluggablePane subclass: #BidiPluggablePane
+	instanceVariableNames: 'rightToLeft'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'BidiPluggablePane class' category: #Bidi!
+BidiPluggablePane class
+	instanceVariableNames: ''!
+
 !classDefinition: #BidiTextEntryMorph category: #Bidi!
 TextEntryMorph subclass: #BidiTextEntryMorph
 	instanceVariableNames: ''
@@ -217,7 +227,7 @@ BidiSelectMultipleField class
 
 !classDefinition: #BidiMold category: #Bidi!
 Mold subclass: #BidiMold
-	instanceVariableNames: ''
+	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
@@ -470,7 +480,7 @@ add: aString target: target action: aSymbol argumentList: argList
 	self addMorphBack: item.
 	^ item	! !
 
-!BidiMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:15:23'!
+!BidiMenuMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 16:39:55'!
 addTitle: aString
 	"Add a title line at the top of this menu Make aString its initial 
 	contents.  
@@ -479,7 +489,7 @@ addTitle: aString
 
 	| s pp w newMorph |
 	
-	newMorph := BoxedMorph new noBorder.
+	newMorph := ColoredBoxMorph new.
 	newMorph color: Theme current menuTitleBar.
 	pp := `8@2`.
 	aString asPlainString linesDo: [ :line | | font |
@@ -545,7 +555,7 @@ initialize
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
-!BidiMenuItemMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 13:15:57'!
+!BidiMenuItemMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:44:39'!
 drawOn: aCanvas 
 	| stringColor leftEdge magnifiedIcon len |
 
@@ -566,7 +576,7 @@ drawOn: aCanvas
 	len := font widthOfString: contents.
 	
 	aCanvas
-		drawString: contents reverse
+		drawString: (contents asBidi writingDirection: #rightToLeft)
 		at: ( self morphWidth - len ) @ 1
 		font: self fontToUse
 		color: stringColor.
@@ -651,6 +661,34 @@ newButtonArea
 	^ buttonArea ! !
 
 !BidiPluggableDialogPanel methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 11:45:29'!
+rightToLeft: aBoolean
+	rightToLeft := aBoolean! !
+
+!BidiPluggablePane methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 21:35:39'!
+initialize
+
+	super initialize.
+	
+	rightToLeft := false! !
+
+!BidiPluggablePane methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 21:36:47'!
+newButtonArea
+"Return the morph where the buttons are layed out"
+	buttonArea := LayoutMorph newRow ::
+		gap: 8;
+		axisEdgeWeight: (rightToLeft ifTrue:[#rowLeft] ifFalse:[#rowRight]);
+		addMorph: (PluggableButtonMorph
+			model: actionOnButton 
+			action: #value
+			label: buttonLabel ).
+	actionOnAltButton ifNotNil: [
+		buttonArea addMorph: (PluggableButtonMorph 
+			model: actionOnAltButton 
+			action: #value
+			label: altButtonLabel)].
+	^ buttonArea ! !
+
+!BidiPluggablePane methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 21:35:29'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
@@ -1070,11 +1108,11 @@ integerField
 	
 	^fields add: anIntegerField ! !
 
-!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:51:20'!
+!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 21:35:03'!
 newPane
 	| pane |
 	pane := nil.
-	pane := PluggablePane new.
+	pane := BidiPluggablePane new.
 	pane rightToLeft: rightToLeft.
 	pane
 		model: self;

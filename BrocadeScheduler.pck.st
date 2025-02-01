@@ -1,0 +1,3074 @@
+'From Cuis7.3 [latest update: #7041] on 1 February 2025 at 11:28:38 pm'!
+'Description '!
+!provides: 'BrocadeScheduler' 1 23!
+SystemOrganization addCategory: #'BrocadeScheduler-Model'!
+SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
+SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
+SystemOrganization addCategory: #'BrocadeScheduler-SchoolMorphic'!
+SystemOrganization addCategory: #'BrocadeScheduler-ResourceMorphic'!
+SystemOrganization addCategory: #BrocadeScheduler!
+
+
+!classDefinition: #AcademicResource category: #'BrocadeScheduler-Model'!
+Object subclass: #AcademicResource
+	instanceVariableNames: 'assignments'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'AcademicResource class' category: #'BrocadeScheduler-Model'!
+AcademicResource class
+	instanceVariableNames: ''!
+
+!classDefinition: #Classroom category: #'BrocadeScheduler-Model'!
+AcademicResource subclass: #Classroom
+	instanceVariableNames: 'campus capacity code floor'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'Classroom class' category: #'BrocadeScheduler-Model'!
+Classroom class
+	instanceVariableNames: ''!
+
+!classDefinition: #Lecturer category: #'BrocadeScheduler-Model'!
+AcademicResource subclass: #Lecturer
+	instanceVariableNames: 'school rank units description code quota'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'Lecturer class' category: #'BrocadeScheduler-Model'!
+Lecturer class
+	instanceVariableNames: ''!
+
+!classDefinition: #Assignment category: #'BrocadeScheduler-Model'!
+Object subclass: #Assignment
+	instanceVariableNames: 'rooms day hour unit stencil lecturers'
+	classVariableNames: 'DayHebrewNames'
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'Assignment class' category: #'BrocadeScheduler-Model'!
+Assignment class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignmentRule category: #'BrocadeScheduler-Model'!
+Object subclass: #AssignmentRule
+	instanceVariableNames: 'violations'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'AssignmentRule class' category: #'BrocadeScheduler-Model'!
+AssignmentRule class
+	instanceVariableNames: ''!
+
+!classDefinition: #ResourceRule category: #'BrocadeScheduler-Model'!
+AssignmentRule subclass: #ResourceRule
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'ResourceRule class' category: #'BrocadeScheduler-Model'!
+ResourceRule class
+	instanceVariableNames: ''!
+
+!classDefinition: #StencilRule category: #'BrocadeScheduler-Model'!
+AssignmentRule subclass: #StencilRule
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'StencilRule class' category: #'BrocadeScheduler-Model'!
+StencilRule class
+	instanceVariableNames: ''!
+
+!classDefinition: #Campus category: #'BrocadeScheduler-Model'!
+Object subclass: #Campus
+	instanceVariableNames: 'rooms college description firstFloor lastFloor'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'Campus class' category: #'BrocadeScheduler-Model'!
+Campus class
+	instanceVariableNames: ''!
+
+!classDefinition: #School category: #'BrocadeScheduler-Model'!
+Object subclass: #School
+	instanceVariableNames: 'college lecturers description'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'School class' category: #'BrocadeScheduler-Model'!
+School class
+	instanceVariableNames: ''!
+
+!classDefinition: #Stencil category: #'BrocadeScheduler-Model'!
+Object subclass: #Stencil
+	instanceVariableNames: 'semester description assignments'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'Stencil class' category: #'BrocadeScheduler-Model'!
+Stencil class
+	instanceVariableNames: ''!
+
+!classDefinition: #Violation category: #'BrocadeScheduler-Model'!
+Object subclass: #Violation
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'Violation class' category: #'BrocadeScheduler-Model'!
+Violation class
+	instanceVariableNames: ''!
+
+!classDefinition: #FreeDayViolation category: #'BrocadeScheduler-Model'!
+Violation subclass: #FreeDayViolation
+	instanceVariableNames: 'stencil'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'FreeDayViolation class' category: #'BrocadeScheduler-Model'!
+FreeDayViolation class
+	instanceVariableNames: ''!
+
+!classDefinition: #OverlapViolation category: #'BrocadeScheduler-Model'!
+Violation subclass: #OverlapViolation
+	instanceVariableNames: 'assignments overlap'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'OverlapViolation class' category: #'BrocadeScheduler-Model'!
+OverlapViolation class
+	instanceVariableNames: ''!
+
+!classDefinition: #ClassroomTableCell category: #'BrocadeScheduler-CampusMorphic'!
+BrocadeTableCell subclass: #ClassroomTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-CampusMorphic'!
+!classDefinition: 'ClassroomTableCell class' category: #'BrocadeScheduler-CampusMorphic'!
+ClassroomTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerTableCell category: #'BrocadeScheduler-SchoolMorphic'!
+BrocadeTableCell subclass: #LecturerTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-SchoolMorphic'!
+!classDefinition: 'LecturerTableCell class' category: #'BrocadeScheduler-SchoolMorphic'!
+LecturerTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignmentTableCell category: 'BrocadeScheduler-StencilMorphic'!
+BrocadeTableCell subclass: #AssignmentTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
+AssignmentTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #WeeklyTimeTableCell category: 'BrocadeScheduler-StencilMorphic'!
+BrocadeTableCell subclass: #WeeklyTimeTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'WeeklyTimeTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
+WeeklyTimeTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #ResourceTimeTableCell category: #'BrocadeScheduler-ResourceMorphic'!
+WeeklyTimeTableCell subclass: #ResourceTimeTableCell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-ResourceMorphic'!
+!classDefinition: 'ResourceTimeTableCell class' category: #'BrocadeScheduler-ResourceMorphic'!
+ResourceTimeTableCell class
+	instanceVariableNames: ''!
+
+!classDefinition: #ClassroomMorph category: #'BrocadeScheduler-CampusMorphic'!
+BrocadeTableCellItem subclass: #ClassroomMorph
+	instanceVariableNames: 'assignment room'
+	classVariableNames: 'ClassroomImage'
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-CampusMorphic'!
+!classDefinition: 'ClassroomMorph class' category: #'BrocadeScheduler-CampusMorphic'!
+ClassroomMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerMorph category: #'BrocadeScheduler-SchoolMorphic'!
+BrocadeTableCellItem subclass: #LecturerMorph
+	instanceVariableNames: 'lecturer'
+	classVariableNames: 'LecturerImage'
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-SchoolMorphic'!
+!classDefinition: 'LecturerMorph class' category: #'BrocadeScheduler-SchoolMorphic'!
+LecturerMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignmentMorph category: 'BrocadeScheduler-StencilMorphic'!
+BrocadeTableCellItem subclass: #AssignmentMorph
+	instanceVariableNames: 'model index collision enableGrabbing'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentMorph class' category: 'BrocadeScheduler-StencilMorphic'!
+AssignmentMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #StencilLabel category: 'BrocadeScheduler-StencilMorphic'!
+NarrowLabelMorph subclass: #StencilLabel
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilLabel class' category: 'BrocadeScheduler-StencilMorphic'!
+StencilLabel class
+	instanceVariableNames: ''!
+
+!classDefinition: #CampusBrowser category: #'BrocadeScheduler-CampusMorphic'!
+BidiSystemWindow subclass: #CampusBrowser
+	instanceVariableNames: 'campusIndex floorIndex selectedFloors selectedRoomIndex'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-CampusMorphic'!
+!classDefinition: 'CampusBrowser class' category: #'BrocadeScheduler-CampusMorphic'!
+CampusBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #ResourceTimeTable category: #'BrocadeScheduler-ResourceMorphic'!
+BidiSystemWindow subclass: #ResourceTimeTable
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-ResourceMorphic'!
+!classDefinition: 'ResourceTimeTable class' category: #'BrocadeScheduler-ResourceMorphic'!
+ResourceTimeTable class
+	instanceVariableNames: ''!
+
+!classDefinition: #LecturerBrowser category: #'BrocadeScheduler-SchoolMorphic'!
+BidiSystemWindow subclass: #LecturerBrowser
+	instanceVariableNames: 'mold'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-SchoolMorphic'!
+!classDefinition: 'LecturerBrowser class' category: #'BrocadeScheduler-SchoolMorphic'!
+LecturerBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #SchoolBrowser category: #'BrocadeScheduler-SchoolMorphic'!
+BidiSystemWindow subclass: #SchoolBrowser
+	instanceVariableNames: 'selectedSchools schoolIndex rankIndex selectedRanks selectedLecturerIndex'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-SchoolMorphic'!
+!classDefinition: 'SchoolBrowser class' category: #'BrocadeScheduler-SchoolMorphic'!
+SchoolBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #StencilBrowser category: 'BrocadeScheduler-StencilMorphic'!
+BidiSystemWindow subclass: #StencilBrowser
+	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex stencilIndex theAssignment views'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilBrowser class' category: 'BrocadeScheduler-StencilMorphic'!
+StencilBrowser class
+	instanceVariableNames: ''!
+
+
+!AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:49:26'!
+assignments
+	^assignments! !
+
+!AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:49:33'!
+attachAssignment: anAssignment
+
+	assignments add: anAssignment! !
+
+!AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:49:40'!
+detachAssignment: anAssignment
+
+	assignments remove: anAssignment! !
+
+!AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:50:20'!
+initialize
+
+	assignments := Set new.! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:48'!
+campus
+	^campus! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:32'!
+campus: aCampus
+	campus := aCampus! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:11'!
+capacity
+	^capacity! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:00:58'!
+capacity: anInteger
+	capacity := anInteger! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:01:07'!
+code
+	^code! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:00:44'!
+code: aString
+	code := aString! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:43'!
+detach
+
+	campus := nil.! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:30:27'!
+floor
+	^floor! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:30:22'!
+floor: anInteger
+	floor := anInteger! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:50:58'!
+initialize
+
+	super initialize.
+! !
+
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:03:14'!
+invariant
+	^true! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
+addAcademicUnit: anAcademicUnit
+
+	self attachAcademicUnit: anAcademicUnit.
+	
+	anAcademicUnit attachLecturer: self.! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:13:36'!
+attachAcademicUnit: anAcademicUnit
+
+	units add: anAcademicUnit.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:14'!
+detach
+
+	school ifNil:[^self].
+	
+	school detachLecturer: self.
+	
+	school := nil. ! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:14:23'!
+detachAcademicUnit: anAcademicUnit
+
+	units remove: anAcademicUnit.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 19:59:17'!
+displayStringOrText
+	^self description ! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 14:31:00'!
+initialize
+
+	super initialize.
+	
+	units := Set new.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:08:05'!
+invariant
+	true! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 14:38:26'!
+morph
+
+	^ LecturerMorph newRow model:self ; build ; yourself.
+! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:14:42'!
+removeUnit: anAcademicUnit
+
+	self detachAcademicUnit: anAcademicUnit.
+	
+	anAcademicUnit detachLecturer: self.! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:52:40'!
+school
+	^school! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:01'!
+school: aSchool
+
+	self assert: school isNil.
+	
+	school := aSchool! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:00'!
+units
+	^units! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 20:34:28'!
+code
+	^code! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 20:34:23'!
+code: anInteger
+	code := anInteger! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 12/27/2024 15:41:34'!
+description
+	^description! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 12/27/2024 15:41:27'!
+description: aString
+	description := aString! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 21:18:11'!
+quota
+	^quota! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 21:18:05'!
+quota: anInteger
+	quota := anInteger! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 21:15:03'!
+rank
+	^rank! !
+
+!Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 21:14:58'!
+rank: aString
+	rank := aString! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:28'!
+addLecturer: aLecturer
+
+	aLecturer attachAssignment: self.
+	
+	self attachLecturer: aLecturer.! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:16:56'!
+attachLecturer: aLecturer
+	lecturers add: aLecturer ! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:17:10'!
+detachLecturer: aLecturer
+	lecturers remove: aLecturer ! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:16:38'!
+lecturers
+	^lecturers! !
+
+!Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:35'!
+removeLecturer: aLecturer
+
+	aLecturer detachAssignment: self.
+	
+	self detachLecturer: aLecturer.! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:28:29'!
+addClassroom: aClassroom
+
+	aClassroom attachAssignment: self.
+	
+	self attachClassroom: aClassroom.! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:29:05'!
+attachClassroom: aClassroom
+	rooms add: aClassroom ! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:28:48'!
+detachClassroom: aClassroom
+	rooms remove: aClassroom ! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:30:50'!
+removeClassroom: aClassroom
+
+	aClassroom detachAssignment: self.
+	
+	self detachClassroom: aClassroom.! !
+
+!Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:32:35'!
+rooms
+	^rooms! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
+before: anAssignment
+
+	^ unit module description < anAssignment unit module description 
+	or: [ unit module description = anAssignment unit module description 
+			and: [unit description <= anAssignment unit description ] ]! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:14:03'!
+day
+	^day! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:06'!
+day: anInteger
+	day := anInteger ! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:03:21'!
+dayHebrew
+
+	day ifNil:[^nil].
+	
+	^DayHebrewNames at: day! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:34'!
+detach
+
+	stencil := nil.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:36:50'!
+hour
+	^hour! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:16'!
+hour: anInteger
+	hour := anInteger
+	! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:27:31'!
+initialize
+
+	lecturers := Set new.
+	
+	rooms := Set new.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:03:33'!
+interval
+
+	self assert: hour notNil.
+	
+	^hour to: hour + unit duration! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:38'!
+invariant
+
+	lecturer units includes: unit.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:20'!
+stencil
+	^stencil! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:44'!
+stencil: aStencil
+
+	self assert: stencil isNil.
+	
+	stencil := aStencil.! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:47:12'!
+unit
+	^unit! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:06'!
+unit: anAcademicUnit
+	unit := anAcademicUnit ! !
+
+!Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
+initialize
+
+	"self initialize"
+	
+	DayHebrewNames := { 'א' . 'ב' . 'ג' . 'ד' . 'ה' . 'ו' . 'שבת' asBidi }.! !
+
+!AssignmentRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:15:10'!
+check: anObject
+
+	self subclassResponsibility ! !
+
+!AssignmentRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:10:42'!
+description
+	self subclassResponsibility ! !
+
+!AssignmentRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:31:24'!
+initialize
+
+	violations := Set new.! !
+
+!AssignmentRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:31:18'!
+violations
+	^violations! !
+
+!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 21:37:36'!
+check: aResource
+
+	violations removeAll.
+	
+	self checkOverlap: aResource.! !
+
+!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 23:14:22'!
+checkOverlap: aResource
+
+	aResource assignments 
+		reject:[:eachAssignment | eachAssignment day isNil] :: 
+		groupBy:[:anAssignment | anAssignment day ] :: 
+		do:[:eachDay | 		| dailyAssignments |
+		
+			dailyAssignments := eachDay asOrderedCollection.
+		
+			1 to: dailyAssignments size do:[:i |
+				i+1 to: dailyAssignments size do:[:j |
+					| x y overlap |
+				
+					x := dailyAssignments at:i. 
+					y := dailyAssignments at:j.
+				
+					overlap := x interval intersect: y interval.
+					
+					overlap isEmptySet ifFalse: [ 
+						violations add: (OverlapViolation overlap: (overlap first @ x day corner: overlap last - 1 @ x day) between: x and: y) ] ] ] ]. 
+! !
+
+!ResourceRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:38:37'!
+description
+	^'חריגות בשיבוץ משאבים )מרצים או חדרים('! !
+
+!StencilRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:38:02'!
+check: aStencil
+
+	violations removeAll.
+	
+	self checkFreeDay: aStencil.! !
+
+!StencilRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:29:42'!
+checkFreeDay: aStencil
+
+	| assignedDays |
+
+	assignedDays := 
+		aStencil assignments 
+			remove:[:eachAssignment | eachAssignment day isNil] :: 
+			collect:[:eachAssignment | eachAssignment day ].
+			
+	1 to: 5 :: asSet includesAllOf: assignedDays
+		:: ifTrue:[
+			violations add: (FreeDayViolation new stencil: aStencil ; yourself) ].
+		
+! !
+
+!StencilRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:32:59'!
+description
+	^'חריגות בשיבוץ תבניות'! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:37'!
+addClassroom: aClassroom
+
+	self assert: aClassroom campus isNil.
+	
+	aClassroom campus: self.
+	
+	rooms add: aClassroom.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:13:13'!
+college
+	^college! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:11:57'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:55:32'!
+description
+	^description! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:55:24'!
+description: aString
+	description := aString! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:39'!
+detach
+
+	college := nil.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/25/2024 22:33:35'!
+detachClassroom: aClassroom
+	
+	rooms remove: aClassroom.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:46:00'!
+displayStringOrText
+	^self description ! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:51'!
+firstFloor
+	^firstFloor! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:31'!
+firstFloor: anInteger
+	firstFloor := anInteger! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:04:52'!
+floors
+
+	^firstFloor to: lastFloor :: collect:[:i | i] :: reverse! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:28:12'!
+initialize
+
+	rooms := Set new.
+	
+	college := nil.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:17'!
+invariant
+
+	rooms do: [:aRoom | aRoom invariant ].
+
+	rooms do: [:aRoom | self assert: aRoom campus == self ].
+	! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:56'!
+lastFloor
+	^lastFloor! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:27:40'!
+lastFloor: anInteger
+	lastFloor := anInteger! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:25:26'!
+removeClassroom: aClassroom
+	
+	self assert: aClassroom campus == self.
+	
+	aClassroom detach.
+	
+	self detachClassroom: aClassroom.! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:32:52'!
+roomAt: aString
+
+	^rooms detect:[:eachRoom | eachRoom code = aString ] ifFound:[:aRoom | aRoom] ifNone:[nil]! !
+
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:05:38'!
+rooms
+	^rooms! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:01:05'!
+addLecturer: aLecturer
+
+	self halt.
+	
+	self assert: aLecturer school isNil.
+	
+	self attachLecturer: aLecturer. 
+	
+	aLecturer school: self.! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:50:34'!
+attachLecturer: aLecturer
+
+	lecturers add: aLecturer ! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:02'!
+college 
+	^college! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:48:40'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege.! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:26'!
+description
+	^description ! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:37'!
+description: aString
+	description := aString! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:41'!
+detach
+
+	college := nil! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:51:03'!
+detachLecturer: aLecturer
+
+	lecturers remove: aLecturer ! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:48'!
+displayStringOrText
+	^description! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:57'!
+initialize
+	lecturers := Set new! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:13:55'!
+invariant
+
+	lecturers do:[:eachTrack | eachTrack invariant ].
+
+	lecturers do:[:eachTrack | eachTrack school == self ].
+	! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:12:02'!
+lecturerAt: anInteger
+
+		^lecturers detect:[:eachLecturer | eachLecturer code = anInteger] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:23:12'!
+lecturers
+	^lecturers! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:54:47'!
+removeLecturer: aLecturer
+
+	self assert: aLecturer school == self.
+	
+	self detachLecturer: aLecturer.
+	
+	aLecturer detach.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:28'!
+addAssignment: anAssignment
+
+	self assert: anAssignment stencil isNil.
+	
+	self attachAssignment: anAssignment.
+	
+	anAssignment stencil: self.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 18:18:36'!
+addNewStencil: aSemester
+
+	aSemester modules do:[:eachModule | 
+		
+			eachModule units do:[:eachUnit | | anAssignment |
+		
+			anAssignment := Assignment new.
+		
+			anAssignment unit: eachUnit.
+			
+		self addAssignment: anAssignment. ] ].
+
+	aSemester addStencil: self
+! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:22:50'!
+assignments
+	^assignments! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:40'!
+attachAssignment: anAssignment
+
+	assignments add: anAssignment ! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:48'!
+attachSemester: aSemester
+
+	semester := aSemester ! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 21:59:25'!
+check
+
+	| aResourceRule |
+	
+	aResourceRule := ResourceRule new.
+	
+	aResourceRule check: self.
+	
+	^aResourceRule violations.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:25'!
+description
+	^description! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:34'!
+description: aString
+	description := aString! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:56:10'!
+detach
+
+	semester := nil.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:24'!
+detachAssignment: anAssignment
+
+	self assert: anAssignment stencil == self.
+	
+	assignments remove: anAssignment
+	! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:32'!
+initialize
+
+	assignments := Set new! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:07:18'!
+invariant
+
+	assignments do: [:anAssignment | anAssignment invariant ].
+
+	assignments do: [:anAssignment | self assert: anAssignment stencil == self ].
+	
+	assignments do: [:anAssignment | self assert: anAssignment unit module semesters includes: semester  ].
+	! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:46:47'!
+removeAssignment: anAssignment
+
+	self assert: anAssignment stencil == self.
+	
+	anAssignment detach.
+	
+	self detachAssignment: anAssignment
+	! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:57'!
+semester
+	^semester! !
+
+!FreeDayViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:26:32'!
+stencil: aStencil
+	stencil := aStencil! !
+
+!OverlapViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:09:13'!
+assignments: aSet 
+	assignments := aSet ! !
+
+!OverlapViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 22:00:04'!
+overlap
+	^overlap! !
+
+!OverlapViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:38:32'!
+overlap: anInterval
+	overlap := anInterval! !
+
+!OverlapViolation class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 20:41:11'!
+overlap: aRectangle between: anAssignment and: anotherAssignment
+
+	| anOverlapViolation |
+	
+	anOverlapViolation := self new.
+	
+	anOverlapViolation assignments: (Set with: anAssignment with: anotherAssignment).
+	
+	anOverlapViolation overlap: aRectangle.
+	
+	^anOverlapViolation ! !
+
+!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:52:08'!
+aboutToGrabClassroom: aClassroomMorph
+
+	| aDuplicateMorph |
+	
+	aClassroomMorph color: Color transparent.
+	
+	aDuplicateMorph := aClassroomMorph duplicate room: aClassroomMorph room ; assignment: aClassroomMorph assignment ; expand ; yourself.
+	
+	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
+	
+	^aDuplicateMorph ! !
+
+!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:04:55'!
+allowsSubmorphDrag
+	^row ~= 1 ! !
+
+!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:24:09'!
+minimumExtent
+	^`0@78`! !
+
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:20:00'!
+aboutToGrabAssignment: anAssignmentMorph
+
+	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
+	
+	anAssignmentMorph model unassign.
+	
+	^anAssignmentMorph ! !
+
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:24:30'!
+aboutToGrabLecturer: aLecturerMorph
+
+	| aDuplicateMorph |
+	
+	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; yourself.
+
+	aDuplicateMorph color: Color transparent.
+	
+	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
+		
+	^aDuplicateMorph 
+! !
+
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/16/2025 22:28:39'!
+allowsSubmorphDrag
+	^row ~= 1 ! !
+
+!LecturerTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 20:09:14'!
+minimumExtent
+	^`0@78`! !
+
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/21/2025 09:22:49'!
+assignmentInRow
+
+	| aColumn |
+	
+	aColumn := self owner owner submorphs at: 1 :: submorphs.
+	
+	^aColumn at: aColumn size - row + 1 :: submorphs at:1 :: model  ! !
+
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:27:25'!
+minimumExtent
+	^`0@78`! !
+
+!AssignmentTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:35:21'!
+wantsDroppedMorph: aMorph event: evt
+	
+	^ aMorph isKindOf: BrocadeTableCellItem
+! !
+
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/17/2025 20:08:44'!
+aboutToGrabAssignment: anAssignmentMorph
+
+	| aDuplicateMorph |
+
+	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
+	
+	aDuplicateMorph := anAssignmentMorph duplicate model: anAssignmentMorph model ; expand ; yourself.
+	
+	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
+	
+	^aDuplicateMorph ! !
+
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:20:15'!
+aboutToGrabClassroom: aClassroomMorph
+
+	self assert: (aClassroomMorph isKindOf: ClassroomMorph).
+
+	aClassroomMorph room ifNil:[^nil].
+	
+	aClassroomMorph unassign: self assignmentInRow.
+	
+	^aClassroomMorph ! !
+
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:05:03'!
+aboutToGrabLecturer: aLecturerMorph
+
+	self assert: (aLecturerMorph isKindOf: LecturerMorph).
+
+	aLecturerMorph lecturer ifNil:[^nil].
+	
+	aLecturerMorph unassign: self assignmentInRow.
+	
+	^aLecturerMorph ! !
+
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/16/2025 22:40:19'!
+allowsMorphDrop
+	^row ~= 1 ! !
+
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/11/2025 21:59:04'!
+allowsSubmorphDrag
+	^row ~= 1 ! !
+
+!WeeklyTimeTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/20/2025 23:13:56'!
+aboutToGrabAssignment: anAssignmentMorph
+
+	self assert: (anAssignmentMorph isKindOf: AssignmentMorph).
+
+	anAssignmentMorph unassign.
+	
+	^anAssignmentMorph ! !
+
+!WeeklyTimeTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/11/2025 21:52:54'!
+acceptDroppingMorph: aMorph event: evt
+	
+	aMorph morphExtent: self morphExtent.
+	
+	self addMorph: aMorph proportionalWidth: 1.0.! !
+
+!WeeklyTimeTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/17/2025 20:32:39'!
+allowsMorphDrop
+	^column ~= 7 and: 	[row ~= 1] ! !
+
+!WeeklyTimeTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/11/2025 21:52:32'!
+allowsSubmorphDrag
+	^row ~= 1 and:[column ~= 7]! !
+
+!WeeklyTimeTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/17/2025 20:32:31'!
+wantsDroppedMorph: aMorph event: evt
+	
+	^aMorph isKindOf: AssignmentMorph 
+! !
+
+!ResourceTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:24:57'!
+allowsMorphDrop
+	^false! !
+
+!ResourceTimeTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:25:11'!
+allowsSubmorphDrag
+	^false! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:26'!
+assign: anAssignment
+
+	self assert: anAssignment notNil ; assert: room notNil.
+	
+	anAssignment addClassroom: room.
+	
+	anAssignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
+	
+	room campus college changed: #assignmentsTable.! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:05:46'!
+assignment
+	^assignment! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:29:59'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:21:33'!
+build
+
+	| aLabelMorph aString |
+	
+	self removeAllMorphs.
+	
+	aString := room ifNil:['לא משובץ'] ifNotNil:['{1}' format:{room code}].
+	
+	aLabelMorph := NarrowLabelMorph contents: aString asBidi.
+	
+	aLabelMorph morphWidth: aLabelMorph measureContents x.
+	
+	aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
+
+	aLabelMorph layoutSpec proportionalHeight: 1.0.	 
+	
+	self addMorph: aLabelMorph.
+	
+	self axisEdgeWeight: 0.0.
+
+	room ifNil:[
+		aLabelMorph color: (Color fromHexString:'#cccccc')].
+	
+	self color: notSelectedColor.! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:08:07'!
+drawOn: aCanvas
+
+	| aForm |
+	
+	super drawOn: aCanvas.
+	
+	aForm := ClassroomImage magnifyBy: self morphHeight / 2 / ClassroomImage height.
+	
+	aCanvas image: aForm at: self morphExtent - aForm extent / 2 + (0@5).
+
+	
+	! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:54:08'!
+expand
+
+	| label |
+	
+	label := self submorphs first.
+	
+	label  contents: ('{1} {2}' format:{ room campus description . room code } :: asBidi).
+	label morphWidth: label measureContents x.
+
+! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:24:48'!
+initialize
+
+	super initialize.
+	
+	notSelectedColor := Color fromHexString: '#fcfcdc' :: alpha:0.3	.
+	
+	selectedColor := notSelectedColor darker.
+! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:05:41'!
+room
+	^room! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:30:07'!
+room: aClassroom
+	room := aClassroom ! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:57:43'!
+unassign
+
+	self assert: room notNil; assert: assignment notNil.
+	
+	assignment removeClassroom: room.
+
+	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
+	
+	assignment := nil.
+	
+! !
+
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:46'!
+unassign: anAssignment
+
+	self assert: room notNil.
+	
+	anAssignment removeClassroom: room.
+
+	anAssignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
+	
+! !
+
+!ClassroomMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/21/2025 22:38:54'!
+aboutToBeGrabbedBy: aHand
+
+	^owner aboutToGrabClassroom: self! !
+
+!ClassroomMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:26:03'!
+justDroppedInto: newOwnerMorph event: anEvent 
+
+	newOwnerMorph isWorldMorph 
+		ifTrue:[
+			room campus college changed: #assignmentsTable.
+			self addAlarm: #delete after: 0. ].
+	
+	(newOwnerMorph isKindOf: AssignmentTableCell) and:[newOwnerMorph column = 1] :: 
+		ifTrue:[  
+			self assign: newOwnerMorph assignmentInRow]
+		ifFalse:[
+			self addAlarm: #delete after: 0.]! !
+
+!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:20:12'!
+initialize
+
+	"self initialize"
+
+	| aFileEntry |
+		
+	aFileEntry := '/home/davidf/src/Cuis-Smalltalk-Darwin/classroom.png' asFileEntry.
+
+	ClassroomImage := ImageReadWriter formFromFileEntry: aFileEntry.
+! !
+
+!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:25:31'!
+new: aClassroom
+
+	| aClassroomMorph |
+	
+	aClassroomMorph := self newColumn.
+	
+	aClassroomMorph room: aClassroom; build.
+
+	aClassroom notNil ifTrue:[aClassroomMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
+	
+	^aClassroomMorph ! !
+
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/22/2025 20:13:04'!
+aboutToBeGrabbedBy: aHand
+
+	^owner aboutToGrabLecturer: self! !
+
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:23:25'!
+justDroppedInto: newOwnerMorph event: anEvent 
+
+	newOwnerMorph isWorldMorph 
+		ifTrue:[
+			self addAlarm: #delete after: 0.
+			lecturer school college changed: #assignmentsTable. ].
+	
+	newOwnerMorph isKindOf: AssignmentTableCell 	:: 
+		ifTrue:[  
+			self assign: newOwnerMorph assignmentInRow]
+		ifFalse:[
+			self addAlarm: #delete after: 0.]
+		! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:01:36'!
+assign: anAssignment
+
+	self assert: anAssignment notNil ; assert: lecturer notNil.
+	
+	anAssignment addLecturer: lecturer.
+	
+	lecturer changed: #assignmentsTable.
+	
+	lecturer school college changed: #assignmentsTable.
+	
+! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:42:41'!
+assignment
+	^assignment! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:44:30'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:17:32'!
+build
+
+	| aLabelMorph |
+	
+	self removeAllMorphs.
+	
+	aLabelMorph := NarrowLabelMorph contents: (lecturer ifNil:['לא משובץ' asBidi] ifNotNil:[lecturer description]).
+	
+	aLabelMorph morphExtent: aLabelMorph measureContents.
+	
+	aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
+	
+	lecturer ifNil:[
+		aLabelMorph color: (Color fromHexString:'#cccccc')].
+		
+	self color: notSelectedColor.
+	
+	self addMorph: aLabelMorph.
+	
+	self axisEdgeWeight: 0.0.
+	
+	
+! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:26:27'!
+drawOn: aCanvas
+
+	| aForm |
+	
+	super drawOn: aCanvas.
+	
+	self morphHeight < 64
+		ifTrue:[ | h |
+			h := self morphHeight * 0.8.
+			aForm := LecturerImage magnifyTo: h @ h.
+			aCanvas image: aForm at: 5@ (self morphHeight - h) / 2.
+		]
+		ifFalse:[
+			aForm := LecturerImage magnifyBy: self morphHeight / 3 / LecturerImage height.
+			aCanvas image: aForm at: self morphExtent - aForm extent / 2 + (0 @ 5).
+		]
+	
+	! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 22:20:37'!
+expand
+
+	self color: (Color fromHexString: '#c7dbff' :: alpha:0.25)! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 21:37:11'!
+initialize
+
+	super initialize.
+
+	notSelectedColor := Color fromHexString: '#fcfcdc' :: alpha:0.3	.
+	
+	selectedColor := notSelectedColor darker.! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:26:37'!
+lecturer
+	^lecturer! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:44:39'!
+lecturer: aLecturer
+	lecturer := aLecturer! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:44:27'!
+unassign
+
+	self assert: lecturer notNil; assert: assignment notNil.
+	
+	assignment removeLecturer: lecturer.
+	
+	assignment := nil.
+	
+	lecturer changed: #assignmentsTable.
+
+! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:04:47'!
+unassign: anAssignment
+
+	self assert: lecturer notNil; assert: anAssignment notNil.
+	
+	anAssignment removeLecturer: lecturer.
+	
+	lecturer changed: #assignmentsTable.
+
+! !
+
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 21:44:51'!
+initialize
+
+	"self initialize"
+
+	| aFileEntry |
+		
+	aFileEntry := '/home/davidf/src/Cuis-Smalltalk-Darwin/mortar.png' asFileEntry.
+
+	LecturerImage := ImageReadWriter formFromFileEntry: aFileEntry.
+! !
+
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:14:58'!
+new: aLecturer
+
+	| aLecturerMorph |
+	
+	aLecturerMorph := self newColumn.
+	
+	aLecturerMorph lecturer: aLecturer.
+	
+	aLecturerMorph build.
+	
+	aLecturer notNil ifTrue:[aLecturerMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
+	
+	^aLecturerMorph! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 21:53:07'!
+assignDay: aDayInteger hour: anHourInteger
+
+	| college interval hh tt |
+	
+	college := model unit module college.
+	
+	interval :=  college availableHoursForDay: aDayInteger.
+	
+	model unit duration > interval size ifTrue:[^self]. "don't assign if the duration cannot fit in the availabe hours for the given day"
+	
+	hh := anHourInteger max: interval first.
+	
+	self assert: hh >= interval first.
+	
+	hh := anHourInteger min: interval last.
+	
+	self assert: hh <= interval last.
+	
+	tt := hh + model unit duration - interval last max: 0.
+	
+	hh := hh - tt.
+		
+	model day: aDayInteger ; hour: hh.
+	model unit module college changed: #assignmentsTable ! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:17:01'!
+build
+
+	| aLabelMorph |
+	
+	self removeAllMorphs.
+	
+	model 
+		ifNotNil:[ 
+
+			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
+	
+			self addMorph: aLabelMorph ].
+	
+	self updateColor.
+
+	self axisEdgeWeight: 0.0! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:02'!
+collision: aBoolean
+	collision := aBoolean! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:42:53'!
+expand
+
+	| code label |
+	
+	model ifNil:[^self].
+	
+	code := '{1}' format:{model unit module code} :: asBidi.
+	
+	label := self submorphs first.
+	
+	label  contents: ('{1} {2} {3}' format:{ code . model unit module description . model unit description }).
+	label morphWidth: label measureContents x.
+
+! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:51:27'!
+index
+	^index! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:47:04'!
+index: anInteger
+	index := anInteger! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:23:17'!
+initialize
+
+	super initialize.
+	
+	index := 0.
+	
+	notSelectedColor := Color fromHexString: '#fcfcdc' :: alpha:0.3	..
+	
+	selectedColor := notSelectedColor darker.
+	
+	collision := false.
+	
+	enableGrabbing := true.
+	
+	borderColor := Color white.
+	
+	borderWidth := 1.
+	
+	self color: Color transparent.! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:39:17'!
+model
+	^model! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 20:29:31'!
+model: anAssignment
+	model := anAssignment! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:24:10'!
+unassign
+
+	model day: nil ;  hour: nil.	
+
+! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:24:02'!
+updateColor
+
+	notSelectedColor := 
+		model
+			ifNil:[Color transparent]
+			ifNotNil:[Color fromHexString: '#fcfcdc' :: alpha:0.3	].
+
+	selectedColor := notSelectedColor darker.
+
+	color := notSelectedColor.
+	
+	self redrawNeeded.
+! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 23:02:23'!
+widget
+	| aMorph |
+	
+	aMorph := owner.
+	
+	[aMorph isNil or:[aMorph isKindOf: PluggableTableMorph ] ]
+		whileFalse:[
+			aMorph := aMorph owner
+		].
+	
+	^aMorph! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 21:50:25'!
+widget: morph
+
+	| aMorph |
+	
+	aMorph := morph.
+	
+	[aMorph isNil or:[aMorph isKindOf: PluggableTableMorph ] ]
+		whileFalse:[
+			aMorph := aMorph owner
+		].
+	
+	^aMorph! !
+
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 1/27/2025 19:19:11'!
+aboutToBeGrabbedBy: aHand
+		
+	index = 0 ifFalse:[^nil].
+	
+	model ifNil:[^nil].
+	
+	^owner aboutToGrabAssignment: self! !
+
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:50:34'!
+justDroppedInto: newOwnerMorph event: anEvent 
+
+	self assert: index = 0.
+	
+	newOwnerMorph isWorldMorph 
+		ifTrue:[
+			anEvent formerOwner isKindOf: WeeklyTimeTableCell
+				::ifTrue:[ 
+					model unit module college changed: #assignmentsTable ].
+			self addAlarm: #delete after: 0. ].
+	
+	newOwnerMorph isKindOf: WeeklyTimeTableCell :: and:[self widget: newOwnerMorph :: model stencil = model stencil ] 
+		:: ifTrue:[ 
+			self assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6]
+		ifFalse:[
+			self addAlarm: #delete after: 0.]! !
+
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:25:33'!
+fromTuple: aTuple
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := self newColumn.
+
+	aTuple 
+		ifNotNil:[
+			anAssignmentMorph index: (aTuple at:1); model: (aTuple at:2); collision: (aTuple at:3).
+		].
+	
+	anAssignmentMorph build ; expand.
+
+			
+	^anAssignmentMorph ! !
+
+!AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:28:58'!
+new: anAssignment
+
+	| anAssignmentMorph |
+	
+	anAssignmentMorph := self newColumn.
+	
+	anAssignmentMorph index: 0.
+	anAssignmentMorph model: anAssignment.
+	anAssignmentMorph collision: false.
+	
+	anAssignmentMorph build.
+
+	anAssignment notNil ifTrue:[anAssignmentMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
+	
+	^anAssignmentMorph ! !
+
+!StencilLabel class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 20:11:03'!
+contents: anInteger
+
+	| aLabel |			
+
+	aLabel := anInteger 
+		ifNil:[ 
+			NarrowLabelMorph contents: 'לא משובץ' :: color: (Color fromHexString:'#cccccc'); yourself ] 
+		ifNotNil:[
+			NarrowLabelMorph contents:('{1}' format:{anInteger})].
+	^aLabel ! !
+
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:10:51'!
+buildMorphicWindow
+
+	| navigationPanel roomsTable |
+
+	navigationPanel := self buildNavigationPanel.
+	
+	roomsTable := self buildRoomsTable.
+	
+	self changed: #roomsTable.
+	
+	self layoutMorph addMorph: (navigationPanel -1.0p | 0.2p) </> (roomsTable -1.0p | 1.0p).
+	! !
+
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/31/2025 16:28:45'!
+buildNavigationPanel
+
+	| floors campuses |
+
+	campuses := BidiPluggableListMorph withModel: self listGetter: #campuses indexGetter: #campusIndex indexSetter: #campusIndex: .
+	
+	floors := BidiPluggableListMorphOfMany withModel: self listGetter: #floorNames primarySelectionGetter: #floorIndex primarySelectionSetter: #floorIndex: listSelectionGetter: #floorSelectionAt: listSelectionSetter: #floorSelectionAt:put:.
+	
+	^ (floors - (1/2)p | 1p) <+> (campuses - (1/2)p | 1p) .
+	
+! !
+
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/25/2025 22:44:34'!
+buildRoomsTable
+
+	| roomsTable |
+
+	roomsTable := PluggableTableMorph new.
+	
+	roomsTable model: self ; table: #roomsTable ; rightToLeft: true ; headerRow: true.
+
+	roomsTable selectRowMessage: #selectClassroom:.
+	
+	roomsTable cellFactory: ClassroomTableCell.
+
+	roomsTable menuFactory: BidiMenuMorph.
+
+	roomsTable menuNshortcutsKey: #menuSpec.
+	
+	roomsTable columnFactory: { 
+		2 -> (PluggableMorphFactory new formatter:[:aClassroom | aClassroom]; morphClass: ClassroomMorph ; factoryMessage: #new: yourself) } asDictionary.
+
+	"
+	roomsTable menuNshortcutsKey: #moduleMenuSpec.
+	
+	roomsTable selectRowMessage: #selectUnit:.
+	
+	roomsTable menuFactory: BidiMenuMorph.
+	"
+	^roomsTable	
+! !
+
+!CampusBrowser methodsFor: 'GUI building' stamp: 'DF 1/31/2025 16:36:02'!
+duplicateWindow
+
+	| aBrowser |
+	
+	aBrowser := self class open: model label: 'קמפוסים וחדרים'.
+	
+	aBrowser campusIndex: campusIndex.
+	
+	aBrowser floorIndex: floorIndex.
+	
+	selectedFloors do:[:index |
+		aBrowser floorSelectionAt:index put: true].
+
+	aBrowser selectClassroom: selectedRoomIndex.
+	
+	model changed: #campuses; changed: #floors.! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:53:02'!
+campusIndex
+
+	^campusIndex ! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:13:31'!
+campusIndex: anInteger
+
+	campusIndex := anInteger.
+	
+	self changed: #floorNames! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:52:34'!
+campuses
+	^model campuses asOrderedCollection sort:[:x :y | x description <= y description ]! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:57:31'!
+floorIndex
+
+	^floorIndex ! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 16:57:41'!
+floorIndex: anInteger
+
+	floorIndex := anInteger.! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 21:42:36'!
+floorNames
+
+	^self floors collect:[:eachFloor | ('{1}'  format:{eachFloor}) ].! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:14:55'!
+floorSelectionAt: anIndex
+
+	^selectedFloors includes: anIndex! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:15:10'!
+floorSelectionAt:anIndex put: aBoolean
+
+	aBoolean
+		ifTrue:[
+			selectedFloors add: anIndex]
+		ifFalse:[
+			selectedFloors remove: anIndex ].
+		
+	self changed: #roomsTable
+		
+		! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:17:46'!
+floors
+
+	| campus |
+	
+	campusIndex = 0 ifTrue:[^{}].
+	
+	campus := self campuses at: campusIndex.
+	
+	^ campus floors! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:40:30'!
+initialize
+
+	super initialize.
+	
+	campusIndex := 0.
+	
+	floorIndex := 0.
+	
+	selectedFloors := Set new.
+	
+	selectedRoomIndex := 0.! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:37:04'!
+menuSpec
+
+^ #(
+		#(0 		'חדר'						false)
+		#(10		'מערכת שעות' 						$g 	window 			openTimeTable 				)
+		#(20		'ערוך פרטי חדר ...' 						$g 	window 			openEditDialog 				)
+		#(30		'-----' 		)
+		#(40		'הסר חדר' 						$c 	window 			removeRoom )
+	).! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:42:37'!
+openTimeTable
+
+	| aRoom  |
+	
+	selectedRoomIndex <= 1 ifTrue:[^self].
+	
+	aRoom := 	self rooms at: selectedRoomIndex - 1.
+	
+	ResourceTimeTable open: aRoom label: ('מערכת שעות לחדר: {1} {2}' format:{ aRoom campus description . aRoom code} :: asBidi writingDirection:#rightToLeft ) .
+	
+	aRoom changed: nil
+	
+	! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 23:03:12'!
+rooms
+
+	| campus campusFloors floors |
+	
+	campusIndex = 0 ifTrue:[^{}].
+	
+	campus := self campuses at: campusIndex.
+	
+	campusFloors := campus floors.
+	
+	floors := Set new.
+	
+	selectedFloors do:[:eachIndex |
+		floors add: (campusFloors at: eachIndex) ].
+	
+	^campus rooms select:[:eachRoom | floors includes: eachRoom floor ] :: asOrderedCollection sort:[:x :y | 
+		x floor > y floor or:[x floor = y floor and:[x code <= y code] ] ].
+	
+	
+	
+	! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:24:20'!
+roomsTable
+
+	| table |
+	
+	table := OrderedCollection new.
+	
+	table add: { 'קיבולת' . 'קוד' . 'קומה' . 'קמפוס' }.
+	
+	self rooms do:[:eachRoom |
+		table add: {  
+			{ '{1}' format:{eachRoom capacity}  } . 
+			{ eachRoom } . 
+			{ '{1}' format: { eachRoom floor }  } .
+			{ eachRoom campus description  } } ] .
+	
+	^table
+! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:40:14'!
+selectClassroom: anIndex
+
+	selectedRoomIndex := anIndex! !
+
+!CampusBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 17:18:52'!
+update: aSymbol
+
+	self changed: aSymbol! !
+
+!CampusBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 19:46:04'!
+addCampusDialog: model
+
+	| mold position aDialog aCampus |
+	
+	aCampus := Campus new.
+	
+	mold := BidiMold new.
+	
+	mold rightToLeft: true.
+	
+	(mold stringField)
+		label: 'שם הקמפוס';
+		on: #description of: aCampus;
+		addCondition:[:input | model campusAt: input :: isNil ]  
+		labeled: 'קיים קמפוס בשם זה.' ;
+		beRequired.
+	(mold integerField)
+		label: 'קומה עליונה';
+		on: #lastFloor of: aCampus;
+		beRequired.
+	(mold integerField)
+		label: 'קומה תחתונה';
+		on: #firstFloor of: aCampus;
+		addCondition:[:input :value | | lastFloor |
+			lastFloor := mold fields at: 2 :: value.
+			value <= lastFloor
+			]  
+		labeled: 'קומה תחתונה גדולה מקומה עליונה.' ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'קמפוס חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addCampus: to: model with: aCampus.
+	
+	mold when: #edited send: #changed: to: model with: #campuses.
+	
+! !
+
+!CampusBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 17:03:42'!
+addClassroomDialog: model
+
+	| aClassroom mold campuses aDialog position |
+
+	campuses := ListModel with: (model campuses asOrderedCollection sort:[:x :y | x description <= y description]).
+	
+	aClassroom := Classroom new.
+	
+	mold := BidiMold new. 
+	
+	mold rightToLeft: true.
+
+	(mold selectField)
+		label: 'קמפוס';
+		on: #listIndex of: campuses;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+	(mold stringField)
+		label: 'מזהה החדר';
+		on: #code of: aClassroom;
+		addCondition:[:input | | campus |
+			campus := mold fields at: 1 :: value. 
+			campus roomAt: input :: isNil ]  
+		labeled: 'קיים חדר עם מזהה זה.';
+		beRequired.
+	(mold integerField)
+		label: 'קומה';
+		on: #floor of: aClassroom;
+		addCondition:[:input :value | | campus |
+			campus := mold fields at: 1 :: value. 
+			(campus firstFloor <= value) and:[value <= campus lastFloor] ] 
+		labeled: 'לא קיימת קומה כזו בקמפוס.';
+		beRequired.
+	(mold integerField)
+		label: 'קיבולת';
+		on: #capacity of: aClassroom;
+		addCondition:[:input :value | 
+			value > 0 ] 
+		labeled: 'כיתה חייבת להכיל לפחות סטודנט אחד.';
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'חדר חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addClassroom: to: (mold fields at:1 :: value) with: aClassroom.
+
+	mold when: #edited send: #changed: to: model with: #roomsTable.
+! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:22:50'!
+buildMorphicWindow
+
+	| timeTable |
+
+	timeTable := self buildYearlyTimeTable.
+	
+	self layoutMorph addMorph: (timeTable -1.0p |1.0p).
+! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:12'!
+buildSemesterTimeTable: aSymbolSemesterMessage
+
+	| semesterTimeTable semesterColumnFactory |
+
+	semesterTimeTable := PluggableTableMorph new.
+	
+	semesterTimeTable model: self ; table: aSymbolSemesterMessage ; rightToLeft: true ; headerRow: true.
+
+	semesterTimeTable cellFactory: ResourceTimeTableCell.
+	
+	semesterColumnFactory := Dictionary new.
+	
+	1 to:6 do:[:eachDay |
+		semesterColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
+	
+	semesterColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} :: asBidi ] ; morphClass: OffsetLabelMorph ; yourself).
+	
+	semesterTimeTable columnFactory: semesterColumnFactory.
+	
+	^semesterTimeTable 
+! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:29:06'!
+buildYearlyTimeTable
+
+	| aTabbedGroup s1 s2 s3 |
+	
+	s1 := self buildSemesterTimeTable: #semesterTimeTable1.
+	s2 := self buildSemesterTimeTable: #semesterTimeTable2.
+	s3 := self buildSemesterTimeTable: #semesterTimeTable3.
+	
+	aTabbedGroup := TabbedGroup newColumn.
+
+	aTabbedGroup build: { 'סמסטר קיץ' reverse -> s3 . 'סמסטר ב' reverse -> s2 . 'סמסטר א' reverse -> s1 }.
+
+	aTabbedGroup color:Color white. 
+	
+	aTabbedGroup select:3.
+
+	^aTabbedGroup ! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:23:17'!
+semesterTimeTable: aStringSemesterName
+
+	|  table |
+	
+	table := OrderedCollection new.
+	
+	table add: { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' . '' }.
+	
+	8 to:23 do:[:i | | aRow |
+		
+		aRow := OrderedCollection new.
+		
+		1 to:6 do:[:j |
+			aRow add: OrderedCollection new ].
+		
+		aRow add: {i }.
+		
+		table add: aRow ].	
+	
+	model assignments select:[:eachAssignment | eachAssignment stencil semester description = aStringSemesterName ] :: do:[:eachAssignment | 
+	
+		eachAssignment day notNil and: [eachAssignment hour notNil] ::
+			ifTrue:[ | cell | 
+				0 to: eachAssignment unit duration -1 do:[:index | 
+				
+					cell := table at: 	eachAssignment hour + index - 6 :: at: 7 - eachAssignment day.
+						
+					cell add: { index . eachAssignment . cell notEmpty  } ] ] ].
+	
+	^table
+	! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:36'!
+semesterTimeTable1
+
+	^self semesterTimeTable: 'סמסטר א'! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:43'!
+semesterTimeTable2
+
+	^self semesterTimeTable: 'סמסטר ב'! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:24:50'!
+semesterTimeTable3
+
+	^self semesterTimeTable: 'סמסטר קיץ'! !
+
+!ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:29:36'!
+update: aSymbol
+
+	self changed: aSymbol! !
+
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/24/2025 21:58:58'!
+buildAssignmentsTable
+
+	| assignmentsTable  |
+	
+	assignmentsTable := PluggableTableMorph new.
+	
+	assignmentsTable  model: self ; table: #assignments ; rightToLeft: true ; headerRow: true.
+	
+	assignmentsTable menuNshortcutsKey: #assignmentMenuSpec.
+	
+	assignmentsTable selectRowMessage: #selectAssignment:.
+	
+	assignmentsTable menuFactory: BidiMenuMorph.
+	
+	assignmentsTable columnFactory: { 
+		1 -> (PluggableMorphFactory new formatter:[:aClassroom |  aClassroom campus description , ' ' , aClassroom code  ] ; yourself) .
+		5 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+	} asDictionary.
+		
+	^assignmentsTable 	
+! !
+
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 23:27:50'!
+buildDetailsPanel
+
+	| detailsPane aPane rankIndex |
+	
+	rankIndex := model school college lecturerRanks find: model rank.
+	
+	mold rightToLeft: true.
+	
+	mold fields removeAll.
+	
+	(mold integerField)
+		label: 'מזהה המרצה';
+		on: #code of: model;
+		customize:[:widget :input :example | 
+			input color: Color lightGray; disableEditing 
+			];
+		beRequired.
+	(mold stringField)
+		label: 'שם המרצה';
+		on: #description of: model;
+		beRequired.
+	(mold fields add: BidiSelectField new)
+		rightToLeft: true;
+		label: 'מעמד מרצה';
+		on: #listIndex of: (ListModel with: model school college lecturerRanks :: listIndex: rankIndex) ;
+		callback:[:value | model rank: (model school college lecturerRanks at: value) ];
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.		
+	(mold integerField)
+		label: 'שעות למשרה';
+		on: #quota of: model;
+		addCondition:[:input :value | value > 0 ]
+		labeled: 'תן לנו לפחות שעה אחת.' ;
+		beRequired.
+
+	mold when: #edited send: #changed: to: model with: #assignments.
+
+	mold when: #edited send: #changed: to: model school college with: #lecturersTable.
+
+	aPane := mold newPane.
+	
+	aPane buttonLabel:'עדכן פרטים' asBidi.
+	
+	detailsPane := LayoutMorph newColumn.
+	
+	detailsPane  axisEdgeWeight: #columnTop.
+	
+	detailsPane addMorph: aPane buildMorphicWindow.
+	
+	^detailsPane! !
+
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:21:59'!
+buildMorphicWindow
+
+	| assignmentsTable detailsPanel dialog |
+	
+	detailsPanel := self buildDetailsPanel.
+	
+	assignmentsTable := self buildAssignmentsTable.
+	
+	self changed: #assignments.
+	
+	dialog := (assignmentsTable - 0.7p) <+> (detailsPanel - 0.3p).
+	
+	self addMorph: dialog.
+	
+! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:41'!
+assignments
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'חדר' . 'שעה' . 'יום' . 'סוג' . 'שם קורס' . 'קוד קורס' }.
+
+	model assignments do:[:eachAssignment | 
+		
+		table add: {
+			eachAssignment rooms . 
+			{ eachAssignment hour } . 
+			{ eachAssignment dayHebrew } . 
+			{ eachAssignment unit }  .
+			{ eachAssignment unit module  } .
+			{ eachAssignment unit module code } } ] .
+	
+	^table
+! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:11:11'!
+initialize
+
+	super initialize.
+	
+	mold := BidiMold new.! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:46:05'!
+update: aSymbol
+
+	self changed: #assignments
+! !
+
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/18/2025 13:45:52'!
+updateLecturerDetails
+
+	| description rank quota |
+
+	mold validate.
+	mold isValid ifFalse:[^self].
+	
+	mold save.
+	
+	description := mold fields at:2 :: value.
+	
+	rank := mold fields at:3 :: value.
+	
+	quota := mold fields at:4 :: value.
+	
+	model description: description; rank: rank; quota: quota.
+	
+	model changed: #assignments.
+	
+	model school college changed: #assignmentsTable.! !
+
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/16/2025 21:59:59'!
+lecturers
+
+	| lecturers ranks schools |
+	
+	lecturers := Set new.
+	
+	schools := self selectedSchools.
+	
+	ranks := self selectedRanks.
+
+	schools do:[:eachSchool |
+		lecturers addAll:
+			(eachSchool lecturers select:[:eachLecturer | ranks includes: eachLecturer rank ]) ].
+		
+	^lecturers asOrderedCollection sort:[:x :y | x description <= y description ]
+			! !
+
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/21/2025 08:58:54'!
+lecturersTable
+
+	| table |
+	
+	table := OrderedCollection new.
+	
+	table add: {'שעות משובצות' . 'שעות למשרה'  . 'שם' . 'קוד' . 'דרגה' . 'בית ספר' }.
+	
+	self lecturers  :: do:[:eachLecturer |
+		table add: {  
+			{ eachLecturer assignments sum:[:eachAssignment | eachAssignment unit duration] ifEmpty:[0] } .  
+			{ eachLecturer quota } .  
+			{ eachLecturer } . 
+			{ eachLecturer code} . 
+			{ eachLecturer rank } .
+			{ eachLecturer school } } ] .
+	
+	^table
+! !
+
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/18/2025 13:21:26'!
+openEditLecturerDialog
+
+	| aLecturer |
+	
+	selectedLecturerIndex <= 1 ifTrue:[^self].
+	
+	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
+	
+	LecturerBrowser open: aLecturer label: 'ערוך מרצה' 
+	
+	! !
+
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/28/2025 22:28:51'!
+openTimeTable
+
+	| aLecturer |
+	
+	selectedLecturerIndex <= 1 ifTrue:[^self].
+	
+	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
+	
+	ResourceTimeTable open: aLecturer label: 'מערכת שעות למרצה: ', aLecturer description.
+	
+	aLecturer changed: nil
+	
+	! !
+
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/28/2025 22:36:39'!
+selectLecturer: anIntegerIndex
+
+	| aLecturer |
+	
+	selectedLecturerIndex := anIntegerIndex.
+	
+	selectedLecturerIndex <= 1 ifTrue:[^self].
+	
+	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
+	
+	self setLabel: 'מרצה: ', aLecturer description.
+	
+	! !
+
+!SchoolBrowser methodsFor: 'ranks' stamp: 'DF 1/16/2025 21:09:02'!
+rankIndex
+	^rankIndex! !
+
+!SchoolBrowser methodsFor: 'ranks' stamp: 'DF 1/16/2025 21:09:10'!
+rankIndex: anInteger
+	rankIndex := anInteger! !
+
+!SchoolBrowser methodsFor: 'ranks' stamp: 'DF 1/16/2025 21:10:00'!
+rankSelectionAt: anIndex
+
+	^selectedRanks includes: anIndex.! !
+
+!SchoolBrowser methodsFor: 'ranks' stamp: 'DF 1/16/2025 21:10:20'!
+rankSelectionAt: anIndex put: aBoolean
+
+	aBoolean 
+		ifTrue:[
+			selectedRanks add: anIndex ]
+		ifFalse:[
+			selectedRanks remove: anIndex ].
+		
+	self changed: #lecturersTable! !
+
+!SchoolBrowser methodsFor: 'ranks' stamp: 'DF 1/16/2025 21:09:42'!
+ranks
+	^model lecturerRanks! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:08:08'!
+schoolIndex
+	^schoolIndex! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:08:18'!
+schoolIndex: anIndex
+	schoolIndex := anIndex! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:06:12'!
+schoolSelectionAt: anIndex
+
+	^selectedSchools includes: anIndex.! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:07:13'!
+schoolSelectionAt: anIndex put: aBoolean
+
+	aBoolean 
+		ifTrue:[
+			selectedSchools add: anIndex ]
+		ifFalse:[
+			selectedSchools remove: anIndex ].
+		
+	self changed: #lecturersTable! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:04:47'!
+schools
+
+	^model schools asOrderedCollection sort:[:x :y | x description <= y description ]! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:58:50'!
+selectedRanks
+
+	| result ranks |
+	
+	result := OrderedCollection new.
+	
+	ranks := self ranks.
+	
+	selectedRanks do:[:index | 
+		index <= ranks size 
+			ifTrue:[	result add: (ranks at:index)] ].
+			
+	^result.
+
+	
+! !
+
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:58:24'!
+selectedSchools
+
+	| result schools |
+	
+	result := OrderedCollection new.
+	
+	schools := self schools.
+	
+	selectedSchools do:[:index | 
+		index <= schools size 
+			ifTrue:[	result add: (schools at:index)] ].
+			
+	^result.
+
+	
+! !
+
+!SchoolBrowser methodsFor: 'menu' stamp: 'DF 1/25/2025 21:40:42'!
+lecturerMenuSpec
+
+^ #(
+		#(0 		'מרצה'						false)
+		#(10		'מערכת שעות' 						$g 	window 			openTimeTable 				)
+		#(20		'ערוך פרטי מרצה ...' 						$g 	window 			openEditLecturerDialog 				)
+		#(30		'-----' 		)
+		#(40		'הסר מרצה' 						$c 	window 			removeLecturer )
+	).! !
+
+!SchoolBrowser methodsFor: 'initialization' stamp: 'DF 1/18/2025 12:59:33'!
+initialize
+
+	super initialize.
+	
+	selectedSchools := Set new.
+	
+	selectedRanks := Set new.
+	
+	schoolIndex := 0.
+	
+	rankIndex := 0.
+	
+	selectedLecturerIndex := 0.
+	
+	! !
+
+!SchoolBrowser methodsFor: 'updating' stamp: 'DF 1/17/2025 22:02:05'!
+update: aSymbol
+	self changed: aSymbol! !
+
+!SchoolBrowser methodsFor: 'GUI building' stamp: 'DF 1/31/2025 20:17:45'!
+buildMorphicWindow
+
+	| topPanel lecturersTable schools employment |
+	
+	schools := BidiPluggableListMorphOfMany withModel: self listGetter: #schools primarySelectionGetter: #schoolIndex primarySelectionSetter: #schoolIndex: listSelectionGetter: #schoolSelectionAt: listSelectionSetter: #schoolSelectionAt:put:.
+	
+	employment := BidiPluggableListMorphOfMany withModel: self listGetter: #ranks primarySelectionGetter: #rankIndex primarySelectionSetter: #rankIndex: listSelectionGetter: #rankSelectionAt: listSelectionSetter: #rankSelectionAt:put:.
+	
+	topPanel := (employment - (1/2)p | 1p) <+> (schools - (1/2)p | 1p) .
+	
+	lecturersTable := PluggableTableMorph new.
+	
+	lecturersTable model: self ; table: #lecturersTable ; rightToLeft: true ; headerRow: true.
+	
+	lecturersTable cellFactory: LecturerTableCell.
+	
+	lecturersTable menuNshortcutsKey: #lecturerMenuSpec.
+	
+	lecturersTable menuFactory: BidiMenuMorph.
+	
+	lecturersTable selectRowMessage: #selectLecturer:.
+	
+	lecturersTable columnFactory: {
+		1 -> (PluggableMorphFactory new formatter:[:aNumber | '{1}' format:{aNumber} ] ; yourself) .
+		2 -> (PluggableMorphFactory new formatter:[:aNumber | '{1}' format:{aNumber} ] ; yourself) .
+		3 ->  (PluggableMorphFactory new formatter:[:aLecturer | aLecturer ] ; morphClass: LecturerMorph ; factoryMessage: #new:; yourself) .
+		4 -> (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} ] ; yourself) .
+		5 -> (PluggableMorphFactory new) .
+		6 -> (PluggableMorphFactory new formatter:[:aSchool | aSchool description ] ; yourself) } asDictionary.
+
+	self layoutMorph addMorph: (topPanel -1.0p | 0.3p </> (lecturersTable -1.0p | 0.7p)).
+	
+	self changed: #lecturersTable.! !
+
+!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:06:39'!
+addLecturerDialog: model
+
+	| schools aLecturer mold position aDialog |
+	
+	aLecturer := Lecturer new.
+	
+	mold := BidiMold new.
+	
+	mold rightToLeft: true.
+
+	schools := ListModel with: (model schools asOrderedCollection sort:[:x :y | x description <= y description]).
+	
+	(mold fields add: BidiSelectField new)
+		rightToLeft: true;
+		label: 'בית ספר';
+		on: #listIndex of: schools;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+
+	(mold integerField)
+		label: 'מזהה מרצה';
+		on: #code of: aLecturer;
+		addCondition:[:input :value | model lecturerAt: value :: isNil ]
+		labeled: 'קיים מרצה עם מזהה זה.' ;
+		beRequired.
+	
+	(mold stringField)
+		label: 'שם המרצה';
+		on: #description of: aLecturer;
+		beRequired.
+
+	(mold fields add: BidiSelectField new)
+		label: 'מעמד מרצה';
+		on: #rank of: (ListModel with: model lecturerRanks :: listIndex: 1) ;
+		callback: [:val | aLecturer rank: (model lecturerRanks at:val) ] ;
+		customize: [:widget :input :example | 
+			input color: Color white ; borderWidth:1 ; borderColor: Color black.
+			] ;
+		beRequired.
+		
+	(mold integerField)
+		label: 'שעות למשרה';
+		on: #quota of: aLecturer;
+		addCondition:[:input :value | value > 0 ]
+		labeled: 'תן לנו לפחות שעה אחת.' ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'מרצה חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addLecturer: to: (mold fields at:1 :: value) with: aLecturer.
+	
+	mold when: #edited send: #changed: to: model with: #lecturersTable
+! !
+
+!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:18:22'!
+addSchoolDialog: model
+
+	| mold aSchool position aDialog |
+	
+	aSchool := School new.
+	
+	mold := BidiMold new.
+	
+	mold rightToLeft: true.
+	
+	(mold stringField)
+		label: 'שם בית הספר';
+		on: #description of: aSchool;
+		addCondition:[:input | model schoolAt: input :: isNil ] 
+		labeled: 'קיים בית ספר בשם זה.' ;
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'בית ספר חדש'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addSchool: to: model with: aSchool.
+	
+	mold when: #edited send: #changed: to: model with: #schools
+! !
+
+!StencilBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 22:13:10'!
+initialExtent
+	^ super initialExtent! !
+
+!StencilBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2025 22:00:51'!
+update: aSymbol
+
+	self changed: aSymbol! !
+
+!StencilBrowser methodsFor: 'programs' stamp: 'DF 1/12/2025 17:54:23'!
+programIndex
+	
+	^ programIndex! !
+
+!StencilBrowser methodsFor: 'programs' stamp: 'DF 2/1/2025 21:45:31'!
+programIndex: anIndex
+
+	programIndex := anIndex.
+
+	self changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable ; changed: #summary! !
+
+!StencilBrowser methodsFor: 'programs' stamp: 'DF 1/11/2025 17:53:57'!
+programs
+
+	^ model programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
+
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:53'!
+trackIndex
+	
+	^ trackIndex! !
+
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:53'!
+trackIndex: anIndex
+
+	trackIndex := anIndex.
+	
+	self changed: #yearNames; changed: #semesterNames	 ; changed: #stencilNames; changed: #assignmentsTable! !
+
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/11/2025 17:53:57'!
+trackNames
+
+	^self tracks collect:[:each | each description] ! !
+
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:23'!
+tracks
+	
+	programIndex 	= 0 ifTrue:[^{}].
+		
+	^self programs at: programIndex :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
+! !
+
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 2/1/2025 17:57:55'!
+selectedSemester
+
+	| semesters |
+	
+	semesters := self semesters.
+	
+	semesters ifEmpty:[^nil].
+	
+	semesterIndex = 0 ifTrue:[^nil].
+	
+	^semesters at: semesterIndex 
+! !
+
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:58:20'!
+semesterIndex
+	
+	^ semesterIndex! !
+
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:58:20'!
+semesterIndex: anIndex
+
+	semesterIndex := anIndex.
+	
+	self changed: #stencilNames; changed: #assignmentsTable! !
+
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:57:57'!
+semesterNames
+
+	^ self semesters collect:[:each | each description ] :: asOrderedCollection sort
+! !
+
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 20:19:53'!
+semesters
+	
+	| years |
+	
+	yearIndex = 0 ifTrue:[^{}].
+	
+	years := self years.
+	
+	years ifEmpty:[^{}].
+	
+	^ years at: yearIndex ifAbsent:[years last] :: semesters ! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:52:32'!
+assignments
+
+	| stencil |
+	
+	stencil := self stencil.
+	
+	stencil ifNil:[^{}].
+	
+	^stencil assignments asOrderedCollection sort:[:x :y | x before:y ].
+! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:48:52'!
+assignmentsTable
+
+	| table |
+
+	table := OrderedCollection new.
+	
+	table add: { 'חדר' . 'שעה' . 'יום' . 'מרצה' . 'סוג' . 'שם קורס' . 'קוד קורס' }.
+
+	self assignments do:[:eachAssignment | 
+		
+		table add: {
+			 eachAssignment rooms			 . 
+			{ eachAssignment hour } . 
+			{ eachAssignment dayHebrew  } . 
+			eachAssignment lecturers .
+			{ eachAssignment unit } .
+			{ eachAssignment unit module } .
+			{ eachAssignment } 
+		} ] .
+	
+	^table
+! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 18:07:32'!
+selectAssignment: aUnitIndex
+
+	aUnitIndex <= 1 
+		ifTrue:[
+			theAssignment := nil.
+			^self].
+	
+	theAssignment := self assignments at: aUnitIndex - 1 . "minus 1 to account for the header, see unitsTable"
+	
+	! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 17:58:20'!
+selectEntitiesIn: aTuple 
+
+	" { a Stencil. a Semester . an AcademicYear . anAcademicTrack . an AcademicProgram } "
+	
+	programIndex := self programs find: (aTuple at: 5).
+	
+	trackIndex := self tracks find: (aTuple at:4). 
+	
+	yearIndex := self years sort:[:x :y | x description <= y description ] :: find: (aTuple at:3).
+	
+	semesterIndex := self semesters asOrderedCollection sort:[:x :y | x description <= y description] :: find:(aTuple at: 2).
+		
+	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable.
+	
+	! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/12/2025 17:59:40'!
+selectFirstEntitiesIn: aProgram
+
+	programIndex := self programs find: aProgram.
+	
+	trackIndex := 1. 
+	
+	yearIndex := 1.
+	
+	semesterIndex := 1.
+
+	stencilIndex := 1.
+		
+	self changed: #programs ; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable.
+	
+	! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/11/2025 18:07:59'!
+selectedAssignment
+	^theAssignment at:1! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:35:05'!
+stencil
+
+	| stencils |
+	
+	stencilIndex = 0 ifTrue:[^nil].
+	
+	stencils := self stencils asOrderedCollection sort:[:x :y | x description <= y description ].
+	
+	stencils ifEmpty:[^nil].
+	
+	^stencils at: stencilIndex 
+! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:55:32'!
+stencilTimeTable
+
+	| table |
+	
+	table := OrderedCollection new.
+	
+	table add: { 'ו' . 'ה' . 'ד' . 'ג' . 'ב' . 'א' . '' }.
+	
+	8 to:23 do:[:i | | aRow |
+		
+		aRow := OrderedCollection new.
+		
+		1 to:6 do:[:j |
+			aRow add: OrderedCollection new ].
+		
+		aRow add: {i }.
+		
+		table add: aRow ].	
+	
+	self assignments do:[:eachAssignment | 
+	
+		eachAssignment day notNil and: [eachAssignment hour notNil] ::
+			ifTrue:[ | cell | 
+				0 to: eachAssignment unit duration -1 do:[:index | 
+				
+					cell := table at: 	eachAssignment hour + index - 6 :: at: 7 - eachAssignment day.
+						
+					cell add: { index . eachAssignment . cell notEmpty } ] ] ].
+	
+	^table
+	! !
+
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 22:10:55'!
+stencilViolations
+
+	| stencil violations |
+	
+	stencil := self stencil.
+	
+	stencil ifNil:[^{}].
+	
+	violations := stencil check.
+	
+	^ violations collect:[:each | each overlap translatedBy: (-6@ -7) :: scaledBy: (1@-1) ]! !
+
+!StencilBrowser methodsFor: 'initialization' stamp: 'DF 1/12/2025 17:59:40'!
+initialize
+
+	super initialize.
+	
+	programIndex := 0.
+	
+	yearIndex := 0.
+	
+	trackIndex := 0.
+	
+	semesterIndex:= 0.
+	
+	stencilIndex := 0.
+	! !
+
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/12/2025 17:59:40'!
+stencilIndex
+	^stencilIndex! !
+
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/12/2025 17:59:40'!
+stencilIndex: anInteger
+
+	stencilIndex := anInteger.
+	
+	self changed: #assignmentsTable! !
+
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 2/1/2025 18:16:13'!
+stencilNames
+
+	^self stencils collect:[:each | each description]  ! !
+
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 2/1/2025 18:16:21'!
+stencils
+		
+	| semesters |
+	
+	semesterIndex = 0 ifTrue:[^{}].
+	
+	semesters := self semesters.
+	
+	semesters ifEmpty:[^{}].
+	
+	^semesters at: semesterIndex ifAbsent:[semesters last] :: stencils asOrderedCollection sort:[:x :y | x description <= y description ]
+! !
+
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:56:34'!
+yearIndex
+	
+	^ yearIndex! !
+
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 18:00:16'!
+yearIndex: anIndex
+
+	yearIndex := anIndex.
+	
+	self changed: #semesterNames	 ; changed: #stencilNames; changed: #assignmentsTable! !
+
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 17:55:45'!
+yearNames
+
+	^self years collect:[:each | each description ] ! !
+
+!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 20:19:39'!
+years
+	
+	| tracks |
+		
+	trackIndex = 0 ifTrue:[^{}].
+	
+	tracks := self tracks.
+	
+	tracks ifEmpty:[^{}].
+	
+	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
+! !
+
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 18:02:04'!
+buildAssignmentsTable
+
+	| assignmentsTable |
+	
+	assignmentsTable := PluggableTableMorph new.
+	
+	assignmentsTable model: self ; table: #assignmentsTable ; rightToLeft: true ; headerRow: true.
+	
+	assignmentsTable menuNshortcutsKey: #assignmentMenuSpec.
+	
+	assignmentsTable selectRowMessage: #selectAssignment:.
+	
+	assignmentsTable menuFactory: BidiMenuMorph.
+	
+	assignmentsTable cellFactory: AssignmentTableCell.
+
+	assignmentsTable columnFactory: { 
+		1 -> (PluggableMorphFactory new formatter:[:aClassroom | aClassroom]; morphClass: ClassroomMorph ; factoryMessage: #new: yourself) .
+		2 -> (PluggableMorphFactory new formatter:[:anInteger | anInteger]; morphClass:StencilLabel; yourself) .
+		3 -> (PluggableMorphFactory new formatter:[:aDay | aDay ]; morphClass: StencilLabel; yourself) .
+		4 -> (PluggableMorphFactory new formatter:[:aLecturer  | aLecturer ] ; morphClass: LecturerMorph ; factoryMessage: #new: ; yourself) .
+		5 -> (PluggableMorphFactory new formatter:[:aUnit | aUnit description ] ; yourself) .
+		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+		7 -> (PluggableMorphFactory new formatter:[:anAssignment | anAssignment ] ; morphClass: AssignmentMorph ; factoryMessage: #new: ; yourself)
+		} asDictionary.
+		
+	^assignmentsTable ! !
+
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 23:00:22'!
+buildMorphicWindow
+
+	| navigationPanel assignmentsTable semesterTimeTable |
+	
+	navigationPanel := self buildNavigationPanel.
+	
+	assignmentsTable := self buildAssignmentsTable.
+			
+	self changed: #assignmentsTable.
+
+	semesterTimeTable := self buildStencilTimeTable.
+	
+	views := TabbedGroup newColumn.
+
+	views build: { 'מערכת' reverse -> semesterTimeTable . 'רשימה' reverse -> assignmentsTable }.
+
+	views color:Color white. 
+	
+	views select:2.
+	
+	self layoutMorph addMorph: (navigationPanel -1.0p | 0.2p </> ( (views -1.0p | 1.0p) | 0.8p)).
+	! !
+
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:23:01'!
+buildNavigationPanel
+
+	| stencils semesters years tracks programs |
+	
+	stencils := BidiPluggableListMorph withModel: self listGetter: #stencilNames indexGetter: #stencilIndex indexSetter: #stencilIndex:.
+	
+	semesters := BidiPluggableListMorph withModel: self listGetter: #semesterNames indexGetter: #semesterIndex indexSetter: #semesterIndex:.
+	
+	years := BidiPluggableListMorph withModel: self listGetter: #yearNames indexGetter: #yearIndex indexSetter: #yearIndex:.
+	
+	tracks := BidiPluggableListMorph withModel: self listGetter: #trackNames indexGetter: #trackIndex indexSetter: #trackIndex: .
+	
+	programs := BidiPluggableListMorph withModel: self listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
+	
+	^(stencils - (1/5)p | 1p) <+> (semesters - (1/5)p | 1p) <+> (years - (1/5)p | 1p) <+> (tracks - (1/5)p | 1p) <+> (programs - (1/5)p | 1p).
+! !
+
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/27/2025 22:22:25'!
+buildStencilTimeTable
+
+	| stencilTimeTable stencilColumnFactory |
+
+	stencilTimeTable := PluggableTableMorph new.
+	
+	stencilTimeTable model: self ; table: #stencilTimeTable ; rightToLeft: true ; headerRow: true.
+
+	stencilTimeTable cellFactory: WeeklyTimeTableCell.
+	
+	stencilTimeTable markers: #stencilViolations.
+	
+	stencilColumnFactory := Dictionary new.
+	
+	1 to:6 do:[:eachDay |
+		stencilColumnFactory at:eachDay put:(PluggableMorphFactory new formatter:[:aTuple | aTuple] ; morphClass: AssignmentMorph ; factoryMessage: #fromTuple: ; yourself) ].
+	
+	stencilColumnFactory at: 7 put: (PluggableMorphFactory new formatter:[:anInteger | '{1}' format:{anInteger} :: asBidi ] ; morphClass: OffsetLabelMorph ; yourself).
+	
+	stencilTimeTable columnFactory: stencilColumnFactory.
+	
+	^stencilTimeTable ! !
+
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 23:03:24'!
+duplicateWindow
+
+	| aBrowser |
+	
+	aBrowser := self class open: model label: self label.
+	
+	aBrowser programIndex: programIndex.
+	
+	aBrowser trackIndex: trackIndex.
+	
+	aBrowser yearIndex: yearIndex.
+
+	aBrowser semesterIndex: semesterIndex.
+	
+	aBrowser stencilIndex: stencilIndex.
+	
+	aBrowser selectView: 1.
+	
+	aBrowser morphPosition: self morphPosition - (aBrowser morphWidth @ 0).
+	
+	model changed: #programs; changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable ; changed: #summary! !
+
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 23:01:03'!
+selectView: anInteger
+
+	views select: anInteger! !
+
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/1/2025 18:02:24'!
+assignmentMenuSpec
+
+^ #(
+		#(0 		'תבנית'				false)
+		#(20	'הוסף תבנית ...' 		$g 	window 	openAddStencilDialog 	)
+		#(30	'-----' )
+		#(40	'הסר תבנית' 			$c 	window 	removeStencilFromSemester )
+	).! !
+
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/1/2025 18:11:06'!
+openAddStencilDialog
+
+	| mold position aDialog semester stencil |
+
+	semester := self selectedSemester.
+	
+	semester ifNil:[^self].
+	
+	stencil := Stencil new.
+	
+	mold := BidiMold new.
+
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד התבנית' ;
+		on: #description of: stencil;
+		beRequired.
+		
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'תבנית חדשה'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #addNewStencil: to: stencil with: semester.
+	
+	mold when: #edited send: #changed: to: model with: #stencilNames 
+	
+! !
+
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/1/2025 21:54:18'!
+removeStencilFromSemester
+
+	| stencil semester |
+	
+	stencilIndex = 0 ifTrue:[^self].
+	
+	semester := self selectedSemester.
+
+	stencil := self stencils at: stencilIndex.
+	
+	semester removeStencil: stencil.
+	
+	stencilIndex := 0.
+	
+	model changed: #stencilNames ; changed: #assignmentsTable! !
+Assignment initialize!
+ClassroomMorph initialize!
+LecturerMorph initialize!

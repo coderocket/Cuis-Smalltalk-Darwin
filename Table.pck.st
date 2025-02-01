@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 12:22:03 pm'!
+'From Cuis7.3 [latest update: #7041] on 1 February 2025 at 5:37:09 pm'!
 'Description '!
-!provides: 'Table' 1 63!
+!provides: 'Table' 1 65!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -652,7 +652,7 @@ cellFactory: aClass
 
 	scroller cellFactory: aClass! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:41:52'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 17:37:03'!
 clickedCell: aTableCell
 
 	headerRow and: [aTableCell row = 1] 
@@ -660,12 +660,20 @@ clickedCell: aTableCell
 		
 	aTableCell selected
 		ifTrue:[
-			self row: aTableCell row select: false
+			self row: aTableCell row select: false.
+			selectedRow := 0.
+			model perform: selectRowMessage with: selectedRow.
 		]
 		ifFalse:[
-			self row: aTableCell row select: true.
+			selectedRow = 0
+				ifFalse:[self row: selectedRow select: false].
+			
+			selectedRow := aTableCell row.
+			
+			self row: selectedRow select: true.
 			selectRowMessage 
-				ifNotNil:[		model perform: selectRowMessage with: aTableCell row ] ]
+				ifNotNil:[
+					model perform: selectRowMessage with: selectedRow ] ]
 ! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:27:35'!
@@ -717,7 +725,7 @@ getMenu
 headerRow: aBoolean
 	headerRow := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:23:11'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 17:33:11'!
 initialize
 
 	innerMorphClass := TableMorph.
@@ -731,6 +739,8 @@ initialize
 	rightToLeft := false.
 	
 	headerRow := false.
+	
+	selectedRow := 0.
 	
 	menuFactory := MenuMorph.
 	
