@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 1 February 2025 at 11:28:38 pm'!
+'From Cuis7.3 [latest update: #7041] on 2 February 2025 at 10:49:15 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 23!
+!provides: 'BrocadeScheduler' 1 38!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
 SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
@@ -191,7 +191,7 @@ ResourceTimeTableCell class
 
 !classDefinition: #ClassroomMorph category: #'BrocadeScheduler-CampusMorphic'!
 BrocadeTableCellItem subclass: #ClassroomMorph
-	instanceVariableNames: 'assignment room'
+	instanceVariableNames: 'room'
 	classVariableNames: 'ClassroomImage'
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-CampusMorphic'!
@@ -966,14 +966,14 @@ overlap: aRectangle between: anAssignment and: anotherAssignment
 	
 	^anOverlapViolation ! !
 
-!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 17:52:08'!
+!ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 22:48:34'!
 aboutToGrabClassroom: aClassroomMorph
 
 	| aDuplicateMorph |
 	
 	aClassroomMorph color: Color transparent.
 	
-	aDuplicateMorph := aClassroomMorph duplicate room: aClassroomMorph room ; assignment: aClassroomMorph assignment ; expand ; yourself.
+	aDuplicateMorph := aClassroomMorph duplicate room: aClassroomMorph room ; expand ; yourself.
 	
 	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
 	
@@ -996,17 +996,15 @@ aboutToGrabAssignment: anAssignmentMorph
 	
 	^anAssignmentMorph ! !
 
-!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:24:30'!
+!LecturerTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 2/2/2025 20:13:34'!
 aboutToGrabLecturer: aLecturerMorph
 
 	| aDuplicateMorph |
 	
 	aDuplicateMorph := aLecturerMorph duplicate lecturer: aLecturerMorph lecturer ; yourself.
-
-	aDuplicateMorph color: Color transparent.
 	
 	self addMorph: aDuplicateMorph. "so that it will remember its previous owner"
-		
+	
 	^aDuplicateMorph 
 ! !
 
@@ -1129,15 +1127,7 @@ assign: anAssignment
 	
 	room campus college changed: #assignmentsTable.! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:05:46'!
-assignment
-	^assignment! !
-
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:29:59'!
-assignment: anAssignment
-	assignment := anAssignment ! !
-
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:21:33'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 18:22:49'!
 build
 
 	| aLabelMorph aString |
@@ -1159,11 +1149,13 @@ build
 	self axisEdgeWeight: 0.0.
 
 	room ifNil:[
-		aLabelMorph color: (Color fromHexString:'#cccccc')].
+		aLabelMorph color: (Color fromHexString:'#cccccc').
+		notSelectedColor := Color transparent.
+		selectedColor := Color transparent ].
 	
 	self color: notSelectedColor.! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:08:07'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 18:23:32'!
 drawOn: aCanvas
 
 	| aForm |
@@ -1174,6 +1166,19 @@ drawOn: aCanvas
 	
 	aCanvas image: aForm at: self morphExtent - aForm extent / 2 + (0@5).
 
+	room
+		ifNil:[
+			aCanvas strokeWidth: 2 color: (Color fromHexString:'#cccccc') strokeDashArray: #(10 10) strokeDashArrayOffset: 0.0 do: [
+				aCanvas roundRectangleMinX: 2 maxX: self morphWidth - 2 minY: 2 maxY: self morphHeight - 2 rx: 4 ry: 4
+		] ]
+		ifNotNil: [ | x0 y0 y1 |
+			x0 := self morphWidth - 4. 
+			y0 := 4.
+			y1 := self morphHeight - 4.
+			aCanvas 
+				line: x0@y0 to: x0@y1 width:4 color: (Color fromHexString:'#cccccc');
+				line: 8@y1  to:x0 @y1 width:4 color: (Color fromHexString:'#cccccc') 
+		] 
 	
 	! !
 
@@ -1206,19 +1211,6 @@ room
 !ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 18:30:07'!
 room: aClassroom
 	room := aClassroom ! !
-
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:57:43'!
-unassign
-
-	self assert: room notNil; assert: assignment notNil.
-	
-	assignment removeClassroom: room.
-
-	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
-	
-	assignment := nil.
-	
-! !
 
 !ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:46'!
 unassign: anAssignment
@@ -1308,15 +1300,7 @@ assign: anAssignment
 	
 ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:42:41'!
-assignment
-	^assignment! !
-
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:44:30'!
-assignment: anAssignment
-	assignment := anAssignment ! !
-
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:17:32'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 17:42:06'!
 build
 
 	| aLabelMorph |
@@ -1329,9 +1313,13 @@ build
 	
 	aLabelMorph layoutSpec offAxisEdgeWeight: 0.5.
 	
-	lecturer ifNil:[
-		aLabelMorph color: (Color fromHexString:'#cccccc')].
-		
+	lecturer 
+		ifNil:[
+			aLabelMorph color: (Color fromHexString:'#cccccc').
+			notSelectedColor := Color transparent.
+			selectedColor := Color transparent.
+		].
+				
 	self color: notSelectedColor.
 	
 	self addMorph: aLabelMorph.
@@ -1341,7 +1329,7 @@ build
 	
 ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:26:27'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 18:24:17'!
 drawOn: aCanvas
 
 	| aForm |
@@ -1357,7 +1345,21 @@ drawOn: aCanvas
 		ifFalse:[
 			aForm := LecturerImage magnifyBy: self morphHeight / 3 / LecturerImage height.
 			aCanvas image: aForm at: self morphExtent - aForm extent / 2 + (0 @ 5).
-		]
+		].
+	
+	lecturer 
+		ifNil:[
+			aCanvas strokeWidth: 2 color: (Color fromHexString:'#cccccc') strokeDashArray: #(10 10) strokeDashArrayOffset: 0.0 do: [
+				aCanvas roundRectangleMinX: 2 maxX: self morphWidth - 2  minY: 2 maxY: self morphHeight - 2 rx: 4 ry: 4
+		] ]
+		ifNotNil: [ | x0 y0 y1 |
+			x0 := self morphWidth - 4. 
+			y0 := 4.
+			y1 := self morphHeight - 4.
+			aCanvas 
+				line: x0@y0 to: x0@y1 width:4 color: (Color fromHexString:'#cccccc');
+				line: 8@y1  to:x0 @y1 width:4 color: (Color fromHexString:'#cccccc') 
+		] 
 	
 	! !
 
@@ -1383,19 +1385,6 @@ lecturer
 lecturer: aLecturer
 	lecturer := aLecturer! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:44:27'!
-unassign
-
-	self assert: lecturer notNil; assert: assignment notNil.
-	
-	assignment removeLecturer: lecturer.
-	
-	assignment := nil.
-	
-	lecturer changed: #assignmentsTable.
-
-! !
-
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:04:47'!
 unassign: anAssignment
 
@@ -1419,7 +1408,7 @@ initialize
 	LecturerImage := ImageReadWriter formFromFileEntry: aFileEntry.
 ! !
 
-!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:14:58'!
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 17:54:06'!
 new: aLecturer
 
 	| aLecturerMorph |
@@ -1429,8 +1418,6 @@ new: aLecturer
 	aLecturerMorph lecturer: aLecturer.
 	
 	aLecturerMorph build.
-	
-	aLecturer notNil ifTrue:[aLecturerMorph borderColor: (Color fromHexString: '#dddddd' ) ; borderWidth:2].
 	
 	^aLecturerMorph! !
 
@@ -1481,6 +1468,22 @@ build
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:02:02'!
 collision: aBoolean
 	collision := aBoolean! !
+
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 20:15:56'!
+drawOn: aCanvas
+
+	| x0 y0 y1 |
+	
+	super drawOn: aCanvas.
+	
+	model ifNotNil:[
+		x0 := self morphWidth - 4. 
+		y0 := 4.
+		y1 := self morphHeight - 4.
+		aCanvas 
+			line: x0@y0 to: x0@y1 width:4 color: (Color fromHexString:'#cccccc');
+			line: 8@y1  to:x0 @y1 width:4 color: (Color fromHexString:'#cccccc') 
+	]! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 21:42:53'!
 expand
@@ -2086,7 +2089,7 @@ update: aSymbol
 
 	self changed: aSymbol! !
 
-!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 1/24/2025 21:58:58'!
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 2/2/2025 17:32:08'!
 buildAssignmentsTable
 
 	| assignmentsTable  |
@@ -2095,9 +2098,9 @@ buildAssignmentsTable
 	
 	assignmentsTable  model: self ; table: #assignments ; rightToLeft: true ; headerRow: true.
 	
-	assignmentsTable menuNshortcutsKey: #assignmentMenuSpec.
+	"assignmentsTable menuNshortcutsKey: #assignmentMenuSpec.
 	
-	assignmentsTable selectRowMessage: #selectAssignment:.
+	assignmentsTable selectRowMessage: #selectAssignment:."
 	
 	assignmentsTable menuFactory: BidiMenuMorph.
 	
@@ -2180,16 +2183,21 @@ buildMorphicWindow
 	
 ! !
 
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:53:41'!
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 20:32:14'!
 assignments
 
 	| table |
 	
 	table := OrderedCollection new.
 
-	table add: { 'חדר' . 'שעה' . 'יום' . 'סוג' . 'שם קורס' . 'קוד קורס' }.
+	table add: { 'חדר' . 'שעה' . 'יום' . 'סוג' . 'שם קורס' . 'קוד קורס' . 'סמסטר' }.
 
-	model assignments do:[:eachAssignment | 
+	model assignments asOrderedCollection
+		sort:[:x :y | 
+			x stencil semester description < y stencil semester description 
+			or:[x stencil semester description = y stencil semester description 
+				and: [x day < y day or:[x day = y day and: [x hour <= y hour ]  ] ] ] ]
+	::	 do:[:eachAssignment | 
 		
 		table add: {
 			eachAssignment rooms . 
@@ -2197,7 +2205,8 @@ assignments
 			{ eachAssignment dayHebrew } . 
 			{ eachAssignment unit }  .
 			{ eachAssignment unit module  } .
-			{ eachAssignment unit module code } } ] .
+			{ eachAssignment unit module code } .
+			{ eachAssignment stencil semester description } } ] .
 	
 	^table
 ! !
@@ -2276,16 +2285,16 @@ lecturersTable
 	^table
 ! !
 
-!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/18/2025 13:21:26'!
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 2/2/2025 20:26:36'!
 openEditLecturerDialog
 
 	| aLecturer |
 	
 	selectedLecturerIndex <= 1 ifTrue:[^self].
 	
-	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
+	aLecturer := self lecturers at: selectedLecturerIndex - 1.
 	
-	LecturerBrowser open: aLecturer label: 'ערוך מרצה' 
+	LecturerBrowser open: aLecturer label: 'ערוך מרצה: ', aLecturer description 
 	
 	! !
 
@@ -2412,15 +2421,15 @@ selectedSchools
 	
 ! !
 
-!SchoolBrowser methodsFor: 'menu' stamp: 'DF 1/25/2025 21:40:42'!
+!SchoolBrowser methodsFor: 'menu' stamp: 'DF 2/2/2025 20:21:13'!
 lecturerMenuSpec
 
 ^ #(
 		#(0 		'מרצה'						false)
-		#(10		'מערכת שעות' 						$g 	window 			openTimeTable 				)
-		#(20		'ערוך פרטי מרצה ...' 						$g 	window 			openEditLecturerDialog 				)
+		#(10		'מערכת שעות' 				$g 	window 			openTimeTable 			)
+		#(20		'ערוך פרטי מרצה ...' 		$g 	window 			openEditLecturerDialog 	)
 		#(30		'-----' 		)
-		#(40		'הסר מרצה' 						$c 	window 			removeLecturer )
+		#(40		'הסר מרצה' 				$c 	window 			removeLecturer )
 	).! !
 
 !SchoolBrowser methodsFor: 'initialization' stamp: 'DF 1/18/2025 12:59:33'!
