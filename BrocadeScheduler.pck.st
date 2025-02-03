@@ -1,13 +1,25 @@
-'From Cuis7.3 [latest update: #7041] on 2 February 2025 at 10:49:15 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 11:34:42 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 38!
+!provides: 'BrocadeScheduler' 1 52!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
 SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-SchoolMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-ResourceMorphic'!
 SystemOrganization addCategory: #BrocadeScheduler!
+SystemOrganization addCategory: #'BrocadeScheduler-Application'!
+SystemOrganization addCategory: #'BrocadeScheduler-UndoRedo'!
 
+
+!classDefinition: #BrocadeApplication category: #'BrocadeScheduler-Application'!
+Object subclass: #BrocadeApplication
+	instanceVariableNames: 'model lastImportDirectory'
+	classVariableNames: 'TheApplication'
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Application'!
+!classDefinition: 'BrocadeApplication class' category: #'BrocadeScheduler-Application'!
+BrocadeApplication class
+	instanceVariableNames: ''!
 
 !classDefinition: #AcademicResource category: #'BrocadeScheduler-Model'!
 Object subclass: #AcademicResource
@@ -137,6 +149,16 @@ Violation subclass: #OverlapViolation
 	category: 'BrocadeScheduler-Model'!
 !classDefinition: 'OverlapViolation class' category: #'BrocadeScheduler-Model'!
 OverlapViolation class
+	instanceVariableNames: ''!
+
+!classDefinition: #TextFieldSentence category: 'BrocadeScheduler-StencilMorphic'!
+LayoutMorph subclass: #TextFieldSentence
+	instanceVariableNames: 'rightToLeft'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'TextFieldSentence class' category: 'BrocadeScheduler-StencilMorphic'!
+TextFieldSentence class
 	instanceVariableNames: ''!
 
 !classDefinition: #ClassroomTableCell category: #'BrocadeScheduler-CampusMorphic'!
@@ -279,6 +301,242 @@ BidiSystemWindow subclass: #StencilBrowser
 StencilBrowser class
 	instanceVariableNames: ''!
 
+!classDefinition: #AddLecturerCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AddLecturerCommand
+	instanceVariableNames: 'school code description rank quota'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AddLecturerCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AddLecturerCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #RemoveLecturerCommand category: #'BrocadeScheduler-UndoRedo'!
+AddLecturerCommand subclass: #RemoveLecturerCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'RemoveLecturerCommand class' category: #'BrocadeScheduler-UndoRedo'!
+RemoveLecturerCommand class
+	instanceVariableNames: ''!
+
+
+!BrocadeApplication methodsFor: 'modules' stamp: 'DF 1/31/2025 22:36:29'!
+addNewModuleDialog
+
+	AcademicProgramBrowser addNewModuleDialog: model! !
+
+!BrocadeApplication methodsFor: 'modules' stamp: 'DF 1/11/2025 16:55:59'!
+openSearchModuleDialog
+
+! !
+
+!BrocadeApplication methodsFor: 'programs' stamp: 'DF 1/31/2025 21:10:34'!
+addAcademicProgramDialog
+
+	AcademicProgramBrowser addAcademicProgramDialog: model! !
+
+!BrocadeApplication methodsFor: 'programs' stamp: 'DF 1/12/2025 20:51:36'!
+openAcademicProgramBrowser
+
+	AcademicProgramBrowser open: model label: 'תוכניות לימוד' 
+! !
+
+!BrocadeApplication methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:19:19'!
+openStencilBrowser
+
+	StencilBrowser open: model label: 'תבניות'.
+! !
+
+!BrocadeApplication methodsFor: 'schools' stamp: 'DF 1/31/2025 19:48:26'!
+addLecturerDialog
+
+	SchoolBrowser addLecturerDialog: model
+	
+! !
+
+!BrocadeApplication methodsFor: 'schools' stamp: 'DF 1/31/2025 19:52:27'!
+addSchoolDialog
+
+	SchoolBrowser addSchoolDialog: model
+	
+! !
+
+!BrocadeApplication methodsFor: 'schools' stamp: 'DF 1/18/2025 13:06:12'!
+openSchoolBrowser
+
+	SchoolBrowser open: model label: 'מרצים'.
+! !
+
+!BrocadeApplication methodsFor: 'campuses' stamp: 'DF 1/31/2025 17:03:12'!
+addCampusDialog
+
+	CampusBrowser addCampusDialog: model! !
+
+!BrocadeApplication methodsFor: 'campuses' stamp: 'DF 1/31/2025 17:04:38'!
+addClassroomDialog
+
+	CampusBrowser addClassroomDialog: model ! !
+
+!BrocadeApplication methodsFor: 'campuses' stamp: 'DF 1/18/2025 17:09:12'!
+openCampusBrowser
+
+	CampusBrowser open: model label: 'קמפוסים'.
+! !
+
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/3/2025 17:10:34'!
+menuBar
+
+	| aMenuBar |
+	
+	aMenuBar := MenuBar new.
+
+	aMenuBar menusRightToLeft: { 
+	{ 'קובץ' . { 
+		{ 'חדש' . self . #newAction }  . 
+		{ 'פתח ...' . self . #openAction } . 
+		{ 'שמור' . self . #saveAction } . 
+		{ 'שמור בשם ...' . self . #saveAsAction } .
+		$| .
+		{'יבא תוכניות לימודים ...' . self . #openImportAcademicProgramDialog } .
+		{'יבא סגל אקדמי ...' . self . #openImportAcademicStaffDialog } .
+		{'יצא תוכנית לימודים ...' . self . #exportAction } .
+		$| .
+		{ 'סגור' . self . #exitAction } } } .  
+	{ 'עריכה' . #buildEditMenu . self } .
+	{ 'תוכנית לימודים' . {
+		{'הצג תוכניות לימודים' . self . #openAcademicProgramBrowser } .
+		{ 'תוכנית לימוד חדשה ...' . self . #addAcademicProgramDialog } .
+		$| .
+		{ 'קורס חדש ...' . self . #addNewModuleDialog } .
+		 } } .
+	{ 'בית ספר' . {
+		{ 'הצג בתי ספר' . self . #openSchoolBrowser } .
+		{ 'בית ספר חדש ...' . self . #addSchoolDialog } .
+		$| .	
+		{ 'מרצה חדשה ...' . self . #addLecturerDialog } 
+		 } } .
+	{ 'חדר' . {
+		{'הצג קמפוסים וחדרים' . self . #openCampusBrowser } .
+		{ 'קמפוס חדש ...' . self . #addCampusDialog } .
+		$| .	
+		{ 'חדר חדש ...' . self . #addClassroomDialog } 
+		 } } .
+	{ 'תבנית' . {
+		{ 'הצג תבניות' . self . #openStencilBrowser } .
+		 } } .
+	{ 'חלונות' . #showCollapsedWindows . self } . 
+	{ 'עזרה' . { 
+		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
+! !
+
+!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:15:09'!
+importAcademicProgram: aFileEntry
+
+	lastImportDirectory := aFileEntry parent.
+	
+	model importAcademicProgram: aFileEntry.
+	
+"	CollegeBrowser open: model label: 'תוכניות לימוד'."
+	
+	! !
+
+!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:25:25'!
+importAcademicStaff: aFileEntry
+
+	lastImportDirectory := aFileEntry parent.
+	
+	model importAcademicStaff: aFileEntry.
+	
+
+	
+	! !
+
+!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:25:44'!
+openImportAcademicProgramDialog
+
+	OpenFileDialog open:self start: lastImportDirectory action: #importAcademicProgram: label:'Select File'! !
+
+!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:25:55'!
+openImportAcademicStaffDialog
+
+	OpenFileDialog open:self start: lastImportDirectory action: #importAcademicStaff: label:'Select File'! !
+
+!BrocadeApplication methodsFor: 'undo/redo' stamp: 'DF 2/3/2025 16:39:31'!
+redo
+	BrocadeCommandHistory instance redo! !
+
+!BrocadeApplication methodsFor: 'undo/redo' stamp: 'DF 2/3/2025 16:39:24'!
+undo
+	BrocadeCommandHistory instance undo! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:43:51'!
+buildEditMenu
+
+	| menu disableUndo disableRedo undoString |
+	
+	menu := MenuBarMenuMorph new.
+	menu color: Color white ; borderWidth: 1; borderColor: Color black.
+	
+	disableUndo := BrocadeCommandHistory instance isAtBeginning.
+	disableRedo := BrocadeCommandHistory instance isAtEnd.
+	
+	undoString := disableUndo ifFalse:['ביטול ', BrocadeCommandHistory instance currentTitle] ifTrue:['ביטול'].
+	
+	(menu add: (undoString asBidi writingDirection:#rightToLeft) target: self action: #undo) isEnabled: disableUndo not .
+	(menu add: ('ביצוע מחדש' asBidi writingDirection:#rightToLeft) target: self action: #redo) isEnabled: disableRedo not .
+	menu addLine.
+	(menu add: ('גזור' asBidi writingDirection:#rightToLeft) target: self action: #cutToClipboard) color: Theme current buttonLabel.
+	(menu add: ('העתק' asBidi writingDirection:#rightToLeft) target: self action: #copyToClipboard) color: Theme current buttonLabel.
+	(menu add: ('הדבק' asBidi writingDirection:#rightToLeft) target: self action: #pasteFromClipboard) color: Theme current buttonLabel.
+	
+	^menu! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 18:15:10'!
+open
+
+	| aCollege |
+	
+	aCollege := College new.
+
+	aCollege invariant.
+
+	model := aCollege.
+! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:43:06'!
+showCollapsedWindows
+
+	| windows menu |
+	
+	windows := UISupervisor ui submorphs select:[:each | each isKindOf: SystemWindow :: and: [each isCollapsed ] ].
+	
+	menu := MenuBarMenuMorph new.
+	menu color: Color white ; borderWidth: 1; borderColor: Color black.
+	windows do:[:eachWindow | 
+		(menu add: (eachWindow label asBidi writingDirection:#rightToLeft) target: eachWindow action: #show) color: Theme current buttonLabel ].
+	
+	^menu! !
+
+!BrocadeApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:24:09'!
+instance
+
+	TheApplication 
+		ifNil:[
+			TheApplication := self new.
+			TheApplication menuBar.
+		].
+	
+	^TheApplication
+	
+! !
+
+!BrocadeApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:24:42'!
+open
+
+	self instance menuBar ; open.	
+! !
 
 !AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:49:26'!
 assignments
@@ -965,6 +1223,48 @@ overlap: aRectangle between: anAssignment and: anotherAssignment
 	anOverlapViolation overlap: aRectangle.
 	
 	^anOverlapViolation ! !
+
+!TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:01:45'!
+build: aStringTemplate
+
+	| index labelText morphs |
+	
+	self removeAllMorphs.
+	
+	morphs := OrderedCollection new.
+	
+	index := 1.
+	
+	aStringTemplate allRangesOfRegexMatches: '<[a-z]+>' :: do:[:each | 
+	
+		labelText := aStringTemplate copyFrom: index to: each first - 1.
+		
+		rightToLeft ifTrue:[labelText := labelText reverse].
+		
+		morphs add:		 (LabelMorph contents: labelText).
+		
+		morphs add: (BidiTextEntryMorph contents: (aStringTemplate copyFrom: each first + 1 to: each last - 1)).
+		
+		index := each last + 1].
+	
+	labelText := aStringTemplate copyFrom: index to: aStringTemplate size.
+	
+	rightToLeft ifTrue:[labelText := labelText reverse].
+	
+	morphs add: (BidiLabelMorph contents: labelText).
+	
+	rightToLeft ifFalse:[morphs := morphs reverse].
+	
+	self addAllMorphs: morphs.! !
+
+!TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 20:57:50'!
+initialize
+	super initialize.
+	rightToLeft := false! !
+
+!TextFieldSentence methodsFor: 'as yet unclassified' stamp: 'DF 12/24/2024 20:54:58'!
+rightToLeft: aBoolean
+	rightToLeft := aBoolean! !
 
 !ClassroomTableCell methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 22:48:34'!
 aboutToGrabClassroom: aClassroomMorph
@@ -2488,12 +2788,12 @@ buildMorphicWindow
 	
 	self changed: #lecturersTable.! !
 
-!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:06:39'!
+!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:34:24'!
 addLecturerDialog: model
 
-	| schools aLecturer mold position aDialog |
+	| schools aCommand mold position aDialog |
 	
-	aLecturer := Lecturer new.
+	aCommand := AddLecturerCommand new.
 	
 	mold := BidiMold new.
 	
@@ -2505,6 +2805,7 @@ addLecturerDialog: model
 		rightToLeft: true;
 		label: 'בית ספר';
 		on: #listIndex of: schools;
+		callback:[:value | aCommand lecturer: value ]; 
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
@@ -2512,20 +2813,20 @@ addLecturerDialog: model
 
 	(mold integerField)
 		label: 'מזהה מרצה';
-		on: #code of: aLecturer;
+		on: #code of: aCommand;
 		addCondition:[:input :value | model lecturerAt: value :: isNil ]
 		labeled: 'קיים מרצה עם מזהה זה.' ;
 		beRequired.
 	
 	(mold stringField)
 		label: 'שם המרצה';
-		on: #description of: aLecturer;
+		on: #description of: aCommand;
 		beRequired.
 
 	(mold fields add: BidiSelectField new)
 		label: 'מעמד מרצה';
 		on: #rank of: (ListModel with: model lecturerRanks :: listIndex: 1) ;
-		callback: [:val | aLecturer rank: (model lecturerRanks at:val) ] ;
+		callback: [:val | aCommand rank: (model lecturerRanks at:val) ] ;
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
@@ -2533,7 +2834,7 @@ addLecturerDialog: model
 		
 	(mold integerField)
 		label: 'שעות למשרה';
-		on: #quota of: aLecturer;
+		on: #quota of: aCommand;
 		addCondition:[:input :value | value > 0 ]
 		labeled: 'תן לנו לפחות שעה אחת.' ;
 		beRequired.
@@ -2544,9 +2845,7 @@ addLecturerDialog: model
 	
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 	
-	mold when: #edited send: #addLecturer: to: (mold fields at:1 :: value) with: aLecturer.
-	
-	mold when: #edited send: #changed: to: model with: #lecturersTable
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
 ! !
 
 !SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:18:22'!
@@ -2587,16 +2886,37 @@ update: aSymbol
 
 	self changed: aSymbol! !
 
+!StencilBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 09:45:25'!
+updateLabel
+
+	| aWriteStream prefix titleString |
+	
+	aWriteStream := WriteStream on:''.
+
+	self programs at: programIndex ifPresent:[:obj | aWriteStream nextPutAll: obj description; nextPutAll: ' '].
+	self tracks at: trackIndex ifPresent:[:obj | aWriteStream nextPutAll: obj description; nextPutAll: ' '].
+	self years at: yearIndex ifPresent:[:obj | aWriteStream nextPutAll: obj description; nextPutAll: ' '].
+	self semesters at: semesterIndex ifPresent:[:obj | aWriteStream nextPutAll: obj description; nextPutAll: ' '].
+	self stencils at: stencilIndex ifPresent:[:obj | aWriteStream nextPutAll: obj description].
+
+	prefix := stencilIndex = 0 ifTrue:['תבניות: '] ifFalse:['תבנית: '].
+	
+	titleString := (prefix , aWriteStream contents) asBidi writingDirection: #rightToLeft.
+	
+	self setLabel: titleString.! !
+
 !StencilBrowser methodsFor: 'programs' stamp: 'DF 1/12/2025 17:54:23'!
 programIndex
 	
 	^ programIndex! !
 
-!StencilBrowser methodsFor: 'programs' stamp: 'DF 2/1/2025 21:45:31'!
+!StencilBrowser methodsFor: 'programs' stamp: 'DF 2/3/2025 09:31:48'!
 programIndex: anIndex
 
 	programIndex := anIndex.
 
+	self updateLabel.
+	
 	self changed: #trackNames ; changed: #yearNames; changed: #semesterNames ; changed: #stencilNames ; changed: #assignmentsTable ; changed: #summary! !
 
 !StencilBrowser methodsFor: 'programs' stamp: 'DF 1/11/2025 17:53:57'!
@@ -2609,10 +2929,12 @@ trackIndex
 	
 	^ trackIndex! !
 
-!StencilBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 17:54:53'!
+!StencilBrowser methodsFor: 'tracks' stamp: 'DF 2/3/2025 09:31:54'!
 trackIndex: anIndex
 
 	trackIndex := anIndex.
+
+	self updateLabel.
 	
 	self changed: #yearNames; changed: #semesterNames	 ; changed: #stencilNames; changed: #assignmentsTable! !
 
@@ -2648,10 +2970,12 @@ semesterIndex
 	
 	^ semesterIndex! !
 
-!StencilBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:58:20'!
+!StencilBrowser methodsFor: 'semesters' stamp: 'DF 2/3/2025 09:32:07'!
 semesterIndex: anIndex
 
 	semesterIndex := anIndex.
+
+	self updateLabel.
 	
 	self changed: #stencilNames; changed: #assignmentsTable! !
 
@@ -2840,10 +3164,12 @@ initialize
 stencilIndex
 	^stencilIndex! !
 
-!StencilBrowser methodsFor: 'stencils' stamp: 'DF 1/12/2025 17:59:40'!
+!StencilBrowser methodsFor: 'stencils' stamp: 'DF 2/3/2025 09:32:13'!
 stencilIndex: anInteger
 
 	stencilIndex := anInteger.
+
+	self updateLabel.
 	
 	self changed: #assignmentsTable! !
 
@@ -2871,10 +3197,12 @@ yearIndex
 	
 	^ yearIndex! !
 
-!StencilBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 18:00:16'!
+!StencilBrowser methodsFor: 'years' stamp: 'DF 2/3/2025 09:32:00'!
 yearIndex: anIndex
 
 	yearIndex := anIndex.
+
+	self updateLabel.
 	
 	self changed: #semesterNames	 ; changed: #stencilNames; changed: #assignmentsTable! !
 
@@ -3030,7 +3358,7 @@ assignmentMenuSpec
 		#(40	'הסר תבנית' 			$c 	window 	removeStencilFromSemester )
 	).! !
 
-!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/1/2025 18:11:06'!
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/3/2025 10:04:54'!
 openAddStencilDialog
 
 	| mold position aDialog semester stencil |
@@ -3045,7 +3373,7 @@ openAddStencilDialog
 
 	mold rightToLeft: true.
 	
-	(mold integerField)
+	(mold stringField)
 		label: 'קוד התבנית' ;
 		on: #description of: stencil;
 		beRequired.
@@ -3078,6 +3406,68 @@ removeStencilFromSemester
 	stencilIndex := 0.
 	
 	model changed: #stencilNames ; changed: #assignmentsTable! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:26:25'!
+code
+	^code! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:26:47'!
+code: anInteger
+	code := anInteger! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:26:55'!
+description: aString
+	description := aString! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:29:38'!
+doIt
+	
+	| aLecturer |
+	
+	aLecturer := Lecturer new.
+	
+	school addLecturer: aLecturer.
+	
+	school college changed: #lecturersTable! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:27:10'!
+qutoa: anInteger
+	quota := anInteger! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:27:03'!
+rank: aString
+	rank := aString! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:27:24'!
+school: aSchool
+	school := aSchool! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:28:18'!
+title
+	^'הוספת מרצה חדש'! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:30:40'!
+undo
+	
+	| aLecturer |
+	
+	aLecturer := school lecturerAt: code.
+	
+	school removeLecturer: aLecturer.
+	
+	school college changed: #lecturersTable! !
+
+!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:32:02'!
+doIt
+	super undo! !
+
+!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:31:23'!
+title
+	^'הסרת מרצה מהמערכת'! !
+
+!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:32:11'!
+undo
+	super doIt! !
 Assignment initialize!
 ClassroomMorph initialize!
 LecturerMorph initialize!

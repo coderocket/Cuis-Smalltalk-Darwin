@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 1 February 2025 at 9:37:19 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 6:04:37 pm'!
 'Description '!
-!provides: 'Bidi' 1 53!
+!provides: 'Bidi' 1 54!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -1125,7 +1125,7 @@ newPane
 	pane buildMorphicWindow .
 	^ pane! !
 
-!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 11:45:07'!
+!BidiMold methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:41:16'!
 openDialog: title
 	| panel |
 	panel := nil.
@@ -1138,7 +1138,7 @@ openDialog: title
 		actionOnButton: [self validate.
 			panel morphExtent: panel minimumExtent. "I don't like to do it manually"
 			self isValid 	ifTrue: [
-				self save.
+				self save. 
 				self triggerEvent: #edited.
 				panel delete] ].
 	

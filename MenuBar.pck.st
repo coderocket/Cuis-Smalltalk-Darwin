@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 1:43:31 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 4:59:53 pm'!
 'Description '!
-!provides: 'MenuBar' 1 5!
+!provides: 'MenuBar' 1 6!
 SystemOrganization addCategory: #MenuBar!
 
 
@@ -12,16 +12,6 @@ Object subclass: #DynamicMenuGenerator
 	category: 'MenuBar'!
 !classDefinition: 'DynamicMenuGenerator class' category: #MenuBar!
 DynamicMenuGenerator class
-	instanceVariableNames: ''!
-
-!classDefinition: #MenuBarModel category: #MenuBar!
-Object subclass: #MenuBarModel
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MenuBar'!
-!classDefinition: 'MenuBarModel class' category: #MenuBar!
-MenuBarModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #MenuBar category: #MenuBar!
@@ -100,30 +90,6 @@ popUpAt: aPoint allowKeyboard: aBoolean
 !DynamicMenuGenerator methodsFor: 'as yet unclassified' stamp: 'DF 1/2/2025 20:49:37'!
 target: anObject
 	target := anObject! !
-
-!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 20:03:13'!
-aboutAction
-	PopUpMenu inform: 'About'! !
-
-!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 20:06:10'!
-exitAction
-	PopUpMenu inform: 'Exit'! !
-
-!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:56:56'!
-newAction
-	PopUpMenu inform: 'New'! !
-
-!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:04'!
-openAction
-	PopUpMenu inform: 'Open'! !
-
-!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:13'!
-saveAction
-	PopUpMenu inform: 'Save'! !
-
-!MenuBarModel methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2024 19:57:18'!
-saveAsAction
-	PopUpMenu inform: 'Save as'! !
 
 !MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 12/13/2024 20:14:05'!
 addMenu: aMenu

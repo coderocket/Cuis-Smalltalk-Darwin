@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 31 January 2025 at 4:04:28 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 7:44:01 pm'!
 'Description '!
-!provides: 'UndoRedo' 1 4!
+!provides: 'UndoRedo' 1 9!
 SystemOrganization addCategory: #UndoRedo!
 
 
@@ -82,9 +82,18 @@ test
 	
 	! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:47:01'!
-do: anUndoRedoCommand
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:43:35'!
+currentTitle
 
+	self assert: self isAtBeginning not.
+	
+	^commands at: currentIndex :: title
+	
+	! !
+
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 18:05:06'!
+do: anUndoRedoCommand
+	
 	anUndoRedoCommand doIt.
 	
 	commands removeLast: commands size - currentIndex . 
@@ -101,10 +110,18 @@ initialize
 	
 	currentIndex := 0.! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 16:03:00'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 16:58:13'!
+isAtBeginning
+	^currentIndex = 0! !
+
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:12:34'!
+isAtEnd
+	^currentIndex = commands size ! !
+
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:12:27'!
 redo
 
-	self assert: currentIndex <= commands size.
+	self assert: currentIndex < commands size.
 	
 	self assert: currentIndex >= 0.
 
@@ -128,6 +145,10 @@ undo
 
 !UndoRedoCommand methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:47:12'!
 doIt
+	self subclassResponsibility ! !
+
+!UndoRedoCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:40:52'!
+title
 	self subclassResponsibility ! !
 
 !UndoRedoCommand methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:40:15'!
