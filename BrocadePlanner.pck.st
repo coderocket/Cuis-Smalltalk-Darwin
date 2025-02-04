@@ -1,6 +1,11 @@
-'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 9:47:26 pm'!
+'From Cuis7.3 [latest update: #7041] on 4 February 2025 at 5:42:19 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 57!
+!provides: 'BrocadePlanner' 1 58!
+!requires: 'Bidi' 1 54 nil!
+!requires: 'Table' 1 66 nil!
+!requires: 'UndoRedo' 1 9 nil!
+!requires: 'LayoutAlgebra' 1 12 nil!
+!requires: 'Neo-CSV-Core' 1 1 nil!
 SystemOrganization addCategory: #'BrocadePlanner-Model'!
 SystemOrganization addCategory: #BrocadePlanner!
 SystemOrganization addCategory: #'BrocadePlanner-Morphic'!

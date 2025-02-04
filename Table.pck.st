@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 9:40:46 pm'!
+'From Cuis7.3 [latest update: #7041] on 4 February 2025 at 6:06:46 pm'!
 'Description '!
-!provides: 'Table' 1 66!
+!provides: 'Table' 1 67!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -787,7 +787,7 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 21:39:49'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:03:11'!
 update: aSymbol 
 
 	| start nrows ncols header table |
@@ -798,7 +798,10 @@ update: aSymbol
 	
 	nrows := table size.
 	
-	model perform: selectRowMessage with: 0.
+	selectRowMessage 
+		ifNotNil:[
+			model perform: selectRowMessage with: 0
+		].
 		
 	nrows = 0 ifTrue:[^self].
 	
