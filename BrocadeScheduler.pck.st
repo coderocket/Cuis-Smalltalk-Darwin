@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 4 February 2025 at 6:23:13 pm'!
+'From Cuis7.3 [latest update: #7041] on 6 February 2025 at 10:52:42 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 65!
+!provides: 'BrocadeScheduler' 1 75!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -323,6 +323,26 @@ AddCampusCommand subclass: #RemoveCampusCommand
 RemoveCampusCommand class
 	instanceVariableNames: ''!
 
+!classDefinition: #AddClassroomCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AddClassroomCommand
+	instanceVariableNames: 'campus code capacity floor classroom'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AddClassroomCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AddClassroomCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #RemoveClassroomCommand category: #'BrocadeScheduler-UndoRedo'!
+AddClassroomCommand subclass: #RemoveClassroomCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'RemoveClassroomCommand class' category: #'BrocadeScheduler-UndoRedo'!
+RemoveClassroomCommand class
+	instanceVariableNames: ''!
+
 !classDefinition: #AddLecturerCommand category: #'BrocadeScheduler-UndoRedo'!
 UndoRedoCommand subclass: #AddLecturerCommand
 	instanceVariableNames: 'school code description rank quota'
@@ -361,6 +381,86 @@ AddSchoolCommand subclass: #RemoveSchoolCommand
 	category: 'BrocadeScheduler-UndoRedo'!
 !classDefinition: 'RemoveSchoolCommand class' category: #'BrocadeScheduler-UndoRedo'!
 RemoveSchoolCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #AddStencilCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AddStencilCommand
+	instanceVariableNames: 'description college stencil semester'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AddStencilCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AddStencilCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #RemoveStencilCommand category: #'BrocadeScheduler-UndoRedo'!
+AddStencilCommand subclass: #RemoveStencilCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'RemoveStencilCommand class' category: #'BrocadeScheduler-UndoRedo'!
+RemoveStencilCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignClassroomCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AssignClassroomCommand
+	instanceVariableNames: 'assignment room'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AssignClassroomCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AssignClassroomCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #UnassignClassroomCommand category: #'BrocadeScheduler-UndoRedo'!
+AssignClassroomCommand subclass: #UnassignClassroomCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'UnassignClassroomCommand class' category: #'BrocadeScheduler-UndoRedo'!
+UnassignClassroomCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignLecturerCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AssignLecturerCommand
+	instanceVariableNames: 'assignment lecturer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AssignLecturerCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AssignLecturerCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #UnassignLecturerCommand category: #'BrocadeScheduler-UndoRedo'!
+AssignLecturerCommand subclass: #UnassignLecturerCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'UnassignLecturerCommand class' category: #'BrocadeScheduler-UndoRedo'!
+UnassignLecturerCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignTimeSlotCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AssignTimeSlotCommand
+	instanceVariableNames: 'assignment day hour'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AssignTimeSlotCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AssignTimeSlotCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #UnassignTimeSlotCommand category: #'BrocadeScheduler-UndoRedo'!
+AssignTimeSlotCommand subclass: #UnassignTimeSlotCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'UnassignTimeSlotCommand class' category: #'BrocadeScheduler-UndoRedo'!
+UnassignTimeSlotCommand class
 	instanceVariableNames: ''!
 
 !classDefinition: #EditLecturerCommand category: #'BrocadeScheduler-UndoRedo'!
@@ -1468,16 +1568,18 @@ allowsMorphDrop
 allowsSubmorphDrag
 	^false! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:26'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:30:06'!
 assign: anAssignment
 
-	self assert: anAssignment notNil ; assert: room notNil.
+	| aCommand |
+
+	self assert: anAssignment notNil ; assert: room notNil.	
 	
-	anAssignment addClassroom: room.
+	aCommand := AssignClassroomCommand new.
+	aCommand assignment: anAssignment ; room: room.
 	
-	anAssignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
-	
-	room campus college changed: #assignmentsTable.! !
+	BrocadeCommandHistory instance do: aCommand. 	
+! !
 
 !ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 18:22:49'!
 build
@@ -1564,14 +1666,19 @@ room
 room: aClassroom
 	room := aClassroom ! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:19:46'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:33:33'!
 unassign: anAssignment
 
-	self assert: room notNil.
-	
-	anAssignment removeClassroom: room.
+	| aCommand |
 
-	anAssignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
+	self assert: room notNil.
+
+	self assert: room notNil; assert: anAssignment notNil.	
+	
+	aCommand := UnassignClassroomCommand new. 
+	aCommand assignment: anAssignment ; lecturer: room.
+	
+	BrocadeCommandHistory instance do: aCommand. 	
 	
 ! !
 
@@ -1624,7 +1731,7 @@ aboutToBeGrabbedBy: aHand
 
 	^owner aboutToGrabLecturer: self! !
 
-!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:23:25'!
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/6/2025 22:24:37'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	newOwnerMorph isWorldMorph 
@@ -1633,23 +1740,21 @@ justDroppedInto: newOwnerMorph event: anEvent
 			lecturer school college changed: #assignmentsTable. ].
 	
 	newOwnerMorph isKindOf: AssignmentTableCell 	:: 
-		ifTrue:[  
-			self assign: newOwnerMorph assignmentInRow]
+		ifTrue:[ 
+			self assign: newOwnerMorph assignmentInRow ]
 		ifFalse:[
 			self addAlarm: #delete after: 0.]
 		! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:01:36'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:24:12'!
 assign: anAssignment
 
-	self assert: anAssignment notNil ; assert: lecturer notNil.
+	| aCommand |
 	
-	anAssignment addLecturer: lecturer.
+	aCommand := AssignLecturerCommand new.
+	aCommand assignment: anAssignment ; lecturer: lecturer.
 	
-	lecturer changed: #assignmentsTable.
-	
-	lecturer school college changed: #assignmentsTable.
-	
+	BrocadeCommandHistory instance do: aCommand. 	
 ! !
 
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 17:42:06'!
@@ -1737,14 +1842,17 @@ lecturer
 lecturer: aLecturer
 	lecturer := aLecturer! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:04:47'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:31:28'!
 unassign: anAssignment
 
-	self assert: lecturer notNil; assert: anAssignment notNil.
+	| aCommand |
+
+	self assert: lecturer notNil; assert: anAssignment notNil.	
 	
-	anAssignment removeLecturer: lecturer.
+	aCommand := UnassignLecturerCommand new.
+	aCommand assignment: anAssignment ; lecturer: lecturer.
 	
-	lecturer changed: #assignmentsTable.
+	BrocadeCommandHistory instance do: aCommand. 	
 
 ! !
 
@@ -1773,31 +1881,16 @@ new: aLecturer
 	
 	^aLecturerMorph! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 21:53:07'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:49:48'!
 assignDay: aDayInteger hour: anHourInteger
 
-	| college interval hh tt |
+	| aCommand |
 	
-	college := model unit module college.
+	aCommand := AssignTimeSlotCommand new.
 	
-	interval :=  college availableHoursForDay: aDayInteger.
+	aCommand day: aDayInteger ; hour: anHourInteger ; assignment: model.
 	
-	model unit duration > interval size ifTrue:[^self]. "don't assign if the duration cannot fit in the availabe hours for the given day"
-	
-	hh := anHourInteger max: interval first.
-	
-	self assert: hh >= interval first.
-	
-	hh := anHourInteger min: interval last.
-	
-	self assert: hh <= interval last.
-	
-	tt := hh + model unit duration - interval last max: 0.
-	
-	hh := hh - tt.
-		
-	model day: aDayInteger ; hour: hh.
-	model unit module college changed: #assignmentsTable ! !
+	BrocadeCommandHistory instance do: aCommand.! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:17:01'!
 build
@@ -1890,11 +1983,16 @@ model
 model: anAssignment
 	model := anAssignment! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 23:24:10'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:51:02'!
 unassign
 
-	model day: nil ;  hour: nil.	
-
+	| aCommand |
+	
+	aCommand := UnassignTimeSlotCommand new.
+	
+	aCommand day: model day ; hour: model hour ; assignment: model.
+	
+	BrocadeCommandHistory instance do: aCommand.
 ! !
 
 !AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:24:02'!
@@ -2281,14 +2379,14 @@ addCampusDialog: model
 	
 ! !
 
-!CampusBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 17:03:42'!
+!CampusBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:56:01'!
 addClassroomDialog: model
 
-	| aClassroom mold campuses aDialog position |
+	| anAddClassroomCommand mold campuses aDialog position |
 
 	campuses := ListModel with: (model campuses asOrderedCollection sort:[:x :y | x description <= y description]).
 	
-	aClassroom := Classroom new.
+	anAddClassroomCommand := AddClassroomCommand new.
 	
 	mold := BidiMold new. 
 	
@@ -2300,10 +2398,11 @@ addClassroomDialog: model
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
+		callback:[:value | anAddClassroomCommand campus: (campuses at: value)];
 		beRequired.
 	(mold stringField)
 		label: 'מזהה החדר';
-		on: #code of: aClassroom;
+		on: #code of: anAddClassroomCommand;
 		addCondition:[:input | | campus |
 			campus := mold fields at: 1 :: value. 
 			campus roomAt: input :: isNil ]  
@@ -2311,7 +2410,7 @@ addClassroomDialog: model
 		beRequired.
 	(mold integerField)
 		label: 'קומה';
-		on: #floor of: aClassroom;
+		on: #floor of: anAddClassroomCommand;
 		addCondition:[:input :value | | campus |
 			campus := mold fields at: 1 :: value. 
 			(campus firstFloor <= value) and:[value <= campus lastFloor] ] 
@@ -2319,7 +2418,7 @@ addClassroomDialog: model
 		beRequired.
 	(mold integerField)
 		label: 'קיבולת';
-		on: #capacity of: aClassroom;
+		on: #capacity of: anAddClassroomCommand;
 		addCondition:[:input :value | 
 			value > 0 ] 
 		labeled: 'כיתה חייבת להכיל לפחות סטודנט אחד.';
@@ -2331,10 +2430,7 @@ addClassroomDialog: model
 	
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 	
-	mold when: #edited send: #addClassroom: to: (mold fields at:1 :: value) with: aClassroom.
-
-	mold when: #edited send: #changed: to: model with: #roomsTable.
-! !
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: anAddClassroomCommand.! !
 
 !ResourceTimeTable methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:22:50'!
 buildMorphicWindow
@@ -3410,16 +3506,18 @@ assignmentMenuSpec
 		#(40	'הסר תבנית' 			$c 	window 	removeStencilFromSemester )
 	).! !
 
-!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/3/2025 10:04:54'!
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/5/2025 21:26:06'!
 openAddStencilDialog
 
-	| mold position aDialog semester stencil |
+	| mold position aDialog semester anAddStencilCommand |
 
 	semester := self selectedSemester.
 	
 	semester ifNil:[^self].
 	
-	stencil := Stencil new.
+	anAddStencilCommand := AddStencilCommand new.
+	
+	anAddStencilCommand semester: semester ; college: model.
 	
 	mold := BidiMold new.
 
@@ -3427,7 +3525,7 @@ openAddStencilDialog
 	
 	(mold stringField)
 		label: 'קוד התבנית' ;
-		on: #description of: stencil;
+		on: #description of: anAddStencilCommand;
 		beRequired.
 		
 	position := UISupervisor ui activeHand morphPosition.
@@ -3436,9 +3534,7 @@ openAddStencilDialog
 	
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 	
-	mold when: #edited send: #addNewStencil: to: stencil with: semester.
-	
-	mold when: #edited send: #changed: to: model with: #stencilNames 
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: anAddStencilCommand.
 	
 ! !
 
@@ -3515,8 +3611,11 @@ undo
 	
 	college changed: #campuses! !
 
-!RemoveCampusCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:22:37'!
+!RemoveCampusCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 20:56:14'!
 doIt
+
+	self assert: campus rooms isEmpty.
+	
 	super undo! !
 
 !RemoveCampusCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:22:06'!
@@ -3524,6 +3623,74 @@ title
 	^'הסרת בית ספר חדש'! !
 
 !RemoveCampusCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:22:45'!
+undo
+	super doIt! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:52:19'!
+campus: aCampus
+	campus := aCampus! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:51:48'!
+capacity: anInteger
+	capacity := anInteger! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:50:52'!
+code
+	^code! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:50:52'!
+code: anInteger
+	code := anInteger! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:57:49'!
+doIt
+	
+	self assert: classroom isNil.
+	
+	classroom := Classroom new.
+	
+	classroom code: code; floor: floor; capacity: capacity.
+	
+	campus addClassroom: classroom.
+	
+	campus college changed: #roomsTable.
+! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:55:28'!
+floor
+	^floor! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:55:25'!
+floor: anInteger
+	floor := anInteger! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:52:38'!
+title
+	^'הוספת חדר חדש'! !
+
+!AddClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:58:14'!
+undo
+	
+	self assert: classroom notNil.
+	
+	campus removeClassroom: classroom.
+	
+	classroom := nil.
+	
+	campus college changed: #lecturersTable! !
+
+!RemoveClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 20:55:32'!
+doIt
+
+	self assert: classroom assignment isEmpty.
+
+	super undo! !
+
+!RemoveClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:59:56'!
+title
+	^'הסרת חדר'! !
+
+!RemoveClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:00:12'!
 undo
 	super doIt! !
 
@@ -3539,12 +3706,14 @@ code: anInteger
 description: aString
 	description := aString! !
 
-!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:29:38'!
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 20:58:57'!
 doIt
 	
 	| aLecturer |
 	
 	aLecturer := Lecturer new.
+	
+	aLecturer code: code; description: description; rank: rank; quota: quota.
 	
 	school addLecturer: aLecturer.
 	
@@ -3577,8 +3746,15 @@ undo
 	
 	school college changed: #lecturersTable! !
 
-!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:32:02'!
+!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 20:54:54'!
 doIt
+
+	| aLecturer |
+	
+	aLecturer := school lecturerAt: code.
+
+	self assert: aLecturer assignment isEmpty.
+	
 	super undo! !
 
 !RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:31:23'!
@@ -3629,8 +3805,11 @@ undo
 	
 	college changed: #schools! !
 
-!RemoveSchoolCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:14:24'!
+!RemoveSchoolCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 20:49:52'!
 doIt
+
+	self assert: school lecturers isEmpty.
+	
 	super undo! !
 
 !RemoveSchoolCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:14:15'!
@@ -3638,6 +3817,214 @@ title
 	^'הסרת בית ספר מהמערכת'! !
 
 !RemoveSchoolCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:14:31'!
+undo
+	super doIt! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:21:08'!
+college: aCollege
+	college := aCollege! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:21:08'!
+description
+	^description! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:21:08'!
+description: aString
+	description := aString! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:24:33'!
+doIt
+
+	self assert: stencil isNil.
+	
+	stencil := Stencil new.
+	
+	stencil description: description.
+	
+	semester addStencil: stencil.
+	
+	college changed: #stencilNames! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:24:05'!
+semester: aSemester
+	semester := aSemester! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:22:07'!
+title
+	^'הוספת תבנית חדשה'! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:26:56'!
+undo
+
+	self assert: stencil notNil.
+	
+	semester removeStencil: stencil.
+	
+	stencil := nil.
+	
+	college changed: #stencilNames! !
+
+!RemoveStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:13:24'!
+doIt
+	
+	self assert: stencil assignments isEmpty.
+	
+	super undo! !
+
+!RemoveStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:11:59'!
+title
+	^'הסרת תבנית'! !
+
+!RemoveStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:12:36'!
+undo
+	super doIt! !
+
+!AssignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:28:12'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!AssignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:29:01'!
+doIt
+
+	assignment addClassroom: room.
+	
+	assignment lecturers do:[:eachLecturer | eachLecturer changed: #assignmentsTable] .
+	
+	room campus college changed: #assignmentsTable.! !
+
+!AssignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:28:19'!
+room: aClassroom
+	room := aClassroom ! !
+
+!AssignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:33:01'!
+title
+	^'שיבוץ חדר'! !
+
+!AssignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:32:42'!
+undo
+
+	assignment removeClassroom: room.
+	
+	room changed: #assignmentsTable.
+	
+	room school college changed: #assignmentsTable.
+	! !
+
+!UnassignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:33:21'!
+doIt
+	super undo! !
+
+!UnassignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:33:12'!
+title
+	^'הסרת שיבוץ חדר'! !
+
+!UnassignClassroomCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:33:24'!
+undo
+	super doIt! !
+
+!AssignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:27:49'!
+assignment: anAssignment
+	assignment  := anAssignment ! !
+
+!AssignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:18:03'!
+doIt
+
+	assignment addLecturer: lecturer.
+	
+	lecturer changed: #assignmentsTable.
+	
+	lecturer school college changed: #assignmentsTable.
+	! !
+
+!AssignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:27:59'!
+lecturer: aLecturer
+	lecturer := aLecturer! !
+
+!AssignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:17:26'!
+title
+	^'שיבוץ מרצה'! !
+
+!AssignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:18:26'!
+undo
+
+	assignment removeLecturer: lecturer.
+	
+	lecturer changed: #assignmentsTable.
+	
+	lecturer school college changed: #assignmentsTable.
+	! !
+
+!UnassignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:21:11'!
+doIt
+	super undo! !
+
+!UnassignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:20:53'!
+title
+	^'הסרת שיבוץ מרצה'! !
+
+!UnassignLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:21:14'!
+undo
+	super doIt! !
+
+!AssignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:35:02'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!AssignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:35:35'!
+day: anInteger
+	day := anInteger! !
+
+!AssignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:52:34'!
+doIt
+
+	| college interval hh tt  |
+	
+	college := assignment unit module college.
+	
+	interval :=  college availableHoursForDay: day.
+	
+	assignment unit duration > interval size ifTrue:[^self]. "don't assign if the duration cannot fit in the availabe hours for the given day"
+	
+	hh := hour max: interval first.
+	
+	self assert: hh >= interval first.
+	
+	hh := hour min: interval last.
+	
+	self assert: hh <= interval last.
+	
+	tt := hh + assignment unit duration - interval last max: 0.
+	
+	hh := hh - tt.
+		
+	assignment day: day ; hour: hh.
+	
+	assignment unit module college changed: #assignmentsTable ! !
+
+!AssignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:35:43'!
+hour: anInteger
+	hour := anInteger! !
+
+!AssignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:51:37'!
+title
+	^'שיבוץ יום ושעה'! !
+
+!AssignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:40:09'!
+undo
+
+	assignment day: nil; hour:nil.
+	
+	assignment unit module college changed: #assignmentsTable 	! !
+
+!UnassignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:52:16'!
+doIt
+	super undo! !
+
+!UnassignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:51:28'!
+title
+	^'הסר שיבוץ יום ושעה'! !
+
+!UnassignTimeSlotCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:52:20'!
 undo
 	super doIt! !
 
