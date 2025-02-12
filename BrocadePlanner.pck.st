@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 11 February 2025 at 3:55:25 pm'!
+'From Cuis7.3 [latest update: #7041] on 12 February 2025 at 10:25:33 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 64!
+!provides: 'BrocadePlanner' 1 83!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -85,7 +85,7 @@ AcademicYear class
 
 !classDefinition: #College category: #'BrocadePlanner-Model'!
 Object subclass: #College
-	instanceVariableNames: 'campuses modules programs description schools'
+	instanceVariableNames: 'modules programs description'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadePlanner-Model'!
@@ -105,7 +105,7 @@ Module class
 
 !classDefinition: #Semester category: #'BrocadePlanner-Model'!
 Object subclass: #Semester
-	instanceVariableNames: 'academicYear description stencils modules'
+	instanceVariableNames: 'academicYear description modules'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadePlanner-Model'!
@@ -321,6 +321,23 @@ detachAcademicTrack: anAcademicTrack
 displayStringOrText
 	^description! !
 
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:04:32'!
+fromXML: anXMLElement
+
+	| aString |
+	
+	self assert: anXMLElement name = 'program'.
+	
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
+
+	anXMLElement elements do:[:eachElement | | anAcademicTrack |
+		anAcademicTrack := AcademicTrack new.
+		self addAcademicTrack: anAcademicTrack.
+		anAcademicTrack fromXML: eachElement	].
+! !
+
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:41'!
 initialize
 	tracks := Set new! !
@@ -361,7 +378,7 @@ xmlOut: anXMLWriter
 	
 	anXMLWriter endTag:'program'.! !
 
-!AcademicProgram class methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 21:06:46'!
+!AcademicProgram class methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 22:04:30'!
 newFrom: aSpec
 
 	| anAcademicProgram |
@@ -382,7 +399,7 @@ newFrom: aSpec
 				aYear description: ('שנה {1}' format:{eachYearIndex}).
 			
 				{ 'סמסטר א' . 'סמסטר ב' } do:[:eachName | | aSemester |
-					aSemester := Semester new.
+					aSemester := aSpec college newSemester.
 					aSemester description: eachName.
 					aYear addSemester: aSemester ].
 				
@@ -452,6 +469,23 @@ detachAcademicYear: anAcademicYear
 !AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 14:31:37'!
 displayStringOrText
 	^description! !
+
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:04:24'!
+fromXML: anXMLElement
+
+	| aString |
+	
+	self assert: anXMLElement name = 'track'.
+	
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
+
+	anXMLElement elements do:[:eachElement | | anAcademicYear |
+		anAcademicYear := AcademicYear new.
+		self addAcademicYear: anAcademicYear.
+		anAcademicYear fromXML: eachElement	].
+! !
 
 !AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:20:32'!
 initialize
@@ -678,6 +712,25 @@ detachSemester: aSemester
 displayStringOrText
 	^description! !
 
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:21:37'!
+fromXML: anXMLElement
+
+	| aString college |
+	
+	self assert: anXMLElement name = 'year'.
+	
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
+	
+	college := track program college.
+
+	anXMLElement elements do:[:eachElement | | aSemester |
+		aSemester := college newSemester.
+		self addSemester: aSemester.
+		aSemester fromXML: eachElement	].
+! !
+
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:09:36'!
 initialize
 
@@ -748,78 +801,6 @@ removeAcademicProgram: anAcademicProgram
 	
 	self detachAcademicProgram: anAcademicProgram.! !
 
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:01:06'!
-addSchool: aSchool
-
-	self assert: aSchool college isNil.
-	
-	aSchool college: self.
-	
-	schools add: aSchool! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:00:09'!
-detachSchool: aSchool
-
-	schools remove: aSchool ! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:34:07'!
-lecturerAt: anIntegerCode
-
-	^schools detect:[:eachSchool | 		eachSchool lecturerAt: anIntegerCode :: notNil ] 
-		ifFound:[:aSchool | 			aSchool lecturerAt: anIntegerCode ]
-		ifNone:[nil]! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:00:38'!
-removeSchool: aSchool
-
-	self assert: aSchool college == self.
-	
-	aSchool detach.
-	
-	self detachSchool: aSchool.! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 19:57:19'!
-schoolAt: aString
-
-	^schools detect:[:eachLecturer | eachLecturer description = aString ] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
-
-!College methodsFor: 'schools' stamp: 'DF 1/16/2025 20:25:55'!
-schools
-	^schools! !
-
-!College methodsFor: 'campuses' stamp: 'DF 1/31/2025 19:45:15'!
-addCampus: aCampus
-
-	self assert: aCampus college isNil.
-	
-	aCampus college: self.
-	
-	campuses add: aCampus.
-! !
-
-!College methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:16:26'!
-campusAt: aString
-
-	^campuses detect:[:eachCampus | eachCampus description = aString ] ifFound:[:aCampus | aCampus] ifNone:[nil]! !
-
-!College methodsFor: 'campuses' stamp: 'DF 1/18/2025 16:33:29'!
-campuses
-	^campuses! !
-
-!College methodsFor: 'campuses' stamp: 'DF 12/25/2024 22:35:02'!
-detachCampus: aCampus
-
-	campuses remove: aCampus! !
-
-!College methodsFor: 'campuses' stamp: 'DF 12/27/2024 15:13:36'!
-removeCampus: aCampus
-
-	self assert: aCampus college == self.
-	
-	aCampus detach.
-	
-	self detachCampus: aCampus.! !
-
 !College methodsFor: 'modules' stamp: 'DF 12/27/2024 15:18:08'!
 addModule: aModule
 
@@ -828,25 +809,6 @@ addModule: aModule
 	aModule college: self.
 	
 	modules add: aModule! !
-
-!College methodsFor: 'modules' stamp: 'DF 1/31/2025 22:07:44'!
-addNewModule: aModuleSpec
-
-	| program track academicYear semester aModule |
-	
-	program := self programAt: aModuleSpec program. 
-		
-	track := program trackAt: aModuleSpec track.
-		
-	academicYear := track academicYearAt: aModuleSpec year. 
-			
-	semester := academicYear semesterAt: aModuleSpec semester.
-	
-	aModule := Module newFrom: aModuleSpec.
-	
-	semester addModule: aModule.
-	
-! !
 
 !College methodsFor: 'modules' stamp: 'DF 12/25/2024 22:38:09'!
 detachModule: aModule
@@ -891,16 +853,28 @@ academicYearNames
 
 	^{ 'שנה 1' . 'שנה 2' . 'שנה 3' . 'שנה 4' }! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 20:52:31'!
-availableHoursForDay: aDayInteger
+!College methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:41:21'!
+fromXML: anXMLElement
 
-	self assert: aDayInteger >=1 ; assert: aDayInteger <=6.
+	| aString |
 	
-	aDayInteger = 6
-		ifTrue:[^ 8 to: 14 ]
-		ifFalse:[^ 8 to: 23 ]
+	self assert: anXMLElement name = 'college'.
 	
-	! !
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
+
+	anXMLElement elementAt: 'modules' :: elements do:[:eachElement | |aModule | 
+		aModule := Module new.
+		self addModule: aModule.
+		aModule fromXML: eachElement ].
+	
+	anXMLElement elementAt: 'programs' :: elements do:[:eachElement | |anAcademicProgram | 
+		anAcademicProgram := AcademicProgram new.
+		self addAcademicProgram: anAcademicProgram.
+		anAcademicProgram fromXML: eachElement ].
+
+! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 14:16:29'!
 importAcademicProgram: aFileEntry
@@ -979,83 +953,36 @@ importAcademicProgram: aFileEntry
 		self addModule: aModule ]
 		! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 14:24:49'!
-importAcademicStaff: aFileEntry
-
-	| aReadStream aCSVReader headers  schoolIndex lecturerCodeIndex firstNameIndex familyNameIndex rankIndex quotaIndex |
-
-	aReadStream := aFileEntry readStream.
-	
-	aCSVReader := NeoCSVReader on: aReadStream.
-	
-	headers := Dictionary new.
-	
-	aCSVReader next withIndexDo:[:eachName :eachIndex | headers at: eachName put: eachIndex].
-	
-	schoolIndex := headers at: 'בית ספר'.
-
-	lecturerCodeIndex := headers at: 'קוד מרצה'.
-	
-	firstNameIndex := headers at: 'שם פרטי'.
-	
-	familyNameIndex := headers at: 'שם משפחה'.
-	
-	rankIndex := headers at: 'דרגה'.
-	
-	quotaIndex := headers at: 'שעות למשרה'.
-	
-	aCSVReader do:[:eachRow | | aSchool aLecturer |
-		
-		aSchool := self schoolAt: (eachRow at: schoolIndex).
-		
-		aLecturer := Lecturer new.
-			
-		aLecturer 
-			code: (Number readFrom: (eachRow at: lecturerCodeIndex)) ; 
-			description: ('{1} {2}' format:{ eachRow at: firstNameIndex . eachRow at: familyNameIndex }) ;
-			rank: (eachRow at: rankIndex );
-			quota: (Number readFrom: (eachRow at: quotaIndex )).
-			
-		aSchool addLecturer: aLecturer.
-		
-	]
-		! !
-
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:56:53'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:29:51'!
 initialize
 
-	campuses := Set new.
-	
 	modules := Set new.
 	
-	schools := Set new.
 	
 	programs := Set new.! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 20:03:21'!
+!College methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 21:36:12'!
 invariant
 
 	programs do: [:anAcademicProgram | anAcademicProgram invariant ].
 
 	programs do: [:anAcademicProgram | self assert: anAcademicProgram college == self ].
 	
-	campuses do: [:aCampus | aCampus invariant ].
-
-	campuses do: [:aCampus | self assert: aCampus college == self ].
-
 	modules do: [:aModule | aModule invariant ].
 
 	modules do: [:aModule | self assert: aModule college == self ].
 
-	schools do: [:aSchool | aSchool invariant ].
 
-	schools do: [:aSchool | self assert: aSchool college == self ].
 	! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 14:36:53'!
 lecturerRanks
 
 	^`{'סגל בכיר' . 'סגל זוטר' . 'מרצה מן החוץ' }` asOrderedCollection! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:19:13'!
+newSemester
+	^Semester new! !
 
 !College methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 22:34:54'!
 semesterNames
@@ -1067,15 +994,8 @@ trackNames
 
 	^{ 'מסלול יום' . 'מסלול ערב' . 'מסלול משולב' }! !
 
-!College methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 15:49:30'!
-xmlOut: anXMLWriter
-	
-	anXMLWriter startElement: 'college' attributeList: {'description' -> description } asDictionary ; endTag.
-	
-	anXMLWriter startTag: 'campuses' ; endTag.
-	campuses do:[:each |
-		each xmlOut: anXMLWriter].
-	anXMLWriter endTag: 'campuses'.
+!College methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:32:51'!
+xmlElementsOut: anXMLWriter
 	
 	anXMLWriter startTag: 'modules' ; endTag.
 	modules do:[:each |
@@ -1086,6 +1006,15 @@ xmlOut: anXMLWriter
 	programs do:[:each |
 		each xmlOut: anXMLWriter ].
 	anXMLWriter endTag: 'programs'.
+	
+! !
+
+!College methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:33:04'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'college' attributeList: {'description' -> description } asDictionary ; endTag.
+	
+	self xmlElementsOut: anXMLWriter.
 	
 	anXMLWriter endTag: 'college'.! !
 
@@ -1158,6 +1087,23 @@ elective
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:41:22'!
 elective: aBoolean
 	elective := aBoolean! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:14:30'!
+fromXML: anXMLElement
+
+	self assert: anXMLElement name = 'module'.
+	
+	code := Integer readFrom: (anXMLElement attributeAt: 'code').
+	
+	description := anXMLElement attributeAt: 'description'.
+	
+	elective := (anXMLElement attributeAt: 'elective') = 'true'.
+
+	anXMLElement elementsDo: [:eachElement | | duration |
+		
+		duration := Integer readFrom:(eachElement attributeAt: 'duration').
+		
+		self updateAcademicUnit: eachElement name duration: duration ]! !
 
 !Module methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:41:31'!
 initialize
@@ -1251,34 +1197,13 @@ xmlOut: anXMLWriter
 academicYear
 	^academicYear ! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 21:39:48'!
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:08'!
 addModule: aModule
 
 	aModule attachSemester: self.
 	
 	self attachModule: aModule.
-	
-	stencils do:[:eachStencil |
-
-			aModule units do:[:eachUnit | 	| anAssignment |
-				
-				eachStencil assignments do:[:x | self assert: (x unit ~= eachUnit) ].
-
-				anAssignment := Assignment new.
-		
-				anAssignment unit: eachUnit.
-			
-				eachStencil addAssignment: anAssignment ] ].
-		! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:31:03'!
-addStencil: aStencil
-	
-	self assert: aStencil semester isNil.
-	
-	aStencil attachSemester: self.
-	
-	self attachStencil: aStencil. ! !
+! !
 
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:43:56'!
 attachAcademicYear: anAcademicYear
@@ -1291,11 +1216,6 @@ attachAcademicYear: anAcademicYear
 attachModule: aModule
 
 	modules add: aModule! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:31:50'!
-attachStencil: aStencil
-
-	stencils add: aStencil! !
 
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:37'!
 description
@@ -1315,68 +1235,61 @@ detachModule: aModule
 
 	modules remove: aModule.! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:32:27'!
-detachStencil: aStencil
-
-	stencils remove: aStencil! !
-
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:20:23'!
 displayStringOrText
 	^description! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:52:55'!
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:24:31'!
 initialize
 
-	stencils := Set new.
-	
 	modules := Set new.! !
-
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:07:02'!
-invariant
-
-	stencils do: [:aStencil | aStencil invariant ].
-
-	stencils do: [:aStencil | self assert: aStencil semester == self ].
-	! !
 
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 15:31:36'!
 modules
 	^modules! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 10:33:03'!
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:33'!
 removeModule: aModule
-
-	stencils do:[:eachStencil |
-
-			aModule units do:[:eachUnit | 					
-				eachStencil assignments select:[:eachAssignment | 	eachAssignment unit = eachUnit ] ::
-					do:[:eachAssignment |
-						eachStencil removeAssignment: eachAssignment ] ] ].
 
 	aModule detachSemester: self.
 	
 	self detachModule: aModule.! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:32:58'!
-removeStencil: aStencil
+!Semester methodsFor: 'xml' stamp: 'DF 2/12/2025 17:37:33'!
+fromXML: anXMLElement
 
-	self assert: aStencil semester == self.
+	| aString college |
 	
-	aStencil detach.
+	self assert: anXMLElement name = 'semester'.
 	
-	self detachStencil: aStencil.! !
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:02:44'!
-stencils
-	^stencils! !
+	college := academicYear academicTrack program college.
+	
+	anXMLElement elementAt: 'modules' :: elements do:[:eachElement | | code module |
+		code := eachElement attributeAt: 'code' :: asInteger.
+		module := college moduleAt: code.
+		self addModule: module ].
+! !
 
-!Semester methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 15:52:11'!
+!Semester methodsFor: 'xml' stamp: 'DF 2/12/2025 17:42:15'!
+xmlElementsOut: anXMLWriter
+
+	anXMLWriter startTag: 'modules' ; endTag.
+	
+	modules do:[:eachModule |
+		anXMLWriter startElement: 'module' attributeList: { 'code' -> eachModule code asString } asDictionary ; endEmptyTag: 'module' ].
+
+	anXMLWriter endTag: 'modules'.! !
+
+!Semester methodsFor: 'xml' stamp: 'DF 2/12/2025 17:35:05'!
 xmlOut: anXMLWriter
 	
 	anXMLWriter startElement: 'semester' attributeList: {'description' -> description } asDictionary ; endTag.
 	
-	modules do:[:eachModule |
-		anXMLWriter startElement: 'module' attributeList: { 'code' -> eachModule code asString } asDictionary ; endEmptyTag: 'module' ].
+	self xmlElementsOut: anXMLWriter.
 	
 	anXMLWriter endTag:'semester'.! !
 
@@ -1917,7 +1830,7 @@ removeModuleFromSemester
 	BrocadeCommandHistory instance do: aCommand.
 ! !
 
-!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 1/26/2025 18:45:48'!
+!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 2/12/2025 22:24:50'!
 buildAcademicUnitsTable
 
 	| unitsTable |
@@ -1933,6 +1846,7 @@ buildAcademicUnitsTable
 	unitsTable menuFactory: BidiMenuMorph.
 	
 	unitsTable columnFactory: {
+		1 -> (PluggableMorphFactory new formatter:[:aNumber | aNumber printStringFractionDigits:1 ] ; yourself) .
 		7 -> (PluggableMorphFactory new formatter:[:aYear |  aYear description asBidi writingDirection: #rightToLeft  ] ; yourself) } asDictionary.
 		
 	^unitsTable ! !
@@ -2017,7 +1931,7 @@ addAcademicProgramDialog: model
 	
 ! !
 
-!AcademicProgramBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:57:37'!
+!AcademicProgramBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 22:07:31'!
 addNewModuleDialog: model
 
 	| mold aDialog position aCommand |
@@ -2064,6 +1978,10 @@ addNewModuleDialog: model
 			lec + rec + lab > 0  ]
 		labeled: 'קורס ללא שעות.' ;
 		beRequired.
+	(mold checkboxField)
+		label: 'קורס בחירה';
+		on: #elective of: aCommand;
+		beRequired.
 	
 	position := UISupervisor ui activeHand morphPosition.
 	 
@@ -2075,7 +1993,39 @@ addNewModuleDialog: model
 	
 ! !
 
-!ModuleBrowser methodsFor: 'GUI building' stamp: 'DF 2/3/2025 19:56:16'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:42:42'!
+programs
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
+	
+	model programs do:[:eachTuple |
+		table add: (eachTuple collect:[:each | { each description asBidi writingDirection:#rightToLeft } ]) ].
+	
+	^table
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:59:43'!
+selectProgram: aProgramIndex
+
+	aProgramIndex <= 1 
+		ifTrue:[
+			theProgram := nil.
+			^self].
+	
+	theProgram := model programs at: aProgramIndex - 1 . "minus 1 to account for the header"
+	
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:59:06'!
+update: aSymbol
+
+	self changed: aSymbol! !
+
+!ModuleBrowser methodsFor: 'GUI building' stamp: 'DF 2/12/2025 22:18:37'!
 buildDetailsPane
 
 	| detailsPane anEditModuleCommand aPane |
@@ -2085,6 +2035,8 @@ buildDetailsPane
 	mold fields removeAll.
 	
 	anEditModuleCommand := EditModuleCommand from: model.
+	
+	anEditModuleCommand module: model.
 	
 	(mold integerField)
 		label: 'קוד הקורס';
@@ -2208,38 +2160,6 @@ initialize
 	super initialize.
 	
 	mold := BidiMold new.! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:42:42'!
-programs
-
-	| table |
-	
-	table := OrderedCollection new.
-
-	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
-	
-	model programs do:[:eachTuple |
-		table add: (eachTuple collect:[:each | { each description asBidi writingDirection:#rightToLeft } ]) ].
-	
-	^table
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:59:43'!
-selectProgram: aProgramIndex
-
-	aProgramIndex <= 1 
-		ifTrue:[
-			theProgram := nil.
-			^self].
-	
-	theProgram := model programs at: aProgramIndex - 1 . "minus 1 to account for the header"
-	
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:59:06'!
-update: aSymbol
-
-	self changed: aSymbol! !
 
 !OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 11:24:30'!
 buildMorphicWindow
@@ -2393,6 +2313,10 @@ initialize
 instance
 
 	^Instance! !
+
+!AddAcademicProgramCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:18:48'!
+college
+	^college! !
 
 !AddAcademicProgramCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:06:24'!
 college: aCollege
@@ -2582,7 +2506,7 @@ recitationDuration
 recitationDuration: anInteger
 	recitationDuration := anInteger ! !
 
-!EditModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:52:05'!
+!EditModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 22:19:48'!
 doIt
 
 	self assert: code = module code.
@@ -2596,9 +2520,7 @@ doIt
 	module updateAcademicUnit: 'תרגול' duration: recitationDuration.
 	module updateAcademicUnit: 'מעבדה' duration: labDuration.
 
-	module college changed: #unitsTable.
-
-	module college with: #summary.
+	module college changed: #unitsTable; changed: #summary.
 ! !
 
 !EditModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:49:04'!
@@ -2643,41 +2565,21 @@ from: aModule
 	
 	^anEditModuleCommand! !
 
-!NewModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:58:38'!
+!NewModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:16:01'!
 doIt
 
-	module := self makeModule! !
-
-!NewModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:59:22'!
-makeModule
-	
 	| aModule |
 		
 	aModule := Module new.
 	
-	aModule code: code ; description: description.
+	aModule code: code ; description: description ; elective: elective. 
 	
-	lectureDuration > 0
-		ifTrue:[ | aLecture |
-			aLecture := Lecture new. 
-			aLecture duration: lectureDuration.
-			aModule addAcademicUnit: aLecture ].
-
-	recitationDuration > 0
-		ifTrue:[ | aRecitation |
-			aRecitation := Recitation new.
-			aRecitation duration: recitationDuration.
-			aModule addAcademicUnit: aRecitation ].
-
-	labDuration > 0 
-		ifTrue:[ | aLaboratory |
-			aLaboratory := Laboratory new.
-			aLaboratory duration: labDuration.
-			aModule addAcademicUnit: aLaboratory ].
+	aModule updateAcademicUnit: 'הרצאה' duration: lectureDuration.
+	aModule updateAcademicUnit: 'תרגול' duration: recitationDuration.
+	aModule updateAcademicUnit: 'מעבדה' duration: labDuration.
 	
 	college addModule: aModule.
-
-	^aModule! !
+! !
 
 !NewModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:42:07'!
 title

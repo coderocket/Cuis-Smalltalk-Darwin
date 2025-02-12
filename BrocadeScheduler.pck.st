@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 6 February 2025 at 10:52:42 pm'!
+'From Cuis7.3 [latest update: #7041] on 12 February 2025 at 9:40:17 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 75!
+!provides: 'BrocadeScheduler' 1 90!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -13,9 +13,29 @@ SystemOrganization addCategory: #'BrocadeScheduler-Application'!
 SystemOrganization addCategory: #'BrocadeScheduler-UndoRedo'!
 
 
+!classDefinition: #SchedulingCollege category: #'BrocadeScheduler-Model'!
+College subclass: #SchedulingCollege
+	instanceVariableNames: 'schools campuses'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'SchedulingCollege class' category: #'BrocadeScheduler-Model'!
+SchedulingCollege class
+	instanceVariableNames: ''!
+
+!classDefinition: #SchedulingSemester category: #'BrocadeScheduler-Model'!
+Semester subclass: #SchedulingSemester
+	instanceVariableNames: 'stencils'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'SchedulingSemester class' category: #'BrocadeScheduler-Model'!
+SchedulingSemester class
+	instanceVariableNames: ''!
+
 !classDefinition: #BrocadeApplication category: #'BrocadeScheduler-Application'!
 Object subclass: #BrocadeApplication
-	instanceVariableNames: 'model lastImportDirectory'
+	instanceVariableNames: 'model lastImportDirectory dirty'
 	classVariableNames: 'TheApplication'
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-Application'!
@@ -474,6 +494,302 @@ EditLecturerCommand class
 	instanceVariableNames: ''!
 
 
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:38:48'!
+addSchool: aSchool
+
+	self assert: aSchool college isNil.
+	
+	aSchool college: self.
+	
+	schools add: aSchool! !
+
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:34:17'!
+detachSchool: aSchool
+
+	schools remove: aSchool ! !
+
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:37:17'!
+importAcademicStaff: aFileEntry
+
+	| aReadStream aCSVReader headers  schoolIndex lecturerCodeIndex firstNameIndex familyNameIndex rankIndex quotaIndex |
+
+	aReadStream := aFileEntry readStream.
+	
+	aCSVReader := NeoCSVReader on: aReadStream.
+	
+	headers := Dictionary new.
+	
+	aCSVReader next withIndexDo:[:eachName :eachIndex | headers at: eachName put: eachIndex].
+	
+	schoolIndex := headers at: 'בית ספר'.
+
+	lecturerCodeIndex := headers at: 'קוד מרצה'.
+	
+	firstNameIndex := headers at: 'שם פרטי'.
+	
+	familyNameIndex := headers at: 'שם משפחה'.
+	
+	rankIndex := headers at: 'דרגה'.
+	
+	quotaIndex := headers at: 'שעות למשרה'.
+	
+	aCSVReader do:[:eachRow | | aSchool aLecturer |
+		
+		aSchool := self schoolAt: (eachRow at: schoolIndex).
+		
+		aLecturer := Lecturer new.
+			
+		aLecturer 
+			code: (Number readFrom: (eachRow at: lecturerCodeIndex)) ; 
+			description: ('{1} {2}' format:{ eachRow at: firstNameIndex . eachRow at: familyNameIndex }) ;
+			rank: (eachRow at: rankIndex );
+			quota: (Number readFrom: (eachRow at: quotaIndex )).
+			
+		aSchool addLecturer: aLecturer.
+		
+	]
+		! !
+
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:38:12'!
+lecturerAt: anIntegerCode
+
+	^schools detect:[:eachSchool | eachSchool lecturerAt: anIntegerCode :: notNil ] 
+		ifFound:[:aSchool | aSchool lecturerAt: anIntegerCode ]
+		ifNone:[nil]! !
+
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:34:03'!
+removeSchool: aSchool
+
+	self assert: aSchool college == self.
+	
+	aSchool detach.
+	
+	self detachSchool: aSchool.! !
+
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:33:55'!
+schoolAt: aString
+
+	^schools detect:[:eachLecturer | eachLecturer description = aString ] ifFound:[:aLecturer | aLecturer] ifNone:[nil]! !
+
+!SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:33:45'!
+schools
+	^schools! !
+
+!SchedulingCollege methodsFor: 'campuses' stamp: 'DF 2/11/2025 22:34:28'!
+addCampus: aCampus
+
+	self assert: aCampus college isNil.
+	
+	aCampus college: self.
+	
+	campuses add: aCampus.
+! !
+
+!SchedulingCollege methodsFor: 'campuses' stamp: 'DF 2/11/2025 22:35:06'!
+campusAt: aString
+
+	^campuses detect:[:eachCampus | eachCampus description = aString ] ifFound:[:aCampus | aCampus] ifNone:[nil]! !
+
+!SchedulingCollege methodsFor: 'campuses' stamp: 'DF 2/11/2025 22:35:14'!
+campuses
+	^campuses! !
+
+!SchedulingCollege methodsFor: 'campuses' stamp: 'DF 2/11/2025 22:35:20'!
+detachCampus: aCampus
+
+	campuses remove: aCampus! !
+
+!SchedulingCollege methodsFor: 'campuses' stamp: 'DF 2/11/2025 22:35:27'!
+removeCampus: aCampus
+
+	self assert: aCampus college == self.
+	
+	aCampus detach.
+	
+	self detachCampus: aCampus.! !
+
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:36:34'!
+availableHoursForDay: aDayInteger
+
+	self assert: aDayInteger >=1 ; assert: aDayInteger <=6.
+	
+	aDayInteger = 6
+		ifTrue:[^ 8 to: 14 ]
+		ifFalse:[^ 8 to: 23 ]
+	
+	! !
+
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:40:56'!
+fromXML: anXMLElement
+
+	super fromXML: anXMLElement.
+			
+	anXMLElement elementAt: 'campuses' :: elements do:[:eachElement | | aCampus |
+		aCampus := Campus new.
+		self addCampus: aCampus.
+		aCampus fromXML: eachElement	].
+
+	anXMLElement elementAt: 'schools' :: elements do:[:eachElement | | aSchool |
+		aSchool := School new.
+		self addSchool: aSchool.
+		aSchool fromXML: eachElement	].
+
+! !
+
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:30:03'!
+initialize
+
+	super initialize.
+	
+	campuses := Set new.
+	
+	schools := Set new.
+! !
+
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 21:36:52'!
+invariant
+
+	super invariant.
+	
+	schools do: [:aSchool | aSchool invariant ].
+
+	schools do: [:aSchool | self assert: aSchool college == self ].
+
+	campuses do: [:aCampus | aCampus invariant ].
+
+	campuses do: [:aCampus | self assert: aCampus college == self ].
+! !
+
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:19:37'!
+newSemester
+	^Semester new! !
+
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:32:31'!
+xmlElementsOut: anXMLWriter
+	
+	super xmlElementsOut: anXMLWriter.
+	
+	anXMLWriter startTag: 'campuses' ; endTag.
+	campuses do:[:each |
+		each xmlOut: anXMLWriter].
+	anXMLWriter endTag: 'campuses'.
+
+	anXMLWriter startTag: 'schools' ; endTag.
+	schools do:[:each |
+		each xmlOut: anXMLWriter].
+	anXMLWriter endTag: 'schools'.
+	
+! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:01'!
+addModule: aModule
+
+	super addModule: aModule.
+	
+	stencils do:[:eachStencil |
+
+			aModule units do:[:eachUnit | 	| anAssignment |
+				
+				eachStencil assignments do:[:x | self assert: (x unit ~= eachUnit) ].
+
+				anAssignment := Assignment new.
+		
+				anAssignment unit: eachUnit.
+			
+				eachStencil addAssignment: anAssignment ] ].
+! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:23:34'!
+addStencil: aStencil
+	
+	self assert: aStencil semester isNil.
+	
+	aStencil attachSemester: self.
+	
+	self attachStencil: aStencil. ! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:23:42'!
+attachStencil: aStencil
+
+	stencils add: aStencil! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:23:49'!
+detachStencil: aStencil
+
+	stencils remove: aStencil! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:40:22'!
+fromXML: anXMLElement
+
+	| college |
+	
+	super fromXML: anXMLElement.
+
+	college := academicYear academicTrack program college.
+	
+	anXMLElement elementAt: 'stencils' :: elements do:[:eachElement | | aStencil |
+	
+		aStencil := Stencil new.
+		
+		self addStencil: aStencil.
+		
+		aStencil fromXML: eachElement ].
+	! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:24:41'!
+initialize
+
+	super initialize.
+	
+	stencils := Set new.
+	
+! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:24:09'!
+invariant
+
+	stencils do: [:aStencil | aStencil invariant ].
+
+	stencils do: [:aStencil | self assert: aStencil semester == self ].
+	! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:27'!
+removeModule: aModule
+
+	stencils do:[:eachStencil |
+
+			aModule units do:[:eachUnit | 					
+				eachStencil assignments select:[:eachAssignment | 	eachAssignment unit = eachUnit ] ::
+					do:[:eachAssignment |
+						eachStencil removeAssignment: eachAssignment ] ] ].
+
+	super removeModule: aModule.! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:24:16'!
+removeStencil: aStencil
+
+	self assert: aStencil semester == self.
+	
+	aStencil detach.
+	
+	self detachStencil: aStencil.! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:24:22'!
+stencils
+	^stencils! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:41:33'!
+xmlElementsOut: anXMLWriter
+
+	super xmlElementsOut: anXMLWriter.
+	
+	anXMLWriter startTag: 'stencils' ; endTag.
+	
+	stencils do:[:eachStencil |
+		eachStencil xmlOut: anXMLWriter ].
+	
+	anXMLWriter endTag: 'stencils'.! !
+
 !BrocadeApplication methodsFor: 'modules' stamp: 'DF 1/31/2025 22:36:29'!
 addNewModuleDialog
 
@@ -623,6 +939,11 @@ redo
 undo
 	BrocadeCommandHistory instance undo! !
 
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/12/2025 21:35:22'!
+saveAction
+
+	! !
+
 !BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:43:51'!
 buildEditMenu
 
@@ -645,17 +966,56 @@ buildEditMenu
 	
 	^menu! !
 
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 18:15:10'!
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 19:32:21'!
+closeAllBrocadeWindows
+
+	UISupervisor ui submorphs select:[:each | each isKindOf: BidiSystemWindow ] :: do:[:each | each delete].! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 20:47:09'!
+dirty
+	^dirty! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 20:47:07'!
+dirty: aBoolean
+	dirty := aBoolean! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 20:47:43'!
+initialize
+	super initialize.
+	
+	dirty := false! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 21:39:48'!
+newAction
+
+	| decision |
+	
+	decision :=
+		dirty 
+			ifTrue:[ 
+				self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self].
+		 	]
+			ifFalse:[
+				false
+			].
+		
+	decision 
+		ifTrue:[
+			self closeAllBrocadeWindows.
+			self open ]! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 19:32:47'!
 open
 
 	| aCollege |
 	
-	aCollege := College new.
+	aCollege := SchedulingCollege new.
 
 	aCollege invariant.
 
 	model := aCollege.
-! !
+	
+	model description:'משבצת חדשה'! !
 
 !BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:43:06'!
 showCollapsedWindows
@@ -756,6 +1116,11 @@ initialize
 invariant
 	^true! !
 
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:10:57'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'room' attributeList: {'code' -> code asString . 'capacity' -> capacity asString . 'floor' -> floor asString } asDictionary ; endEmptyTag: 'room'.! !
+
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
 
@@ -827,6 +1192,11 @@ school: aSchool
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:00'!
 units
 	^units! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:12:09'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'lecturer' attributeList: {'code' -> code asString . 'description' -> description. 'quota' -> quota asString . 'rank' -> rank } asDictionary ; endEmptyTag: 'lecturer'.! !
 
 !Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 20:34:28'!
 code
@@ -985,6 +1355,70 @@ unit
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:06'!
 unit: anAcademicUnit
 	unit := anAcademicUnit ! !
+
+!Assignment methodsFor: 'xml' stamp: 'DF 2/12/2025 18:07:55'!
+fromXML: anXMLElement
+
+	| college |
+	
+	self assert: anXMLElement name = 'assignment'.
+
+	college := stencil semester year academicTrack program college.
+	
+	day := anXMLElement attributeAt: 'day'.
+	
+	day ifNotNil:[day := Integer readFrom: day].
+	
+	hour := anXMLElement attributeAt: 'hour'.
+	
+	hour ifNotNil:[hour := Integer readFrom: hour].
+		
+	anXMLElement elementAt: 'lecturers' :: elements do:[:eachElement | | school lecturer |
+
+		school := college schoolAt: (eachElement attributeAt: 'school').
+		
+		lecturer := school lecturerAt: (eachElement attributeAt: 'lecturer').
+		
+		lecturers add: lecturer ].
+	
+	anXMLElement elementAt: 'rooms' :: elements do:[:eachElement | | campus room |
+
+		campus := college campusAt: (eachElement attributeAt: 'campus').
+		
+		room := campus roomAt: (eachElement attributeAt: 'room').
+		
+		rooms add: room ].
+! !
+
+!Assignment methodsFor: 'xml' stamp: 'DF 2/12/2025 17:51:45'!
+lecturersXmlOut: anXMLWriter
+
+	anXMLWriter startTag: 'lecturers' ; endTag.
+
+	lecturers do:[:eachLecturer |
+		anXMLWriter startElement: 'lecturer' attributeList: {'school' -> eachLecturer school description . 'code' -> eachLecturer code asString } asDictionary ; endEmptyTag: 'lecturer' ].
+	
+	anXMLWriter endTag:'lecturers'.		! !
+
+!Assignment methodsFor: 'xml' stamp: 'DF 2/12/2025 17:51:50'!
+roomsXmlOut: anXMLWriter
+
+	anXMLWriter startTag: 'rooms' ; endTag.
+
+	rooms do:[:eachRoom |
+		anXMLWriter startElement: 'room' attributeList: { 'campus' -> eachRoom campus description . 'code' -> eachRoom code asString } asDictionary ; endEmptyTag: 'room' ].
+	
+	anXMLWriter endTag:'rooms'.	! !
+
+!Assignment methodsFor: 'xml' stamp: 'DF 2/12/2025 17:47:55'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'assignment' attributeList: {'day' -> day asString . 'hour' -> hour asString .  } asDictionary ; endTag.
+
+	self lecturersXmlOut: anXMLWriter. 
+	self roomsXmlOut: anXMLWriter.
+	
+	anXMLWriter endTag:'assignment'.! !
 
 !Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
 initialize
@@ -1168,6 +1602,18 @@ roomAt: aString
 rooms
 	^rooms! !
 
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:09:44'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'campus' attributeList: {'description' -> description } asDictionary ; endTag.
+	
+	anXMLWriter startTag: 'rooms' ; endTag.
+	rooms do:[:each |
+		each xmlOut: anXMLWriter].
+	anXMLWriter endTag: 'rooms'.
+	
+	anXMLWriter endTag: 'campus'.! !
+
 !School methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:01:05'!
 addLecturer: aLecturer
 
@@ -1246,6 +1692,18 @@ removeLecturer: aLecturer
 	self detachLecturer: aLecturer.
 	
 	aLecturer detach.! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:19:15'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'school' attributeList: {'description' -> description } asDictionary ; endTag.
+	
+	anXMLWriter startTag: 'lecturers' ; endTag.
+	lecturers do:[:each |
+		each xmlOut: anXMLWriter].
+	anXMLWriter endTag: 'lecturers'.
+	
+	anXMLWriter endTag: 'school'.! !
 
 !Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:14:28'!
 addAssignment: anAssignment
@@ -1346,6 +1804,33 @@ removeAssignment: anAssignment
 !Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:57'!
 semester
 	^semester! !
+
+!Stencil methodsFor: 'xml' stamp: 'DF 2/12/2025 17:59:58'!
+fromXML: anXMLElement
+
+	| aString |
+	
+	self assert: anXMLElement name = 'stencil'.
+	
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
+
+	anXMLElement elements do:[:eachElement | | assignment |
+		assignment := Assignment new.
+		self addAssignment: assignment.
+		assignment fromXML: eachElement ].
+! !
+
+!Stencil methodsFor: 'xml' stamp: 'DF 2/12/2025 17:44:35'!
+xmlOut: anXMLWriter
+	
+	anXMLWriter startElement: 'stencil' attributeList: {'description' -> description } asDictionary ; endTag.
+
+	assignments do:[:eachAssignment |
+		eachAssignment xmlOut: anXMLWriter ].
+	
+	anXMLWriter endTag:'stencil'.! !
 
 !FreeDayViolation methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:26:32'!
 stencil: aStencil
