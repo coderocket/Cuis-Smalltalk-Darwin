@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <college description="משבצת חדשה"><modules>
+ <module code="12" description="Module2" elective="false">
+ <הרצאה duration="2"/> 
+ <מעבדה duration="2"/> </module>
+ <module code="13" description="Module3" elective="false">
+ <תרגול duration="2"/> 
+ <מעבדה duration="3"/> 
+ <הרצאה duration="2"/> </module>
+ <module code="11" description="Module1" elective="true">
+ <הרצאה duration="3"/> 
+ <תרגול duration="2"/> </module></modules><programs>
+ <program description="Program1">
+ <track description="מסלול יום">
+ <year description="שנה 1">
+ <semester description="סמסטר א"><modules>
+ <module code="11"/> </modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר ב"><modules></modules>
+<stencils>
+</stencils>
+</semester></year>
+ <year description="שנה 2">
+ <semester description="סמסטר א"><modules></modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר ב"><modules>
+ <module code="12"/> </modules>
+<stencils>
+</stencils>
+</semester></year>
+ <year description="שנה 3">
+ <semester description="סמסטר א"><modules>
+ <module code="13"/> </modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר ב"><modules></modules>
+<stencils>
+</stencils>
+</semester></year></track>
+ <track description="מסלול ערב">
+ <year description="שנה 1">
+ <semester description="סמסטר א"><modules></modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר ב"><modules>
+ <module code="11"/> </modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר קיץ"><modules></modules>
+<stencils>
+</stencils>
+</semester></year>
+ <year description="שנה 2">
+ <semester description="סמסטר א"><modules></modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר ב"><modules></modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר קיץ"><modules>
+ <module code="12"/> </modules>
+<stencils>
+</stencils>
+</semester></year>
+ <year description="שנה 3">
+ <semester description="סמסטר א"><modules></modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר ב"><modules>
+ <module code="13"/> </modules>
+<stencils>
+</stencils>
+</semester>
+ <semester description="סמסטר קיץ"><modules></modules>
+<stencils>
+</stencils>
+</semester></year></track></program></programs><campuses></campuses><schools></schools></college>

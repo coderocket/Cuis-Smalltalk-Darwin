@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 12 February 2025 at 9:40:17 pm'!
+'From Cuis7.3 [latest update: #7041] on 13 February 2025 at 9:08:59 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 90!
+!provides: 'BrocadeScheduler' 1 98!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -660,9 +660,9 @@ invariant
 	campuses do: [:aCampus | self assert: aCampus college == self ].
 ! !
 
-!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:19:37'!
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 21:06:00'!
 newSemester
-	^Semester new! !
+	^SchedulingSemester new! !
 
 !SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:32:31'!
 xmlElementsOut: anXMLWriter
@@ -939,10 +939,40 @@ redo
 undo
 	BrocadeCommandHistory instance undo! !
 
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/12/2025 21:35:22'!
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/13/2025 21:08:56'!
+fromXML: aFileEntry
+
+	| aReadStream anXMLDocument aCollege |
+	
+	aReadStream := aFileEntry readStream.
+	
+	anXMLDocument := XMLDOMParser parseDocumentFrom: aReadStream.
+	
+	aCollege := SchedulingCollege new.
+	
+	aCollege fromXML: anXMLDocument elements first.
+	
+	aCollege invariant.
+	
+	self closeAllBrocadeWindows.
+	
+	model := aCollege.
+! !
+
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/13/2025 20:52:26'!
 saveAction
 
-	! !
+	| aWriteStream anXMLWriter |
+	
+	aWriteStream := WriteStream on: ''.
+	
+	anXMLWriter := XMLWriter on: aWriteStream.
+	
+	anXMLWriter xmlDeclaration: '1.0' encoding: 'UTF-8'.
+	
+	model xmlOut: anXMLWriter.
+	
+	self halt.! !
 
 !BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:43:51'!
 buildEditMenu
@@ -1016,6 +1046,11 @@ open
 	model := aCollege.
 	
 	model description:'משבצת חדשה'! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 13:03:48'!
+openAction
+
+	OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'! !
 
 !BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:43:06'!
 showCollapsedWindows
@@ -1356,7 +1391,7 @@ unit
 unit: anAcademicUnit
 	unit := anAcademicUnit ! !
 
-!Assignment methodsFor: 'xml' stamp: 'DF 2/12/2025 18:07:55'!
+!Assignment methodsFor: 'xml' stamp: 'DF 2/13/2025 20:45:25'!
 fromXML: anXMLElement
 
 	| college |
@@ -1367,11 +1402,11 @@ fromXML: anXMLElement
 	
 	day := anXMLElement attributeAt: 'day'.
 	
-	day ifNotNil:[day := Integer readFrom: day].
+	day ifNotNil:[day := Number readFrom: day].
 	
 	hour := anXMLElement attributeAt: 'hour'.
 	
-	hour ifNotNil:[hour := Integer readFrom: hour].
+	hour ifNotNil:[hour := Number readFrom: hour].
 		
 	anXMLElement elementAt: 'lecturers' :: elements do:[:eachElement | | school lecturer |
 

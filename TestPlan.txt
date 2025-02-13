@@ -1,0 +1,113 @@
+Test Plan
+
+Brocade Planner
+
+Modules
+
+	Module1 11 -- elective
+		Lecture
+		Recitation
+	Module2 12
+		Lecture
+		Lab
+	Module3 13 
+		Lecture
+		Recitation
+		Lab
+ 
+Program1
+	Morning
+		Year1
+			Semester1
+				Module1
+			Semester2
+		Year2
+			Semester1
+			Semester2
+				Module2
+		Year3
+			Semester1
+				Module3
+			Semester2
+	Evening
+		Year1
+			Semester1
+			Semester2
+				Module1
+			Semester3
+		Year2
+			Semester1
+			Semester2
+			Semester3
+				Module2
+		Year3
+			Semester1
+			Semester2
+				Module3
+			Semester3
+
+Brocade Scheduler
+
+Campuses
+	Campus1
+		Floor 1
+			Room 1
+		Floor 2
+			Room 2
+		Floor 3
+			Room 3
+
+Schools
+	School1
+		Lecturer1
+	School2
+		Lecturer2
+	School3
+		Lecturer3
+
+Modules
+
+	Module1
+	Module2
+	Module3
+
+Program1
+	Morning
+		Year1
+			Semester1
+				Stencil1
+					Module1
+				Stencil2
+					Module1
+			Semester2
+		Year2
+			Semester1
+			Semester2
+				Stencil3
+					Module2
+		Year3
+			Semester1
+				Stencil4
+					Module3
+			Semester2
+	Evening
+		Year1
+			Semester1
+			Semester2
+				Stencil5
+					Module1
+			Semester3
+		Year2
+			Semester1
+			Semester2
+			Semester3
+				Stencil6
+					Module2
+				Stencil7
+					Module2
+		Year3
+			Semester1
+			Semester2
+				Stencil8
+					Module3
+			Semester3

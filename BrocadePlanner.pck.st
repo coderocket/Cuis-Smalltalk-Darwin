@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 12 February 2025 at 10:25:33 pm'!
+'From Cuis7.3 [latest update: #7041] on 13 February 2025 at 9:03:25 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 83!
+!provides: 'BrocadePlanner' 1 86!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -1088,12 +1088,12 @@ elective
 elective: aBoolean
 	elective := aBoolean! !
 
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:14:30'!
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 20:44:56'!
 fromXML: anXMLElement
 
 	self assert: anXMLElement name = 'module'.
 	
-	code := Integer readFrom: (anXMLElement attributeAt: 'code').
+	code := Number readFrom: (anXMLElement attributeAt: 'code').
 	
 	description := anXMLElement attributeAt: 'description'.
 	
@@ -1101,7 +1101,7 @@ fromXML: anXMLElement
 
 	anXMLElement elementsDo: [:eachElement | | duration |
 		
-		duration := Integer readFrom:(eachElement attributeAt: 'duration').
+		duration := Number readFrom:(eachElement attributeAt: 'duration').
 		
 		self updateAcademicUnit: eachElement name duration: duration ]! !
 
@@ -1255,7 +1255,7 @@ removeModule: aModule
 	
 	self detachModule: aModule.! !
 
-!Semester methodsFor: 'xml' stamp: 'DF 2/12/2025 17:37:33'!
+!Semester methodsFor: 'xml' stamp: 'DF 2/13/2025 20:46:22'!
 fromXML: anXMLElement
 
 	| aString college |
@@ -1269,7 +1269,7 @@ fromXML: anXMLElement
 	college := academicYear academicTrack program college.
 	
 	anXMLElement elementAt: 'modules' :: elements do:[:eachElement | | code module |
-		code := eachElement attributeAt: 'code' :: asInteger.
+		code := Number readFrom: (eachElement attributeAt: 'code').
 		module := college moduleAt: code.
 		self addModule: module ].
 ! !
@@ -2143,16 +2143,23 @@ openAcademicProgramBrowser
 	
 	! !
 
-!ModuleBrowser methodsFor: 'menu' stamp: 'DF 1/11/2025 17:05:41'!
+!ModuleBrowser methodsFor: 'menu' stamp: 'DF 2/13/2025 21:03:21'!
 removeModuleFromSemester
+	
+	| semester program college aCommand |
 	
 	theProgram ifNil:[^self].
 	
-	theProgram at:1 :: removeModule: model.
+	semester := theProgram at:1.
 	
-	model changed: #programs.
-		
-	model college changed: #unitsTable! !
+	program := theProgram at: 4.
+	
+	college := program college.
+	
+	aCommand := RemoveModuleCommand new college: college ; semester: semester; code: model code.
+	
+	BrocadeCommandHistory instance do: aCommand.
+! !
 
 !ModuleBrowser methodsFor: 'initialization' stamp: 'DF 1/19/2025 19:11:16'!
 initialize
@@ -2161,7 +2168,7 @@ initialize
 	
 	mold := BidiMold new.! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 11:24:30'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 15:48:32'!
 buildMorphicWindow
 
 	|  top entries openButton cancelButton buttons dialog backButton upButton |
@@ -2182,7 +2189,7 @@ buildMorphicWindow
 			ifFalse:[
 				currentDirectoryEntryMorph contents: directory pathName ] ].
 	
-	top := ((backButton + upButton) - 128f @ (16@0) align:0) + (currentDirectoryEntryMorph - 800f) | 48f.
+	top := ((backButton + upButton) - 128f @ (16@0) align:0) + (currentDirectoryEntryMorph - 1.0p) | 48f.
 	
 	entries :=  PluggableListMorph withModel: self listGetter: #entryNames indexGetter: #entryIndex indexSetter: #entryIndex:.
 	
@@ -2193,7 +2200,7 @@ buildMorphicWindow
 	
 	buttons := openButton - 96f / (cancelButton - 96f).
 	
-	dialog := top </> ( (entries -1p |1p ) + (buttons | 64f - 0.3p) ).
+	dialog := (top -1p) </> ( (entries -1p |1p ) + (buttons | 64f - 0.3p) ).
 	
 	self addMorph: dialog
 	! !
@@ -2245,6 +2252,10 @@ goUp
 	currentDirectoryEntryMorph contents: directory pathName.
 	
 	self changed: #entryNames! !
+
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 15:45:37'!
+initialExtent
+	^640@480! !
 
 !OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2025 22:44:00'!
 initialize
