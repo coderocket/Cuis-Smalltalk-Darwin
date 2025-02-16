@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 13 February 2025 at 9:08:59 pm'!
+'From Cuis7.3 [latest update: #7041] on 16 February 2025 at 6:38:59 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 98!
+!provides: 'BrocadeScheduler' 1 106!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -35,7 +35,7 @@ SchedulingSemester class
 
 !classDefinition: #BrocadeApplication category: #'BrocadeScheduler-Application'!
 Object subclass: #BrocadeApplication
-	instanceVariableNames: 'model lastImportDirectory dirty'
+	instanceVariableNames: 'model lastImportDirectory dirty homeDirectory'
 	classVariableNames: 'TheApplication'
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-Application'!
@@ -853,7 +853,7 @@ openCampusBrowser
 	CampusBrowser open: model label: 'קמפוסים'.
 ! !
 
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/3/2025 17:10:34'!
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/16/2025 18:34:12'!
 menuBar
 
 	| aMenuBar |
@@ -870,6 +870,8 @@ menuBar
 		{'יבא תוכניות לימודים ...' . self . #openImportAcademicProgramDialog } .
 		{'יבא סגל אקדמי ...' . self . #openImportAcademicStaffDialog } .
 		{'יצא תוכנית לימודים ...' . self . #exportAction } .
+		$| .
+		{ 'הגדרות ...' . self . #settingsDialog } .
 		$| .
 		{ 'סגור' . self . #exitAction } } } .  
 	{ 'עריכה' . #buildEditMenu . self } .
@@ -1009,9 +1011,20 @@ dirty
 dirty: aBoolean
 	dirty := aBoolean! !
 
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 20:47:43'!
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:29:48'!
+home
+	^homeDirectory ! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:26:00'!
+home: aString
+	homeDirectory := aString! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:37:59'!
 initialize
+
 	super initialize.
+
+	homeDirectory := DirectoryEntry userBaseDirectory asString.
 	
 	dirty := false! !
 
@@ -1051,6 +1064,26 @@ open
 openAction
 
 	OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:36:52'!
+settingsDialog
+
+	| mold position aDialog |
+	
+	mold := BidiMold new.
+	
+	(mold stringField)
+		label: 'Brocade home directory';
+		on: #home of: self ; 
+		addCondition:[:input :value | value asDirectoryEntry exists ] ;
+		beRequired .
+
+	position := UISupervisor ui activeHand morphPosition.
+		
+	aDialog := mold openDialog: 'Brocade Settings'.
+		
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+! !
 
 !BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:43:06'!
 showCollapsedWindows

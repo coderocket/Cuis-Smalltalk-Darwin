@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 15 February 2025 at 9:35:59 pm'!
+'From Cuis7.3 [latest update: #7041] on 16 February 2025 at 9:35:49 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 129!
+!provides: 'BrocadePlanner' 1 148!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -184,6 +184,16 @@ BidiSystemWindow subclass: #ModuleBrowser
 ModuleBrowser class
 	instanceVariableNames: ''!
 
+!classDefinition: #BrocadeSettings category: #'BrocadePlanner-Morphic'!
+SystemWindow subclass: #BrocadeSettings
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Morphic'!
+!classDefinition: 'BrocadeSettings class' category: #'BrocadePlanner-Morphic'!
+BrocadeSettings class
+	instanceVariableNames: ''!
+
 !classDefinition: #OpenFileDialog category: #'BrocadePlanner-Morphic'!
 SystemWindow subclass: #OpenFileDialog
 	instanceVariableNames: 'directory currentDirectoryEntryMorph theEntryIndex showHiddenFiles sortBy selectFileEntryAction'
@@ -192,6 +202,16 @@ SystemWindow subclass: #OpenFileDialog
 	category: 'BrocadePlanner-Morphic'!
 !classDefinition: 'OpenFileDialog class' category: #'BrocadePlanner-Morphic'!
 OpenFileDialog class
+	instanceVariableNames: ''!
+
+!classDefinition: #SelectDirectoryDialog category: #'BrocadePlanner-Morphic'!
+OpenFileDialog subclass: #SelectDirectoryDialog
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Morphic'!
+!classDefinition: 'SelectDirectoryDialog class' category: #'BrocadePlanner-Morphic'!
+SelectDirectoryDialog class
 	instanceVariableNames: ''!
 
 !classDefinition: #BrocadeCommandHistory category: #'BrocadePlanner-UndoRedo'!
@@ -1569,18 +1589,26 @@ renderSemesterTableHeader: aSemester on: anXMLWriter
 	anXMLWriter endTag:'table:table-row'.
 	! !
 
-!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/15/2025 21:07:41'!
+!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/15/2025 22:11:14'!
 renderSemesterTableSummary: aSemester on: anXMLWriter
 
-	| duration points |
+	| mandatory duration points lecture recitation lab |
 	
-	duration := aSemester modules reject:[:each | each elective] :: asOrderedCollection collect:[:each | each duration ] :: sum:[:each | each] ifEmpty:[0].
+	mandatory := aSemester modules reject:[:each | each elective] :: asOrderedCollection.
 	
-	points := aSemester modules reject:[:each | each elective] :: asOrderedCollection collect:[:each | each points ] :: sum:[:each | each] ifEmpty:[0].
+	duration := mandatory collect:[:each | each duration ] :: sum:[:each | each] ifEmpty:[0].
+	
+	points := mandatory collect:[:each | each points ] :: sum:[:each | each] ifEmpty:[0].
+	
+	lecture := mandatory collect:[:each | each unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration] ] :: sum:[:each | each] ifEmpty:[0].
+
+	recitation := mandatory collect:[:each | each unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration] ] :: sum:[:each | each] ifEmpty:[0].
+	
+	lab := mandatory collect:[:each | each unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration] ] :: sum:[:each | each] ifEmpty:[0].
 	
 	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.1' } asDictionary ; endTag.
 
-	{ '' . 'ס"ה קורסי חובה ב' , aSemester description . '' . duration asString . '' . '' . '' . points asString } 
+	{ '' . 'ס"ה קורסי חובה ב' , aSemester description . '' . duration asString . lecture asString . recitation asString . lab asString . points asString } 
 	do:[:eachString |
 	
 		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A1' . 'office:value-type' -> 'string' } asDictionary ; endTag.
@@ -1664,14 +1692,14 @@ render: anAcademicTrack on: anXMLWriter
 templateDirectory: aDirectoryEntry
 	templateDirectory := aDirectoryEntry ! !
 
-!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/15/2025 21:35:50'!
-writeAcademicTrackDocument: anAcademicTrack
+!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 21:35:47'!
+writeAcademicTrackDocument: anAcademicTrack inDirectory: aDirectory
 
-	| documentName dir dst content anXMLWriter aZipArchive |
+	| documentName dir dst content anXMLWriter aZipArchive count |
 	
 	documentName := anAcademicTrack program description , ' ' , anAcademicTrack description .	
 		
-	dir := DirectoryEntry currentDirectory.
+	dir := aDirectory.
 	
 	dst := dir / documentName.
 	
@@ -1694,8 +1722,14 @@ writeAcademicTrackDocument: anAcademicTrack
 	aZipArchive addFile: dst // 'meta.xml'  as: 'meta.xml'; addFile: dst// 'styles.xml' as:'styles.xml' ; addFile: dst // 'content.xml' as:'content.xml'.
 	
 	aZipArchive addFile: dst / 'META-INF' // 'manifest.xml' as: 'META-INF/manifest.xml'.
-		
-	aZipArchive writeToFileNamed: dir // (documentName , '.odt').
+	
+	count := aZipArchive members sum:[:each | each uncompressedSize ] ifEmpty: [0].
+	
+	'Generating document ...' displayProgressAt: Sensor mousePoint from: 1 to:  count during: [:barBlock | | acc |
+		acc := 0.
+		aZipArchive writeToFileNamed: dir // (documentName , '.odt') notifying: [:q | acc := acc + q. barBlock value:acc . (Delay forMilliseconds: 10) wait ] ].
+	
+	"dst delete."
 	! !
 
 !QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:15:58'!
@@ -1802,6 +1836,30 @@ programIndex: anIndex
 programs
 
 	^ model programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
+
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 2/16/2025 21:31:29'!
+exportTrackAsOpenDoc: aDirectoryEntry
+
+	| tracks track anOpenDocWriter |
+	
+	trackIndex = 0 ifTrue:[^self].
+	
+	tracks := self tracks.
+	
+	trackIndex <= tracks size ifFalse:[^self].
+	
+	track := tracks at: trackIndex.
+	
+	anOpenDocWriter := OpenDocWriter new.
+	
+	anOpenDocWriter templateDirectory: BrocadeApplication instance home asDirectoryEntry / 'opendoc'.
+	
+	anOpenDocWriter writeAcademicTrackDocument: track inDirectory: aDirectoryEntry.! !
+
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 2/16/2025 19:13:30'!
+selectExportDirectory
+
+	OpenFileDialog open:self start: BrocadeApplication instance home asDirectoryEntry action: #exportTrackAsOpenDoc: label: 'Select Directory'! !
 
 !AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 16:46:08'!
 trackIndex
@@ -2235,6 +2293,20 @@ removeModuleFromSemester
 	BrocadeCommandHistory instance do: aCommand.
 ! !
 
+!AcademicProgramBrowser methodsFor: 'menus' stamp: 'DF 2/16/2025 20:01:35'!
+tracksMenuSpec
+
+	| string message |
+
+	message := trackIndex notNil and: [trackIndex > 0] :: ifTrue:[#selectExportDirectory] ifFalse:[nil].
+	
+	string := 'יצא כמסמך ...' asBidi writingDirection:#rightToLeft.
+
+^ {
+		{ 0 .	'מסלול אקדמי'	.	false } .
+		{ 10 .	 string 		. 	$e .	#window .	message } .
+	}.! !
+
 !AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 2/12/2025 22:24:50'!
 buildAcademicUnitsTable
 
@@ -2272,7 +2344,7 @@ buildMorphicWindow
 	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ( (status - 1.0p | 48f) </> (unitsMorph -1.0p | 1.0p) | 0.8p)).
 	! !
 
-!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 1/31/2025 20:36:04'!
+!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 2/16/2025 18:43:18'!
 buildNavigationPanel
 
 	|  electives semesters years tracks programs |
@@ -2280,6 +2352,8 @@ buildNavigationPanel
 	programs := BidiPluggableListMorph withModel: self listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
 	
 	tracks := BidiPluggableListMorph withModel: self listGetter: #tracks indexGetter: #trackIndex indexSetter: #trackIndex: .
+	
+	tracks menuNshortcutsKey: #tracksMenuSpec.
 
 	years := BidiPluggableListMorphOfMany withModel: self listGetter: #years primarySelectionGetter: #yearIndex primarySelectionSetter: #yearIndex: listSelectionGetter: #yearSelectionAt: listSelectionSetter: #yearSelectionAt:put:.
 
@@ -2573,6 +2647,23 @@ initialize
 	
 	mold := BidiMold new.! !
 
+!BrocadeSettings methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:32:34'!
+buildMorphicWindow
+
+	| mold |
+	
+	mold := Mold new.
+	
+	(mold stringField)
+		label: 'Brocade home directory';
+		on: #home of: model ; 
+		addCondition:[:input :value | value asDirectoryEntry exists ] ;
+		beRequired .
+		
+	self addMorph: mold newPane.
+
+! !
+
 !OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 15:48:32'!
 buildMorphicWindow
 
@@ -2690,12 +2781,10 @@ recurse
 			currentDirectoryEntryMorph contents: directory pathName.
 			self changed: #entryNames ]! !
 
-!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 1/4/2025 16:46:21'!
+!OpenFileDialog methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 21:28:31'!
 selectFileEntry
 
-	theEntryIndex = 0 ifTrue:[^self].
-	
-	model perform: selectFileEntryAction with: (self entries at: theEntryIndex).
+	model perform: selectFileEntryAction with: directory.
 	
 	self delete.
 	! !
@@ -3032,4 +3121,72 @@ at: anIndex ifPresent: aBlock
 	anIndex > 0 and:[anIndex <= self size] ::
 		ifTrue:[aBlock value: (self at: anIndex) ]
 		! !
+
+!Archive methodsFor: '*BrocadePlanner-ODT' stamp: 'DF 2/16/2025 20:42:53'!
+writeToFileNamed: aFileName notifying: aBlock
+
+	"Catch attempts to overwrite existing zip file"
+	(self canWriteToFileNamed: aFileName)
+		ifFalse: [ ^self error: (aFileName, ' is needed by one or more members in this archive') ].
+	aFileName asFileEntry writeStreamDo: [ :stream |
+		self writeTo: stream notifying: aBlock ]! !
+
+!ZipArchive methodsFor: '*BrocadePlanner-ODT' stamp: 'DF 2/16/2025 20:33:56'!
+writeTo: stream notifying: aBlock
+	stream binary.
+	members do: [ :member |
+		member writeTo: stream notifying: aBlock. 
+		member endRead.
+	].
+	writeCentralDirectoryOffset := stream position.
+	self writeCentralDirectoryTo: stream.
+	! !
+
+!ZipArchiveMember methodsFor: '*BrocadePlanner-ODT' stamp: 'DF 2/16/2025 20:39:00'!
+compressDataTo: aStream notifying: aBlock
+	"Copy my deflated data to the given stream."
+	| encoder startPos endPos |
+
+	encoder := ZipWriteStream on: aStream.
+	startPos := aStream position.
+
+	[ readDataRemaining > 0 ] whileTrue: [ | data |
+		data := self readRawChunk: (4096 min: readDataRemaining).
+		data := data asByteArray.
+		encoder nextPutAll: data.
+		readDataRemaining := readDataRemaining - data size.
+		aBlock value: data size.
+	].
+	encoder finish. "not close!!"
+	endPos := aStream position.
+	compressedSize := endPos - startPos.
+	crc32 := encoder crc.
+! !
+
+!ZipArchiveMember methodsFor: '*BrocadePlanner-ODT' stamp: 'DF 2/16/2025 20:36:07'!
+writeDataTo: aStream notifying: aBlock
+	"Copy my (possibly inflated or deflated) data to the given stream.
+	This might do compression, decompression, or straight copying, depending
+	on the values of compressionMethod and desiredCompressionMethod"
+
+	"Note: Do not shortcut this method if uncompressedSize = 0. Even in this case
+	data may be produced by the compressor (i.e., '' zipped size > 0) and must
+	be stored in the file or else other utilities will treat the zip file as corrupt."
+
+	(compressionMethod = CompressionStored and: [ desiredCompressionMethod = CompressionDeflated ])
+		ifTrue: [ ^self compressDataTo: aStream notifying: aBlock ].
+
+	(compressionMethod = CompressionDeflated and: [ desiredCompressionMethod = CompressionStored ])
+		ifTrue: [ ^self uncompressDataTo: aStream ].
+
+	self copyDataTo: aStream.! !
+
+!ZipArchiveMember methodsFor: '*BrocadePlanner-ODT' stamp: 'DF 2/16/2025 20:35:17'!
+writeTo: aStream notifying: aBlock
+
+	self rewindData.
+	writeLocalHeaderRelativeOffset := aStream position.
+	self writeLocalFileHeaderTo: aStream.
+	self writeDataTo: aStream notifying: aBlock.
+	self refreshLocalFileHeaderTo: aStream.! !
 BrocadeCommandHistory initialize!
