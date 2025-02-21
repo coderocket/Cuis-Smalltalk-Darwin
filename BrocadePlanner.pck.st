@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 21 February 2025 at 7:44:18 pm'!
+'From Cuis7.3 [latest update: #7041] on 21 February 2025 at 9:19:13 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 174!
+!provides: 'BrocadePlanner' 1 183!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -1571,7 +1571,7 @@ xmlElementsOut: anXMLWriter
 
 	anXMLWriter endTag: 'modules'.! !
 
-!OpenDocWriter methodsFor: 'styles' stamp: 'DF 2/15/2025 20:46:46'!
+!OpenDocWriter methodsFor: 'styles' stamp: 'DF 2/21/2025 20:19:41'!
 renderParagraphStylesOn: anXMLWriter
 	
 	anXMLWriter startElement: 'style:style' attributeList: { 'style:name' -> 'P1' . 'style:family' -> 'paragraph' . 'style:parent-style-name' -> 'Heading_20_2' } asDictionary ;endTag.
@@ -1597,6 +1597,7 @@ renderParagraphStylesOn: anXMLWriter
 	anXMLWriter endTag: 'style:style'.
 
 	anXMLWriter startElement: 'style:style' attributeList: { 'style:name' -> 'P4' . 'style:family' -> 'paragraph' . 'style:parent-style-name' -> 'Standard' } asDictionary ;endTag.
+
 		anXMLWriter startElement: 'style:paragraph-properties' attributeList: {
 			'fo:margin-left' -> '0cm' .
 			'fo:maring-right' -> '0cm' .
@@ -1604,7 +1605,7 @@ renderParagraphStylesOn: anXMLWriter
 			'fo:maring-bottom' -> '0cm' .
 			'style:contextual-spacing' -> 'false'.
 			'fo:text-indent' -> '0cm' .
-			'fo:text-align' -> 'center'.
+			'fo:text-align' -> 'end'.
 			'style:justify-single-word' -> 'false' .
 			'style:auto-text-indent' -> 'false'
 		} asDictionary ; endTag.
@@ -1614,6 +1615,27 @@ renderParagraphStylesOn: anXMLWriter
 		anXMLWriter endTag: 'style:paragraph-properties'.
 		
 	anXMLWriter endTag: 'style:style'.
+	
+	anXMLWriter startElement: 'style:style' attributeList: { 'style:name' -> 'P5' . 'style:family' -> 'paragraph' . 'style:parent-style-name' -> 'Standard' } asDictionary ;endTag.
+
+		anXMLWriter startElement: 'style:paragraph-properties' attributeList: {
+			'fo:margin-left' -> '0cm' .
+			'fo:maring-right' -> '0cm' .
+			'fo:margin-top' -> '0cm' .
+			'fo:maring-bottom' -> '0cm' .
+			'style:contextual-spacing' -> 'false'.
+			'fo:text-indent' -> '0cm' .
+			'fo:text-align' -> 'start'.
+			'style:justify-single-word' -> 'false' .
+			'style:auto-text-indent' -> 'false'
+		} asDictionary ; endTag.
+		
+			anXMLWriter startTag: 'style:tab-stops' ; endEmptyTag: 'style:tab-stops'.
+
+		anXMLWriter endTag: 'style:paragraph-properties'.
+		
+	anXMLWriter endTag: 'style:style'.
+
 ! !
 
 !OpenDocWriter methodsFor: 'styles' stamp: 'DF 2/15/2025 15:07:18'!
@@ -1630,7 +1652,7 @@ renderTableColumn: aString styleForWidth: aNumberCm on: anXMLWriter
 	anXMLWriter endTag: 'style:style'.
 ! !
 
-!OpenDocWriter methodsFor: 'styles' stamp: 'DF 2/15/2025 20:46:03'!
+!OpenDocWriter methodsFor: 'styles' stamp: 'DF 2/21/2025 20:09:43'!
 renderTableStylesOn: anXMLWriter
 	
 	anXMLWriter startElement: 'style:style' attributeList: { 'style:name' -> 'Table' . 'style:family' -> 'table' } asDictionary ;endTag.
@@ -1660,7 +1682,7 @@ renderTableStylesOn: anXMLWriter
 			'fo:border-right' -> '0.5pt solid #999999' .
 			'fo:border-top' -> '0.5pt solid #999999' .
 			'fo:border-bottom' -> '1.5pt solid #666666' .
-			'tyle:writing-mode' -> 'rl-tb'
+			'style:writing-mode' -> 'rl-tb'
 		} asDictionary ; endEmptyTag: 'style:table-cell-properties'.
 		
 	anXMLWriter endTag: 'style:style'.
@@ -1673,7 +1695,7 @@ renderTableStylesOn: anXMLWriter
 			'fo:padding-top' -> '0cm' .
 			'fo:padding-bottom' -> '0cm' .
 			'fo:border' -> '0.5pt solid #999999' .
-			'tyle:writing-mode' -> 'rl-tb'
+			'style:writing-mode' -> 'rl-tb'
 		} asDictionary ; endEmptyTag: 'style:table-cell-properties'.
 		
 	anXMLWriter endTag: 'style:style'.
@@ -1717,21 +1739,34 @@ renderTextStylesOn: anXMLWriter
 	anXMLWriter endTag: 'number:number-style'.
 ! !
 
-!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/15/2025 21:07:11'!
-renderModule: aModule on: anXMLWriter
+!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/21/2025 21:07:20'!
+renderAcademicYearTableSummary: anAcademicYear on: anXMLWriter
 
-	| lecture recitation lab |
+	| mandatory duration points lecture recitation lab |
+
+	duration := 0. points := 0. lecture := 0. recitation := 0. lab := 0.
 	
-	lecture := aModule unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
-	recitation := aModule unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration].
-	lab := aModule unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+	anAcademicYear semesters do:[:eachSemester |	
+	
+		mandatory := eachSemester modules reject:[:each | each elective] :: asOrderedCollection.
+	
+		duration := duration + (mandatory collect:[:each | each duration ] :: sum:[:each | each] ifEmpty:[0]).
+	
+		points := points + (mandatory collect:[:each | each points ] :: sum:[:each | each] ifEmpty:[0]).
+	
+		lecture := lecture + (mandatory collect:[:each | each unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration] ] :: sum:[:each | each] ifEmpty:[0]).
 
-	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.2' } asDictionary ; endTag.
+		recitation := recitation + (mandatory collect:[:each | each unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration] ] :: sum:[:each | each] ifEmpty:[0]).
+	
+		lab := lab + (mandatory collect:[:each | each unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration] ] :: sum:[:each | each] ifEmpty:[0]).
+	].
+	
+	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.1' } asDictionary ; endTag.
 
-	{ aModule code . aModule description . 'אין' . aModule duration . lecture . recitation . lab . aModule points } collect:[:each | each asString ] :: 
+	{ '' . 'ס"ה קורסי חובה ב' , anAcademicYear description . '' . duration asString . lecture asString . recitation asString . lab asString . points asString } 
 	do:[:eachString |
 	
-		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A2' . 'office:value-type' -> 'string' } asDictionary ; endTag.
+		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A1' . 'office:value-type' -> 'string' } asDictionary ; endTag.
 		
 		anXMLWriter startElement: 'text:p' attributeList: { 'text:style-name' -> 'P4' } asDictionary ; endTag.
 	
@@ -1741,6 +1776,48 @@ renderModule: aModule on: anXMLWriter
 
 		anXMLWriter endTag: 'table:table-cell'.	
 	].
+
+	anXMLWriter endTag:'table:table-row'.
+	! !
+
+!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/21/2025 20:25:37'!
+renderCell: strings on: anXMLWriter
+	
+		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A2' . 'office:value-type' -> 'string' } asDictionary ; endTag.
+		
+		strings do:[:eachStringStyle | |str styl |
+		
+			str := eachStringStyle at:1.
+			styl := eachStringStyle at:2.
+			
+			anXMLWriter startElement: 'text:p' attributeList: { 'text:style-name' -> styl } asDictionary ; endTag.
+	
+			anXMLWriter pcData: str.
+	
+			anXMLWriter endTag: 'text:p'. 
+		].
+	
+		anXMLWriter endTag: 'table:table-cell'.	
+! !
+
+!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/21/2025 20:34:44'!
+renderModule: aModule on: anXMLWriter
+
+	| lecture recitation lab |
+	
+	lecture := aModule unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+	recitation := aModule unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+	lab := aModule unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+
+	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.2' } asDictionary ; endTag.
+		self renderCell: { { aModule code asString . 'P4' } } on: anXMLWriter.
+
+		self renderCell: { { aModule description  . 'P4' } . { aModule latin . 'P5' } } on: anXMLWriter.
+
+		self renderCell: (aModule prereqs collect:[:eachModule | { eachModule description . 'P4' } ]) on: anXMLWriter.
+		
+		{ aModule duration . lecture . recitation . lab . aModule points } collect:[:each | each asString ] :: 
+		do:[:eachString | self renderCell: { { eachString . 'P4' } } on: anXMLWriter ].
 
 	anXMLWriter endTag:'table:table-row'.
 	! !
@@ -1752,12 +1829,12 @@ renderSemester: aSemester on: anXMLWriter
 	
 	self renderSemesterTable: aSemester on: anXMLWriter.! !
 
-!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/15/2025 21:07:17'!
+!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/21/2025 21:11:31'!
 renderSemesterTable: aSemester on: anXMLWriter
 
 	anXMLWriter startElement: 'table:table' attributeList: { 'table:name' -> aSemester description . 'table:style-name' -> 'Table' } asDictionary ; endTag.
 
-	self renderSemesterTableHeader: aSemester on: anXMLWriter. 
+	self renderTableHeaderOn: anXMLWriter. 
 	
 	aSemester modules reject:[:each | each elective] :: do:[:eachModule |
 		self renderModule: eachModule on: anXMLWriter ].
@@ -1765,36 +1842,6 @@ renderSemesterTable: aSemester on: anXMLWriter
 	self renderSemesterTableSummary: aSemester on: anXMLWriter.  
 	 
 	anXMLWriter endTag: 'table:table'.! !
-
-!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/15/2025 21:07:31'!
-renderSemesterTableHeader: aSemester on: anXMLWriter
-
-	{ 'A' . 'B' . 'C' . 'D' . 'D' . 'D' .'D' . 'D' } 
-	do:[:eachStyleName | 
-		anXMLWriter startElement: 'table:table-column' attributeList: { 'table:style-name' -> ('Table.{1}' format:{ eachStyleName }) } asDictionary ; endEmptyTag:'table:table-column'. ].
-	
-	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.1' } asDictionary ; endTag.
-
-	{ 'קוד קורס' . 'מקצוע' . 'דרישות קדם' . 'ש"ש' . 'ש"ה' . 'ש"ת' . 'ש"מ' . 'נ"ז' } 
-	do:[:eachString |
-	
-		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A1' . 'office:value-type' -> 'string' } asDictionary ; endTag.
-		
-		anXMLWriter startElement: 'text:p' attributeList: { 'text:style-name' -> 'P4' } asDictionary ; endTag.
-	
-		anXMLWriter startElement: 'text:span' attributeList:{ 'text:style-name' -> 'T1'} asDictionary; endTag.
-		
-		anXMLWriter pcData: eachString.
-
-		anXMLWriter endTag: 'text:span'. 
-	
-		anXMLWriter endTag: 'text:p'. 
-
-		anXMLWriter endTag: 'table:table-cell'.	
-	].
-
-	anXMLWriter endTag:'table:table-row'.
-	! !
 
 !OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/15/2025 22:11:14'!
 renderSemesterTableSummary: aSemester on: anXMLWriter
@@ -1842,6 +1889,36 @@ renderSemesterTitle: aSemester on: anXMLWriter
 	anXMLWriter endTag: 'text:h'.
 ! !
 
+!OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/21/2025 21:11:18'!
+renderTableHeaderOn: anXMLWriter
+
+	{ 'A' . 'B' . 'C' . 'D' . 'D' . 'D' .'D' . 'D' } 
+	do:[:eachStyleName | 
+		anXMLWriter startElement: 'table:table-column' attributeList: { 'table:style-name' -> ('Table.{1}' format:{ eachStyleName }) } asDictionary ; endEmptyTag:'table:table-column'. ].
+	
+	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.1' } asDictionary ; endTag.
+
+	{ 'קוד קורס' . 'מקצוע' . 'דרישות קדם' . 'ש"ש' . 'ש"ה' . 'ש"ת' . 'ש"מ' . 'נ"ז' } 
+	do:[:eachString |
+	
+		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A1' . 'office:value-type' -> 'string' } asDictionary ; endTag.
+		
+		anXMLWriter startElement: 'text:p' attributeList: { 'text:style-name' -> 'P4' } asDictionary ; endTag.
+	
+		anXMLWriter startElement: 'text:span' attributeList:{ 'text:style-name' -> 'T1'} asDictionary; endTag.
+		
+		anXMLWriter pcData: eachString.
+
+		anXMLWriter endTag: 'text:span'. 
+	
+		anXMLWriter endTag: 'text:p'. 
+
+		anXMLWriter endTag: 'table:table-cell'.	
+	].
+
+	anXMLWriter endTag:'table:table-row'.
+	! !
+
 !OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/15/2025 13:52:44'!
 copyFile: aFileEntry to: aDirectoryEntry
 
@@ -1867,7 +1944,7 @@ documentAttributes
 } asDictionary
 	! !
 
-!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/15/2025 21:05:10'!
+!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 20:50:11'!
 render: anAcademicTrack on: anXMLWriter
 
 	anXMLWriter xmlDeclaration: '1.0' encoding: 'UTF-8'.
@@ -1887,13 +1964,25 @@ render: anAcademicTrack on: anXMLWriter
 				startTag: 'office:text' ; endTag.
 				
 					anAcademicTrack academicYears do:[:eachAcademicYear | 
-						eachAcademicYear semesters do:[:eachSemester | self renderSemester: eachSemester on: anXMLWriter ] ].
+						self renderAcademicYear: eachAcademicYear  on: anXMLWriter ].
 		
 		anXMLWriter 
 				endTag: 'office:text' ;
 			endTag: 'office:body' ;
 		endTag: 'office:document-content'
 		! !
+
+!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 21:19:11'!
+renderAcademicYear: anAcademicYear on: anXMLWriter.
+
+	anAcademicYear semesters do:[:eachSemester | self renderSemester: eachSemester on: anXMLWriter ].
+
+	anXMLWriter startElement: 'table:table' attributeList: { 'table:name' -> anAcademicYear description . 'table:style-name' -> 'Table' } asDictionary ; endTag.
+
+	self renderTableHeaderOn: anXMLWriter.
+	self renderAcademicYearTableSummary: anAcademicYear on: anXMLWriter.
+	
+	anXMLWriter endTag: 'table:table'.! !
 
 !OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/15/2025 12:17:36'!
 templateDirectory: aDirectoryEntry
