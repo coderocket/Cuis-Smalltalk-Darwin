@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 16 February 2025 at 6:38:59 pm'!
+'From Cuis7.3 [latest update: #7041] on 21 February 2025 at 2:58:30 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 106!
+!provides: 'BrocadeScheduler' 1 113!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -35,7 +35,7 @@ SchedulingSemester class
 
 !classDefinition: #BrocadeApplication category: #'BrocadeScheduler-Application'!
 Object subclass: #BrocadeApplication
-	instanceVariableNames: 'model lastImportDirectory dirty homeDirectory'
+	instanceVariableNames: 'model path lastImportDirectory dirty homeDirectory'
 	classVariableNames: 'TheApplication'
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-Application'!
@@ -664,19 +664,19 @@ invariant
 newSemester
 	^SchedulingSemester new! !
 
-!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:32:31'!
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
 xmlElementsOut: anXMLWriter
 	
 	super xmlElementsOut: anXMLWriter.
 	
 	anXMLWriter startTag: 'campuses' ; endTag.
 	campuses do:[:each |
-		each xmlOut: anXMLWriter].
+		each toXML: anXMLWriter].
 	anXMLWriter endTag: 'campuses'.
 
 	anXMLWriter startTag: 'schools' ; endTag.
 	schools do:[:each |
-		each xmlOut: anXMLWriter].
+		each toXML: anXMLWriter].
 	anXMLWriter endTag: 'schools'.
 	
 ! !
@@ -778,7 +778,7 @@ removeStencil: aStencil
 stencils
 	^stencils! !
 
-!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:41:33'!
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
 xmlElementsOut: anXMLWriter
 
 	super xmlElementsOut: anXMLWriter.
@@ -786,7 +786,7 @@ xmlElementsOut: anXMLWriter
 	anXMLWriter startTag: 'stencils' ; endTag.
 	
 	stencils do:[:eachStencil |
-		eachStencil xmlOut: anXMLWriter ].
+		eachStencil toXML: anXMLWriter ].
 	
 	anXMLWriter endTag: 'stencils'.! !
 
@@ -853,6 +853,28 @@ openCampusBrowser
 	CampusBrowser open: model label: 'קמפוסים'.
 ! !
 
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/3/2025 19:43:51'!
+buildEditMenu
+
+	| menu disableUndo disableRedo undoString |
+	
+	menu := MenuBarMenuMorph new.
+	menu color: Color white ; borderWidth: 1; borderColor: Color black.
+	
+	disableUndo := BrocadeCommandHistory instance isAtBeginning.
+	disableRedo := BrocadeCommandHistory instance isAtEnd.
+	
+	undoString := disableUndo ifFalse:['ביטול ', BrocadeCommandHistory instance currentTitle] ifTrue:['ביטול'].
+	
+	(menu add: (undoString asBidi writingDirection:#rightToLeft) target: self action: #undo) isEnabled: disableUndo not .
+	(menu add: ('ביצוע מחדש' asBidi writingDirection:#rightToLeft) target: self action: #redo) isEnabled: disableRedo not .
+	menu addLine.
+	(menu add: ('גזור' asBidi writingDirection:#rightToLeft) target: self action: #cutToClipboard) color: Theme current buttonLabel.
+	(menu add: ('העתק' asBidi writingDirection:#rightToLeft) target: self action: #copyToClipboard) color: Theme current buttonLabel.
+	(menu add: ('הדבק' asBidi writingDirection:#rightToLeft) target: self action: #pasteFromClipboard) color: Theme current buttonLabel.
+	
+	^menu! !
+
 !BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/16/2025 18:34:12'!
 menuBar
 
@@ -901,6 +923,70 @@ menuBar
 		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
 ! !
 
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/12/2025 21:39:48'!
+newAction
+
+	| decision |
+	
+	decision :=
+		dirty 
+			ifTrue:[ 
+				self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self].
+		 	]
+			ifFalse:[
+				false
+			].
+		
+	decision 
+		ifTrue:[
+			self closeAllBrocadeWindows.
+			self open ]! !
+
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/12/2025 19:32:47'!
+open
+
+	| aCollege |
+	
+	aCollege := SchedulingCollege new.
+
+	aCollege invariant.
+
+	model := aCollege.
+	
+	model description:'משבצת חדשה'! !
+
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/13/2025 13:03:48'!
+openAction
+
+	OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'! !
+
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/21/2025 14:46:25'!
+saveAction
+
+	| anXMLWriter file |
+	
+	self assert: path notNil.
+	
+	file := path asFileEntry.
+
+	[		
+		anXMLWriter := XMLWriter on: file writeStream.
+	
+		anXMLWriter xmlDeclaration: '1.0' encoding: 'UTF-8'.
+	
+		model toXML: anXMLWriter.
+	]
+	ensure:[
+		anXMLWriter ifNotNil:[:w | w stream close ].
+	]
+! !
+
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/21/2025 13:58:36'!
+saveAsAction
+
+	SaveFileDialog open: self start: lastImportDirectory action: #saveAs: label: 'Save As ...'
+! !
+
 !BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:15:09'!
 importAcademicProgram: aFileEntry
 
@@ -941,6 +1027,14 @@ redo
 undo
 	BrocadeCommandHistory instance undo! !
 
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/11/2025 20:47:09'!
+dirty
+	^dirty! !
+
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/11/2025 20:47:07'!
+dirty: aBoolean
+	dirty := aBoolean! !
+
 !BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/13/2025 21:08:56'!
 fromXML: aFileEntry
 
@@ -961,65 +1055,22 @@ fromXML: aFileEntry
 	model := aCollege.
 ! !
 
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/13/2025 20:52:26'!
-saveAction
-
-	| aWriteStream anXMLWriter |
-	
-	aWriteStream := WriteStream on: ''.
-	
-	anXMLWriter := XMLWriter on: aWriteStream.
-	
-	anXMLWriter xmlDeclaration: '1.0' encoding: 'UTF-8'.
-	
-	model xmlOut: anXMLWriter.
-	
-	self halt.! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:43:51'!
-buildEditMenu
-
-	| menu disableUndo disableRedo undoString |
-	
-	menu := MenuBarMenuMorph new.
-	menu color: Color white ; borderWidth: 1; borderColor: Color black.
-	
-	disableUndo := BrocadeCommandHistory instance isAtBeginning.
-	disableRedo := BrocadeCommandHistory instance isAtEnd.
-	
-	undoString := disableUndo ifFalse:['ביטול ', BrocadeCommandHistory instance currentTitle] ifTrue:['ביטול'].
-	
-	(menu add: (undoString asBidi writingDirection:#rightToLeft) target: self action: #undo) isEnabled: disableUndo not .
-	(menu add: ('ביצוע מחדש' asBidi writingDirection:#rightToLeft) target: self action: #redo) isEnabled: disableRedo not .
-	menu addLine.
-	(menu add: ('גזור' asBidi writingDirection:#rightToLeft) target: self action: #cutToClipboard) color: Theme current buttonLabel.
-	(menu add: ('העתק' asBidi writingDirection:#rightToLeft) target: self action: #copyToClipboard) color: Theme current buttonLabel.
-	(menu add: ('הדבק' asBidi writingDirection:#rightToLeft) target: self action: #pasteFromClipboard) color: Theme current buttonLabel.
-	
-	^menu! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 19:32:21'!
-closeAllBrocadeWindows
-
-	UISupervisor ui submorphs select:[:each | each isKindOf: BidiSystemWindow ] :: do:[:each | each delete].! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 20:47:09'!
-dirty
-	^dirty! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 20:47:07'!
-dirty: aBoolean
-	dirty := aBoolean! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:29:48'!
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/16/2025 18:29:48'!
 home
 	^homeDirectory ! !
 
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:26:00'!
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/16/2025 18:26:00'!
 home: aString
 	homeDirectory := aString! !
 
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:37:59'!
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/21/2025 14:32:55'!
+saveAs: aString
+
+	path := aString.
+	
+	self saveAction.! !
+
+!BrocadeApplication methodsFor: 'initialization' stamp: 'DF 2/16/2025 18:37:59'!
 initialize
 
 	super initialize.
@@ -1028,42 +1079,24 @@ initialize
 	
 	dirty := false! !
 
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 21:39:48'!
-newAction
+!BrocadeApplication methodsFor: 'window management' stamp: 'DF 2/12/2025 19:32:21'!
+closeAllBrocadeWindows
 
-	| decision |
+	UISupervisor ui submorphs select:[:each | each isKindOf: BidiSystemWindow ] :: do:[:each | each delete].! !
+
+!BrocadeApplication methodsFor: 'window management' stamp: 'DF 1/31/2025 13:43:06'!
+showCollapsedWindows
+
+	| windows menu |
 	
-	decision :=
-		dirty 
-			ifTrue:[ 
-				self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self].
-		 	]
-			ifFalse:[
-				false
-			].
-		
-	decision 
-		ifTrue:[
-			self closeAllBrocadeWindows.
-			self open ]! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 19:32:47'!
-open
-
-	| aCollege |
+	windows := UISupervisor ui submorphs select:[:each | each isKindOf: SystemWindow :: and: [each isCollapsed ] ].
 	
-	aCollege := SchedulingCollege new.
-
-	aCollege invariant.
-
-	model := aCollege.
+	menu := MenuBarMenuMorph new.
+	menu color: Color white ; borderWidth: 1; borderColor: Color black.
+	windows do:[:eachWindow | 
+		(menu add: (eachWindow label asBidi writingDirection:#rightToLeft) target: eachWindow action: #show) color: Theme current buttonLabel ].
 	
-	model description:'משבצת חדשה'! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/13/2025 13:03:48'!
-openAction
-
-	OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'! !
+	^menu! !
 
 !BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:36:52'!
 settingsDialog
@@ -1084,20 +1117,6 @@ settingsDialog
 		
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 ! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 13:43:06'!
-showCollapsedWindows
-
-	| windows menu |
-	
-	windows := UISupervisor ui submorphs select:[:each | each isKindOf: SystemWindow :: and: [each isCollapsed ] ].
-	
-	menu := MenuBarMenuMorph new.
-	menu color: Color white ; borderWidth: 1; borderColor: Color black.
-	windows do:[:eachWindow | 
-		(menu add: (eachWindow label asBidi writingDirection:#rightToLeft) target: eachWindow action: #show) color: Theme current buttonLabel ].
-	
-	^menu! !
 
 !BrocadeApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:24:09'!
 instance
@@ -1184,8 +1203,8 @@ initialize
 invariant
 	^true! !
 
-!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:10:57'!
-xmlOut: anXMLWriter
+!Classroom methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
+toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'room' attributeList: {'code' -> code asString . 'capacity' -> capacity asString . 'floor' -> floor asString } asDictionary ; endEmptyTag: 'room'.! !
 
@@ -1257,14 +1276,14 @@ school: aSchool
 	
 	school := aSchool! !
 
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
+toXML: anXMLWriter
+	
+	anXMLWriter startElement: 'lecturer' attributeList: {'code' -> code asString . 'description' -> description. 'quota' -> quota asString . 'rank' -> rank } asDictionary ; endEmptyTag: 'lecturer'.! !
+
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:00'!
 units
 	^units! !
-
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:12:09'!
-xmlOut: anXMLWriter
-	
-	anXMLWriter startElement: 'lecturer' attributeList: {'code' -> code asString . 'description' -> description. 'quota' -> quota asString . 'rank' -> rank } asDictionary ; endEmptyTag: 'lecturer'.! !
 
 !Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 20:34:28'!
 code
@@ -1478,8 +1497,8 @@ roomsXmlOut: anXMLWriter
 	
 	anXMLWriter endTag:'rooms'.	! !
 
-!Assignment methodsFor: 'xml' stamp: 'DF 2/12/2025 17:47:55'!
-xmlOut: anXMLWriter
+!Assignment methodsFor: 'xml' stamp: 'DF 2/21/2025 13:21:29'!
+toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'assignment' attributeList: {'day' -> day asString . 'hour' -> hour asString .  } asDictionary ; endTag.
 
@@ -1670,14 +1689,14 @@ roomAt: aString
 rooms
 	^rooms! !
 
-!Campus methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:09:44'!
-xmlOut: anXMLWriter
+!Campus methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
+toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'campus' attributeList: {'description' -> description } asDictionary ; endTag.
 	
 	anXMLWriter startTag: 'rooms' ; endTag.
 	rooms do:[:each |
-		each xmlOut: anXMLWriter].
+		each toXML: anXMLWriter].
 	anXMLWriter endTag: 'rooms'.
 	
 	anXMLWriter endTag: 'campus'.! !
@@ -1761,14 +1780,14 @@ removeLecturer: aLecturer
 	
 	aLecturer detach.! !
 
-!School methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 18:19:15'!
-xmlOut: anXMLWriter
+!School methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
+toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'school' attributeList: {'description' -> description } asDictionary ; endTag.
 	
 	anXMLWriter startTag: 'lecturers' ; endTag.
 	lecturers do:[:each |
-		each xmlOut: anXMLWriter].
+		each toXML: anXMLWriter].
 	anXMLWriter endTag: 'lecturers'.
 	
 	anXMLWriter endTag: 'school'.! !
@@ -1890,13 +1909,13 @@ fromXML: anXMLElement
 		assignment fromXML: eachElement ].
 ! !
 
-!Stencil methodsFor: 'xml' stamp: 'DF 2/12/2025 17:44:35'!
-xmlOut: anXMLWriter
+!Stencil methodsFor: 'xml' stamp: 'DF 2/21/2025 13:21:29'!
+toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'stencil' attributeList: {'description' -> description } asDictionary ; endTag.
 
 	assignments do:[:eachAssignment |
-		eachAssignment xmlOut: anXMLWriter ].
+		eachAssignment toXML: anXMLWriter ].
 	
 	anXMLWriter endTag:'stencil'.! !
 

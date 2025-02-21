@@ -1,0 +1,90 @@
+<?xml  version="1.0" encoding="UTF-8" ?>
+<college description="משבצת חדשה"><modules>
+<module code="90902" description="חשבון דיפרנציאלי ואינטגרלי [חדו&quot;א] 2" elective="false" latin="Differential and Integral Calculus 2">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10145" description="ארגון המחשב ושפת סף" elective="false" latin="Computer Organization and Assembly">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="90905" description="אלגברה ליניארית" elective="false" latin="Linear Algebra">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="90901" description="חשבון דיפרנציאלי ואינטגרלי (חדו&quot;א) 1" elective="false" latin="Differential and Integral Calculus 1">
+<תרגול duration="2"/> 
+<הרצאה duration="4"/> </module>
+<module code="10128" description="תכנות מונחה עצמים" elective="false" latin="Object Oriented Programming">
+<תרגול duration="3"/> 
+<הרצאה duration="3"/> </module>
+<module code="90923" description="לוגיקה מתמטית למדעי המחשב" elective="false" latin="Mathematical Logic for Computer Science">
+<תרגול duration="3"/> 
+<הרצאה duration="2"/> </module>
+<module code="90955" description="מתמטיקה בדידה" elective="false" latin="Discrete Mathematics">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10016" description="מבוא למדעי המחשב" elective="false" latin="Introduction to Computer Science">
+<הרצאה duration="3"/> 
+<תרגול duration="3"/> </module>
+<module code="10142" description="כלי פיתוח" elective="false" latin="Software Development Tools">
+<מעבדה duration="2"/> </module>
+<module code="10827" description="אתיקה להנדסת תוכנה" elective="false" latin="Ethics for Software Engineering">
+<הרצאה duration="3"/> </module></modules><prereqs>
+<module-prereqs code="90902">
+<prereq code="90902"/> 
+<prereq code="90902"/> </module-prereqs>
+<module-prereqs code="10145">
+<prereq code="10145"/> </module-prereqs>
+<module-prereqs code="90905"></module-prereqs>
+<module-prereqs code="90901"></module-prereqs>
+<module-prereqs code="10128">
+<prereq code="10128"/> </module-prereqs>
+<module-prereqs code="90923">
+<prereq code="90923"/> </module-prereqs>
+<module-prereqs code="90955"></module-prereqs>
+<module-prereqs code="10016"></module-prereqs>
+<module-prereqs code="10142"></module-prereqs>
+<module-prereqs code="10827"></module-prereqs></prereqs><programs>
+<program description="הנדסת תוכנה">
+<track description="מסלול יום">
+<year description="שנה 1">
+<semester description="סמסטר א"><modules>
+<module code="90905"/> 
+<module code="90901"/> 
+<module code="10016"/> 
+<module code="90955"/> </modules><stencils></stencils></semester>
+<semester description="סמסטר ב"><modules>
+<module code="90923"/> 
+<module code="90902"/> 
+<module code="10145"/> 
+<module code="10128"/> 
+<module code="10827"/> 
+<module code="10142"/> </modules><stencils></stencils></semester></year>
+<year description="שנה 2">
+<semester description="סמסטר א"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year>
+<year description="שנה 3">
+<semester description="סמסטר א"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year>
+<year description="שנה 4">
+<semester description="סמסטר א"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year></track>
+<track description="מסלול ערב">
+<year description="שנה 1">
+<semester description="סמסטר א"><modules></modules></semester>
+<semester description="סמסטר ב"><modules></modules></semester>
+<semester description="סמסטר קיץ"><modules></modules></semester></year>
+<year description="שנה 2">
+<semester description="סמסטר א"><modules></modules></semester>
+<semester description="סמסטר ב"><modules></modules></semester>
+<semester description="סמסטר קיץ"><modules></modules></semester></year>
+<year description="שנה 3">
+<semester description="סמסטר א"><modules></modules></semester>
+<semester description="סמסטר ב"><modules></modules></semester>
+<semester description="סמסטר קיץ"><modules></modules></semester></year>
+<year description="שנה 4">
+<semester description="סמסטר א"><modules></modules></semester>
+<semester description="סמסטר ב"><modules></modules></semester>
+<semester description="סמסטר קיץ"><modules></modules></semester></year>
+<year description="שנה 5">
+<semester description="סמסטר א"><modules></modules></semester>
+<semester description="סמסטר ב"><modules></modules></semester>
+<semester description="סמסטר קיץ"><modules></modules></semester></year></track></program></programs><campuses></campuses><schools></schools></college>
