@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 21 February 2025 at 9:19:13 pm'!
+'From Cuis7.3 [latest update: #7041] on 22 February 2025 at 8:53:15 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 183!
+!provides: 'BrocadePlanner' 1 208!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -16,12 +16,22 @@ SystemOrganization addCategory: #'BrocadePlanner-ODT'!
 
 !classDefinition: #AcademicProgram category: #'BrocadePlanner-Model'!
 Object subclass: #AcademicProgram
-	instanceVariableNames: 'tracks description college'
+	instanceVariableNames: 'tracks description college themes'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadePlanner-Model'!
 !classDefinition: 'AcademicProgram class' category: #'BrocadePlanner-Model'!
 AcademicProgram class
+	instanceVariableNames: ''!
+
+!classDefinition: #AcademicTheme category: #'BrocadePlanner-Model'!
+Object subclass: #AcademicTheme
+	instanceVariableNames: 'modules program description'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Model'!
+!classDefinition: 'AcademicTheme class' category: #'BrocadePlanner-Model'!
+AcademicTheme class
 	instanceVariableNames: ''!
 
 !classDefinition: #AcademicTrack category: #'BrocadePlanner-Model'!
@@ -96,7 +106,7 @@ College class
 
 !classDefinition: #Module category: #'BrocadePlanner-Model'!
 Object subclass: #Module
-	instanceVariableNames: 'college units code description latin semesters elective prereqs dependants'
+	instanceVariableNames: 'college units code description latin semesters elective prereqs dependants themes'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadePlanner-Model'!
@@ -174,6 +184,16 @@ BidiSystemWindow subclass: #AcademicProgramBrowser
 AcademicProgramBrowser class
 	instanceVariableNames: ''!
 
+!classDefinition: #AcademicThemeBrowser category: #'BrocadePlanner-Morphic'!
+BidiSystemWindow subclass: #AcademicThemeBrowser
+	instanceVariableNames: 'programIndex themeIndex'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Morphic'!
+!classDefinition: 'AcademicThemeBrowser class' category: #'BrocadePlanner-Morphic'!
+AcademicThemeBrowser class
+	instanceVariableNames: ''!
+
 !classDefinition: #ModuleBrowser category: #'BrocadePlanner-Morphic'!
 BidiSystemWindow subclass: #ModuleBrowser
 	instanceVariableNames: 'selectedProgram selectedPrereq'
@@ -242,6 +262,26 @@ UndoRedoCommand subclass: #AddAcademicProgramCommand
 	category: 'BrocadePlanner-UndoRedo'!
 !classDefinition: 'AddAcademicProgramCommand class' category: #'BrocadePlanner-UndoRedo'!
 AddAcademicProgramCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #AddAcademicThemeCommand category: #'BrocadePlanner-UndoRedo'!
+UndoRedoCommand subclass: #AddAcademicThemeCommand
+	instanceVariableNames: 'program themeName theme'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-UndoRedo'!
+!classDefinition: 'AddAcademicThemeCommand class' category: #'BrocadePlanner-UndoRedo'!
+AddAcademicThemeCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #RemoveAcademicThemeCommand category: #'BrocadePlanner-UndoRedo'!
+AddAcademicThemeCommand subclass: #RemoveAcademicThemeCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-UndoRedo'!
+!classDefinition: 'RemoveAcademicThemeCommand class' category: #'BrocadePlanner-UndoRedo'!
+RemoveAcademicThemeCommand class
 	instanceVariableNames: ''!
 
 !classDefinition: #AddModuleCommand category: #'BrocadePlanner-UndoRedo'!
@@ -335,7 +375,50 @@ RemoveProgramCommand class
 	instanceVariableNames: ''!
 
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:25'!
+!AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 18:53:02'!
+addTheme: anAcademicTheme
+
+	anAcademicTheme program ifNotNil:[:program |
+		program detachTheme: anAcademicTheme.
+		anAcademicTheme detachProgram ].
+	
+	anAcademicTheme attachProgram: self.
+	
+	self attachTheme: anAcademicTheme 
+
+! !
+
+!AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 18:51:16'!
+attachTheme: anAcademicThem
+
+	themes add: anAcademicThem ! !
+
+!AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 18:51:27'!
+detachTheme: anAcademicThem
+
+	themes remove: anAcademicThem ! !
+
+!AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 18:58:34'!
+removeTheme: anAcademicTheme
+
+	self assert: (themes includes: anAcademicTheme).
+	
+	self detachTheme: anAcademicTheme.
+	
+	anAcademicTheme detachProgram.
+
+! !
+
+!AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 19:13:52'!
+themeAt: aString
+
+	^themes detect:[:eachTheme | eachTheme description = aString] ifFound:[:aTheme | aTheme] ifNone:[nil]! !
+
+!AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 18:55:07'!
+themes
+	^themes! !
+
+!AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/27/2024 20:03:25'!
 addAcademicTrack: anAcademicTrack
 
 	self assert: anAcademicTrack program isNil.
@@ -344,10 +427,33 @@ addAcademicTrack: anAcademicTrack
 	
 	anAcademicTrack program: self.! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:38'!
+!AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/27/2024 20:03:38'!
 attachAcademicTrack: anAcademicTrack
 
 	tracks add: anAcademicTrack ! !
+
+!AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/27/2024 20:03:55'!
+detachAcademicTrack: anAcademicTrack
+
+	tracks remove: anAcademicTrack ! !
+
+!AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/27/2024 20:02:54'!
+removeAcademicTrack: anAcademicTrack
+
+	self assert: anAcademicTrack program == self.
+	
+	self detachAcademicTrack: anAcademicTrack.
+	
+	anAcademicTrack detach.! !
+
+!AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/29/2024 20:23:21'!
+trackAt: aString
+
+	^ tracks detect:[:eachTrack | eachTrack description = aString] ifFound:[:aTrack | aTrack] ifNone:[nil]! !
+
+!AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/27/2024 20:29:57'!
+tracks
+	^tracks! !
 
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:46'!
 college 
@@ -373,18 +479,16 @@ detach
 
 	college := nil! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:03:55'!
-detachAcademicTrack: anAcademicTrack
-
-	tracks remove: anAcademicTrack ! !
-
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:19:55'!
 displayStringOrText
 	^description! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:17:41'!
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:53:14'!
 initialize
-	tracks := Set new! !
+
+	tracks := Set new.
+	
+	themes := Set new! !
 
 !AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:15'!
 invariant
@@ -393,24 +497,6 @@ invariant
 
 	tracks do:[:eachTrack | eachTrack program == self ].
 	! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:02:54'!
-removeAcademicTrack: anAcademicTrack
-
-	self assert: anAcademicTrack program == self.
-	
-	self detachAcademicTrack: anAcademicTrack.
-	
-	anAcademicTrack detach.! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:21'!
-trackAt: aString
-
-	^ tracks detect:[:eachTrack | eachTrack description = aString] ifFound:[:aTrack | aTrack] ifNone:[nil]! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:29:57'!
-tracks
-	^tracks! !
 
 !AcademicProgram methodsFor: 'filing' stamp: 'DF 2/11/2025 22:04:32'!
 fromXML: anXMLElement
@@ -502,6 +588,67 @@ newFrom: aSpec
 	
 	^anAcademicProgram.
 ! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:59:56'!
+addModule: aModule
+
+	self attachModule: aModule.
+	
+	aModule attachTheme: self.! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:48:06'!
+attachModule: aModule
+
+	modules add: aModule! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:57:09'!
+attachProgram: anAcademicProgram
+
+	self assert: program isNil.
+
+	program := anAcademicProgram ! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:53:31'!
+description
+	^description! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:53:24'!
+description: aString
+	description := aString! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:48:11'!
+detachModule: aModule
+
+	modules remove: aModule! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:50:23'!
+detachProgram
+
+	program := nil! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:49:44'!
+displayStringOrText
+	^description! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:49:11'!
+initialize
+
+	modules := Set new! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:50:39'!
+modules
+	^modules! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:50:32'!
+program
+	^program! !
+
+!AcademicTheme methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:00:12'!
+removeModule: aModule
+
+	self detachModule: aModule.
+	
+	aModule detachTheme: self.! !
 
 !AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/29/2024 20:23:50'!
 academicYearAt: aString
@@ -1165,6 +1312,11 @@ attachSemester: aSemester
 
 	semesters add: aSemester! !
 
+!Module methodsFor: 'structure' stamp: 'DF 2/22/2025 18:48:35'!
+attachTheme: anAcademicTheme
+
+	themes add: anAcademicTheme ! !
+
 !Module methodsFor: 'structure' stamp: 'DF 12/27/2024 15:14:26'!
 college
 	^college! !
@@ -1200,6 +1352,11 @@ detachPrereq: aModule
 detachSemester: aSemester
 
 	semesters remove: aSemester! !
+
+!Module methodsFor: 'structure' stamp: 'DF 2/22/2025 19:00:32'!
+detachTheme: anAcademicTheme
+
+	themes remove: anAcademicTheme ! !
 
 !Module methodsFor: 'structure' stamp: 'DF 2/3/2025 19:54:40'!
 removeAcademicUnit: anAcademicUnit
@@ -1356,7 +1513,7 @@ xmlPrereqsOut: anXMLWriter
 	
 	anXMLWriter endTag: 'module-prereqs'.! !
 
-!Module methodsFor: 'initialization' stamp: 'DF 2/17/2025 21:38:05'!
+!Module methodsFor: 'initialization' stamp: 'DF 2/22/2025 18:48:52'!
 initialize
 
 	college := nil.
@@ -1369,7 +1526,9 @@ initialize
 	
 	prereqs := Set new.
 	
-	dependants := Set new.! !
+	dependants := Set new.
+	
+	themes := Set new.! !
 
 !Module methodsFor: 'comparing' stamp: 'DF 2/20/2025 21:10:25'!
 after: aModule
@@ -1988,7 +2147,25 @@ renderAcademicYear: anAcademicYear on: anXMLWriter.
 templateDirectory: aDirectoryEntry
 	templateDirectory := aDirectoryEntry ! !
 
-!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 21:35:47'!
+!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 20:44:55'!
+temporaryFilename
+
+	| aWriteStream nonc |
+	
+	aWriteStream := WriteStream on: ''.
+
+	aWriteStream nextPut:$~.
+	
+	12 timesRepeat: [ aWriteStream nextPut: (Character codePoint: 96 + 22 atRandom) ] .
+	
+	nonc := Time now asDurationSinceMidnight totalMilliseconds mod: 10000.
+
+	aWriteStream nextPutAll: nonc asString.
+	
+	^aWriteStream contents
+! !
+
+!OpenDocWriter methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 20:51:19'!
 writeAcademicTrackDocument: anAcademicTrack inDirectory: aDirectory
 
 	| documentName dir dst content anXMLWriter aZipArchive count |
@@ -1997,7 +2174,7 @@ writeAcademicTrackDocument: anAcademicTrack inDirectory: aDirectory
 		
 	dir := aDirectory.
 	
-	dst := dir / documentName.
+	dst := dir / self temporaryFilename.
 	
 	content := dst // 'content.xml'.
 	
@@ -2025,7 +2202,10 @@ writeAcademicTrackDocument: anAcademicTrack inDirectory: aDirectory
 		acc := 0.
 		aZipArchive writeToFileNamed: dir // (documentName , '.odt') notifying: [:q | acc := acc + q. barBlock value:acc . (Delay forMilliseconds: 10) wait ] ].
 	
-	"dst delete."
+	"delete tmp dir"
+	
+	dst recursiveDelete.
+
 	! !
 
 !QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:15:58'!
@@ -2152,10 +2332,10 @@ exportTrackAsOpenDoc: aDirectoryEntry
 	
 	anOpenDocWriter writeAcademicTrackDocument: track inDirectory: aDirectoryEntry.! !
 
-!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 2/16/2025 19:13:30'!
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 2/22/2025 20:49:10'!
 selectExportDirectory
 
-	OpenFileDialog open:self start: BrocadeApplication instance home asDirectoryEntry action: #exportTrackAsOpenDoc: label: 'Select Directory'! !
+	SelectDirectoryDialog open:self start: BrocadeApplication instance home asDirectoryEntry action: #exportTrackAsOpenDoc: label: 'Select Directory'! !
 
 !AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 1/12/2025 16:46:08'!
 trackIndex
@@ -2339,7 +2519,7 @@ summary
 	
 	^'סך הכול {1} שעות, {2} נקודות זכות.' format: { hours printString reverse . points printStringFractionDigits:1 :: reverse } :: reverse! !
 
-!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 2/1/2025 15:07:08'!
+!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 2/22/2025 19:32:22'!
 units
 
 	| selectedElectiveNames semesters units |
@@ -2353,8 +2533,8 @@ units
 	semesters asOrderedCollection sort:[:x :y | x academicYear description < y academicYear description or:[x academicYear description = y academicYear description and: [x description <= y description] ] ] ::
 	
 	do:[:eachSemester |	 | modules |
-		modules := 		eachSemester modules select:[:eachModule |
-			(eachModule elective and:[selectedElectiveNames includes: 'בחירה']) 			or:
+		modules := 	eachSemester modules select:[:eachModule |
+			(eachModule elective and:[selectedElectiveNames includes: 'בחירה']) 	or:
 			[eachModule elective not and:[selectedElectiveNames includes: 'חובה'] ] ].
 		
 		modules asOrderedCollection sort:[:x :y | x code <= y code ] :: do:[:eachModule |
@@ -2771,6 +2951,173 @@ addNewModuleDialog: model
 	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand  
 	
 ! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:49:03'!
+addAcademicThemeDialog
+
+	| program mold position aCommand aDialog |
+	
+	aCommand := AddAcademicThemeCommand new.
+	
+	program := self programs at: programIndex.
+	
+	aCommand program: program. 
+	
+	mold := BidiMold new.
+	
+	mold rightToLeft: true.
+	
+	(mold stringField)
+		label: 'שם ההתמחות';
+		on: #themeName of: aCommand;
+		addCondition: [:input| program themeAt: input :: isNil ]   
+		labeled: 'כבר קיימת התמחות עם שם זה.';
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'התמחות חדשה'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
+	
+! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:26:10'!
+buildModulesTable
+
+	| table |
+	
+	table := PluggableTableMorph new.
+	
+	table model: self ; table: #modulesTable ; rightToLeft: true ; headerRow: true.
+		
+	^table ! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:27:20'!
+buildMorphicWindow
+
+	| topPanel table |
+	
+	topPanel := self buildNavigationPanel.
+	
+	table := self buildModulesTable.
+		 
+	self changed: #modulesTable.
+	
+	self layoutMorph addMorph: (topPanel -1.0p | 0.2p </> ((table -1.0p | 1.0p) | 0.8p)).
+	! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:45:40'!
+buildNavigationPanel
+
+	|  programs themes |
+
+	programs := BidiPluggableListMorph withModel: self listGetter: #programs indexGetter: #programIndex indexSetter: #programIndex:.
+	
+	programs menuNshortcutsKey: #programMenuSpec.
+	
+	themes := BidiPluggableListMorph withModel: self listGetter: #themes indexGetter: #themeIndex indexSetter: #themeIndex: .
+	
+	^(themes - (1/2)p | 1p) <+> (programs - (1/2)p | 1p).
+! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:43:33'!
+initialize
+
+	super initialize.
+
+	programIndex := 0.
+
+	themeIndex := 0.! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:35:18'!
+modulesTable
+
+	| themes modules table |
+		
+	themeIndex = 0 ifTrue:[^{}].
+	
+	themes := self themes.
+	
+	themes ifEmpty:[^{}].
+	
+	modules := themes at: themeIndex ifAbsent:[themes last] :: modules :: asOrderedCollection sort:[:x :y | x description <= y description ].
+
+	table := OrderedCollection new.
+	
+	table add: {  'שם קורס' . 'קוד קורס' }.
+
+	modules do:[:eachModule | 
+		table add: { 
+			{ eachModule  description asBidi writingDirection: #rightToLeft } . 
+			{ eachModule code }
+		} ] .
+	
+	^table
+! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:28:34'!
+programIndex
+	
+	^ programIndex! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:28:27'!
+programIndex: anIndex
+
+	programIndex := anIndex.
+	
+	self changed: #themes ; changed: #modulesTable! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:46:47'!
+programMenuSpec
+
+	| addThemeMessage  |
+	
+	addThemeMessage := programIndex ifNil:[nil] ifNotNil:[#addAcademicThemeDialog].
+		
+^ {
+		{ 0 .	'תוכנית לימודים' .		false } .
+		{ 20 .	'הוסף התמחות ...' asBidi writingDirection:#rightToLeft .		$a . #window .	addThemeMessage } .
+	}.! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:15:43'!
+programs
+
+	^ model programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:52:15'!
+themeIndex
+	
+	^ themeIndex! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:29:14'!
+themeIndex: anIndex
+
+	themeIndex := anIndex.
+	
+	self changed: #modulesTable! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:16:14'!
+themes
+	
+	| programs index |
+	
+	programIndex = 0 ifTrue:[^{}].
+	
+	programs := self programs.
+	
+	programs ifEmpty:[^{}].
+	
+	index := programIndex min: programs size.
+		
+	^programs at: index :: themes asOrderedCollection sort:[:x :y | x description <= y description ].
+! !
+
+!AcademicThemeBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:51:27'!
+update: aSymbol
+	self changed: aSymbol! !
 
 !ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 18:11:33'!
 addPrereq
@@ -3355,6 +3702,68 @@ undo
 	
 	college changed: #programs.
 ! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:49:17'!
+doIt
+	
+	self assert: program notNil.
+	
+	self assert: theme isNil.
+	
+	theme := AcademicTheme new.
+	
+	theme description: themeName.
+	
+	program addTheme: theme.
+	
+	program college changed: #themes
+	! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:08:32'!
+program: anAcademicProgram
+	program := anAcademicProgram ! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:12:41'!
+theme: anAcademicTheme
+	theme := anAcademicTheme ! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:08:41'!
+themeName
+	^themeName! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:08:48'!
+themeName: aString
+	themeName := aString! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:09:06'!
+title
+	^ 'הוספת התמחות חדשה'! !
+
+!AddAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:49:23'!
+undo
+	
+	self assert: program notNil.
+	
+	self assert: theme notNil.
+	
+	program removeTheme: theme.
+	
+	theme := nil.
+	
+	program college changed: #themes
+	! !
+
+!RemoveAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:12:13'!
+doIt
+	super undo! !
+
+!RemoveAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:14:33'!
+title
+	^ 'הסרת התמחות'! !
+
+!RemoveAcademicThemeCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 19:12:53'!
+undo
+	super doIt! !
 
 !AddModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 11:16:28'!
 code

@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 21 February 2025 at 2:58:30 pm'!
+'From Cuis7.3 [latest update: #7041] on 22 February 2025 at 7:19:16 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 113!
+!provides: 'BrocadeScheduler' 1 114!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -811,6 +811,10 @@ openAcademicProgramBrowser
 	AcademicProgramBrowser open: model label: 'תוכניות לימוד' 
 ! !
 
+!BrocadeApplication methodsFor: 'programs' stamp: 'DF 2/22/2025 19:19:11'!
+openAcademicThemeBrowser
+	AcademicThemeBrowser open: model label: 'התמחויות'! !
+
 !BrocadeApplication methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:19:19'!
 openStencilBrowser
 
@@ -875,7 +879,7 @@ buildEditMenu
 	
 	^menu! !
 
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/16/2025 18:34:12'!
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/22/2025 19:18:20'!
 menuBar
 
 	| aMenuBar |
@@ -902,6 +906,8 @@ menuBar
 		{ 'תוכנית לימוד חדשה ...' . self . #addAcademicProgramDialog } .
 		$| .
 		{ 'קורס חדש ...' . self . #addNewModuleDialog } .
+		$| .
+		{ 'הצג התמחויות' . self . #openAcademicThemeBrowser } 
 		 } } .
 	{ 'בית ספר' . {
 		{ 'הצג בתי ספר' . self . #openSchoolBrowser } .
