@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 23 February 2025 at 12:32:40 pm'!
+'From Cuis7.3 [latest update: #6895] on 23 February 2025 at 12:42:18 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 216!
+!provides: 'BrocadePlanner' 1 217!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -1493,7 +1493,7 @@ programs
 semesters
 	^semesters ! !
 
-!Module methodsFor: 'xml' stamp: 'DF 2/13/2025 20:44:56'!
+!Module methodsFor: 'xml' stamp: 'DF 2/23/2025 12:42:13'!
 fromXML: anXMLElement
 
 	self assert: anXMLElement name = 'module'.
@@ -1501,6 +1501,8 @@ fromXML: anXMLElement
 	code := Number readFrom: (anXMLElement attributeAt: 'code').
 	
 	description := anXMLElement attributeAt: 'description'.
+
+	latin := anXMLElement attributeAt: 'latin'.
 	
 	elective := (anXMLElement attributeAt: 'elective') = 'true'.
 
