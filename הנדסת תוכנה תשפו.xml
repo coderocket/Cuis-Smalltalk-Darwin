@@ -1,126 +1,289 @@
 <?xml  version="1.0" encoding="UTF-8" ?>
 <college description="משבצת חדשה"><modules>
-<module code="10117" description="מבני נתונים" elective="false" latin="Data Structures">
-<הרצאה duration="4"/> 
-<תרגול duration="2"/> </module>
-<module code="90902" description="חשבון דיפרנציאלי ואינטגרלי [חדו&quot;א] 2" elective="false" latin="Differential and Integral Calculus 2">
-<הרצאה duration="4"/> 
-<תרגול duration="2"/> </module>
-<module code="10139" description="מודלים חישוביים" elective="false" latin="Computational Models">
-<הרצאה duration="4"/> 
-<תרגול duration="2"/> </module>
-<module code="10145" description="ארגון המחשב ושפת סף" elective="false" latin="Computer Organization and Assembly">
-<הרצאה duration="4"/> 
-<תרגול duration="2"/> </module>
 <module code="10013" description="תקשורת מחשבים" elective="false" latin="Computers Communications">
+<תרגול duration="1"/> 
+<הרצאה duration="3"/> </module>
+<module code="10146" description="אימות תוכנה" elective="false" latin="Software Verification">
+<הרצאה duration="3"/> 
+<תרגול duration="2"/> </module>
+<module code="10303" description="מערכות הפעלה" elective="false" latin="Operating Systems">
 <הרצאה duration="3"/> 
 <תרגול duration="1"/> </module>
-<module code="90905" description="אלגברה ליניארית" elective="false" latin="Linear Algebra">
-<הרצאה duration="4"/> 
-<תרגול duration="2"/> </module>
-<module code="90901" description="חשבון דיפרנציאלי ואינטגרלי (חדו&quot;א) 1" elective="false" latin="Differential and Integral Calculus 1">
-<תרגול duration="2"/> 
-<הרצאה duration="4"/> </module>
-<module code="10128" description="תכנות מונחה עצמים" elective="false" latin="Object Oriented Programming">
-<תרגול duration="3"/> 
-<הרצאה duration="3"/> </module>
 <module code="90911" description="מבוא להסתברות" elective="false" latin="Introduction to Probability">
 <הרצאה duration="3"/> 
 <תרגול duration="1"/> </module>
-<module code="10119" description="תיכון מונחה עצמים" elective="false" latin="Object Oriented Design">
-<תרגול duration="2"/> 
-<הרצאה duration="3"/> </module>
 <module code="90923" description="לוגיקה מתמטית למדעי המחשב" elective="false" latin="Mathematical Logic for Computer Science">
 <תרגול duration="3"/> 
 <הרצאה duration="2"/> </module>
-<module code="90955" description="מתמטיקה בדידה" elective="false" latin="Discrete Mathematics">
-<הרצאה duration="4"/> 
-<תרגול duration="2"/> </module>
-<module code="10010" description="מבוא לתכנות מערכות" elective="false" latin="Introduction to System Programming">
+<module code="10400" description="סמינר בהנדסת תוכנה" elective="true" latin="Seminar in Software Engineering">
+<הרצאה duration="2"/> 
+<תרגול duration="1"/> </module>
+<module code="10142" description="כלי פיתוח" elective="false" latin="Software Development Tools">
+<מעבדה duration="2"/> </module>
+<module code="10015" description="סטטיסטיקה" elective="false" latin="Statistics">
 <תרגול duration="2"/> 
+<הרצאה duration="2"/> </module>
+<module code="10128" description="תכנות מונחה עצמים" elective="false" latin="Object Oriented Programming">
+<תרגול duration="3"/> 
+<הרצאה duration="3"/> </module>
+<module code="80901" description="קורס נוסף מהיחידה ללימודי חברה ורוח" elective="false" latin="Humanities &amp; Social Studies">
+<הרצאה duration="2"/> </module>
+<module code="10313" description="אבטחת מידע" elective="false" latin="Data Security">
+<תרגול duration="1"/> 
+<הרצאה duration="2"/> </module>
+<module code="10147" description="אפיון ממשקי משתמש" elective="false" latin="Specification of User Interfaces">
+<הרצאה duration="3"/> 
+<מעבדה duration="1"/> 
+<תרגול duration="1"/> </module>
+<module code="10241" description="הבטחת איכות תוכנה" elective="false" latin="Software QA">
+<תרגול duration="2"/> 
+<הרצאה duration="2"/> </module>
+<module code="10356" description="סמינר בשפות תכנות" elective="true" latin="Seminar in Programming Languages">
+<תרגול duration="1"/> 
 <הרצאה duration="2"/> </module>
 <module code="10016" description="מבוא למדעי המחשב" elective="false" latin="Introduction to Computer Science">
 <הרצאה duration="3"/> 
 <תרגול duration="3"/> </module>
-<module code="10142" description="כלי פיתוח" elective="false" latin="Software Development Tools">
-<מעבדה duration="2"/> </module>
+<module code="10127" description="בסיסי נתונים" elective="false" latin="Database Systems">
+<הרצאה duration="2"/> 
+<תרגול duration="2"/> </module>
+<module code="10143" description="הנדסת תוכנה אינטגרטיבית" elective="false" latin="Integrative Software Engineering">
+<הרצאה duration="3"/> 
+<תרגול duration="2"/> </module>
+<module code="10139" description="מודלים חישוביים" elective="false" latin="Computational Models">
+<תרגול duration="2"/> 
+<הרצאה duration="4"/> </module>
+<module code="90901" description="חשבון דיפרנציאלי ואינטגרלי (חדו&quot;א) 1" elective="false" latin="Differential and Integral Calculus 1">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10151" description="ארכיטקטורת מערכות תוכנה" elective="false" latin="Software Systems Architecture">
+<הרצאה duration="2"/> 
+<תרגול duration="1"/> </module>
+<module code="10149" description="עקרונות שפות תכנות" elective="false" latin="Principles of Programming Languages">
+<תרגול duration="2"/> 
+<הרצאה duration="3"/> </module>
+<module code="10422" description="פרויקט גמר חלק ב׳" elective="false" latin="Final Project Part 2">
+<הרצאה duration="2"/> </module>
+<module code="10261" description="סמינר בשיטות פיתוח" elective="true" latin="Seminar in Development Methodologies">
+<תרגול duration="1"/> 
+<הרצאה duration="2"/> </module>
+<module code="90955" description="מתמטיקה בדידה" elective="false" latin="Discrete Mathematics">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10148" description="מידול מערכות תוכנה" elective="false" latin="Software Systems Modeling">
+<הרצאה duration="2"/> 
+<תרגול duration="1"/> </module>
+<module code="10110" description="מערכות משובצות מחשב" elective="false" latin="Embedded Systems">
+<הרצאה duration="1"/> 
+<מעבדה duration="3"/> </module>
+<module code="80900" description="קורס מהיחידה ללימודי חברה ורוח" elective="false" latin="Humanities &amp; Social Studies">
+<הרצאה duration="2"/> </module>
+<module code="10334" description="קומפילציה" elective="false" latin="Compilation">
+<תרגול duration="1"/> 
+<הרצאה duration="3"/> </module>
+<module code="10121" description="אלגוריתם מתקדם וסיבוכיות" elective="false" latin="Advanced Algorithms &amp; Complexity">
+<תרגול duration="2"/> 
+<הרצאה duration="3"/> </module>
+<module code="10117" description="מבני נתונים" elective="false" latin="Data Structures">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
 <module code="10827" description="אתיקה להנדסת תוכנה" elective="false" latin="Ethics for Software Engineering">
+<הרצאה duration="3"/> </module>
+<module code="10213" description="הנדסת דרישות" elective="false" latin="Requirements Engineering">
+<הרצאה duration="2"/> 
+<תרגול duration="2"/> </module>
+<module code="90905" description="אלגברה ליניארית" elective="false" latin="Linear Algebra">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10423" description="פרויקט גמר חלק ג׳" elective="false" latin="Final Project Part 3">
+<הרצאה duration="3"/> </module>
+<module code="90902" description="חשבון דיפרנציאלי ואינטגרלי [חדו&quot;א] 2" elective="false" latin="Differential and Integral Calculus 2">
+<תרגול duration="2"/> 
+<הרצאה duration="4"/> </module>
+<module code="10010" description="מבוא לתכנות מערכות" elective="false" latin="Introduction to System Programming">
+<הרצאה duration="2"/> 
+<תרגול duration="2"/> </module>
+<module code="19103" description="מבוא לבינה מלאכותית" elective="false" latin="Introduction to AI">
+<הרצאה duration="2"/> 
+<תרגול duration="3"/> </module>
+<module code="10324" description="מחשוב מקבילי ומבוזר" elective="false" latin="Parallel Computation">
+<הרצאה duration="3"/> 
+<תרגול duration="2"/> </module>
+<module code="10352" description="סמינר מתקדם בסייבר" elective="true" latin="Cyber Seminar">
+<תרגול duration="1"/> 
+<הרצאה duration="2"/> </module>
+<module code="10411" description="פרויקט גמר חלק א׳" elective="false" latin="Final Project Part 1">
+<הרצאה duration="2"/> </module>
+<module code="10145" description="ארגון המחשב ושפת סף" elective="false" latin="Computer Organization and Assembly">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10120" description="תכנון וניתוח אלגוריתמים" elective="false" latin="Design &amp; Analysis of Algorithms">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10119" description="תיכון מונחה עצמים" elective="false" latin="Object Oriented Design">
+<תרגול duration="2"/> 
 <הרצאה duration="3"/> </module></modules><prereqs>
+<module-prereqs code="10013">
+<prereq code="10145"/> </module-prereqs>
+<module-prereqs code="10146">
+<prereq code="10139"/> </module-prereqs>
+<module-prereqs code="10303">
+<prereq code="10145"/> 
+<prereq code="10010"/> </module-prereqs>
+<module-prereqs code="90911">
+<prereq code="90901"/> </module-prereqs>
+<module-prereqs code="90923">
+<prereq code="90955"/> </module-prereqs>
+<module-prereqs code="10400">
+<prereq code="10148"/> 
+<prereq code="10151"/> </module-prereqs>
+<module-prereqs code="10142"></module-prereqs>
+<module-prereqs code="10015">
+<prereq code="90911"/> </module-prereqs>
+<module-prereqs code="10128">
+<prereq code="10016"/> </module-prereqs>
+<module-prereqs code="80901"></module-prereqs>
+<module-prereqs code="10313">
+<prereq code="90905"/> 
+<prereq code="10013"/> 
+<prereq code="90911"/> </module-prereqs>
+<module-prereqs code="10147">
+<prereq code="10016"/> </module-prereqs>
+<module-prereqs code="10241">
+<prereq code="10128"/> </module-prereqs>
+<module-prereqs code="10356"></module-prereqs>
+<module-prereqs code="10016"></module-prereqs>
+<module-prereqs code="10127">
+<prereq code="10016"/> </module-prereqs>
+<module-prereqs code="10143">
+<prereq code="10148"/> 
+<prereq code="10151"/> 
+<prereq code="10303"/> 
+<prereq code="10142"/> </module-prereqs>
+<module-prereqs code="10139">
+<prereq code="90923"/> </module-prereqs>
+<module-prereqs code="90901"></module-prereqs>
+<module-prereqs code="10151">
+<prereq code="10213"/> </module-prereqs>
+<module-prereqs code="10149">
+<prereq code="10010"/> </module-prereqs>
+<module-prereqs code="10422">
+<prereq code="10411"/> </module-prereqs>
+<module-prereqs code="10261">
+<prereq code="10151"/> 
+<prereq code="10148"/> </module-prereqs>
+<module-prereqs code="90955"></module-prereqs>
+<module-prereqs code="10148">
+<prereq code="10139"/> </module-prereqs>
+<module-prereqs code="10110">
+<prereq code="10010"/> 
+<prereq code="10145"/> </module-prereqs>
+<module-prereqs code="80900"></module-prereqs>
+<module-prereqs code="10334">
+<prereq code="10139"/> </module-prereqs>
+<module-prereqs code="10121"></module-prereqs>
 <module-prereqs code="10117">
 <prereq code="10117"/> </module-prereqs>
-<module-prereqs code="90902">
-<prereq code="90902"/> 
-<prereq code="90902"/> </module-prereqs>
-<module-prereqs code="10139">
-<prereq code="10139"/> </module-prereqs>
-<module-prereqs code="10145">
-<prereq code="10145"/> </module-prereqs>
-<module-prereqs code="10013">
-<prereq code="10013"/> </module-prereqs>
-<module-prereqs code="90905"></module-prereqs>
-<module-prereqs code="90901"></module-prereqs>
-<module-prereqs code="10128">
-<prereq code="10128"/> </module-prereqs>
-<module-prereqs code="90911">
-<prereq code="90911"/> </module-prereqs>
-<module-prereqs code="10119">
+<module-prereqs code="10827"></module-prereqs>
+<module-prereqs code="10213">
 <prereq code="10119"/> </module-prereqs>
-<module-prereqs code="90923">
-<prereq code="90923"/> </module-prereqs>
-<module-prereqs code="90955"></module-prereqs>
+<module-prereqs code="90905"></module-prereqs>
+<module-prereqs code="10423"></module-prereqs>
+<module-prereqs code="90902">
+<prereq code="90905"/> 
+<prereq code="90901"/> </module-prereqs>
 <module-prereqs code="10010">
-<prereq code="10010"/> </module-prereqs>
-<module-prereqs code="10016"></module-prereqs>
-<module-prereqs code="10142"></module-prereqs>
-<module-prereqs code="10827"></module-prereqs></prereqs><programs>
+<prereq code="10128"/> </module-prereqs>
+<module-prereqs code="19103">
+<prereq code="10016"/> 
+<prereq code="90955"/> 
+<prereq code="90911"/> </module-prereqs>
+<module-prereqs code="10324">
+<prereq code="10120"/> </module-prereqs>
+<module-prereqs code="10352">
+<prereq code="10313"/> </module-prereqs>
+<module-prereqs code="10411"></module-prereqs>
+<module-prereqs code="10145">
+<prereq code="10016"/> </module-prereqs>
+<module-prereqs code="10120">
+<prereq code="10117"/> </module-prereqs>
+<module-prereqs code="10119">
+<prereq code="10128"/> </module-prereqs></prereqs><programs>
 <program description="הנדסת תוכנה">
 <track description="מסלול יום">
-<year description="שנה 1">
-<semester description="סמסטר א"><modules>
+<year description="שנה 1" ordinal="1">
+<semester description="סמסטר א" ordinal="1"><modules>
 <module code="90905"/> 
-<module code="90901"/> 
 <module code="10016"/> 
-<module code="90955"/> </modules><stencils></stencils></semester>
-<semester description="סמסטר ב"><modules>
-<module code="90923"/> 
-<module code="90902"/> 
+<module code="90955"/> 
+<module code="90901"/> </modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules>
 <module code="10145"/> 
-<module code="10128"/> 
 <module code="10827"/> 
-<module code="10142"/> </modules><stencils></stencils></semester></year>
-<year description="שנה 2">
-<semester description="סמסטר א"><modules>
+<module code="10128"/> 
+<module code="90923"/> 
+<module code="10142"/> 
+<module code="90902"/> </modules><stencils></stencils></semester></year>
+<year description="שנה 2" ordinal="2">
+<semester description="סמסטר א" ordinal="1"><modules>
 <module code="10117"/> 
-<module code="10139"/> 
-<module code="10119"/> 
 <module code="10013"/> 
 <module code="10010"/> 
-<module code="90911"/> </modules><stencils></stencils></semester>
-<semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year>
-<year description="שנה 3">
-<semester description="סמסטר א"><modules></modules><stencils></stencils></semester>
-<semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year>
-<year description="שנה 4">
-<semester description="סמסטר א"><modules></modules><stencils></stencils></semester>
-<semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year></track>
+<module code="90911"/> 
+<module code="10139"/> 
+<module code="10119"/> </modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules>
+<module code="10015"/> 
+<module code="19103"/> 
+<module code="10146"/> 
+<module code="10213"/> 
+<module code="10313"/> 
+<module code="10147"/> </modules><stencils></stencils></semester></year>
+<year description="שנה 3" ordinal="3">
+<semester description="סמסטר א" ordinal="1"><modules>
+<module code="10149"/> 
+<module code="10148"/> 
+<module code="10303"/> 
+<module code="10127"/> 
+<module code="10120"/> </modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules>
+<module code="10151"/> 
+<module code="10334"/> 
+<module code="10121"/> 
+<module code="10324"/> 
+<module code="10143"/> 
+<module code="10411"/> </modules><stencils></stencils></semester></year>
+<year description="שנה 4" ordinal="4">
+<semester description="סמסטר א" ordinal="1"><modules>
+<module code="10110"/> 
+<module code="80900"/> 
+<module code="80901"/> 
+<module code="10422"/> 
+<module code="10261"/> 
+<module code="10356"/> </modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules>
+<module code="10241"/> 
+<module code="10423"/> 
+<module code="10352"/> 
+<module code="10400"/> </modules><stencils></stencils></semester></year></track>
 <track description="מסלול ערב">
-<year description="שנה 1">
-<semester description="סמסטר א"><modules></modules></semester>
-<semester description="סמסטר ב"><modules></modules></semester>
-<semester description="סמסטר קיץ"><modules></modules></semester></year>
-<year description="שנה 2">
-<semester description="סמסטר א"><modules></modules></semester>
-<semester description="סמסטר ב"><modules></modules></semester>
-<semester description="סמסטר קיץ"><modules></modules></semester></year>
-<year description="שנה 3">
-<semester description="סמסטר א"><modules></modules></semester>
-<semester description="סמסטר ב"><modules></modules></semester>
-<semester description="סמסטר קיץ"><modules></modules></semester></year>
-<year description="שנה 4">
-<semester description="סמסטר א"><modules></modules></semester>
-<semester description="סמסטר ב"><modules></modules></semester>
-<semester description="סמסטר קיץ"><modules></modules></semester></year>
-<year description="שנה 5">
-<semester description="סמסטר א"><modules></modules></semester>
-<semester description="סמסטר ב"><modules></modules></semester>
-<semester description="סמסטר קיץ"><modules></modules></semester></year></track></program></programs><campuses></campuses><schools></schools></college>
+<year description="שנה 1" ordinal="1">
+<semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year>
+<year description="שנה 2" ordinal="2">
+<semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year>
+<year description="שנה 3" ordinal="3">
+<semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year>
+<year description="שנה 4" ordinal="4">
+<semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year>
+<year description="שנה 5" ordinal="5">
+<semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year></track></program></programs><campuses></campuses><schools></schools></college>

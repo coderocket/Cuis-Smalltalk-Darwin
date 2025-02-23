@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 23 February 2025 at 12:42:18 pm'!
+'From Cuis7.3 [latest update: #6895] on 23 February 2025 at 1:20:09 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 217!
+!provides: 'BrocadePlanner' 1 218!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -2432,14 +2432,14 @@ semesterSelectionAt: anIndex
 	
 	^ selectedSemesters includes: anIndex! !
 
-!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 17:07:21'!
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 2/23/2025 12:52:29'!
 semesterSelectionAt: anIndex put: aBoolean
 
 	aBoolean 
 		ifTrue:[
 			selectedSemesters add: anIndex ]
 		ifFalse:[
-			selectedSemesters remove: anIndex ].
+			selectedSemesters remove: anIndex ifAbsent:[] ].
 		
 	self changed: #unitsTable ; changed: #summary! !
 
@@ -2672,14 +2672,14 @@ yearSelectionAt: anIndex
 	
 	^ selectedYears includes: anIndex! !
 
-!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 16:52:03'!
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 2/23/2025 13:20:01'!
 yearSelectionAt: anIndex put: aBoolean
 
 	aBoolean 
 		ifTrue:[
 			selectedYears add: anIndex ]
 		ifFalse:[
-			selectedYears remove: anIndex ].
+			selectedYears remove: anIndex ifAbsent:[] ].
 		
 	self changed: #semesterNames; changed: #unitsTable ; changed: #summary ! !
 
