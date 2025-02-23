@@ -1,11 +1,20 @@
 <?xml  version="1.0" encoding="UTF-8" ?>
 <college description="משבצת חדשה"><modules>
+<module code="10117" description="מבני נתונים" elective="false" latin="Data Structures">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
 <module code="90902" description="חשבון דיפרנציאלי ואינטגרלי [חדו&quot;א] 2" elective="false" latin="Differential and Integral Calculus 2">
+<הרצאה duration="4"/> 
+<תרגול duration="2"/> </module>
+<module code="10139" description="מודלים חישוביים" elective="false" latin="Computational Models">
 <הרצאה duration="4"/> 
 <תרגול duration="2"/> </module>
 <module code="10145" description="ארגון המחשב ושפת סף" elective="false" latin="Computer Organization and Assembly">
 <הרצאה duration="4"/> 
 <תרגול duration="2"/> </module>
+<module code="10013" description="תקשורת מחשבים" elective="false" latin="Computers Communications">
+<הרצאה duration="3"/> 
+<תרגול duration="1"/> </module>
 <module code="90905" description="אלגברה ליניארית" elective="false" latin="Linear Algebra">
 <הרצאה duration="4"/> 
 <תרגול duration="2"/> </module>
@@ -15,12 +24,21 @@
 <module code="10128" description="תכנות מונחה עצמים" elective="false" latin="Object Oriented Programming">
 <תרגול duration="3"/> 
 <הרצאה duration="3"/> </module>
+<module code="90911" description="מבוא להסתברות" elective="false" latin="Introduction to Probability">
+<הרצאה duration="3"/> 
+<תרגול duration="1"/> </module>
+<module code="10119" description="תיכון מונחה עצמים" elective="false" latin="Object Oriented Design">
+<תרגול duration="2"/> 
+<הרצאה duration="3"/> </module>
 <module code="90923" description="לוגיקה מתמטית למדעי המחשב" elective="false" latin="Mathematical Logic for Computer Science">
 <תרגול duration="3"/> 
 <הרצאה duration="2"/> </module>
 <module code="90955" description="מתמטיקה בדידה" elective="false" latin="Discrete Mathematics">
 <הרצאה duration="4"/> 
 <תרגול duration="2"/> </module>
+<module code="10010" description="מבוא לתכנות מערכות" elective="false" latin="Introduction to System Programming">
+<תרגול duration="2"/> 
+<הרצאה duration="2"/> </module>
 <module code="10016" description="מבוא למדעי המחשב" elective="false" latin="Introduction to Computer Science">
 <הרצאה duration="3"/> 
 <תרגול duration="3"/> </module>
@@ -28,18 +46,30 @@
 <מעבדה duration="2"/> </module>
 <module code="10827" description="אתיקה להנדסת תוכנה" elective="false" latin="Ethics for Software Engineering">
 <הרצאה duration="3"/> </module></modules><prereqs>
+<module-prereqs code="10117">
+<prereq code="10117"/> </module-prereqs>
 <module-prereqs code="90902">
 <prereq code="90902"/> 
 <prereq code="90902"/> </module-prereqs>
+<module-prereqs code="10139">
+<prereq code="10139"/> </module-prereqs>
 <module-prereqs code="10145">
 <prereq code="10145"/> </module-prereqs>
+<module-prereqs code="10013">
+<prereq code="10013"/> </module-prereqs>
 <module-prereqs code="90905"></module-prereqs>
 <module-prereqs code="90901"></module-prereqs>
 <module-prereqs code="10128">
 <prereq code="10128"/> </module-prereqs>
+<module-prereqs code="90911">
+<prereq code="90911"/> </module-prereqs>
+<module-prereqs code="10119">
+<prereq code="10119"/> </module-prereqs>
 <module-prereqs code="90923">
 <prereq code="90923"/> </module-prereqs>
 <module-prereqs code="90955"></module-prereqs>
+<module-prereqs code="10010">
+<prereq code="10010"/> </module-prereqs>
 <module-prereqs code="10016"></module-prereqs>
 <module-prereqs code="10142"></module-prereqs>
 <module-prereqs code="10827"></module-prereqs></prereqs><programs>
@@ -59,7 +89,13 @@
 <module code="10827"/> 
 <module code="10142"/> </modules><stencils></stencils></semester></year>
 <year description="שנה 2">
-<semester description="סמסטר א"><modules></modules><stencils></stencils></semester>
+<semester description="סמסטר א"><modules>
+<module code="10117"/> 
+<module code="10139"/> 
+<module code="10119"/> 
+<module code="10013"/> 
+<module code="10010"/> 
+<module code="90911"/> </modules><stencils></stencils></semester>
 <semester description="סמסטר ב"><modules></modules><stencils></stencils></semester></year>
 <year description="שנה 3">
 <semester description="סמסטר א"><modules></modules><stencils></stencils></semester>

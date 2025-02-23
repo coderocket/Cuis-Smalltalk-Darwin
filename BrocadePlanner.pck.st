@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 22 February 2025 at 8:53:15 pm'!
+'From Cuis7.3 [latest update: #7041] on 23 February 2025 at 9:38:48 am'!
 'Description '!
-!provides: 'BrocadePlanner' 1 208!
+!provides: 'BrocadePlanner' 1 213!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -2398,6 +2398,15 @@ semesterNames at: index ].
 	^self semesters select:[:eachSemester | selectedNames includes: eachSemester description].
 ! !
 
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 2/23/2025 09:20:04'!
+selectedSemesters: aSet
+	selectedSemesters := aSet! !
+
+!AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 2/23/2025 09:38:20'!
+selectedSemestersIndices
+
+	^selectedSemesters! !
+
 !AcademicProgramBrowser methodsFor: 'semesters' stamp: 'DF 1/12/2025 16:46:21'!
 semesterIndex
 	
@@ -2544,7 +2553,7 @@ units
 	^units
 ! !
 
-!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 2/21/2025 13:34:01'!
+!AcademicProgramBrowser methodsFor: 'modules' stamp: 'DF 2/23/2025 09:34:42'!
 unitsTable
 
 	| table |
@@ -2604,6 +2613,16 @@ electiveIndex: anIndex
 
 	electiveIndex := anIndex! !
 
+!AcademicProgramBrowser methodsFor: 'electives' stamp: 'DF 2/23/2025 09:32:21'!
+selectedElectives
+
+	^selectedElectives ! !
+
+!AcademicProgramBrowser methodsFor: 'electives' stamp: 'DF 2/23/2025 09:26:53'!
+selectedElectives: aSet
+
+	selectedElectives := aSet! !
+
 !AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/26/2025 18:55:21'!
 electiveNames
 
@@ -2624,6 +2643,14 @@ electiveSelectionAt: anIndex put: aBoolean
 			selectedElectives remove: anIndex ifAbsent:[nil] ].
 		
 	self changed: #unitsTable ; changed: #summary ! !
+
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 2/23/2025 09:32:15'!
+selectedYears
+	^selectedYears ! !
+
+!AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 2/23/2025 09:19:49'!
+selectedYears: aSet
+	selectedYears := aSet! !
 
 !AcademicProgramBrowser methodsFor: 'years' stamp: 'DF 1/12/2025 16:46:14'!
 yearIndex
@@ -2840,6 +2867,40 @@ buildNavigationPanel
 	
 	^(electives - (1/5)p | 1p) <+> (semesters - (1/5)p | 1p) <+> (years - (1/5)p | 1p) <+> (tracks - (1/5)p | 1p) <+> (programs - (1/5)p | 1p).
 ! !
+
+!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 2/23/2025 09:38:28'!
+copyNavigationIndicesFrom: anAcademicProgramBrowser
+	
+	programIndex :=  anAcademicProgramBrowser programIndex.
+	
+	trackIndex := anAcademicProgramBrowser trackIndex.
+	
+	yearIndex := anAcademicProgramBrowser yearIndex. 
+	
+	selectedYears := anAcademicProgramBrowser selectedYears copy. 
+
+	semesterIndex := anAcademicProgramBrowser semesterIndex.
+
+	selectedSemesters := anAcademicProgramBrowser selectedSemestersIndices copy.
+
+	electiveIndex := anAcademicProgramBrowser electiveIndex.
+
+	selectedElectives := anAcademicProgramBrowser selectedElectives copy.
+! !
+
+!AcademicProgramBrowser methodsFor: 'GUI building' stamp: 'DF 2/23/2025 09:33:11'!
+duplicateWindow
+
+	| aBrowser |
+	
+	aBrowser := self class open: model label: self label.
+	
+	aBrowser copyNavigationIndicesFrom: self.
+		
+	aBrowser morphPosition: self morphPosition - (aBrowser morphWidth @ 0).
+	
+	model changed: #programs; changed: #tracks ; changed: #years; changed: #semesterNames ; changed: #electiveNames.
+	self changed: #unitsTable ; changed: #summary.! !
 
 !AcademicProgramBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 19:10:43'!
 addAcademicProgramDialog: model

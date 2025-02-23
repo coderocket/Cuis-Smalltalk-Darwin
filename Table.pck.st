@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 4 February 2025 at 6:06:46 pm'!
+'From Cuis7.3 [latest update: #7041] on 23 February 2025 at 9:15:39 am'!
 'Description '!
-!provides: 'Table' 1 67!
+!provides: 'Table' 1 68!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -17,7 +17,7 @@ TabbedGroup class
 
 !classDefinition: #TableCell category: #Table!
 LayoutMorph subclass: #TableCell
-	instanceVariableNames: 'row column selected model border tableBorderWidth tableBorderColor'
+	instanceVariableNames: 'row column selected model border tableBorderWidth tableBorderColor minimumHeight'
 	classVariableNames: 'Bottom Left Right Top'
 	poolDictionaries: ''
 	category: 'Table'!
@@ -241,7 +241,7 @@ tableBorderWidth
 tableBorderWidth: anInteger
 	tableBorderWidth := anInteger! !
 
-!TableCell methodsFor: 'initialization' stamp: 'DF 1/27/2025 18:52:42'!
+!TableCell methodsFor: 'initialization' stamp: 'DF 2/23/2025 09:12:42'!
 initialize
 	super initialize.
 	
@@ -253,7 +253,9 @@ initialize
 	
 	tableBorderColor := Color red.
 	
-	tableBorderWidth := 4.! !
+	tableBorderWidth := 4.
+	
+	minimumHeight := FontFamily defaultFamilyAndPointSize lineSpacing. ! !
 
 !TableCell methodsFor: 'event handling testing' stamp: 'DF 1/26/2025 20:59:19'!
 handlesMouseDown: aMouseButtonEvent
@@ -338,6 +340,10 @@ select: aBoolean
 !TableCell methodsFor: 'accessing' stamp: 'DF 1/5/2025 19:29:10'!
 selected
 	^selected! !
+
+!TableCell methodsFor: 'geometry' stamp: 'DF 2/23/2025 09:13:37'!
+minimumExtent
+	^0@minimumHeight ! !
 
 !TableCell class methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 18:26:27'!
 bottom
@@ -883,14 +889,15 @@ factoryMessage: aSymbol
 formatter: aBlock
 	formatter := aBlock! !
 
-!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:55:33'!
+!PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 2/23/2025 09:10:41'!
 initialize
 
 	factoryMessage := #contents:.
 	
 	formatter := [:anObject | anObject displayStringOrText ].
 	
-	morphClass := NarrowLabelMorph.! !
+	morphClass := NarrowLabelMorph.
+! !
 
 !PluggableMorphFactory methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2025 22:12:32'!
 morphClass: aMorphClass
