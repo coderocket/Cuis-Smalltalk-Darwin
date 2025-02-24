@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 23 February 2025 at 9:15:39 am'!
+'From Cuis7.3 [latest update: #7041] on 23 February 2025 at 7:06:34 pm'!
 'Description '!
-!provides: 'Table' 1 68!
+!provides: 'Table' 1 69!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -414,6 +414,21 @@ at: row at: col
 
 	^submorphs at: numColumns  - col + 1 :: submorphs at: numRows - row + 1! !
 
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/23/2025 19:03:26'!
+at: rowIndex at: colIndex ifPresent: aBlock ifAbsent: absentBlock
+
+	| column cell |
+	
+	column := submorphs at: numColumns  - colIndex + 1 ifAbsent:[nil].
+	
+	column ifNil:[^absentBlock value].
+	
+	cell := column submorphs at: numRows - rowIndex + 1 ifAbsent:[nil].
+	
+	cell ifNil:[^absentBlock value].
+	
+	^ aBlock value: cell! !
+
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 19:32:38'!
 borderAround: aRectangle set: aBoolean
 
@@ -773,7 +788,7 @@ menuFactory: aClass
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:41:04'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/23/2025 18:59:49'!
 row: anIndex select: aBoolean
 
 	aBoolean
@@ -782,7 +797,7 @@ row: anIndex select: aBoolean
 				scroller at: anIndex at: columnIndex :: select: true ] ]
 		ifFalse:[
 			1 to: scroller numColumns do:[ : columnIndex |			
-				scroller at: anIndex at: columnIndex :: select: false ] ].
+				scroller at: anIndex at: columnIndex ifPresent:[:morph | morph select: false] ifAbsent:[] ] ].
 ! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/7/2025 16:48:26'!
