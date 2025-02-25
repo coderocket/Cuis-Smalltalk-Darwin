@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 16 February 2025 at 7:04:00 pm'!
+'From Cuis7.3 [latest update: #7041] on 25 February 2025 at 9:48:30 am'!
 'Description '!
-!provides: 'Bidi' 1 55!
+!provides: 'Bidi' 1 56!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -57,7 +57,7 @@ BidiBrowser class
 
 !classDefinition: #BidiLabelGroup category: #Bidi!
 LabelGroup subclass: #BidiLabelGroup
-	instanceVariableNames: ''
+	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
@@ -147,7 +147,7 @@ BidiPluggablePane class
 
 !classDefinition: #BidiTextEntryMorph category: #Bidi!
 TextEntryMorph subclass: #BidiTextEntryMorph
-	instanceVariableNames: ''
+	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
@@ -187,7 +187,7 @@ TestBidi class
 
 !classDefinition: #BidiField category: #Bidi!
 Field subclass: #BidiField
-	instanceVariableNames: ''
+	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Bidi'!
@@ -419,12 +419,12 @@ newSystemCategoryNameIfNone: aNoneBlock
 		ifTrue: aNoneBlock 
 		ifFalse: [newName asBidiSymbol].! !
 
-!BidiLabelGroup methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:47:15'!
+!BidiLabelGroup methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:36:55'!
 initialize
 
 	super initialize.
 	
-	rightToLeft := false.! !
+	rightToLeft := false. ! !
 
 !BidiLabelGroup methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:47:06'!
 rightToLeft: aBoolean
@@ -834,12 +834,12 @@ drawTextCursorOn: aCanvas
 			emphasis: emphasis 
 			on: aCanvas ]! !
 
-!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:00:25'!
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:35:08'!
 initialize
 
 	super initialize.
 	
-	rightToLeft := false. ! !
+	rightToLeft := false.  ! !
 
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/27/2025 16:12:17'!
 installEditor
@@ -852,8 +852,9 @@ installEditor
 	self redrawNeeded.
 	^editor! !
 
-!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:00:07'!
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:47:28'!
 rightToLeft: aBoolean
+	self assert: (aBoolean isKindOf: Boolean).
 	rightToLeft := aBoolean! !
 
 !BidiInnerListMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:41:57'!
@@ -973,11 +974,12 @@ exampleMorph
 		ifTrue: [nil] 
 		ifFalse: [rightToLeft ifTrue:[self inputColumn lastSubmorph ] ifFalse:[self inputColumn firstSubmorph ]]! !
 
-!BidiField methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 17:12:07'!
+!BidiField methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:40:03'!
 initialize
+	rightToLeft := true.
 	super initialize.
 	
-	rightToLeft := true! !
+! !
 
 !BidiField methodsFor: 'as yet unclassified' stamp: 'DF 12/20/2024 17:32:06'!
 inputMorph
@@ -986,7 +988,7 @@ inputMorph
 	self inputColumn firstSubmorph 
 ! !
 
-!BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 19:02:00'!
+!BidiField methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:32:18'!
 inputMorphInstance
 "
 	Subclass according to the nature of the input 
@@ -996,9 +998,16 @@ inputMorphInstance
 	
 	aTextEntryMorph := BidiTextEntryMorph new.
 	
-	aTextEntryMorph rightToLeft: true.
+	aTextEntryMorph rightToLeft: rightToLeft.
 	
 	^ aTextEntryMorph ! !
+
+!BidiField methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:47:13'!
+rightToLeft: aBoolean
+self assert: (aBoolean isKindOf: Boolean).
+	rightToLeft := aBoolean.
+	
+	self inputMorph rightToLeft: aBoolean! !
 
 !BidiField methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 20:06:48'!
 validateInput

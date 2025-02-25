@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 24 February 2025 at 7:29:04 pm'!
+'From Cuis7.3 [latest update: #7041] on 25 February 2025 at 9:48:33 am'!
 'Description '!
-!provides: 'BrocadePlanner' 1 243!
+!provides: 'BrocadePlanner' 1 244!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -3579,7 +3579,7 @@ buildDependantsTable
 	
 ! !
 
-!ModuleBrowser methodsFor: 'GUI building' stamp: 'DF 2/21/2025 18:02:28'!
+!ModuleBrowser methodsFor: 'GUI building' stamp: 'DF 2/25/2025 09:32:52'!
 buildDetailsPane
 
 	| mold detailsPane anEditModuleCommand aPane |
@@ -3605,7 +3605,7 @@ buildDetailsPane
 		label: 'שם הקורס';
 		on: #description of: anEditModuleCommand;
 		beRequired.
-	(mold stringField)
+	(mold stringField) rightToLeft: false; 
 		label: 'שם באנגלית';
 		on: #latin of: anEditModuleCommand;
 		beRequired.
