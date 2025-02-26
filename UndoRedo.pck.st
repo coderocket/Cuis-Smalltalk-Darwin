@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 7:44:01 pm'!
+'From Cuis7.3 [latest update: #7041] on 26 February 2025 at 9:20:03 pm'!
 'Description '!
-!provides: 'UndoRedo' 1 9!
+!provides: 'UndoRedo' 1 10!
 SystemOrganization addCategory: #UndoRedo!
 
 
@@ -16,7 +16,7 @@ TestUndoRedo class
 
 !classDefinition: #CommandHistory category: #UndoRedo!
 Object subclass: #CommandHistory
-	instanceVariableNames: 'commands currentIndex'
+	instanceVariableNames: 'commands currentIndex saveIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'UndoRedo'!
@@ -91,11 +91,14 @@ currentTitle
 	
 	! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 18:05:06'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 21:18:29'!
 do: anUndoRedoCommand
 	
 	anUndoRedoCommand doIt.
 	
+	saveIndex > currentIndex 
+		ifTrue:[saveIndex := nil].
+				
 	commands removeLast: commands size - currentIndex . 
 	
 	commands add: anUndoRedoCommand.
@@ -103,12 +106,14 @@ do: anUndoRedoCommand
 	currentIndex := currentIndex + 1.
 	! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:52:05'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 20:53:12'!
 initialize
 
 	commands := OrderedCollection new.
 	
-	currentIndex := 0.! !
+	currentIndex := 0.
+	
+	saveIndex := 0.! !
 
 !CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 16:58:13'!
 isAtBeginning
@@ -117,6 +122,10 @@ isAtBeginning
 !CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:12:34'!
 isAtEnd
 	^currentIndex = commands size ! !
+
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 21:19:14'!
+isDirty
+	^saveIndex isNil or:[saveIndex ~= currentIndex]! !
 
 !CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:12:27'!
 redo
@@ -130,6 +139,10 @@ redo
 	commands at: currentIndex :: doIt.
 	
 	! !
+
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 20:53:37'!
+save
+	saveIndex := currentIndex ! !
 
 !CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:39:10'!
 undo

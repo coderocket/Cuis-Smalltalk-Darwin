@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 22 February 2025 at 7:19:16 pm'!
+'From Cuis7.3 [latest update: #7041] on 26 February 2025 at 9:20:09 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 114!
+!provides: 'BrocadeScheduler' 1 115!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -879,7 +879,7 @@ buildEditMenu
 	
 	^menu! !
 
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/22/2025 19:18:20'!
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/26/2025 19:26:21'!
 menuBar
 
 	| aMenuBar |
@@ -893,7 +893,7 @@ menuBar
 		{ 'שמור' . self . #saveAction } . 
 		{ 'שמור בשם ...' . self . #saveAsAction } .
 		$| .
-		{'יבא תוכניות לימודים ...' . self . #openImportAcademicProgramDialog } .
+		{'יבא תוכניות לימודים ...' . self . nil "#openImportAcademicProgramDialog" } .
 		{'יבא סגל אקדמי ...' . self . #openImportAcademicStaffDialog } .
 		{'יצא תוכנית לימודים ...' . self . #exportAction } .
 		$| .

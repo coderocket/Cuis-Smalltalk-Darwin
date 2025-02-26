@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 3 February 2025 at 4:59:53 pm'!
+'From Cuis7.3 [latest update: #7041] on 26 February 2025 at 7:39:28 pm'!
 'Description '!
-!provides: 'MenuBar' 1 6!
+!provides: 'MenuBar' 1 7!
 SystemOrganization addCategory: #MenuBar!
 
 
@@ -154,7 +154,7 @@ initialize
 	
 	menus := OrderedCollection new.! !
 
-!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 13:17:46'!
+!MenuBar methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 19:30:06'!
 menus: anOrderedCollection
 
 "
@@ -199,7 +199,7 @@ MenuBar menus: {
 				(each at:2) do:[:item | 
 					item = $| 
 						ifTrue:[menu addLine]
-						ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ] ] ].
+						ifFalse:[(menu add: (item at:1) target: (item at:2) action: (item at:3)) color: Theme current buttonLabel ; isEnabled: (item at:3) notNil ] ] ].
 		self addMenu: menu. 
 		index := index + 1 ] .
 
