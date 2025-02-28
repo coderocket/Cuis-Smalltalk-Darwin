@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 26 February 2025 at 9:20:09 pm'!
+'From Cuis7.3 [latest update: #7041] on 28 February 2025 at 6:53:07 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 115!
+!provides: 'BrocadeScheduler' 1 118!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
@@ -35,7 +35,7 @@ SchedulingSemester class
 
 !classDefinition: #BrocadeApplication category: #'BrocadeScheduler-Application'!
 Object subclass: #BrocadeApplication
-	instanceVariableNames: 'model path lastImportDirectory dirty homeDirectory'
+	instanceVariableNames: 'model path lastImportDirectory homeDirectory'
 	classVariableNames: 'TheApplication'
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-Application'!
@@ -795,6 +795,13 @@ addNewModuleDialog
 
 	AcademicProgramBrowser addNewModuleDialog: model! !
 
+!BrocadeApplication methodsFor: 'modules' stamp: 'DF 2/28/2025 18:41:19'!
+openCollegeModuleBrowser
+
+	CollegeModuleBrowser open: model label: 'רשימת כל הקורסים'
+
+! !
+
 !BrocadeApplication methodsFor: 'modules' stamp: 'DF 1/11/2025 16:55:59'!
 openSearchModuleDialog
 
@@ -879,7 +886,7 @@ buildEditMenu
 	
 	^menu! !
 
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/26/2025 19:26:21'!
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/28/2025 18:38:38'!
 menuBar
 
 	| aMenuBar |
@@ -905,6 +912,7 @@ menuBar
 		{'הצג תוכניות לימודים' . self . #openAcademicProgramBrowser } .
 		{ 'תוכנית לימוד חדשה ...' . self . #addAcademicProgramDialog } .
 		$| .
+		{ 'רשימת כל הקורסים' . self . #openCollegeModuleBrowser } .
 		{ 'קורס חדש ...' . self . #addNewModuleDialog } .
 		$| .
 		{ 'הצג התמחויות' . self . #openAcademicThemeBrowser } 
@@ -929,13 +937,13 @@ menuBar
 		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
 ! !
 
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/12/2025 21:39:48'!
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/28/2025 16:54:38'!
 newAction
 
 	| decision |
 	
 	decision :=
-		dirty 
+		BrocadeCommandHistory instance isDirty 
 			ifTrue:[ 
 				self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self].
 		 	]
@@ -946,25 +954,25 @@ newAction
 	decision 
 		ifTrue:[
 			self closeAllBrocadeWindows.
-			self open ]! !
-
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/12/2025 19:32:47'!
-open
-
-	| aCollege |
 	
-	aCollege := SchedulingCollege new.
-
-	aCollege invariant.
-
-	model := aCollege.
+			BrocadeCommandHistory instance initialize.
+			
+			model := SchedulingCollege new.
 	
-	model description:'משבצת חדשה'! !
+			model description:'משבצת חדשה' ]! !
 
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/13/2025 13:03:48'!
+!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/28/2025 17:31:05'!
 openAction
 
-	OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'! !
+	| dialog |
+	
+	BrocadeCommandHistory instance isDirty 
+		ifTrue:[ 
+			self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self] ].
+		
+	dialog := OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'.
+	
+	dialog morphPosition: (dialog owner morphExtent - dialog morphExtent / 2).! !
 
 !BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/21/2025 14:46:25'!
 saveAction
@@ -1033,15 +1041,7 @@ redo
 undo
 	BrocadeCommandHistory instance undo! !
 
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/11/2025 20:47:09'!
-dirty
-	^dirty! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/11/2025 20:47:07'!
-dirty: aBoolean
-	dirty := aBoolean! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/13/2025 21:08:56'!
+!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/28/2025 17:25:47'!
 fromXML: aFileEntry
 
 	| aReadStream anXMLDocument aCollege |
@@ -1057,8 +1057,13 @@ fromXML: aFileEntry
 	aCollege invariant.
 	
 	self closeAllBrocadeWindows.
+
+	BrocadeCommandHistory instance initialize.
 	
 	model := aCollege.
+	
+	self updateDocumentName. 
+
 ! !
 
 !BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/16/2025 18:29:48'!
@@ -1076,14 +1081,16 @@ saveAs: aString
 	
 	self saveAction.! !
 
-!BrocadeApplication methodsFor: 'initialization' stamp: 'DF 2/16/2025 18:37:59'!
+!BrocadeApplication methodsFor: 'initialization' stamp: 'DF 2/28/2025 16:58:34'!
 initialize
 
 	super initialize.
 
 	homeDirectory := DirectoryEntry userBaseDirectory asString.
 	
-	dirty := false! !
+	BrocadeCommandHistory instance when: #changed send: #updateDocumentName to: self.
+	
+	! !
 
 !BrocadeApplication methodsFor: 'window management' stamp: 'DF 2/12/2025 19:32:21'!
 closeAllBrocadeWindows
@@ -1123,6 +1130,17 @@ settingsDialog
 		
 	aDialog morphPosition: position - (aDialog morphWidth@0).
 ! !
+
+!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:33:03'!
+updateDocumentName
+
+	| tag |
+	
+	tag := 
+		BrocadeCommandHistory instance isDirty ifTrue:['*'] ifFalse:[''].
+	
+	DisplayScreen hostOSWindowTitle: model description , tag.
+	! !
 
 !BrocadeApplication class methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 19:24:09'!
 instance
@@ -1707,11 +1725,9 @@ toXML: anXMLWriter
 	
 	anXMLWriter endTag: 'campus'.! !
 
-!School methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:01:05'!
+!School methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:16:10'!
 addLecturer: aLecturer
 
-	self halt.
-	
 	self assert: aLecturer school isNil.
 	
 	self attachLecturer: aLecturer. 
@@ -3516,7 +3532,7 @@ buildMorphicWindow
 	
 	self changed: #lecturersTable.! !
 
-!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:34:24'!
+!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:15:49'!
 addLecturerDialog: model
 
 	| schools aCommand mold position aDialog |
@@ -3533,7 +3549,7 @@ addLecturerDialog: model
 		rightToLeft: true;
 		label: 'בית ספר';
 		on: #listIndex of: schools;
-		callback:[:value | aCommand lecturer: value ]; 
+		callback:[:value | aCommand school: schools selectedItem ]; 
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
@@ -3576,12 +3592,14 @@ addLecturerDialog: model
 	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
 ! !
 
-!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:12:50'!
+!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:06:13'!
 addSchoolDialog: model
 
 	| mold aCommand position aDialog |
 	
 	aCommand := AddSchoolCommand new.
+	
+	aCommand college: model.
 	
 	mold := BidiMold new.
 	
@@ -4280,6 +4298,10 @@ code
 code: anInteger
 	code := anInteger! !
 
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:03:20'!
+description
+	^description! !
+
 !AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:26:55'!
 description: aString
 	description := aString! !
@@ -4297,8 +4319,12 @@ doIt
 	
 	school college changed: #lecturersTable! !
 
-!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:27:10'!
-qutoa: anInteger
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:04:06'!
+quota
+	^quota! !
+
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:12:09'!
+quota: anInteger
 	quota := anInteger! !
 
 !AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:27:03'!

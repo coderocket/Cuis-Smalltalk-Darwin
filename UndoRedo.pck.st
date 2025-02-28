@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 26 February 2025 at 9:20:03 pm'!
+'From Cuis7.3 [latest update: #7041] on 28 February 2025 at 5:01:57 pm'!
 'Description '!
-!provides: 'UndoRedo' 1 10!
+!provides: 'UndoRedo' 1 11!
 SystemOrganization addCategory: #UndoRedo!
 
 
@@ -91,7 +91,7 @@ currentTitle
 	
 	! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 21:18:29'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 16:56:19'!
 do: anUndoRedoCommand
 	
 	anUndoRedoCommand doIt.
@@ -104,7 +104,8 @@ do: anUndoRedoCommand
 	commands add: anUndoRedoCommand.
 	
 	currentIndex := currentIndex + 1.
-	! !
+	
+	self triggerEvent: #changed! !
 
 !CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 20:53:12'!
 initialize
@@ -127,7 +128,7 @@ isAtEnd
 isDirty
 	^saveIndex isNil or:[saveIndex ~= currentIndex]! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 17:12:27'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 16:56:28'!
 redo
 
 	self assert: currentIndex < commands size.
@@ -138,13 +139,15 @@ redo
 	
 	commands at: currentIndex :: doIt.
 	
-	! !
+	self triggerEvent: #changed! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/26/2025 20:53:37'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 16:56:33'!
 save
-	saveIndex := currentIndex ! !
+	saveIndex := currentIndex.
+	
+	self triggerEvent: #changed! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:39:10'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 16:56:36'!
 undo
 
 	self assert: currentIndex <= commands size.
@@ -154,7 +157,8 @@ undo
 	commands at: currentIndex :: undo.
 	
 	currentIndex := currentIndex - 1.
-	! !
+	
+	self triggerEvent: #changed! !
 
 !UndoRedoCommand methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 15:47:12'!
 doIt
