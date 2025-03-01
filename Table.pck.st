@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 23 February 2025 at 7:06:34 pm'!
+'From Cuis7.3 [latest update: #7041] on 1 March 2025 at 2:56:02 pm'!
 'Description '!
-!provides: 'Table' 1 69!
+!provides: 'Table' 1 70!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -673,7 +673,7 @@ cellFactory: aClass
 
 	scroller cellFactory: aClass! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 17:37:03'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 22:01:06'!
 clickedCell: aTableCell
 
 	headerRow and: [aTableCell row = 1] 
@@ -683,7 +683,7 @@ clickedCell: aTableCell
 		ifTrue:[
 			self row: aTableCell row select: false.
 			selectedRow := 0.
-			model perform: selectRowMessage with: selectedRow.
+			selectRowMessage ifNotNil:[model perform: selectRowMessage with: selectedRow].
 		]
 		ifFalse:[
 			selectedRow = 0
