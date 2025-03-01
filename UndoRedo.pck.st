@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 28 February 2025 at 5:01:57 pm'!
+'From Cuis7.3 [latest update: #7041] on 1 March 2025 at 2:56:06 pm'!
 'Description '!
-!provides: 'UndoRedo' 1 11!
+!provides: 'UndoRedo' 1 12!
 SystemOrganization addCategory: #UndoRedo!
 
 
@@ -91,12 +91,12 @@ currentTitle
 	
 	! !
 
-!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 16:56:19'!
+!CommandHistory methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:07:36'!
 do: anUndoRedoCommand
 	
 	anUndoRedoCommand doIt.
 	
-	saveIndex > currentIndex 
+	saveIndex notNil and: [saveIndex > currentIndex] ::
 		ifTrue:[saveIndex := nil].
 				
 	commands removeLast: commands size - currentIndex . 
