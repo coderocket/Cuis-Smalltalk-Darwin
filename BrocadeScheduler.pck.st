@@ -1,8 +1,9 @@
-'From Cuis7.3 [latest update: #7041] on 1 March 2025 at 3:21:24 pm'!
+'From Cuis7.3 [latest update: #7041] on 2 March 2025 at 9:14:45 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 154!
+!provides: 'BrocadeScheduler' 1 162!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
+!requires: 'SpriteAtlas' 1 0 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
 SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
@@ -11,6 +12,7 @@ SystemOrganization addCategory: #'BrocadeScheduler-ResourceMorphic'!
 SystemOrganization addCategory: #BrocadeScheduler!
 SystemOrganization addCategory: #'BrocadeScheduler-Application'!
 SystemOrganization addCategory: #'BrocadeScheduler-UndoRedo'!
+SystemOrganization addCategory: #'BrocadeScheduler-SpriteAtlas'!
 
 
 !classDefinition: #SchedulingCollege category: #'BrocadeScheduler-Model'!
@@ -256,7 +258,7 @@ ResourceTimeTableCell class
 !classDefinition: #ClassroomMorph category: #'BrocadeScheduler-CampusMorphic'!
 BrocadeTableCellItem subclass: #ClassroomMorph
 	instanceVariableNames: 'room'
-	classVariableNames: 'ClassroomImage'
+	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-CampusMorphic'!
 !classDefinition: 'ClassroomMorph class' category: #'BrocadeScheduler-CampusMorphic'!
@@ -266,7 +268,7 @@ ClassroomMorph class
 !classDefinition: #LecturerMorph category: #'BrocadeScheduler-SchoolMorphic'!
 BrocadeTableCellItem subclass: #LecturerMorph
 	instanceVariableNames: 'lecturer'
-	classVariableNames: 'LecturerImage'
+	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-SchoolMorphic'!
 !classDefinition: 'LecturerMorph class' category: #'BrocadeScheduler-SchoolMorphic'!
@@ -341,6 +343,16 @@ BidiSystemWindow subclass: #StencilBrowser
 	category: 'BrocadeScheduler-StencilMorphic'!
 !classDefinition: 'StencilBrowser class' category: 'BrocadeScheduler-StencilMorphic'!
 StencilBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #BrocadeSpriteAtlas category: #'BrocadeScheduler-SpriteAtlas'!
+SpriteAtlas subclass: #BrocadeSpriteAtlas
+	instanceVariableNames: ''
+	classVariableNames: 'Instance'
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-SpriteAtlas'!
+!classDefinition: 'BrocadeSpriteAtlas class' category: #'BrocadeScheduler-SpriteAtlas'!
+BrocadeSpriteAtlas class
 	instanceVariableNames: ''!
 
 !classDefinition: #AddCampusCommand category: #'BrocadeScheduler-UndoRedo'!
@@ -860,9 +872,9 @@ openAcademicProgramBrowser
 	AcademicProgramBrowser open: model label: 'תוכניות לימוד' 
 ! !
 
-!BrocadeApplication methodsFor: 'programs' stamp: 'DF 2/22/2025 19:19:11'!
+!BrocadeApplication methodsFor: 'programs' stamp: 'DF 3/2/2025 15:40:20'!
 openAcademicThemeBrowser
-	AcademicThemeBrowser open: model label: 'התמחויות'! !
+	EasyThemeBrowser open: model label: 'התמחויות'! !
 
 !BrocadeApplication methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:19:19'!
 openStencilBrowser
@@ -1347,6 +1359,30 @@ attachAcademicUnit: anAcademicUnit
 	units add: anAcademicUnit.
 ! !
 
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 19:13:46'!
+blockedSlotsFromXML: anXMLElement
+
+	anXMLElement elementAt: 'blocked-slots' :: elements do:[:eachSemester | | semesterOrdinal |
+		
+		self assert: eachSemester name = 'semester'.
+		
+		semesterOrdinal := Number readFrom: (eachSemester attributeAt: 'ordinal').
+		
+		eachSemester elements do:[:eachDay | | dayOrdinal |
+		
+			self assert: eachDay name = 'day'.
+				
+			dayOrdinal := Number readFrom: (eachDay attributeAt: 'ordinal').
+			
+			eachDay elements do:[:eachHour | | hourOrdinal |
+				
+				self assert: eachHour name = 'hour'.
+				
+				hourOrdinal := Number readFrom: (eachHour attributeAt: 'ordinal').
+				
+				blockedSlots at: semesterOrdinal :: at: dayOrdinal :: add: hourOrdinal ] ] ].
+! !
+
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:14'!
 detach
 
@@ -1365,6 +1401,21 @@ detachAcademicUnit: anAcademicUnit
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 19:59:17'!
 displayStringOrText
 	^self description ! !
+
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 19:04:02'!
+fromXML: anXMLElement
+
+	self assert: anXMLElement name = 'lecturer'.
+
+	code := Number readFrom:(anXMLElement attributeAt: 'code').
+
+	description := anXMLElement attributeAt: 'description'.
+
+	quota := Number readFrom:(anXMLElement attributeAt: 'quota').
+
+	rank := anXMLElement attributeAt: 'rank'.
+	
+	self blockedSlotsFromXML: anXMLElement.! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 20:57:08'!
 initialize
@@ -1406,10 +1457,25 @@ school: aSchool
 	
 	school := aSchool! !
 
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:21:29'!
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 18:43:44'!
 toXML: anXMLWriter
 	
-	anXMLWriter startElement: 'lecturer' attributeList: {'code' -> code asString . 'description' -> description. 'quota' -> quota asString . 'rank' -> rank } asDictionary ; endEmptyTag: 'lecturer'.! !
+	anXMLWriter startElement: 'lecturer' attributeList: {'code' -> code asString . 'description' -> description. 'quota' -> quota asString . 'rank' -> rank } asDictionary ; endTag.
+	
+		anXMLWriter startTag: 'blocked-slots' ; endTag.
+			(1 to:3) do:[:i | | semester |
+				semester := blockedSlots at:i.
+				anXMLWriter startElement: 'semester' attributeList: { 'ordinal' -> i asString} asDictionary; endTag.
+					(1 to:6) do:[:day | | hours |
+						anXMLWriter startElement: 'day' attributeList: { 'ordinal' -> day asString} asDictionary; endTag.
+							hours := semester at:day.
+							hours do:[:eachHour |
+								anXMLWriter startElement: 'hour' attributeList: { 'ordinal' -> eachHour asString} asDictionary; endEmptyTag:'hour'.].
+						anXMLWriter endTag: 'day'].
+				anXMLWriter endTag: 'semester' ].
+		anXMLWriter endTag: 'blocked-slots'.
+	
+	anXMLWriter endTag: 'lecturer'.! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:58:00'!
 units
@@ -1878,6 +1944,19 @@ detachLecturer: aLecturer
 displayStringOrText
 	^description! !
 
+!School methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 18:54:13'!
+fromXML: anXMLElement
+
+	| aString |
+	
+	self assert: anXMLElement name = 'school'.
+
+	aString := anXMLElement attributeAt: 'description'.
+	
+	self description: aString.
+
+	self lecturersFromXML: anXMLElement.! !
+
 !School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:49:57'!
 initialize
 	lecturers := Set new! !
@@ -1898,6 +1977,15 @@ lecturerAt: anInteger
 !School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 21:23:12'!
 lecturers
 	^lecturers! !
+
+!School methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 18:53:55'!
+lecturersFromXML: anXMLElement
+
+	anXMLElement elementAt: 'lecturers' :: elements do:[:eachElement | | aLecturer |
+		aLecturer := Lecturer new.
+		self addLecturer: aLecturer.
+		aLecturer fromXML: eachElement	].
+! !
 
 !School methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:54:47'!
 removeLecturer: aLecturer
@@ -2433,14 +2521,14 @@ build
 	
 	self color: notSelectedColor.! !
 
-!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 18:23:32'!
+!ClassroomMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:14:28'!
 drawOn: aCanvas
 
 	| aForm |
 	
 	super drawOn: aCanvas.
 	
-	aForm := ClassroomImage magnifyBy: self morphHeight / 2 / ClassroomImage height.
+	aForm := ClassroomMorph icon magnifyBy: self morphHeight / 2 / ClassroomMorph icon height.
 	
 	aCanvas image: aForm at: self morphExtent - aForm extent / 2 + (0@5).
 
@@ -2525,17 +2613,9 @@ justDroppedInto: newOwnerMorph event: anEvent
 		ifFalse:[
 			self addAlarm: #delete after: 0.]! !
 
-!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 22:20:12'!
-initialize
-
-	"self initialize"
-
-	| aFileEntry |
-		
-	aFileEntry := '/home/davidf/src/Cuis-Smalltalk-Darwin/classroom.png' asFileEntry.
-
-	ClassroomImage := ImageReadWriter formFromFileEntry: aFileEntry.
-! !
+!ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:14:05'!
+icon
+	^BrocadeSpriteAtlas instance spriteAt: 0 at:2! !
 
 !ClassroomMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/29/2025 19:25:31'!
 new: aClassroom
@@ -2610,7 +2690,7 @@ build
 	
 ! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 18:24:17'!
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:12:31'!
 drawOn: aCanvas
 
 	| aForm |
@@ -2620,11 +2700,11 @@ drawOn: aCanvas
 	self morphHeight < 64
 		ifTrue:[ | h |
 			h := self morphHeight * 0.8.
-			aForm := LecturerImage magnifyTo: h @ h.
+			aForm := LecturerMorph icon magnifyTo: h @ h.
 			aCanvas image: aForm at: 5@ (self morphHeight - h) / 2.
 		]
 		ifFalse:[
-			aForm := LecturerImage magnifyBy: self morphHeight / 3 / LecturerImage height.
+			aForm := LecturerMorph icon magnifyBy: self morphHeight / 3 / LecturerMorph icon height.
 			aCanvas image: aForm at: self morphExtent - aForm extent / 2 + (0 @ 5).
 		].
 	
@@ -2680,17 +2760,9 @@ unassign: anAssignment
 
 ! !
 
-!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/23/2025 21:44:51'!
-initialize
-
-	"self initialize"
-
-	| aFileEntry |
-		
-	aFileEntry := '/home/davidf/src/Cuis-Smalltalk-Darwin/mortar.png' asFileEntry.
-
-	LecturerImage := ImageReadWriter formFromFileEntry: aFileEntry.
-! !
+!LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:10:09'!
+icon
+	^BrocadeSpriteAtlas instance spriteAt: 0 at: 5! !
 
 !LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 17:54:06'!
 new: aLecturer
@@ -4445,6 +4517,18 @@ removeStencilFromSemester
 	
 	model changed: #stencilNames ; changed: #assignmentsTable! !
 
+!BrocadeSpriteAtlas class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:07:10'!
+instance
+	
+	Instance ifNil:[ | path |
+		Instance := self new.
+		Instance width: 128; height: 128.
+		path := BrocadeApplication instance home.
+		Instance load: path asDirectoryEntry // 'icons.png'.
+	].
+
+	^Instance! !
+
 !AddCampusCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:18:42'!
 college: aCollege
 	college := aCollege! !
@@ -4998,5 +5082,3 @@ isEmptySet
 	^stop <= start! !
 SchedulingCollege initialize!
 Assignment initialize!
-ClassroomMorph initialize!
-LecturerMorph initialize!

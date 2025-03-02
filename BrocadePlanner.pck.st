@@ -1,12 +1,13 @@
-'From Cuis7.3 [latest update: #7041] on 28 February 2025 at 7:13:22 pm'!
+'From Cuis7.3 [latest update: #7041] on 2 March 2025 at 6:50:18 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 244!
+!provides: 'BrocadePlanner' 1 268!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
 !requires: 'Neo-CSV-Core' 1 1 nil!
 !requires: 'YAXO' 1 28 nil!
 !requires: 'LayoutAlgebra' 1 12 nil!
+!requires: 'PluggableBrowsing' 1 47 nil!
 SystemOrganization addCategory: #'BrocadePlanner-Model'!
 SystemOrganization addCategory: #BrocadePlanner!
 SystemOrganization addCategory: #'BrocadePlanner-Morphic'!
@@ -144,6 +145,16 @@ Error subclass: #BrocadeError
 BrocadeError class
 	instanceVariableNames: ''!
 
+!classDefinition: #EmptySelection category: #'BrocadePlanner-Morphic'!
+Notification subclass: #EmptySelection
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Morphic'!
+!classDefinition: 'EmptySelection class' category: #'BrocadePlanner-Morphic'!
+EmptySelection class
+	instanceVariableNames: ''!
+
 !classDefinition: #QuietTheme category: #'BrocadePlanner-Morphic'!
 Theme subclass: #QuietTheme
 	instanceVariableNames: ''
@@ -214,6 +225,16 @@ BidiSystemWindow subclass: #ModuleBrowser
 ModuleBrowser class
 	instanceVariableNames: ''!
 
+!classDefinition: #EasyThemeBrowser category: #'BrocadePlanner-Morphic'!
+PluggableBrowser subclass: #EasyThemeBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Morphic'!
+!classDefinition: 'EasyThemeBrowser class' category: #'BrocadePlanner-Morphic'!
+EasyThemeBrowser class
+	instanceVariableNames: ''!
+
 !classDefinition: #BrocadeSettings category: #'BrocadePlanner-Morphic'!
 SystemWindow subclass: #BrocadeSettings
 	instanceVariableNames: ''
@@ -252,6 +273,16 @@ OpenFileDialog subclass: #SelectDirectoryDialog
 	category: 'BrocadePlanner-Morphic'!
 !classDefinition: 'SelectDirectoryDialog class' category: #'BrocadePlanner-Morphic'!
 SelectDirectoryDialog class
+	instanceVariableNames: ''!
+
+!classDefinition: #EasyThemeBrowserModel category: #'BrocadePlanner-Morphic'!
+PluggableBrowserModel subclass: #EasyThemeBrowserModel
+	instanceVariableNames: 'moduleIndex'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadePlanner-Morphic'!
+!classDefinition: 'EasyThemeBrowserModel class' category: #'BrocadePlanner-Morphic'!
+EasyThemeBrowserModel class
 	instanceVariableNames: ''!
 
 !classDefinition: #BrocadeCommandHistory category: #'BrocadePlanner-UndoRedo'!
@@ -1123,6 +1154,10 @@ programNames
 programs
 	^programs! !
 
+!College methodsFor: 'programs' stamp: 'DF 3/2/2025 16:08:56'!
+programsFor: indices
+	^programs asOrderedCollection sort:[:x :y | x description <= y description ].! !
+
 !College methodsFor: 'programs' stamp: 'DF 12/27/2024 15:19:24'!
 removeAcademicProgram: anAcademicProgram
 
@@ -1131,6 +1166,34 @@ removeAcademicProgram: anAcademicProgram
 	anAcademicProgram detach.
 	
 	self detachAcademicProgram: anAcademicProgram.! !
+
+!College methodsFor: 'programs' stamp: 'DF 3/2/2025 16:13:58'!
+themesFor: indices
+
+	| index program |
+	
+	index := indices at: #programs.
+	
+	index = 0 ifTrue:[^{}].
+	
+	program := self programsFor:{} :: at: index.
+	
+	^program themes asOrderedCollection sort:[:x :y | x description <= y description ].
+	! !
+
+!College methodsFor: 'programs' stamp: 'DF 3/2/2025 16:16:18'!
+tracksFor: indices
+
+	| index program |
+	
+	index := indices at: #programs.
+	
+	index = 0 ifTrue:[^{}].
+	
+	program := self programsFor:{} :: at: index.
+	
+	^program tracks asOrderedCollection sort:[:x :y | x description <= y description ].
+	! !
 
 !College methodsFor: 'modules' stamp: 'DF 12/27/2024 15:18:08'!
 addModule: aModule
@@ -4124,6 +4187,158 @@ initialize
 	
 	selectedPrereq := 0.! !
 
+!EasyThemeBrowser methodsFor: 'dialogs' stamp: 'DF 3/2/2025 17:00:49'!
+addAcademicThemeDialog
+
+	| program mold position aCommand aDialog |
+	
+	aCommand := AddAcademicThemeCommand new.
+	
+	program := model topic: #programs.
+	
+	aCommand program: program. 
+	
+	mold := BidiMold new.
+	
+	mold rightToLeft: true.
+	
+	(mold stringField)
+		label: 'שם ההתמחות';
+		on: #themeName of: aCommand;
+		addCondition: [:input| program themeAt: input :: isNil ]   
+		labeled: 'כבר קיימת התמחות עם שם זה.';
+		beRequired.
+	
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'התמחות חדשה'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
+	
+! !
+
+!EasyThemeBrowser methodsFor: 'dialogs' stamp: 'DF 3/2/2025 17:01:56'!
+openAddModuleDialog
+
+
+	| theme mold aCommand aDialog position |
+	
+	theme := model topic: #themes.
+	
+	aCommand := AddModuleToThemeCommand new theme: theme; yourself. 
+		
+	mold := BidiMold new. 
+	
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד הקורס';
+		on: #code of: aCommand ;
+		addCondition: [:input :value | model moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' asBidi ;
+		addCondition: [:input :value | theme moduleAt: value :: isNil ] labeled:'הקורס כבר נמצא בהתמחות.' asBidi ;
+		beRequired.
+		
+	position := UISupervisor ui activeHand morphPosition.
+
+	aDialog := mold openDialog: 'הוסף קורס להתמחות'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
+	! !
+
+!EasyThemeBrowser methodsFor: 'dialogs' stamp: 'DF 3/2/2025 18:06:05'!
+openEditModuleDialog
+
+	ModuleBrowser open: model module ! !
+
+!EasyThemeBrowser methodsFor: 'menu' stamp: 'DF 3/2/2025 18:15:36'!
+moduleMenuSpec
+
+	| addModuleMessage editModuleMessage removeModuleMessage |
+	
+	editModuleMessage := (model isNoneSelectedAt: #modules) ifTrue:[nil] ifFalse:[#openEditModuleDialog].
+	
+	addModuleMessage :=  (model isNoneSelectedAt: #themes) ifTrue:[nil] ifFalse:[#openAddModuleDialog].
+	
+	removeModuleMessage :=  (model isNoneSelectedAt: #modules) ifTrue:[nil] ifFalse:[#removeModule].
+	
+^ {
+		{ 0 .	'קורס' .				false } .
+		{ 10 .	'ערוך קורס ...' . 		$e .	#window .	editModuleMessage }.
+		{ 20 .	'הוסף קורס ...' .		$a . #window .	addModuleMessage } .
+		{ 30 .	'-----' } .
+		{ 40 .	'הסר קורס' . 			$c .	#window . 	removeModuleMessage }
+	}.! !
+
+!EasyThemeBrowser methodsFor: 'menu' stamp: 'DF 3/2/2025 18:17:12'!
+programMenuSpec
+
+	| addThemeMessage  |
+	
+	addThemeMessage := model isNoneSelectedAt: #programs :: ifTrue:[nil] ifFalse: [ #addAcademicThemeDialog ].
+		
+^ {
+		{ 0 . 	'תוכנית לימודים' .	false } .
+		{ 20 . 	'הוסף התמחות ...' 	asBidi writingDirection:#rightToLeft .	$a . #window .	addThemeMessage } .
+	}.! !
+
+!EasyThemeBrowser methodsFor: 'GUI building' stamp: 'DF 3/2/2025 14:21:31'!
+buildModulesTable
+
+	| table |
+	
+	table := PluggableTableMorph new.
+	
+	table model: model ; table: #modules ; rightToLeft: true ; headerRow: true.
+
+	table menuNshortcutsKey: #moduleMenuSpec.
+	
+	table selectRowMessage: #selectModule:.
+
+	table menuFactory: BidiMenuMorph.
+
+	table columnFactory: {
+		4 -> (PluggableMorphFactory new formatter:[:aYear |  aYear description asBidi writingDirection: #rightToLeft  ] ; yourself) } asDictionary.
+		
+	^table ! !
+
+!EasyThemeBrowser methodsFor: 'GUI building' stamp: 'DF 3/2/2025 18:22:04'!
+buildMorphicWindow
+
+	| table |
+	
+	listMenus at: #programs put: #programMenuSpec.
+	
+	super buildMorphicWindow.
+	
+	table := self buildModulesTable.
+		
+	self layoutMorph addAdjusterAndMorph: table proportionalHeight: 0.8.! !
+
+!EasyThemeBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 16:23:44'!
+open: model label: aString
+
+	| topics aBrowserModel window |
+	
+	topics := { 'themes' . 'tracks' . 'programs' }.
+	
+	aBrowserModel := EasyThemeBrowserModel new.
+
+	aBrowserModel topics: topics dependencies: { 'tracks' -> 'programs' . 'themes' -> 'programs' . 'modules' -> 'tracks' . 'modules' -> 'themes' } ; model: model.
+
+	window := self new.
+	window
+		model: aBrowserModel ;
+		topics: topics ;
+		listMorphFactory: BidiPluggableListMorph ;		
+		buildMorphicWindow.
+	aString ifNotNil: [ window setLabel: aString ].
+	window openInWorld.
+	^window! !
+
 !BrocadeSettings methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:32:34'!
 buildMorphicWindow
 
@@ -4315,6 +4530,65 @@ selectFileEntry
 	model perform: selectFileEntryAction with: directory.
 	
 	self delete.
+	! !
+
+!EasyThemeBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 18:15:36'!
+isNoneSelectedAt: aSymbol
+
+	^aSymbol = #modules
+		ifTrue:[
+			moduleIndex = 0]
+		ifFalse:[
+			super isNoneSelectedAt: aSymbol]! !
+
+!EasyThemeBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 18:14:04'!
+module
+
+	|  theme track tuples tuple |
+
+	track := self topic: #tracks.
+	
+	theme := self topic: #themes. 
+
+	tuples := theme modulesInTrack: track.
+	
+	moduleIndex = 0 ifTrue:[EmptySelection new signal].
+
+	tuple := tuples at: moduleIndex ifAbsent:[tuples last].
+	
+	^tuple at:1.
+! !
+
+!EasyThemeBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 15:55:45'!
+modules
+
+	|  tuples table |
+	
+	[
+		tuples := self topic: #themes :: modulesInTrack: (self topic: #tracks)
+	] on: EmptySelection do:[ :ex | tuples := {} ].	
+
+	table := OrderedCollection new.
+	
+	table add: {  'שם קורס' . 'קוד קורס' . 'סמסטר' . 'שנה' }.
+
+	tuples do:[:eachTuple | 
+		
+		table add: { 
+			{ (eachTuple at:1) description asBidi writingDirection: #rightToLeft } . 
+			{ (eachTuple at:1) code } . 
+			{ eachTuple at:2  } .
+			{ (eachTuple at:2) academicYear } 
+		} ] .
+	
+	^table
+! !
+
+!EasyThemeBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 18:13:18'!
+selectModule: aModuleIndex
+
+	moduleIndex :=  aModuleIndex = 0 ifTrue:[0] ifFalse:[aModuleIndex - 1] . "minus 1 to account for the table header row"
+	
 	! !
 
 !BrocadeCommandHistory class methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 10:24:36'!
