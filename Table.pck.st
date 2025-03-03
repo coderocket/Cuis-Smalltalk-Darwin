@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 1 March 2025 at 2:56:02 pm'!
+'From Cuis7.3 [latest update: #6895] on 3 March 2025 at 6:17:18 pm'!
 'Description '!
-!provides: 'Table' 1 70!
+!provides: 'Table' 1 71!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -262,9 +262,18 @@ handlesMouseDown: aMouseButtonEvent
 	
 	^aMouseButtonEvent mouseButton1Pressed ! !
 
-!TableCell methodsFor: 'events' stamp: 'DF 1/26/2025 20:02:48'!
+!TableCell methodsFor: 'events' stamp: 'DF 3/3/2025 18:03:11'!
 mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
 
+	| ancestor |
+	
+	ancestor := owner.
+	
+	[ancestor notNil and:[ancestor isKindOf: PluggableTableMorph ] ] whileFalse:[ancestor := ancestor owner ].
+		
+	ancestor ifNotNil:[
+		UISupervisor ui activeHand newKeyboardFocus: ancestor ].
+		
 	model triggerEvent: #clicked ! !
 
 !TableCell methodsFor: 'drawing' stamp: 'DF 1/27/2025 20:51:20'!
@@ -741,6 +750,12 @@ getMenu
 			ifFalse: [
 				self addItemTo: menu fromSpec: itemSpec submenus: submenus ]]]].
 	^ menu! !
+
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/3/2025 18:09:07'!
+handlesKeyboard
+
+	self isLocked ifTrue: [^false ].
+	^self visible! !
 
 !PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 12/28/2024 16:58:54'!
 headerRow: aBoolean
