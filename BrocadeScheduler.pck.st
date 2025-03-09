@@ -1,11 +1,11 @@
-'From Cuis7.3 [latest update: #6895] on 8 March 2025 at 4:06:49 pm'!
+'From Cuis7.3 [latest update: #7041] on 9 March 2025 at 8:26:01 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 166!
+!provides: 'BrocadeScheduler' 1 168!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
-SystemOrganization addCategory: #'BrocadeScheduler-StencilMorphic'!
+SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-SchoolMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-ResourceMorphic'!
@@ -14,6 +14,16 @@ SystemOrganization addCategory: #'BrocadeScheduler-Application'!
 SystemOrganization addCategory: #'BrocadeScheduler-UndoRedo'!
 SystemOrganization addCategory: #'BrocadeScheduler-SpriteAtlas'!
 
+
+!classDefinition: #BrocadeSchedulingApplication category: #'BrocadeScheduler-Application'!
+BrocadePlannerApplication subclass: #BrocadeSchedulingApplication
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Application'!
+!classDefinition: 'BrocadeSchedulingApplication class' category: #'BrocadeScheduler-Application'!
+BrocadeSchedulingApplication class
+	instanceVariableNames: ''!
 
 !classDefinition: #SchedulingCollege category: #'BrocadeScheduler-Model'!
 College subclass: #SchedulingCollege
@@ -33,16 +43,6 @@ Semester subclass: #SchedulingSemester
 	category: 'BrocadeScheduler-Model'!
 !classDefinition: 'SchedulingSemester class' category: #'BrocadeScheduler-Model'!
 SchedulingSemester class
-	instanceVariableNames: ''!
-
-!classDefinition: #BrocadeApplication category: #'BrocadeScheduler-Application'!
-Object subclass: #BrocadeApplication
-	instanceVariableNames: 'model path lastImportDirectory homeDirectory'
-	classVariableNames: 'TheApplication'
-	poolDictionaries: ''
-	category: 'BrocadeScheduler-Application'!
-!classDefinition: 'BrocadeApplication class' category: #'BrocadeScheduler-Application'!
-BrocadeApplication class
 	instanceVariableNames: ''!
 
 !classDefinition: #AcademicResource category: #'BrocadeScheduler-Model'!
@@ -185,13 +185,13 @@ Object subclass: #BlockedSlotTableCellFactory
 BlockedSlotTableCellFactory class
 	instanceVariableNames: ''!
 
-!classDefinition: #TextFieldSentence category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #TextFieldSentence category: 'BrocadeScheduler-StencilMorphic'!
 LayoutMorph subclass: #TextFieldSentence
 	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'TextFieldSentence class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'TextFieldSentence class' category: 'BrocadeScheduler-StencilMorphic'!
 TextFieldSentence class
 	instanceVariableNames: ''!
 
@@ -225,23 +225,23 @@ BrocadeTableCell subclass: #LecturerTableCell
 LecturerTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentTableCell category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #AssignmentTableCell category: 'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCell subclass: #AssignmentTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'AssignmentTableCell class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
 AssignmentTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #WeeklyTimeTableCell category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #WeeklyTimeTableCell category: 'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCell subclass: #WeeklyTimeTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'WeeklyTimeTableCell class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'WeeklyTimeTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
 WeeklyTimeTableCell class
 	instanceVariableNames: ''!
 
@@ -275,23 +275,23 @@ BrocadeTableCellItem subclass: #LecturerMorph
 LecturerMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentMorph category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #AssignmentMorph category: 'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCellItem subclass: #AssignmentMorph
 	instanceVariableNames: 'model index collision enableGrabbing'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'AssignmentMorph class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentMorph class' category: 'BrocadeScheduler-StencilMorphic'!
 AssignmentMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilLabel category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #StencilLabel category: 'BrocadeScheduler-StencilMorphic'!
 NarrowLabelMorph subclass: #StencilLabel
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'StencilLabel class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilLabel class' category: 'BrocadeScheduler-StencilMorphic'!
 StencilLabel class
 	instanceVariableNames: ''!
 
@@ -335,13 +335,13 @@ BidiSystemWindow subclass: #SchoolBrowser
 SchoolBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilBrowser category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #StencilBrowser category: 'BrocadeScheduler-StencilMorphic'!
 BidiSystemWindow subclass: #StencilBrowser
 	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex stencilIndex theAssignment views'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'StencilBrowser class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilBrowser class' category: 'BrocadeScheduler-StencilMorphic'!
 StencilBrowser class
 	instanceVariableNames: ''!
 
@@ -525,6 +525,126 @@ UndoRedoCommand subclass: #EditLecturerCommand
 EditLecturerCommand class
 	instanceVariableNames: ''!
 
+
+!BrocadeSchedulingApplication methodsFor: 'stencils' stamp: 'DF 3/9/2025 20:09:54'!
+openStencilBrowser
+
+	StencilBrowser open: model label: 'תבניות'.
+! !
+
+!BrocadeSchedulingApplication methodsFor: 'schools' stamp: 'DF 3/9/2025 20:09:54'!
+addLecturerDialog
+
+	SchoolBrowser addLecturerDialog: model
+	
+! !
+
+!BrocadeSchedulingApplication methodsFor: 'schools' stamp: 'DF 3/9/2025 20:09:54'!
+addSchoolDialog
+
+	SchoolBrowser addSchoolDialog: model
+	
+! !
+
+!BrocadeSchedulingApplication methodsFor: 'schools' stamp: 'DF 3/9/2025 20:09:54'!
+openSchoolBrowser
+
+	SchoolBrowser open: model label: 'מרצים'.
+! !
+
+!BrocadeSchedulingApplication methodsFor: 'campuses' stamp: 'DF 3/9/2025 20:09:54'!
+addCampusDialog
+
+	CampusBrowser addCampusDialog: model! !
+
+!BrocadeSchedulingApplication methodsFor: 'campuses' stamp: 'DF 3/9/2025 20:09:54'!
+addClassroomDialog
+
+	CampusBrowser addClassroomDialog: model ! !
+
+!BrocadeSchedulingApplication methodsFor: 'campuses' stamp: 'DF 3/9/2025 20:09:54'!
+openCampusBrowser
+
+	CampusBrowser open: model label: 'קמפוסים'.
+! !
+
+!BrocadeSchedulingApplication methodsFor: 'menu' stamp: 'DF 3/9/2025 20:09:54'!
+menuBar
+
+	| aMenuBar |
+	
+	aMenuBar := MenuBar new.
+
+	aMenuBar menusRightToLeft: { 
+	{ 'קובץ' . { 
+		{ 'חדש' . self . #newAction }  . 
+		{ 'פתח ...' . self . #openAction } . 
+		{ 'שמור' . self . #saveAction } . 
+		{ 'שמור בשם ...' . self . #saveAsAction } .
+		$| .
+		{'יבא תוכניות לימודים ...' . self . nil "#openImportAcademicProgramDialog" } .
+		{'יבא סגל אקדמי ...' . self . #openImportAcademicStaffDialog } .
+		{'יצא תוכנית לימודים ...' . self . #exportAction } .
+		$| .
+		{ 'הגדרות ...' . self . #settingsDialog } .
+		$| .
+		{ 'סגור' . self . #exitAction } } } .  
+	{ 'עריכה' . #buildEditMenu . self } .
+	{ 'תוכנית לימודים' . {
+		{'הצג תוכניות לימודים' . self . #openAcademicProgramBrowser } .
+		{ 'תוכנית לימוד חדשה ...' . self . #addAcademicProgramDialog } .
+		$| .
+		{ 'רשימת כל הקורסים' . self . #openCollegeModuleBrowser } .
+		{ 'קורס חדש ...' . self . #addNewModuleDialog } .
+		$| .
+		{ 'הצג התמחויות' . self . #openAcademicThemeBrowser } 
+		 } } .
+	{ 'בית ספר' . {
+		{ 'הצג בתי ספר' . self . #openSchoolBrowser } .
+		{ 'בית ספר חדש ...' . self . #addSchoolDialog } .
+		$| .	
+		{ 'מרצה חדשה ...' . self . #addLecturerDialog } 
+		 } } .
+	{ 'חדר' . {
+		{'הצג קמפוסים וחדרים' . self . #openCampusBrowser } .
+		{ 'קמפוס חדש ...' . self . #addCampusDialog } .
+		$| .	
+		{ 'חדר חדש ...' . self . #addClassroomDialog } 
+		 } } .
+	{ 'תבנית' . {
+		{ 'הצג תבניות' . self . #openStencilBrowser } .
+		 } } .
+	{ 'חלונות' . #showCollapsedWindows . self } . 
+	{ 'עזרה' . { 
+		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
+! !
+
+!BrocadeSchedulingApplication methodsFor: 'import/export' stamp: 'DF 3/9/2025 20:09:54'!
+importAcademicStaff: aFileEntry
+
+	lastImportDirectory := aFileEntry parent.
+	
+	model importAcademicStaff: aFileEntry.
+	
+
+	
+	! !
+
+!BrocadeSchedulingApplication methodsFor: 'import/export' stamp: 'DF 3/9/2025 20:09:54'!
+openImportAcademicStaffDialog
+
+	OpenFileDialog open:self start: lastImportDirectory action: #importAcademicStaff: label:'Select File'! !
+
+!BrocadeSchedulingApplication methodsFor: 'filing' stamp: 'DF 3/9/2025 20:24:48'!
+collegeBuilder
+	^SchedulingCollege! !
+
+!BrocadeSchedulingApplication methodsFor: 'initialization' stamp: 'DF 3/9/2025 20:14:37'!
+initialize
+
+	super initialize.
+	
+	! !
 
 !SchedulingCollege methodsFor: 'schools' stamp: 'DF 2/11/2025 22:38:48'!
 addSchool: aSchool
@@ -844,381 +964,6 @@ xmlElementsOut: anXMLWriter
 	
 	anXMLWriter endTag: 'stencils'.! !
 
-!BrocadeApplication methodsFor: 'modules' stamp: 'DF 1/31/2025 22:36:29'!
-addNewModuleDialog
-
-	AcademicProgramBrowser addNewModuleDialog: model! !
-
-!BrocadeApplication methodsFor: 'modules' stamp: 'DF 3/8/2025 15:54:59'!
-openCollegeModuleBrowser
-
-	EasyCollegeModulesBrowser open: model label: 'רשימת כל הקורסים'
-
-! !
-
-!BrocadeApplication methodsFor: 'modules' stamp: 'DF 1/11/2025 16:55:59'!
-openSearchModuleDialog
-
-! !
-
-!BrocadeApplication methodsFor: 'programs' stamp: 'DF 1/31/2025 21:10:34'!
-addAcademicProgramDialog
-
-	AcademicProgramBrowser addAcademicProgramDialog: model! !
-
-!BrocadeApplication methodsFor: 'programs' stamp: 'DF 1/12/2025 20:51:36'!
-openAcademicProgramBrowser
-
-	AcademicProgramBrowser open: model label: 'תוכניות לימוד' 
-! !
-
-!BrocadeApplication methodsFor: 'programs' stamp: 'DF 3/2/2025 15:40:20'!
-openAcademicThemeBrowser
-	EasyThemeBrowser open: model label: 'התמחויות'! !
-
-!BrocadeApplication methodsFor: 'stencils' stamp: 'DF 1/11/2025 18:19:19'!
-openStencilBrowser
-
-	StencilBrowser open: model label: 'תבניות'.
-! !
-
-!BrocadeApplication methodsFor: 'schools' stamp: 'DF 1/31/2025 19:48:26'!
-addLecturerDialog
-
-	SchoolBrowser addLecturerDialog: model
-	
-! !
-
-!BrocadeApplication methodsFor: 'schools' stamp: 'DF 1/31/2025 19:52:27'!
-addSchoolDialog
-
-	SchoolBrowser addSchoolDialog: model
-	
-! !
-
-!BrocadeApplication methodsFor: 'schools' stamp: 'DF 1/18/2025 13:06:12'!
-openSchoolBrowser
-
-	SchoolBrowser open: model label: 'מרצים'.
-! !
-
-!BrocadeApplication methodsFor: 'campuses' stamp: 'DF 1/31/2025 17:03:12'!
-addCampusDialog
-
-	CampusBrowser addCampusDialog: model! !
-
-!BrocadeApplication methodsFor: 'campuses' stamp: 'DF 1/31/2025 17:04:38'!
-addClassroomDialog
-
-	CampusBrowser addClassroomDialog: model ! !
-
-!BrocadeApplication methodsFor: 'campuses' stamp: 'DF 1/18/2025 17:09:12'!
-openCampusBrowser
-
-	CampusBrowser open: model label: 'קמפוסים'.
-! !
-
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/3/2025 19:43:51'!
-buildEditMenu
-
-	| menu disableUndo disableRedo undoString |
-	
-	menu := MenuBarMenuMorph new.
-	menu color: Color white ; borderWidth: 1; borderColor: Color black.
-	
-	disableUndo := BrocadeCommandHistory instance isAtBeginning.
-	disableRedo := BrocadeCommandHistory instance isAtEnd.
-	
-	undoString := disableUndo ifFalse:['ביטול ', BrocadeCommandHistory instance currentTitle] ifTrue:['ביטול'].
-	
-	(menu add: (undoString asBidi writingDirection:#rightToLeft) target: self action: #undo) isEnabled: disableUndo not .
-	(menu add: ('ביצוע מחדש' asBidi writingDirection:#rightToLeft) target: self action: #redo) isEnabled: disableRedo not .
-	menu addLine.
-	(menu add: ('גזור' asBidi writingDirection:#rightToLeft) target: self action: #cutToClipboard) color: Theme current buttonLabel.
-	(menu add: ('העתק' asBidi writingDirection:#rightToLeft) target: self action: #copyToClipboard) color: Theme current buttonLabel.
-	(menu add: ('הדבק' asBidi writingDirection:#rightToLeft) target: self action: #pasteFromClipboard) color: Theme current buttonLabel.
-	
-	^menu! !
-
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/28/2025 18:38:38'!
-menuBar
-
-	| aMenuBar |
-	
-	aMenuBar := MenuBar new.
-
-	aMenuBar menusRightToLeft: { 
-	{ 'קובץ' . { 
-		{ 'חדש' . self . #newAction }  . 
-		{ 'פתח ...' . self . #openAction } . 
-		{ 'שמור' . self . #saveAction } . 
-		{ 'שמור בשם ...' . self . #saveAsAction } .
-		$| .
-		{'יבא תוכניות לימודים ...' . self . nil "#openImportAcademicProgramDialog" } .
-		{'יבא סגל אקדמי ...' . self . #openImportAcademicStaffDialog } .
-		{'יצא תוכנית לימודים ...' . self . #exportAction } .
-		$| .
-		{ 'הגדרות ...' . self . #settingsDialog } .
-		$| .
-		{ 'סגור' . self . #exitAction } } } .  
-	{ 'עריכה' . #buildEditMenu . self } .
-	{ 'תוכנית לימודים' . {
-		{'הצג תוכניות לימודים' . self . #openAcademicProgramBrowser } .
-		{ 'תוכנית לימוד חדשה ...' . self . #addAcademicProgramDialog } .
-		$| .
-		{ 'רשימת כל הקורסים' . self . #openCollegeModuleBrowser } .
-		{ 'קורס חדש ...' . self . #addNewModuleDialog } .
-		$| .
-		{ 'הצג התמחויות' . self . #openAcademicThemeBrowser } 
-		 } } .
-	{ 'בית ספר' . {
-		{ 'הצג בתי ספר' . self . #openSchoolBrowser } .
-		{ 'בית ספר חדש ...' . self . #addSchoolDialog } .
-		$| .	
-		{ 'מרצה חדשה ...' . self . #addLecturerDialog } 
-		 } } .
-	{ 'חדר' . {
-		{'הצג קמפוסים וחדרים' . self . #openCampusBrowser } .
-		{ 'קמפוס חדש ...' . self . #addCampusDialog } .
-		$| .	
-		{ 'חדר חדש ...' . self . #addClassroomDialog } 
-		 } } .
-	{ 'תבנית' . {
-		{ 'הצג תבניות' . self . #openStencilBrowser } .
-		 } } .
-	{ 'חלונות' . #showCollapsedWindows . self } . 
-	{ 'עזרה' . { 
-		{ 'אודות' . self . #aboutAction } } } } :: openInWorld morphPosition:0@0.
-! !
-
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/28/2025 16:54:38'!
-newAction
-
-	| decision |
-	
-	decision :=
-		BrocadeCommandHistory instance isDirty 
-			ifTrue:[ 
-				self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self].
-		 	]
-			ifFalse:[
-				false
-			].
-		
-	decision 
-		ifTrue:[
-			self closeAllBrocadeWindows.
-	
-			BrocadeCommandHistory instance initialize.
-			
-			model := SchedulingCollege new.
-	
-			model description:'משבצת חדשה' ]! !
-
-!BrocadeApplication methodsFor: 'menu' stamp: 'DF 2/28/2025 17:31:05'!
-openAction
-
-	| dialog |
-	
-	BrocadeCommandHistory instance isDirty 
-		ifTrue:[ 
-			self confirm:'קיימים שינויים שלא נשמרו. להמשיך?' asBidi orCancel:[^self] ].
-		
-	dialog := OpenFileDialog open:self start: lastImportDirectory action: #fromXML: label:'Select File'.
-	
-	dialog morphPosition: (dialog owner morphExtent - dialog morphExtent / 2).! !
-
-!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:15:09'!
-importAcademicProgram: aFileEntry
-
-	lastImportDirectory := aFileEntry parent.
-	
-	model importAcademicProgram: aFileEntry.
-	
-"	CollegeBrowser open: model label: 'תוכניות לימוד'."
-	
-	! !
-
-!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:25:25'!
-importAcademicStaff: aFileEntry
-
-	lastImportDirectory := aFileEntry parent.
-	
-	model importAcademicStaff: aFileEntry.
-	
-
-	
-	! !
-
-!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:25:44'!
-openImportAcademicProgramDialog
-
-	OpenFileDialog open:self start: lastImportDirectory action: #importAcademicProgram: label:'Select File'! !
-
-!BrocadeApplication methodsFor: 'import/export' stamp: 'DF 1/26/2025 14:25:55'!
-openImportAcademicStaffDialog
-
-	OpenFileDialog open:self start: lastImportDirectory action: #importAcademicStaff: label:'Select File'! !
-
-!BrocadeApplication methodsFor: 'undo/redo' stamp: 'DF 2/3/2025 16:39:31'!
-redo
-	BrocadeCommandHistory instance redo! !
-
-!BrocadeApplication methodsFor: 'undo/redo' stamp: 'DF 2/3/2025 16:39:24'!
-undo
-	BrocadeCommandHistory instance undo! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/28/2025 17:25:47'!
-fromXML: aFileEntry
-
-	| aReadStream anXMLDocument aCollege |
-	
-	aReadStream := aFileEntry readStream.
-	
-	anXMLDocument := XMLDOMParser parseDocumentFrom: aReadStream.
-	
-	aCollege := SchedulingCollege new.
-	
-	aCollege fromXML: anXMLDocument elements first.
-	
-	aCollege invariant.
-	
-	self closeAllBrocadeWindows.
-
-	BrocadeCommandHistory instance initialize.
-	
-	model := aCollege.
-	
-	self updateDocumentName. 
-
-! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/16/2025 18:29:48'!
-home
-	^homeDirectory ! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/16/2025 18:26:00'!
-home: aString
-	homeDirectory := aString! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 3/3/2025 12:28:24'!
-saveAction
-
-	| anXMLWriter file |
-	
-	self assert: path notNil.
-	
-	file := path asFileEntry.
-
-	[		
-		anXMLWriter := XMLWriter on: file writeStream.
-	
-		anXMLWriter xmlDeclaration: '1.0' encoding: 'UTF-8'.
-	
-		model toXML: anXMLWriter.
-		
-		BrocadeCommandHistory instance save.
-	]
-	ensure:[
-		anXMLWriter ifNotNil:[:w | w stream close ].
-	]
-! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/21/2025 14:32:55'!
-saveAs: aString
-
-	path := aString.
-	
-	self saveAction.! !
-
-!BrocadeApplication methodsFor: 'filing' stamp: 'DF 2/21/2025 13:58:36'!
-saveAsAction
-
-	SaveFileDialog open: self start: lastImportDirectory action: #saveAs: label: 'Save As ...'
-! !
-
-!BrocadeApplication methodsFor: 'initialization' stamp: 'DF 2/28/2025 16:58:34'!
-initialize
-
-	super initialize.
-
-	homeDirectory := DirectoryEntry userBaseDirectory asString.
-	
-	BrocadeCommandHistory instance when: #changed send: #updateDocumentName to: self.
-	
-	! !
-
-!BrocadeApplication methodsFor: 'window management' stamp: 'DF 2/12/2025 19:32:21'!
-closeAllBrocadeWindows
-
-	UISupervisor ui submorphs select:[:each | each isKindOf: BidiSystemWindow ] :: do:[:each | each delete].! !
-
-!BrocadeApplication methodsFor: 'window management' stamp: 'DF 1/31/2025 13:43:06'!
-showCollapsedWindows
-
-	| windows menu |
-	
-	windows := UISupervisor ui submorphs select:[:each | each isKindOf: SystemWindow :: and: [each isCollapsed ] ].
-	
-	menu := MenuBarMenuMorph new.
-	menu color: Color white ; borderWidth: 1; borderColor: Color black.
-	windows do:[:eachWindow | 
-		(menu add: (eachWindow label asBidi writingDirection:#rightToLeft) target: eachWindow action: #show) color: Theme current buttonLabel ].
-	
-	^menu! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:36:52'!
-settingsDialog
-
-	| mold position aDialog |
-	
-	mold := BidiMold new.
-	
-	(mold stringField)
-		label: 'Brocade home directory';
-		on: #home of: self ; 
-		addCondition:[:input :value | value asDirectoryEntry exists ] ;
-		beRequired .
-
-	position := UISupervisor ui activeHand morphPosition.
-		
-	aDialog := mold openDialog: 'Brocade Settings'.
-		
-	aDialog morphPosition: position - (aDialog morphWidth@0).
-! !
-
-!BrocadeApplication methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:33:03'!
-updateDocumentName
-
-	| tag |
-	
-	tag := 
-		BrocadeCommandHistory instance isDirty ifTrue:['*'] ifFalse:[''].
-	
-	DisplayScreen hostOSWindowTitle: model description , tag.
-	! !
-
-!BrocadeApplication class methodsFor: 'as yet unclassified' stamp: 'DF 3/3/2025 12:26:08'!
-instance
-
-	TheApplication 
-		ifNil:[
-			TheApplication := self new.
-			BrocadeCommandHistory instance when: #changed send: #updateDocumentName
-to: TheApplication.
-			TheApplication menuBar.
-		].
-	
-	^TheApplication
-	
-! !
-
-!BrocadeApplication class methodsFor: 'as yet unclassified' stamp: 'DF 3/3/2025 12:23:44'!
-open
-
-	self instance menuBar.	
-! !
-
 !AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 12:49:26'!
 assignments
 	^assignments! !
@@ -1289,6 +1034,66 @@ invariant
 toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'room' attributeList: {'code' -> code asString . 'capacity' -> capacity asString . 'floor' -> floor asString } asDictionary ; endEmptyTag: 'room'.! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:31:52'!
+blockSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
+	
+	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: add: anIntegerHour.! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 2/28/2025 21:11:10'!
+blockedSlots
+	^blockedSlots ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:25:45'!
+isBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour :: ifFalse:[^true].
+	
+	^ blockedSlots at: anIntegerSemester :: at: anIntegerDay :: includes: anIntegerHour ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:56:52'!
+toggleBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	| hours |
+	
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
+	
+	hours := blockedSlots at: anIntegerSemester :: at: anIntegerDay.
+	
+	hours includes: anIntegerHour ::
+		ifTrue:[hours remove: anIntegerHour ]
+		ifFalse:[hours add: anIntegerHour ].
+		
+	^hours includes: anIntegerHour ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:32:00'!
+unblockSemester: anIntegerSemester  day: anIntegerDay hour: anHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anHour).
+	
+	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: remove: anHour.! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
@@ -1456,66 +1261,6 @@ rank
 !Lecturer methodsFor: 'accessing' stamp: 'DF 1/16/2025 21:14:58'!
 rank: aString
 	rank := aString! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:31:52'!
-blockSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
-	
-	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: add: anIntegerHour.! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 2/28/2025 21:11:10'!
-blockedSlots
-	^blockedSlots ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:25:45'!
-isBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour :: ifFalse:[^true].
-	
-	^ blockedSlots at: anIntegerSemester :: at: anIntegerDay :: includes: anIntegerHour ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:56:52'!
-toggleBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	| hours |
-	
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
-	
-	hours := blockedSlots at: anIntegerSemester :: at: anIntegerDay.
-	
-	hours includes: anIntegerHour ::
-		ifTrue:[hours remove: anIntegerHour ]
-		ifFalse:[hours add: anIntegerHour ].
-		
-	^hours includes: anIntegerHour ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:32:00'!
-unblockSemester: anIntegerSemester  day: anIntegerDay hour: anHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anHour).
-	
-	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: remove: anHour.! !
 
 !Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:28'!
 addLecturer: aLecturer
@@ -4521,13 +4266,13 @@ removeStencilFromSemester
 	
 	model changed: #stencilNames ; changed: #assignmentsTable! !
 
-!BrocadeSpriteAtlas class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:07:10'!
+!BrocadeSpriteAtlas class methodsFor: 'as yet unclassified' stamp: 'DF 3/9/2025 20:25:46'!
 instance
 	
 	Instance ifNil:[ | path |
 		Instance := self new.
 		Instance width: 128; height: 128.
-		path := BrocadeApplication instance home.
+		path := BrocadePlannerApplication instance home.
 		Instance load: path asDirectoryEntry // 'icons.png'.
 	].
 
