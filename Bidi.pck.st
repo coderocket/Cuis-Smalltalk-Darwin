@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 25 February 2025 at 9:48:30 am'!
+'From Cuis7.3 [latest update: #6895] on 10 March 2025 at 11:03:28 am'!
 'Description '!
-!provides: 'Bidi' 1 56!
+!provides: 'Bidi' 1 57!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -734,6 +734,11 @@ newButtonArea
 !BidiPluggablePane methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 21:35:29'!
 rightToLeft: aBoolean
 	rightToLeft := aBoolean! !
+
+!BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/10/2025 11:03:00'!
+characterIndexAtPoint: aPoint
+
+	^super characterIndexAtPoint: self morphWidth - aPoint x @ aPoint y! !
 
 !BidiTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/19/2025 18:59:47'!
 displayTextCursorAtX: x top: top bottom: bottom emphasis: anEmphasis on: aCanvas
