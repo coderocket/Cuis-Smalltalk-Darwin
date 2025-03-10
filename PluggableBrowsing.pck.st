@@ -1,27 +1,17 @@
-'From Cuis7.3 [latest update: #6895] on 8 March 2025 at 6:04:09 pm'!
+'From Cuis7.3 [latest update: #7041] on 10 March 2025 at 5:52:43 pm'!
 'Description '!
-!provides: 'PluggableBrowsing' 1 80!
+!provides: 'PluggableBrowsing' 1 86!
 SystemOrganization addCategory: #PluggableBrowsing!
 
 
-!classDefinition: #PluggableBrowser category: #PluggableBrowsing!
-BidiSystemWindow subclass: #PluggableBrowser
-	instanceVariableNames: 'builders composition'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'PluggableBrowsing'!
-!classDefinition: 'PluggableBrowser class' category: #PluggableBrowsing!
-PluggableBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #DemoPluggableTableBrowser category: #PluggableBrowsing!
-PluggableBrowser subclass: #DemoPluggableTableBrowser
+!classDefinition: #DemoPluggableBrowserWindow category: #PluggableBrowsing!
+SystemWindow subclass: #DemoPluggableBrowserWindow
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PluggableBrowsing'!
-!classDefinition: 'DemoPluggableTableBrowser class' category: #PluggableBrowsing!
-DemoPluggableTableBrowser class
+!classDefinition: 'DemoPluggableBrowserWindow class' category: #PluggableBrowsing!
+DemoPluggableBrowserWindow class
 	instanceVariableNames: ''!
 
 !classDefinition: #DemoPluggableBrowserModel category: #PluggableBrowsing!
@@ -52,6 +42,16 @@ NavigationTopic subclass: #NavigationTopicMulti
 	category: 'PluggableBrowsing'!
 !classDefinition: 'NavigationTopicMulti class' category: #PluggableBrowsing!
 NavigationTopicMulti class
+	instanceVariableNames: ''!
+
+!classDefinition: #PluggableBrowserBuilder category: #PluggableBrowsing!
+Object subclass: #PluggableBrowserBuilder
+	instanceVariableNames: 'builders composition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PluggableBrowsing'!
+!classDefinition: 'PluggableBrowserBuilder class' category: #PluggableBrowsing!
+PluggableBrowserBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #PluggableBrowserModel category: #PluggableBrowsing!
@@ -95,123 +95,56 @@ TableTopicMorphBuilder class
 	instanceVariableNames: ''!
 
 
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/7/2025 18:39:15'!
+!DemoPluggableBrowserWindow methodsFor: 'as yet unclassified' stamp: 'DF 3/10/2025 17:45:12'!
 buildMorphicWindow
-
-	| morph |
 	
-	morph := self perform: composition first with: composition allButFirst.
+	| topics aBrowserModel topicBuilders builder |
 	
-	self layoutMorph addMorph: morph proportionalHeight:1.0.
-	! !
-
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/8/2025 11:41:42'!
-builders: aDictionary
-
-	builders := aDictionary ! !
-
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/7/2025 18:45:41'!
-column: args
-
-	| morphs | 
-		
-	morphs := LayoutMorph newColumn.
-		
-	args first do:[:each | | morph | 
-		morph := self perform: each first with: each allButFirst.
-		morphs addMorph: morph layoutSpec: (LayoutSpec proportionalWidth: 1.0 proportionalHeight: each last ) ] separatedBy:[ morphs addAdjusterMorph ].
-		
-	^morphs! !
-
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/6/2025 21:33:28'!
-composition: anOrderedCollection
-	composition := anOrderedCollection! !
-
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/6/2025 21:26:03'!
-initialize
-
-	super initialize.
-		! !
-
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/7/2025 18:46:09'!
-row: args
-
-	| morphs | 
-		
-	morphs := LayoutMorph newRow.
-		
-	args first do:[:each | | morph | 
-		morph := self perform: each first with: each allButFirst.
-		morphs addMorph: morph layoutSpec: (LayoutSpec proportionalWidth: each last proportionalHeight: 1.0 ) ] separatedBy:[ morphs addAdjusterMorph ].
-		
-	^morphs! !
-
-!PluggableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/8/2025 11:41:24'!
-topic: args
-
-	"^builders detect: [:builder | builder topic getter = args first] :: build"
-	^builders at: args first :: build
-
-! !
-
-!PluggableBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 3/5/2025 14:07:45'!
-open: model label: aString topics: anOrderedCollection
-
-	|  window |
-	window := self new.
-	window
-		model: model;
-		builders: anOrderedCollection ;
-		buildMorphicWindow.
-	aString ifNotNil: [ window setLabel: aString ].
-	window openInWorld.
-	^window! !
-
-!DemoPluggableTableBrowser methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 12:29:31'!
-buildMorphicWindow
-
-	| table |
+	topics := { #a . #b . #c  }.
 	
-	super buildMorphicWindow.
-	
-	table := PluggableTableMorph new.
-	
-	table model: model ; table: #table ; rightToLeft: true ; headerRow: true.
-		
-	self layoutMorph addAdjusterAndMorph: table proportionalHeight: 0.8.! !
+	aBrowserModel := PluggableBrowserModel new.
 
-!DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/1/2025 20:23:12'!
-a
-	^a! !
+	aBrowserModel model: model; topics: topics dependencies: { #b -> #a . #c -> #a . #c -> #b  }.
+	
+	model := aBrowserModel.
+
+	topicBuilders := topics collect:[:eachSymbol | | topic | 
+		topic :=  aBrowserModel topics at: eachSymbol. 		
+		eachSymbol -> (TopicMorphBuilder new topic: topic ; factory: PluggableListMorph ; yourself)] :: asDictionary.
+	
+	builder := PluggableBrowserBuilder new.
+	builder
+		composition: { #column: . { { #row: . { { #topic: . #a . 1/3 } . { #topic: . #b . 2/3 }  } . 0.2 } . { #topic: . #c .  0.8 } } };
+		builders: topicBuilders. 
+	
+	self layoutMorph addMorph: builder build proportionalHeight:1.0.	! !
 
 !DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 09:24:22'!
 aFor: indices
 	^a! !
 
-!DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/1/2025 20:23:15'!
-b
-	^b! !
-
 !DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 09:24:25'!
 bFor: indices
 	^b! !
 
-!DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/1/2025 20:23:17'!
-c
-	^c! !
+!DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/10/2025 17:50:26'!
+cFor: topics
 
-!DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 09:51:03'!
-cFor: indices
-
-	| index v |
+	| index v  u |
 	
-	index := indices at:#a.
+	index := topics at:#a :: index.
 	
 	index = 0 ifTrue:[^{}].
 	
 	v := a at: index.
 	
-	^c collect:[:each | each @ v]! !
+	index := topics at: #b :: index.
+
+	index = 0 ifTrue:[^{}].
+	
+	u := b at: index.
+	
+	^c collect:[:each | '{1}.{2}.{3}' format:{each . u . v } ]! !
 
 !DemoPluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/1/2025 20:23:55'!
 initialize
@@ -413,6 +346,73 @@ topic: aSymbol
 		
 	dispatch at: selectionSetter put: [:anIndex :aBoolean | self selectionAt: anIndex put: aBoolean ] .
 ! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/10/2025 17:24:31'!
+build
+
+	^self perform: composition first with: composition allButFirst.
+	! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/8/2025 11:41:42'!
+builders: aDictionary
+
+	builders := aDictionary ! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/7/2025 18:45:41'!
+column: args
+
+	| morphs | 
+		
+	morphs := LayoutMorph newColumn.
+		
+	args first do:[:each | | morph | 
+		morph := self perform: each first with: each allButFirst.
+		morphs addMorph: morph layoutSpec: (LayoutSpec proportionalWidth: 1.0 proportionalHeight: each last ) ] separatedBy:[ morphs addAdjusterMorph ].
+		
+	^morphs! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/6/2025 21:33:28'!
+composition: anOrderedCollection
+	composition := anOrderedCollection! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/6/2025 21:26:03'!
+initialize
+
+	super initialize.
+		! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/7/2025 18:46:09'!
+row: args
+
+	| morphs | 
+		
+	morphs := LayoutMorph newRow.
+		
+	args first do:[:each | | morph | 
+		morph := self perform: each first with: each allButFirst.
+		morphs addMorph: morph layoutSpec: (LayoutSpec proportionalWidth: each last proportionalHeight: 1.0 ) ] separatedBy:[ morphs addAdjusterMorph ].
+		
+	^morphs! !
+
+!PluggableBrowserBuilder methodsFor: 'as yet unclassified' stamp: 'DF 3/10/2025 17:16:18'!
+topic: args
+
+	^builders at: args first :: build
+
+! !
+
+!PluggableBrowserBuilder class methodsFor: 'as yet unclassified' stamp: 'DF 3/10/2025 17:24:20'!
+open: model label: aString topics: anOrderedCollection
+
+	|  window |
+	window := self new.
+	window
+		model: model;
+		builders: anOrderedCollection ;
+		build.
+	aString ifNotNil: [ window setLabel: aString ].
+	window openInWorld.
+	^window! !
 
 !PluggableBrowserModel methodsFor: 'as yet unclassified' stamp: 'DF 3/8/2025 15:32:33'!
 build: aSymbol
