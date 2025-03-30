@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 10 March 2025 at 11:03:28 am'!
+'From Cuis7.3 [latest update: #6895] on 29 March 2025 at 7:27:32 pm'!
 'Description '!
-!provides: 'Bidi' 1 57!
+!provides: 'Bidi' 1 62!
 !requires: 'UI-Mold' 1 17 nil!
 SystemOrganization addCategory: #Bidi!
 
@@ -53,6 +53,16 @@ Browser subclass: #BidiBrowser
 	category: 'Bidi'!
 !classDefinition: 'BidiBrowser class' category: #Bidi!
 BidiBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #FadingHoverHelpMorph category: #Bidi!
+HoverHelpMorph subclass: #FadingHoverHelpMorph
+	instanceVariableNames: 'textColor selectionColor form alpha background stepTime delay rate font'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Bidi'!
+!classDefinition: 'FadingHoverHelpMorph class' category: #Bidi!
+FadingHoverHelpMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #BidiLabelGroup category: #Bidi!
@@ -418,6 +428,133 @@ newSystemCategoryNameIfNone: aNoneBlock
 	^newName isEmpty
 		ifTrue: aNoneBlock 
 		ifFalse: [newName asBidiSymbol].! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:15:04'!
+contents: aStringOrText wrappedTo: wordWrapWidthOrNil
+
+	| aCanvas r |
+	
+	super contents: aStringOrText wrappedTo: wordWrapWidthOrNil.
+	
+	form := Form extent:self morphExtent depth: Display depth.
+
+	aCanvas := VectorCanvas onForm: form.
+	
+	r := self localBounds.
+	aCanvas roundRect: r color: color radius: 4.
+	aCanvas
+		drawTextComposition: textComposition
+		at: `4@4`
+		extent: extent - 8
+		color: `Color black`
+		selectionColor: (Theme current textHighlightFocused: false).! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:06:43'!
+delay: anIntegerMilliSeconds
+	delay := anIntegerMilliSeconds ! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 17:52:30'!
+drawOn: aCanvas
+
+	| window mix |
+	
+	window := self externalizeBoundsToWorld: self localBounds.
+	
+	mix := background copy.
+
+	mix copyBits: form at: 0@0 translucent: alpha.
+
+	aCanvas image: mix at:0@0.
+	
+	! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:06:49'!
+fade
+
+	self snap; openInWorld ; addAlarm: #startStepping after: delay.
+! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:08:58'!
+font: aFont
+	font := aFont! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:09:17'!
+initialize
+
+	super initialize.
+	
+	textColor := Color black.
+	
+	selectionColor  := Theme current textHighlightFocused: false.
+	
+	font := FontFamily defaultFamilyAndPointSize.
+	
+	alpha := 1.0.
+	
+	delay := 1000. "1000 millisec".
+	
+	stepTime := 100. "100 millisec".
+	
+	rate := 0.8.! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:07:34'!
+rate: aFloat
+
+	rate := aFloat! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 16:08:29'!
+requiresVectorCanvas
+	^true ! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 17:49:44'!
+snap
+
+	| window |
+
+	window := self externalizeBoundsToWorld: self localBounds.
+	
+	background := Form fromDisplay: window.
+! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:07:25'!
+step
+
+	alpha := alpha * rate.
+	
+	alpha < 0.1 
+		ifTrue:[
+			alpha := 0.0.
+			self stopStepping. 
+			self delete].
+		
+	self redrawNeeded.
+! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:06:24'!
+stepTime
+	^stepTime ! !
+
+!FadingHoverHelpMorph methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 18:06:16'!
+stepTime: anIntegerMilliSeconds
+	stepTime := anIntegerMilliSeconds ! !
+
+!FadingHoverHelpMorph class methodsFor: 'as yet unclassified' stamp: 'DF 3/29/2025 19:26:52'!
+inform: aText
+
+	| aMorph text |
+	
+	text := aText asText.
+	
+	text font: (FontFamily defaultFamilyPointSize: (FontFamily defaultPointSize * 2)).
+	
+	aMorph := self contents: text doWordWrap: false.
+
+	aMorph morphPosition: (Display extent x - aMorph morphWidth / 2) @ 0.
+
+	aMorph delay: 2000.
+
+	aMorph fade.
+! !
 
 !BidiLabelGroup methodsFor: 'as yet unclassified' stamp: 'DF 2/25/2025 09:36:55'!
 initialize
