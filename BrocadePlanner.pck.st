@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 30 March 2025 at 4:13:33 pm'!
+'From Cuis7.3 [latest update: #7041] on 30 March 2025 at 6:33:42 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 309!
+!provides: 'BrocadePlanner' 1 312!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -567,7 +567,7 @@ redo
 undo
 	BrocadeCommandHistory instance undo! !
 
-!BrocadePlannerApplication methodsFor: 'filing' stamp: 'DF 3/9/2025 20:22:04'!
+!BrocadePlannerApplication methodsFor: 'filing' stamp: 'DF 3/30/2025 16:44:10'!
 fromXML: aFileEntry
 
 	| aReadStream anXMLDocument aCollege |
@@ -589,7 +589,10 @@ fromXML: aFileEntry
 	model := aCollege.
 	
 	self updateDocumentName. 
+	
+	path := aFileEntry pathName.
 
+	FadingHoverHelpMorph inform: (('הקובץ {1} נטען בהצלחה.' format:{aFileEntry name}) asBidi writingDirection: #rightToLeft)
 ! !
 
 !BrocadePlannerApplication methodsFor: 'filing' stamp: 'DF 2/16/2025 18:29:48'!
@@ -600,7 +603,7 @@ home
 home: aString
 	homeDirectory := aString! !
 
-!BrocadePlannerApplication methodsFor: 'filing' stamp: 'DF 3/3/2025 12:28:24'!
+!BrocadePlannerApplication methodsFor: 'filing' stamp: 'DF 3/30/2025 16:40:46'!
 saveAction
 
 	| anXMLWriter file |
@@ -617,6 +620,8 @@ saveAction
 		model toXML: anXMLWriter.
 		
 		BrocadeCommandHistory instance save.
+		
+		FadingHoverHelpMorph inform: (('הקובץ {1} נשמר בהצלחה.' format:{file name}) asBidi writingDirection: #rightToLeft)
 	]
 	ensure:[
 		anXMLWriter ifNotNil:[:w | w stream close ].
@@ -728,49 +733,6 @@ open
 reset
 	TheApplication := nil.! !
 
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:46'!
-college 
-	^college! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:50'!
-college: aCollege
-
-	self assert: college isNil.
-	
-	college := aCollege.! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:27'!
-description
-	^description ! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:17'!
-description: aString
-	description := aString! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:19'!
-detach
-
-	college := nil! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:19:55'!
-displayStringOrText
-	^description! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:53:14'!
-initialize
-
-	tracks := Set new.
-	
-	themes := Set new! !
-
-!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:15'!
-invariant
-
-	tracks do:[:eachTrack | eachTrack invariant ].
-
-	tracks do:[:eachTrack | eachTrack program == self ].
-	! !
-
 !AcademicProgram methodsFor: 'themes' stamp: 'DF 2/22/2025 18:53:02'!
 addTheme: anAcademicTheme
 
@@ -850,6 +812,49 @@ trackAt: aString
 !AcademicProgram methodsFor: 'tracks' stamp: 'DF 12/27/2024 20:29:57'!
 tracks
 	^tracks! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:46'!
+college 
+	^college! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:50'!
+college: aCollege
+
+	self assert: college isNil.
+	
+	college := aCollege.! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:27'!
+description
+	^description ! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:04:17'!
+description: aString
+	description := aString! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:19'!
+detach
+
+	college := nil! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 1/31/2025 20:19:55'!
+displayStringOrText
+	^description! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 2/22/2025 18:53:14'!
+initialize
+
+	tracks := Set new.
+	
+	themes := Set new! !
+
+!AcademicProgram methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 20:14:15'!
+invariant
+
+	tracks do:[:eachTrack | eachTrack invariant ].
+
+	tracks do:[:eachTrack | eachTrack program == self ].
+	! !
 
 !AcademicProgram methodsFor: 'filing' stamp: 'DF 2/24/2025 15:15:06'!
 fromXML: anXMLElement
@@ -1819,24 +1824,6 @@ xmlElementsOut: anXMLWriter
 	
 ! !
 
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:52'!
-invariant
-
-	units do: [:aUnit | aUnit invariant ].
-
-	units do: [:aUnit | self assert: aUnit module == self ].
-	! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:00:32'!
-latin
-	^latin! !
-
-!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:00:29'!
-latin: aString
-
-	latin := aString
-! !
-
 !Module methodsFor: 'structure' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
 
@@ -2135,6 +2122,24 @@ before: aModule
 	^tracks allSatisfy:[:eachTrack | 
 		(self semesterInTrack: eachTrack) before: (aModule semesterInTrack: eachTrack) ].
 		! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:06:52'!
+invariant
+
+	units do: [:aUnit | aUnit invariant ].
+
+	units do: [:aUnit | self assert: aUnit module == self ].
+	! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:00:32'!
+latin
+	^latin! !
+
+!Module methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 13:00:29'!
+latin: aString
+
+	latin := aString
+! !
 
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 17:00:11'!
 academicYear
@@ -2463,6 +2468,82 @@ renderTextStylesOn: anXMLWriter
 	anXMLWriter endTag: 'number:number-style'.
 ! !
 
+!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 18:46:40'!
+renderAcademicTheme: anAcademicTheme in: anAcademicTrack on: anXMLWriter.
+
+	self renderThemeTitle: anAcademicTheme on: anXMLWriter.
+	
+	anXMLWriter startElement: 'table:table' attributeList: { 'table:name' -> anAcademicTheme description . 'table:style-name' -> 'Table' } asDictionary ; endTag.
+
+	self renderElectiveTableHeaderOn: anXMLWriter.
+
+	anAcademicTheme modulesInTrack: anAcademicTrack :: do:[:eachTuple | 
+		self renderElectiveModule: (eachTuple at:1) in:(eachTuple at:2) on: anXMLWriter ].
+
+	
+	anXMLWriter endTag: 'table:table'. ! !
+
+!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 18:42:24'!
+renderElectiveModule: aModule in: aSemester on: anXMLWriter 
+
+	| lecture recitation lab |
+	
+	lecture := aModule unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+	recitation := aModule unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+	lab := aModule unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
+
+	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.2' } asDictionary ; endTag.
+		
+		self renderCell: { { aModule code asString . 'P4' } } on: anXMLWriter.
+
+		self renderCell: { { aModule description  . 'P4' } . { aModule latin . 'P5' } } on: anXMLWriter.
+
+		self renderCell: (aModule prereqs collect:[:eachModule | { eachModule description . 'P4' } ]) on: anXMLWriter.
+		
+		{ aModule duration . lecture . recitation . lab . aModule points } collect:[:each | each asString ] :: 
+		do:[:eachString | self renderCell: { { eachString . 'P4' } } on: anXMLWriter ].
+
+		self renderCell: { { aSemester academicYear description, ', ', aSemester description  . 'P4' } } on: anXMLWriter.
+
+	anXMLWriter endTag:'table:table-row'.
+	! !
+
+!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 18:42:07'!
+renderElectiveTableHeaderOn: anXMLWriter
+
+	{ 'A' . 'B' . 'C' . 'D' . 'D' . 'D' .'D' . 'D' . 'E' } 
+	do:[:eachStyleName | 
+		anXMLWriter startElement: 'table:table-column' attributeList: { 'table:style-name' -> ('Table.{1}' format:{ eachStyleName }) } asDictionary ; endEmptyTag:'table:table-column'. ].
+	
+	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.1' } asDictionary ; endTag.
+
+	{ 'קוד קורס' . 'מקצוע' . 'דרישות קדם' . 'ש"ש' . 'ש"ה' . 'ש"ת' . 'ש"מ' . 'נ"ז' . 'שנה וסמסטר מומלצים' } 
+	do:[:eachString |
+	
+		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A1' . 'office:value-type' -> 'string' } asDictionary ; endTag.
+		
+		anXMLWriter startElement: 'text:p' attributeList: { 'text:style-name' -> 'P4' } asDictionary ; endTag.
+	
+		anXMLWriter startElement: 'text:span' attributeList:{ 'text:style-name' -> 'T1'} asDictionary; endTag.
+		
+		anXMLWriter pcData: eachString.
+
+		anXMLWriter endTag: 'text:span'. 
+	
+		anXMLWriter endTag: 'text:p'. 
+
+		anXMLWriter endTag: 'table:table-cell'.	
+	].
+
+	anXMLWriter endTag:'table:table-row'.
+	! !
+
+!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 19:14:20'!
+renderThemeTitle: aTheme on: anXMLWriter
+
+	self renderHeading: 'מסלול התמחות ', aTheme  description level:3 on: anXMLWriter.
+! !
+
 !OpenDocWriter methodsFor: 'rendering semesters' stamp: 'DF 2/21/2025 21:07:20'!
 renderAcademicYearTableSummary: anAcademicYear on: anXMLWriter
 
@@ -2785,82 +2866,6 @@ writeAcademicTrackDocument: anAcademicTrack inDirectory: aDirectory
 	dst recursiveDelete.
 
 	! !
-
-!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 18:46:40'!
-renderAcademicTheme: anAcademicTheme in: anAcademicTrack on: anXMLWriter.
-
-	self renderThemeTitle: anAcademicTheme on: anXMLWriter.
-	
-	anXMLWriter startElement: 'table:table' attributeList: { 'table:name' -> anAcademicTheme description . 'table:style-name' -> 'Table' } asDictionary ; endTag.
-
-	self renderElectiveTableHeaderOn: anXMLWriter.
-
-	anAcademicTheme modulesInTrack: anAcademicTrack :: do:[:eachTuple | 
-		self renderElectiveModule: (eachTuple at:1) in:(eachTuple at:2) on: anXMLWriter ].
-
-	
-	anXMLWriter endTag: 'table:table'. ! !
-
-!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 18:42:24'!
-renderElectiveModule: aModule in: aSemester on: anXMLWriter 
-
-	| lecture recitation lab |
-	
-	lecture := aModule unitAt: 'הרצאה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
-	recitation := aModule unitAt: 'תרגול' :: ifNil:[0] ifNotNil:[:unit | unit duration].
-	lab := aModule unitAt: 'מעבדה' :: ifNil:[0] ifNotNil:[:unit | unit duration].
-
-	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.2' } asDictionary ; endTag.
-		
-		self renderCell: { { aModule code asString . 'P4' } } on: anXMLWriter.
-
-		self renderCell: { { aModule description  . 'P4' } . { aModule latin . 'P5' } } on: anXMLWriter.
-
-		self renderCell: (aModule prereqs collect:[:eachModule | { eachModule description . 'P4' } ]) on: anXMLWriter.
-		
-		{ aModule duration . lecture . recitation . lab . aModule points } collect:[:each | each asString ] :: 
-		do:[:eachString | self renderCell: { { eachString . 'P4' } } on: anXMLWriter ].
-
-		self renderCell: { { aSemester academicYear description, ', ', aSemester description  . 'P4' } } on: anXMLWriter.
-
-	anXMLWriter endTag:'table:table-row'.
-	! !
-
-!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 18:42:07'!
-renderElectiveTableHeaderOn: anXMLWriter
-
-	{ 'A' . 'B' . 'C' . 'D' . 'D' . 'D' .'D' . 'D' . 'E' } 
-	do:[:eachStyleName | 
-		anXMLWriter startElement: 'table:table-column' attributeList: { 'table:style-name' -> ('Table.{1}' format:{ eachStyleName }) } asDictionary ; endEmptyTag:'table:table-column'. ].
-	
-	anXMLWriter startElement: 'table:table-row' attributeList: { 'table:style-name' -> 'Table.1' } asDictionary ; endTag.
-
-	{ 'קוד קורס' . 'מקצוע' . 'דרישות קדם' . 'ש"ש' . 'ש"ה' . 'ש"ת' . 'ש"מ' . 'נ"ז' . 'שנה וסמסטר מומלצים' } 
-	do:[:eachString |
-	
-		anXMLWriter startElement: 'table:table-cell' attributeList: { 'table:style-name' -> 'Table.A1' . 'office:value-type' -> 'string' } asDictionary ; endTag.
-		
-		anXMLWriter startElement: 'text:p' attributeList: { 'text:style-name' -> 'P4' } asDictionary ; endTag.
-	
-		anXMLWriter startElement: 'text:span' attributeList:{ 'text:style-name' -> 'T1'} asDictionary; endTag.
-		
-		anXMLWriter pcData: eachString.
-
-		anXMLWriter endTag: 'text:span'. 
-	
-		anXMLWriter endTag: 'text:p'. 
-
-		anXMLWriter endTag: 'table:table-cell'.	
-	].
-
-	anXMLWriter endTag:'table:table-row'.
-	! !
-
-!OpenDocWriter methodsFor: 'electives and themes' stamp: 'DF 2/26/2025 19:14:20'!
-renderThemeTitle: aTheme on: anXMLWriter
-
-	self renderHeading: 'מסלול התמחות ', aTheme  description level:3 on: anXMLWriter.
-! !
 
 !QuietTheme methodsFor: 'as yet unclassified' stamp: 'DF 12/19/2024 19:15:58'!
 background
@@ -3755,39 +3760,6 @@ openEditModuleDialog
 	
 	ModuleBrowser open: topic item last! !
 
-!EasyCollegeModulesBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 3/8/2025 16:07:53'!
-open: model label: aString
-
-	| topics builders aBrowserModel window |
-	
-	topics := { #electives . #programs . #programModules }.
-	
-	aBrowserModel := PluggableBrowserModel new.
-
-	aBrowserModel factory at: #electives put: NavigationTopicMulti.
-
-	aBrowserModel  model: model; topics: topics dependencies: {  #programModules -> #electives . #programModules -> #programs }.
-	
-	builders := Dictionary new.
-
-	builders at: #electives put:(MultiTopicMorphBuilder new topic: (aBrowserModel topics at:#electives) ; factory: BidiPluggableListMorphOfMany ; yourself).
-
-	builders at: #programs put:(TopicMorphBuilder new topic: (aBrowserModel topics at:#programs) ; factory: BidiPluggableListMorph ; yourself).
-	
-	builders at: #programModules put: (TableTopicMorphBuilder new topic: (aBrowserModel topics at: #programModules) ; factory: PluggableTableMorph  ; menuBuilder: BidiMenuMorph ; yourself).
-
-	builders at: #programModules :: menu: #moduleMenuSpec.
-		
-	window := self new.
-	window
-		composition: { #column: . { { #row: . { { #topic: . #electives . 1/2 } . { #topic: . #programs . 1/2 } } . 0.2 } . { #topic: . #programModules .  0.8 } } };
-		model: aBrowserModel ;
-		builders: builders ;
-		buildMorphicWindow.
-	aString ifNotNil: [ window setLabel: aString ].
-	window openInWorld.
-	^window! !
-
 !EasyThemeBrowser methodsFor: 'dialogs' stamp: 'DF 3/8/2025 15:35:22'!
 addAcademicThemeDialog
 
@@ -3947,6 +3919,151 @@ buildMorphicWindow
 		builders: topicBuilders. 
 	
 	self layoutMorph addMorph: builder build proportionalHeight:1.0.	! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 18:11:33'!
+addPrereq
+
+	| mold aCommand position aDialog |
+		
+	aCommand := AddPrereqCommand new.
+	
+	aCommand module: model.
+
+	mold := BidiMold new.
+	
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד הקורס';
+		on: #code of: aCommand ;
+		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' asBidi ;
+		beRequired.
+		
+	position := UISupervisor ui activeHand morphPosition.
+
+	aDialog := mold openDialog: 'הוסף דרישת קדם'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
+	! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/24/2025 19:18:41'!
+dependants
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'שם' . 'קוד' }.
+	
+	model dependants do:[:eachModule | 
+		table add: ({ { eachModule description asBidi writingDirection:#rightToLeft  } . { eachModule code }})].
+	
+	^table
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 18:37:01'!
+prereqViolations
+
+	| table violations |
+	
+	violations := Set new.
+	
+	table := self prereqs.
+	
+	2 to: table size do:[:index | | prereq |
+		prereq := model college moduleAt: (table at: index :: at:2) anyOne.
+		
+		prereq before: model :: ifFalse:[
+			 violations add: (index @ 1 corner: index @ 2) ] ].
+	
+	^ violations! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/20/2025 11:00:23'!
+prereqs
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'שם' . 'קוד' }.
+	
+	model prereqs do:[:eachModule |
+		table add: ({ { eachModule description asBidi writingDirection:#rightToLeft  } . { eachModule code }})].
+	
+	^table
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:42:42'!
+programs
+
+	| table |
+	
+	table := OrderedCollection new.
+
+	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
+	
+	model programs do:[:eachTuple |
+		table add: (eachTuple collect:[:each | { each description asBidi writingDirection:#rightToLeft } ]) ].
+	
+	^table
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 19:42:23'!
+removePrereq
+
+	| aCommand |
+	
+	self assert: selectedPrereq notNil.
+		
+	aCommand := RemovePrereqCommand new.
+	
+	aCommand module: model ; code: (selectedPrereq at:2 :: anyOne).
+	
+	BrocadeCommandHistory instance do: aCommand.
+	! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/24/2025 19:26:08'!
+selectDependant: anIndex
+
+	anIndex <= 1 
+		ifTrue:[
+			selectedDependant := nil.
+			^self].
+	
+	selectedDependant := self dependants at: anIndex
+	
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 19:41:34'!
+selectPrereq: aPrereqIndex
+
+	aPrereqIndex <= 1 
+		ifTrue:[
+			selectedPrereq := nil.
+			^self].
+	
+	selectedPrereq := self prereqs at: aPrereqIndex
+	
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/23/2025 16:29:55'!
+selectProgram: aProgramIndex
+
+	aProgramIndex <= 1 
+		ifTrue:[
+			selectedProgramIndex := nil.
+			^self].
+	
+	selectedProgramIndex := aProgramIndex - 1
+	
+! !
+
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:59:06'!
+update: aSymbol
+
+	self changed: aSymbol! !
 
 !ModuleBrowser methodsFor: 'GUI building' stamp: 'DF 2/24/2025 19:17:53'!
 buildDependantsTable
@@ -4166,151 +4283,6 @@ initialize
 	selectedProgramIndex := 0.
 	
 	selectedPrereq := 0.! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 18:11:33'!
-addPrereq
-
-	| mold aCommand position aDialog |
-		
-	aCommand := AddPrereqCommand new.
-	
-	aCommand module: model.
-
-	mold := BidiMold new.
-	
-	mold rightToLeft: true.
-	
-	(mold integerField)
-		label: 'קוד הקורס';
-		on: #code of: aCommand ;
-		addCondition: [:input :value | model college moduleAt: value :: notNil ] labeled:'הקורס לא קיים במערכת.' asBidi ;
-		beRequired.
-		
-	position := UISupervisor ui activeHand morphPosition.
-
-	aDialog := mold openDialog: 'הוסף דרישת קדם'.
-	
-	aDialog morphPosition: position - (aDialog morphWidth@0).
-	
-	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: aCommand.
-	! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/24/2025 19:18:41'!
-dependants
-
-	| table |
-	
-	table := OrderedCollection new.
-
-	table add: { 'שם' . 'קוד' }.
-	
-	model dependants do:[:eachModule | 
-		table add: ({ { eachModule description asBidi writingDirection:#rightToLeft  } . { eachModule code }})].
-	
-	^table
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 18:37:01'!
-prereqViolations
-
-	| table violations |
-	
-	violations := Set new.
-	
-	table := self prereqs.
-	
-	2 to: table size do:[:index | | prereq |
-		prereq := model college moduleAt: (table at: index :: at:2) anyOne.
-		
-		prereq before: model :: ifFalse:[
-			 violations add: (index @ 1 corner: index @ 2) ] ].
-	
-	^ violations! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/20/2025 11:00:23'!
-prereqs
-
-	| table |
-	
-	table := OrderedCollection new.
-
-	table add: { 'שם' . 'קוד' }.
-	
-	model prereqs do:[:eachModule |
-		table add: ({ { eachModule description asBidi writingDirection:#rightToLeft  } . { eachModule code }})].
-	
-	^table
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 13:42:42'!
-programs
-
-	| table |
-	
-	table := OrderedCollection new.
-
-	table add: { 'סמסטר' . 'שנה' . 'מסלול' . 'תוכנית' }.
-	
-	model programs do:[:eachTuple |
-		table add: (eachTuple collect:[:each | { each description asBidi writingDirection:#rightToLeft } ]) ].
-	
-	^table
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 19:42:23'!
-removePrereq
-
-	| aCommand |
-	
-	self assert: selectedPrereq notNil.
-		
-	aCommand := RemovePrereqCommand new.
-	
-	aCommand module: model ; code: (selectedPrereq at:2 :: anyOne).
-	
-	BrocadeCommandHistory instance do: aCommand.
-	! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/24/2025 19:26:08'!
-selectDependant: anIndex
-
-	anIndex <= 1 
-		ifTrue:[
-			selectedDependant := nil.
-			^self].
-	
-	selectedDependant := self dependants at: anIndex
-	
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 19:41:34'!
-selectPrereq: aPrereqIndex
-
-	aPrereqIndex <= 1 
-		ifTrue:[
-			selectedPrereq := nil.
-			^self].
-	
-	selectedPrereq := self prereqs at: aPrereqIndex
-	
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/23/2025 16:29:55'!
-selectProgram: aProgramIndex
-
-	aProgramIndex <= 1 
-		ifTrue:[
-			selectedProgramIndex := nil.
-			^self].
-	
-	selectedProgramIndex := aProgramIndex - 1
-	
-! !
-
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 1/10/2025 20:59:06'!
-update: aSymbol
-
-	self changed: aSymbol! !
 
 !BrocadeSettings methodsFor: 'as yet unclassified' stamp: 'DF 2/16/2025 18:32:34'!
 buildMorphicWindow
