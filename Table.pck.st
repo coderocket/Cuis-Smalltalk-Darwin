@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 3 March 2025 at 6:17:18 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 April 2025 at 10:44:26 pm'!
 'Description '!
-!provides: 'Table' 1 71!
+!provides: 'Table' 1 73!
 !requires: 'Bidi' 1 44 nil!
 SystemOrganization addCategory: #Table!
 
@@ -77,7 +77,7 @@ OffsetLabelMorph class
 
 !classDefinition: #PluggableTableMorph category: #Table!
 PluggableScrollPane subclass: #PluggableTableMorph
-	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass columnFactory getMarkers'
+	instanceVariableNames: 'getTable headerRow rightToLeft selectedRow selectRowMessage menuFactory innerMorphClass columnFactory getMarkers offset'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Table'!
@@ -496,6 +496,10 @@ build
 	
 ! !
 
+!TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 4/3/2025 22:34:07'!
+cellFactory
+	^cellFactory! !
+
 !TableMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 21:50:26'!
 cellFactory: aClass
 	cellFactory := aClass! !
@@ -823,12 +827,22 @@ selectRowMessage: aSymbol
 table: aSymbol
 	getTable := aSymbol! !
 
-!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:03:11'!
+!PluggableTableMorph methodsFor: 'as yet unclassified' stamp: 'DF 4/3/2025 22:44:06'!
 update: aSymbol 
 
-	| start nrows ncols header table |
+	| start nrows ncols header table aTableMorph  |
+	
+	offset := self scrollerOffset.
+	
+	aTableMorph := innerMorphClass new.
+	
+	aTableMorph cellFactory: scroller cellFactory. 
+	
+	aTableMorph morphExtent: scroller morphExtent.
 
-	scroller removeAllMorphs.
+	aTableMorph color: Color transparent.
+	
+	aTableMorph target: self.
 		
 	table := model perform: getTable.
 	
@@ -845,9 +859,9 @@ update: aSymbol
 	
 	ncols := header size.
 	
-	scroller morphHeight: extent y.
+	aTableMorph morphHeight: extent y.
 	
-	scroller numRows: nrows ; numColumns: ncols; build.
+	aTableMorph numRows: nrows ; numColumns: ncols; build.
 	
 	headerRow 
 		ifTrue:[ 
@@ -857,14 +871,15 @@ update: aSymbol
 				
 				aLabelMorph rightToLeft: rightToLeft.
 				
-				scroller at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		].
+				aTableMorph at: 1 at:colIndex :: axisEdgeWeight: #center ; addMorph: aLabelMorph			 ] 		].
 
-	start := headerRow 		ifTrue:[ 	2] ifFalse:[			 1 ].
+	start := headerRow 
+		ifTrue:[2] ifFalse:[1].
 			
 	start to: nrows do:[:rowIndex |
 		1 to:ncols do:[:colIndex | | cell items factory |
 			items := table at: rowIndex :: at:colIndex.
-			cell := scroller at: rowIndex at:colIndex.
+			cell := aTableMorph at: rowIndex at:colIndex.
 			factory := columnFactory at: colIndex ifAbsent:[PluggableMorphFactory new]. 
 			items 
 				ifEmpty:[cell addMorph: factory buildEmpty].
@@ -874,10 +889,11 @@ update: aSymbol
 	getMarkers ifNotNil:[ | rectangles |
 		rectangles := model perform: getMarkers. 
 		rectangles do:[:eachRectangle |
-			scroller borderAround: eachRectangle set: true ] ]
-	
-	
-! !
+			aTableMorph borderAround: eachRectangle set: true ] ].
+		
+	self scroller: aTableMorph.
+	self scrollerOffset: offset.
+	! !
 
 !MorphProvider methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 17:41:57'!
 morph

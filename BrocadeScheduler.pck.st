@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 3 April 2025 at 10:52:42 am'!
+'From Cuis7.3 [latest update: #7041] on 3 April 2025 at 9:14:53 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 174!
+!provides: 'BrocadeScheduler' 1 178!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -771,10 +771,8 @@ availableHoursForDay: aDayInteger
 	
 	! !
 
-!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:40:56'!
+!SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 4/3/2025 20:20:29'!
 fromXML: anXMLElement
-
-	super fromXML: anXMLElement.
 			
 	anXMLElement elementAt: 'campuses' :: elements do:[:eachElement | | aCampus |
 		aCampus := Campus new.
@@ -786,6 +784,7 @@ fromXML: anXMLElement
 		self addSchool: aSchool.
 		aSchool fromXML: eachElement	].
 
+	super fromXML: anXMLElement.
 ! !
 
 !SchedulingCollege methodsFor: 'as yet unclassified' stamp: 'DF 2/11/2025 22:30:03'!
@@ -1398,14 +1397,14 @@ unit
 unit: anAcademicUnit
 	unit := anAcademicUnit ! !
 
-!Assignment methodsFor: 'xml' stamp: 'DF 2/13/2025 20:45:25'!
+!Assignment methodsFor: 'xml' stamp: 'DF 4/3/2025 20:35:37'!
 fromXML: anXMLElement
 
-	| college |
+	| college module moduleCode |
 	
 	self assert: anXMLElement name = 'assignment'.
 
-	college := stencil semester year academicTrack program college.
+	college := stencil semester academicYear academicTrack program college.
 	
 	day := anXMLElement attributeAt: 'day'.
 	
@@ -1414,20 +1413,32 @@ fromXML: anXMLElement
 	hour := anXMLElement attributeAt: 'hour'.
 	
 	hour ifNotNil:[hour := Number readFrom: hour].
-		
-	anXMLElement elementAt: 'lecturers' :: elements do:[:eachElement | | school lecturer |
+
+	moduleCode := Number readFrom: (anXMLElement elementAt: 'unit' :: attributeAt: 'module'). 
+	
+	module := college moduleAt: moduleCode.
+	
+	unit := module unitAt: (anXMLElement elementAt: 'unit' :: attributeAt: 'description').
+	
+	anXMLElement elementAt: 'lecturers' :: elements do:[:eachElement | | school lecturer code |
 
 		school := college schoolAt: (eachElement attributeAt: 'school').
 		
-		lecturer := school lecturerAt: (eachElement attributeAt: 'lecturer').
+		code := Number readFrom:(eachElement attributeAt: 'code').
+		
+		lecturer := school lecturerAt: code.
+		
+		lecturer addAcademicUnit: unit.
 		
 		lecturers add: lecturer ].
 	
-	anXMLElement elementAt: 'rooms' :: elements do:[:eachElement | | campus room |
+	anXMLElement elementAt: 'rooms' :: elements do:[:eachElement | | campus room code |
 
 		campus := college campusAt: (eachElement attributeAt: 'campus').
+
+		code := Number readFrom:(eachElement attributeAt: 'code').
 		
-		room := campus roomAt: (eachElement attributeAt: 'room').
+		room := campus roomAt: code.
 		
 		rooms add: room ].
 ! !
@@ -1452,13 +1463,25 @@ roomsXmlOut: anXMLWriter
 	
 	anXMLWriter endTag:'rooms'.	! !
 
-!Assignment methodsFor: 'xml' stamp: 'DF 2/21/2025 13:21:29'!
+!Assignment methodsFor: 'xml' stamp: 'DF 4/3/2025 20:23:22'!
 toXML: anXMLWriter
 	
-	anXMLWriter startElement: 'assignment' attributeList: {'day' -> day asString . 'hour' -> hour asString .  } asDictionary ; endTag.
+	| attrs |
 
-	self lecturersXmlOut: anXMLWriter. 
-	self roomsXmlOut: anXMLWriter.
+	self assert: unit notNil.
+		
+	attrs := Dictionary new.
+	
+	day ifNotNil:[attrs at: 'day' put: day asString ].
+	
+	hour ifNotNil:[attrs at: 'hour' put: hour asString ].
+	
+	anXMLWriter startElement: 'assignment' attributeList: attrs ; endTag.
+
+		anXMLWriter startElement: 'unit' attributeList: {'description' -> unit description . 'module' -> unit module code asString } asDictionary ; endEmptyTag:'unit'.
+	
+		self lecturersXmlOut: anXMLWriter. 
+		self roomsXmlOut: anXMLWriter.
 	
 	anXMLWriter endTag:'assignment'.! !
 
