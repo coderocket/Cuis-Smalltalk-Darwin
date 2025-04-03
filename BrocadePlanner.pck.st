@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 30 March 2025 at 6:33:42 pm'!
+'From Cuis7.3 [latest update: #7041] on 31 March 2025 at 8:51:03 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 312!
+!provides: 'BrocadePlanner' 1 313!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -3026,7 +3026,7 @@ tracks
 	^programs at: index :: tracks asOrderedCollection sort:[:x :y | x description <= y description ].
 ! !
 
-!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 2/3/2025 09:23:14'!
+!AcademicProgramBrowser methodsFor: 'tracks' stamp: 'DF 3/31/2025 19:07:32'!
 updateLabel
 
 	trackIndex = 0 or: [programIndex = 0] ::
@@ -3034,11 +3034,13 @@ updateLabel
 			self setLabel: 'תוכניות לימודים'.
 			]
 		ifFalse:[
-			| programName trackName |
+			| programName trackName tracks |
 
 			programName := self programs at: programIndex :: description.
 	
-			trackName := self tracks at: trackIndex :: description.
+			tracks := self tracks.
+			
+			trackName := (trackIndex <= tracks size) ifTrue:[tracks at: trackIndex  :: description] ifFalse:[''].
 	
 			self setLabel: ('תוכנית לימודים: {1} {2}' format:{ programName . trackName }) asBidi.
 			]	

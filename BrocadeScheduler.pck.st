@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 30 March 2025 at 8:33:01 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 April 2025 at 10:52:42 am'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 170!
+!provides: 'BrocadeScheduler' 1 174!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -982,6 +982,11 @@ detachAssignment: anAssignment
 initialize
 
 	assignments := Set new.! !
+
+!AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 3/31/2025 21:40:16'!
+removeInvalidAssignments
+
+	assignments := assignments reject:[:each | each stencil semester isNil ]! !
 
 !Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:48'!
 campus
@@ -3266,7 +3271,7 @@ buildDetailsPanel
 	
 	^detailsPane! !
 
-!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 3/1/2025 15:21:22'!
+!LecturerBrowser methodsFor: 'GUI building' stamp: 'DF 4/3/2025 10:50:25'!
 buildMorphicWindow
 
 	| assignmentsTable group detailsPanel dialog |
@@ -3285,7 +3290,7 @@ buildMorphicWindow
 	
 	self changed: #assignments.
 	
-	dialog := (assignmentsTable - 0.7p) / (group - 0.7p | 1.0p) <+> (detailsPanel - 0.3p).
+	dialog := (assignmentsTable - 0.8p) </> (group - 0.8p | 1.0p) <+> (detailsPanel - 0.3p).
 	
 	self addMorph: dialog.
 	
@@ -3347,7 +3352,7 @@ timeTable
 	^table
 	! !
 
-!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 20:32:14'!
+!LecturerBrowser methodsFor: 'as yet unclassified' stamp: 'DF 4/3/2025 10:52:13'!
 assignments
 
 	| table |
@@ -3360,13 +3365,18 @@ assignments
 		sort:[:x :y | 
 			x stencil semester description < y stencil semester description 
 			or:[x stencil semester description = y stencil semester description 
-				and: [x day < y day or:[x day = y day and: [x hour <= y hour ]  ] ] ] ]
+				and: [ | xdd xhh ydd yhh |
+					xdd := x day ifNil:[0].
+					xhh := x hour ifNil:[0].
+					ydd := y day ifNil:[0].
+					yhh := y hour ifNil:[0].
+					xdd < ydd or:[xdd = ydd and: [xhh <= yhh ]  ] ] ] ]
 	::	 do:[:eachAssignment | 
 		
 		table add: {
 			eachAssignment rooms . 
-			{ eachAssignment hour } . 
-			{ eachAssignment dayHebrew } . 
+			{ eachAssignment hour ifNil:[''] } . 
+			{ eachAssignment dayHebrew ifNil:[''] } . 
 			{ eachAssignment unit }  .
 			{ eachAssignment unit module  } .
 			{ eachAssignment unit module code } .
@@ -3948,7 +3958,7 @@ selectFirstEntitiesIn: aProgram
 selectedAssignment
 	^theAssignment at:1! !
 
-!StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:35:05'!
+!StencilBrowser methodsFor: 'assignments' stamp: 'DF 3/31/2025 18:57:20'!
 stencil
 
 	| stencils |
@@ -3959,7 +3969,7 @@ stencil
 	
 	stencils ifEmpty:[^nil].
 	
-	^stencils at: stencilIndex 
+	^stencils at: (stencilIndex min: stencils size)
 ! !
 
 !StencilBrowser methodsFor: 'assignments' stamp: 'DF 1/27/2025 21:55:32'!
@@ -4254,18 +4264,22 @@ openAddStencilDialog
 	
 ! !
 
-!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/1/2025 21:54:18'!
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 3/31/2025 21:33:27'!
 removeStencilFromSemester
 
-	| stencil semester |
+	| stencil semester command |
 	
 	stencilIndex = 0 ifTrue:[^self].
+	
+	command := RemoveStencilCommand new.
 	
 	semester := self selectedSemester.
 
 	stencil := self stencils at: stencilIndex.
+
+	command college: model ; semester: semester; stencil: stencil.
 	
-	semester removeStencil: stencil.
+	BrocadeCommandHistory instance do: command.
 	
 	stencilIndex := 0.
 	
@@ -4588,6 +4602,10 @@ doIt
 !AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:24:05'!
 semester: aSemester
 	semester := aSemester! !
+
+!AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 3/31/2025 21:32:43'!
+stencil: aStencil
+	stencil := aStencil! !
 
 !AddStencilCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/5/2025 21:22:07'!
 title

@@ -438,7 +438,12 @@
 <track description="מסלול יום">
 <year description="שנה 1" ordinal="1">
 <semester description="סמסטר א" ordinal="1"><modules>
-<module code="10016"/> </modules><stencils></stencils></semester>
+<module code="10016"/> </modules><stencils>
+<stencil description="501">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="802" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="802" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
@@ -495,13 +500,28 @@
 <year description="שנה 1" ordinal="1">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
-<module code="10826"/> </modules><stencils></stencils></semester>
+<module code="10826"/> </modules><stencils>
+<stencil description="211">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="800" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="504" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules>
-<module code="10820"/> </modules><stencils></stencils></semester>
+<module code="10820"/> </modules><stencils>
+<stencil description="212">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="102" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="102" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
-<module code="10804"/> </modules><stencils></stencils></semester>
+<module code="10804"/> </modules><stencils>
+<stencil description="221">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="116" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="116" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר קיץ" ordinal="3"><modules></modules><stencils></stencils></semester></year>
 <year description="שנה 3" ordinal="3">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
@@ -518,9 +538,39 @@
 <track description="מסלול יום">
 <year description="שנה 1" ordinal="1">
 <semester description="סמסטר א" ordinal="1"><modules>
-<module code="10826"/> </modules><stencils></stencils></semester>
+<module code="10826"/> </modules><stencils>
+<stencil description="203">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="800" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="504" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="201">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="504" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="800" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="202">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="800" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="504" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
-<module code="10804"/> </modules><stencils></stencils></semester></year>
+<module code="10804"/> </modules><stencils>
+<stencil description="206">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="116" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="204">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="116" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="205">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="116" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester></year>
@@ -557,18 +607,36 @@
 <semester description="סמסטר א" ordinal="1"><modules>
 <module code="10016"/> </modules><stencils>
 <stencil description="307">
-<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
-<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment></stencil>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="802" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="802" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
 <stencil description="305">
-<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
-<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment></stencil>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="101" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="101" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
 <stencil description="306">
-<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
-<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="101" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="101" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules>
-<module code="10336"/> </modules><stencils></stencils></semester>
+<module code="10336"/> </modules><stencils>
+<stencil description="323">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="322">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="321">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="324">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester></year>
 <year description="שנה 3" ordinal="3">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
@@ -580,9 +648,17 @@
 <year description="שנה 1" ordinal="1">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
-<module code="10336"/> </modules><stencils></stencils></semester>
+<module code="10336"/> </modules><stencils>
+<stencil description="325">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר קיץ" ordinal="3"><modules>
-<module code="10016"/> </modules><stencils></stencils></semester></year>
+<module code="10016"/> </modules><stencils>
+<stencil description="326">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="802" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="802" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules></modules><stencils></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules></modules><stencils></stencils></semester>
@@ -606,14 +682,68 @@
 <module code="10016"/> 
 <module code="90901"/> 
 <module code="90905"/> 
-<module code="90955"/> </modules><stencils></stencils></semester>
+<module code="90955"/> </modules><stencils>
+<stencil description="10111">
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="102" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="102" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment></stencil>
+<stencil description="10112">
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="803" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="803" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
 <module code="10145"/> 
 <module code="90902"/> 
 <module code="10142"/> 
 <module code="10128"/> 
 <module code="90923"/> 
-<module code="10827"/> </modules><stencils></stencils></semester></year>
+<module code="10827"/> </modules><stencils>
+<stencil description="10121">
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="106" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="106" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="800" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment></stencil>
+<stencil description="10122">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="102" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="102" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="106" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="106" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules>
 <module code="10119"/> 
@@ -621,14 +751,114 @@
 <module code="10010"/> 
 <module code="10117"/> 
 <module code="10139"/> 
-<module code="90911"/> </modules><stencils></stencils></semester>
+<module code="90911"/> </modules><stencils>
+<stencil description="10211">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="118" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="103" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="118" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="110" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="806" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="806" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="110" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="103" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="10212">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="118" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="118" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="113" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="110" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="110" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="118" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="118" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="113" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
 <module code="10147"/> 
 <module code="10015"/> 
 <module code="10146"/> 
 <module code="10313"/> 
 <module code="10213"/> 
-<module code="19103"/> </modules><stencils></stencils></semester></year>
+<module code="19103"/> </modules><stencils>
+<stencil description="10221">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="506" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="121" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="121" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<stencil description="10222">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="506" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="121" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="121" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 3" ordinal="3">
 <semester description="סמסטר א" ordinal="1"><modules>
 <module code="10233"/> 
@@ -640,7 +870,42 @@
 <module code="10148"/> 
 <module code="10245"/> 
 <module code="10240"/> 
-<module code="10149"/> </modules><stencils></stencils></semester>
+<module code="10149"/> </modules><stencils>
+<stencil description="10311">
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="107" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="509" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="113" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="110" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="509" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="108" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="110" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="107" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="113" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers>
+<lecturer code="108" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment day="nil" hour="nil"><lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
 <module code="10359"/> 
 <module code="10143"/> 
@@ -989,7 +1254,7 @@
 <module code="10266"/> 
 <module code="10346"/> </modules><stencils></stencils></semester></year></track></tracks><themes></themes></program></programs><campuses></campuses><schools>
 <school description="הנדסת תוכנה"><lecturers>
-<lecturer code="118" description="ארנון ברקת" quota="28" rank="סגל בכיר"><blocked-slots>
+<lecturer code="121" description="מיכל הוכמן" quota="24" rank="סגל בכיר"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
@@ -1011,7 +1276,7 @@
 <day ordinal="4"></day>
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
-<lecturer code="117" description="הישאם עבד אלחלים" quota="24" rank="סגל בכיר"><blocked-slots>
+<lecturer code="806" description="דינה בילצ'ינסקי" quota="12" rank="סגל זוטר"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
@@ -1143,7 +1408,51 @@
 <day ordinal="4"></day>
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="801" description="גיא איסקוב" quota="28" rank="סגל זוטר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
 <lecturer code="120" description="שמואל טישברוביץ" quota="20" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="511" description="מיכה ברשף" quota="12" rank="מרצה מן החוץ"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
@@ -1209,7 +1518,29 @@
 <day ordinal="4"></day>
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
-<lecturer code="116" description="אפרת הרצברג מורג" quota="28" rank="סגל בכיר"><blocked-slots>
+<lecturer code="512" description="אסף פוקס" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="123" description="שרון ילוב הנדזל" quota="12" rank="סגל בכיר"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
@@ -1253,6 +1584,50 @@
 <day ordinal="4"></day>
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="505" description="רועי זימון" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="805" description="אפרת וינברג" quota="12" rank="סגל זוטר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
 <lecturer code="109" description="יאיר אבן זוהר" quota="24" rank="סגל בכיר"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
@@ -1275,48 +1650,11 @@
 <day ordinal="4"></day>
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
-<lecturer code="108" description="מריה ארטישצ'לב" quota="24" rank="סגל בכיר"><blocked-slots>
+<lecturer code="124" description="יהודית אפרשטיין" quota="24" rank="סגל בכיר"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
 <day ordinal="3"></day>
-<day ordinal="4"></day>
-<day ordinal="5"></day>
-<day ordinal="6"></day></semester>
-<semester ordinal="2">
-<day ordinal="1"></day>
-<day ordinal="2"></day>
-<day ordinal="3"></day>
-<day ordinal="4"></day>
-<day ordinal="5"></day>
-<day ordinal="6"></day></semester>
-<semester ordinal="3">
-<day ordinal="1"></day>
-<day ordinal="2"></day>
-<day ordinal="3"></day>
-<day ordinal="4"></day>
-<day ordinal="5"></day>
-<day ordinal="6"></day></semester></blocked-slots></lecturer>
-<lecturer code="100" description="דוד פייטלסון" quota="24" rank="סגל בכיר"><blocked-slots>
-<semester ordinal="1">
-<day ordinal="1"></day>
-<day ordinal="2"></day>
-<day ordinal="3">
-<hour ordinal="10"/> 
-<hour ordinal="15"/> 
-<hour ordinal="20"/> 
-<hour ordinal="11"/> 
-<hour ordinal="16"/> 
-<hour ordinal="21"/> 
-<hour ordinal="12"/> 
-<hour ordinal="17"/> 
-<hour ordinal="22"/> 
-<hour ordinal="8"/> 
-<hour ordinal="13"/> 
-<hour ordinal="18"/> 
-<hour ordinal="9"/> 
-<hour ordinal="14"/> 
-<hour ordinal="19"/> </day>
 <day ordinal="4"></day>
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester>
@@ -1445,6 +1783,505 @@
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
 <lecturer code="119" description="ויקטור טאובקין" quota="28" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="507" description="יצחק אביב" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="118" description="ארנון ברקת" quota="28" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="509" description="אור סהר" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="117" description="הישאם עבד אלחלים" quota="24" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="506" description="לימור מתתיהו" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="803" description="גריגורי שאולוב" quota="28" rank="סגל זוטר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="514" description="זיו סופרמן" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="116" description="אפרת הרצברג מורג" quota="28" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="802" description="פיני שלומי" quota="28" rank="סגל זוטר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="804" description="ירדן קרני" quota="28" rank="סגל זוטר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="122" description="מיכאל מן" quota="24" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="504" description="שי אוהב ציון" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="108" description="מריה ארטישצ'לב" quota="24" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="100" description="דוד פייטלסון" quota="24" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3">
+<hour ordinal="10"/> 
+<hour ordinal="15"/> 
+<hour ordinal="20"/> 
+<hour ordinal="11"/> 
+<hour ordinal="16"/> 
+<hour ordinal="21"/> 
+<hour ordinal="12"/> 
+<hour ordinal="17"/> 
+<hour ordinal="22"/> 
+<hour ordinal="8"/> 
+<hour ordinal="13"/> 
+<hour ordinal="18"/> 
+<hour ordinal="9"/> 
+<hour ordinal="14"/> 
+<hour ordinal="19"/> </day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="501" description="רום גת" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="513" description="שי תבור" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="800" description="תום כהן" quota="28" rank="סגל זוטר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="502" description="יצחק גנוט" quota="28" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="500" description="ליאור רוטברג" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="503" description="טל פסטרנק" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="510" description="אלירן אלישע" quota="12" rank="מרצה מן החוץ"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="508" description="הוואנה ריקה" quota="12" rank="מרצה מן החוץ"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
