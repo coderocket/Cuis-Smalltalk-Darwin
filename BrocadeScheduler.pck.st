@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 3 April 2025 at 9:14:53 pm'!
+'From Cuis7.3 [latest update: #7041] on 4 April 2025 at 7:18:09 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 178!
+!provides: 'BrocadeScheduler' 1 179!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -267,7 +267,7 @@ ClassroomMorph class
 
 !classDefinition: #LecturerMorph category: #'BrocadeScheduler-SchoolMorphic'!
 BrocadeTableCellItem subclass: #LecturerMorph
-	instanceVariableNames: 'lecturer'
+	instanceVariableNames: 'lecturer assignment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-SchoolMorphic'!
@@ -2205,14 +2205,14 @@ aboutToGrabClassroom: aClassroomMorph
 	
 	^aClassroomMorph ! !
 
-!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 1/29/2025 19:05:03'!
+!AssignmentTableCell methodsFor: 'dropping/grabbing' stamp: 'DF 4/4/2025 19:09:23'!
 aboutToGrabLecturer: aLecturerMorph
 
 	self assert: (aLecturerMorph isKindOf: LecturerMorph).
 
 	aLecturerMorph lecturer ifNil:[^nil].
 	
-	aLecturerMorph unassign: self assignmentInRow.
+	aLecturerMorph assignment: self assignmentInRow.
 	
 	^aLecturerMorph ! !
 
@@ -2417,8 +2417,10 @@ aboutToBeGrabbedBy: aHand
 
 	^owner aboutToGrabLecturer: self! !
 
-!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/6/2025 22:24:37'!
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 4/4/2025 19:18:03'!
 justDroppedInto: newOwnerMorph event: anEvent 
+
+	assignment ifNotNil:[self unassign].
 
 	newOwnerMorph isWorldMorph 
 		ifTrue:[
@@ -2528,19 +2530,26 @@ lecturer
 lecturer: aLecturer
 	lecturer := aLecturer! !
 
-!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:31:28'!
-unassign: anAssignment
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 4/4/2025 19:10:33'!
+unassign
 
 	| aCommand |
 
-	self assert: lecturer notNil; assert: anAssignment notNil.	
+	self assert: lecturer notNil; assert: assignment notNil.	
 	
 	aCommand := UnassignLecturerCommand new.
-	aCommand assignment: anAssignment ; lecturer: lecturer.
+	aCommand assignment: assignment ; lecturer: lecturer.
 	
-	BrocadeCommandHistory instance do: aCommand. 	
+	BrocadeCommandHistory instance do: aCommand. 
+	
+	assignment := nil.
 
 ! !
+
+!LecturerMorph methodsFor: 'nil' stamp: 'DF 4/4/2025 19:09:05'!
+assignment: anAssignment
+
+	assignment := anAssignment ! !
 
 !LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:10:09'!
 icon
