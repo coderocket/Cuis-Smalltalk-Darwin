@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 31 March 2025 at 8:51:03 pm'!
+'From Cuis7.3 [latest update: #7041] on 5 April 2025 at 7:37:42 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 313!
+!provides: 'BrocadePlanner' 1 315!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -218,7 +218,7 @@ EasyThemeBrowser class
 
 !classDefinition: #ModuleBrowser category: #'BrocadePlanner-Morphic'!
 BidiSystemWindow subclass: #ModuleBrowser
-	instanceVariableNames: 'selectedProgramIndex selectedPrereq'
+	instanceVariableNames: 'selectedProgramIndex selectedPrereq selectedDependant'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadePlanner-Morphic'!
@@ -4026,12 +4026,12 @@ removePrereq
 	BrocadeCommandHistory instance do: aCommand.
 	! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/24/2025 19:26:08'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 4/5/2025 19:28:26'!
 selectDependant: anIndex
 
 	anIndex <= 1 
 		ifTrue:[
-			selectedDependant := nil.
+			selectedDependant := nil. 
 			^self].
 	
 	selectedDependant := self dependants at: anIndex
@@ -4221,6 +4221,18 @@ buildProgramsTable
 	
 ! !
 
+!ModuleBrowser methodsFor: 'menu' stamp: 'DF 4/5/2025 19:32:18'!
+dependantsMenuSpec
+
+	| editDependantMessage |
+	
+	editDependantMessage :=  selectedDependant isNil ifTrue:[nil] ifFalse:[#openEditModuleDialog].
+	
+^ {
+		{ 0 .	'תלות' .				false } .
+		{ 10 .	'ערוך ...' . 		$e .	#window .	editDependantMessage }.
+	}.! !
+
 !ModuleBrowser methodsFor: 'menu' stamp: 'DF 1/18/2025 21:07:55'!
 moduleMenuSpec
 
@@ -4242,6 +4254,19 @@ openAcademicProgramBrowser
 	
 	
 	! !
+
+!ModuleBrowser methodsFor: 'menu' stamp: 'DF 4/5/2025 19:35:46'!
+openEditModuleDialog
+
+	| module code |
+	
+	selectedDependant ifNil:[^self].
+	
+	code := selectedDependant at:2 :: first. 
+	
+	module := model college moduleAt: code.
+	
+	ModuleBrowser open: module! !
 
 !ModuleBrowser methodsFor: 'menu' stamp: 'DF 2/21/2025 18:41:22'!
 prereqMenuSpec
