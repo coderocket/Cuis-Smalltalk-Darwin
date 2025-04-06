@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 5 April 2025 at 7:37:42 pm'!
+'From Cuis7.3 [latest update: #7041] on 6 April 2025 at 9:28:54 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 315!
+!provides: 'BrocadePlanner' 1 317!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -1564,7 +1564,7 @@ modulesFor: indices
 	
 ! !
 
-!College methodsFor: 'modules' stamp: 'DF 3/9/2025 17:32:14'!
+!College methodsFor: 'modules' stamp: 'DF 4/6/2025 21:28:05'!
 programModulesFor: indices
 
 	| table programTopic program electiveTopic programModules selectedElectiveNames symbols |
@@ -1608,9 +1608,9 @@ programModulesFor: indices
 			d at: eachSemester description :: add: (symbols at: eachSemester academicYear academicTrack description) ].
 		
 		table add: { 
-			{ UnicodeString newFrom: (d at: 'סמסטר קיץ' :: sort) } .
-			{ UnicodeString newFrom: (d at:'סמסטר ב' :: sort) } . 
-			{ UnicodeString newFrom: (d at: 'סמסטר א' :: sort)  } . 
+			{ UnicodeString newFrom: (d at: 'סמסטר קיץ' :: asSet :: asOrderedCollection sort ) } .
+			{ UnicodeString newFrom: (d at:'סמסטר ב' :: asSet :: asOrderedCollection sort) } . 
+			{ UnicodeString newFrom: (d at: 'סמסטר א' :: asSet :: asOrderedCollection sort)  } . 
 			{ eachModule description asBidi writingDirection: #rightToLeft } . 
 			{ eachModule code } . eachModule } ].
 	
@@ -2108,7 +2108,7 @@ after: aModule
 		(self semesterInTrack: eachTrack) after: (aModule semesterInTrack: eachTrack) ].
 	! !
 
-!Module methodsFor: 'comparing' stamp: 'DF 2/23/2025 16:32:56'!
+!Module methodsFor: 'comparing' stamp: 'DF 4/6/2025 21:10:15'!
 before: aModule
 
 	" Answers true if self appears in each academic track before aModule "
@@ -2117,9 +2117,9 @@ before: aModule
 	
 	tracks := self tracks.
 	
-	tracks = aModule tracks ifFalse:[^false].
+	tracks includesAllOf: aModule tracks :: ifFalse:[^false].
 	
-	^tracks allSatisfy:[:eachTrack | 
+	^aModule tracks allSatisfy:[:eachTrack | 
 		(self semesterInTrack: eachTrack) before: (aModule semesterInTrack: eachTrack) ].
 		! !
 
@@ -3965,7 +3965,7 @@ dependants
 	^table
 ! !
 
-!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 2/21/2025 18:37:01'!
+!ModuleBrowser methodsFor: 'as yet unclassified' stamp: 'DF 4/6/2025 20:56:06'!
 prereqViolations
 
 	| table violations |
@@ -3978,6 +3978,7 @@ prereqViolations
 		prereq := model college moduleAt: (table at: index :: at:2) anyOne.
 		
 		prereq before: model :: ifFalse:[
+			
 			 violations add: (index @ 1 corner: index @ 2) ] ].
 	
 	^ violations! !
