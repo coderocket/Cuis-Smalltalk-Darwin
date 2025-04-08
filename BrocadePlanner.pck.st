@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 6 April 2025 at 9:28:54 pm'!
+'From Cuis7.3 [latest update: #7041] on 8 April 2025 at 11:59:09 am'!
 'Description '!
-!provides: 'BrocadePlanner' 1 317!
+!provides: 'BrocadePlanner' 1 318!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -2205,6 +2205,10 @@ displayStringOrText
 initialize
 
 	modules := Set new.! !
+
+!Semester methodsFor: 'as yet unclassified' stamp: 'DF 4/7/2025 19:38:54'!
+mayRemove: aModule
+	^true! !
 
 !Semester methodsFor: 'as yet unclassified' stamp: 'DF 2/24/2025 11:19:56'!
 moduleAt: aCodeInteger
@@ -4705,14 +4709,14 @@ undo
 	module college changed: #unitsTable.
 ! !
 
-!RemoveModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 22:06:40'!
+!RemoveModuleCommand methodsFor: 'as yet unclassified' stamp: 'DF 4/8/2025 11:58:49'!
 doIt
 	
 	| module |
 	
 	module := college moduleAt: code.
 	
-	self assert: (module semesters allSatisfy:[:aSemester | aSemester stencils isEmpty ]).
+	self assert: (semester mayRemove: module).
 		
 	super undo! !
 

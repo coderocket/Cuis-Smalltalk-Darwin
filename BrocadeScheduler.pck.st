@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 6 April 2025 at 8:29:50 pm'!
+'From Cuis7.3 [latest update: #7041] on 8 April 2025 at 11:59:06 am'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 181!
+!provides: 'BrocadeScheduler' 1 182!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -925,6 +925,13 @@ invariant
 
 	stencils do: [:aStencil | self assert: aStencil semester == self ].
 	! !
+
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 4/7/2025 19:44:58'!
+mayRemove: aModule
+
+	^stencils allSatisfy: [:eachStencil | 
+		eachStencil assignments allSatisfy:[:eachAssignment | 
+			eachAssignment unit module ~= aModule or:[eachAssignment isUnassigned] ] ]! !
 
 !SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:27'!
 removeModule: aModule
@@ -1853,10 +1860,10 @@ detach
 
 	semester := nil.! !
 
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:24'!
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 4/7/2025 19:50:18'!
 detachAssignment: anAssignment
 
-	self assert: anAssignment stencil == self.
+	"self assert: anAssignment stencil == self."
 	
 	assignments remove: anAssignment
 	! !
@@ -1876,14 +1883,15 @@ invariant
 	assignments do: [:anAssignment | self assert: (anAssignment unit module semesters includes: semester)  ].
 	! !
 
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:46:47'!
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 4/7/2025 19:50:28'!
 removeAssignment: anAssignment
 
 	self assert: anAssignment stencil == self.
 	
+	self detachAssignment: anAssignment.
+	
 	anAssignment detach.
 	
-	self detachAssignment: anAssignment
 	! !
 
 !Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:30:57'!
