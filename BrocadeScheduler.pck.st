@@ -1,11 +1,11 @@
-'From Cuis7.3 [latest update: #7041] on 8 April 2025 at 11:59:06 am'!
+'From Cuis7.3 [latest update: #6895] on 10 April 2025 at 2:07:28 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 182!
+!provides: 'BrocadeScheduler' 1 184!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
-SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
+SystemOrganization addCategory: #'BrocadeScheduler-StencilMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-SchoolMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-ResourceMorphic'!
@@ -185,13 +185,13 @@ Object subclass: #BlockedSlotTableCellFactory
 BlockedSlotTableCellFactory class
 	instanceVariableNames: ''!
 
-!classDefinition: #TextFieldSentence category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #TextFieldSentence category: #'BrocadeScheduler-StencilMorphic'!
 LayoutMorph subclass: #TextFieldSentence
 	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'TextFieldSentence class' category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'TextFieldSentence class' category: #'BrocadeScheduler-StencilMorphic'!
 TextFieldSentence class
 	instanceVariableNames: ''!
 
@@ -225,23 +225,23 @@ BrocadeTableCell subclass: #LecturerTableCell
 LecturerTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentTableCell category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #AssignmentTableCell category: #'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCell subclass: #AssignmentTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'AssignmentTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentTableCell class' category: #'BrocadeScheduler-StencilMorphic'!
 AssignmentTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #WeeklyTimeTableCell category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #WeeklyTimeTableCell category: #'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCell subclass: #WeeklyTimeTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'WeeklyTimeTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'WeeklyTimeTableCell class' category: #'BrocadeScheduler-StencilMorphic'!
 WeeklyTimeTableCell class
 	instanceVariableNames: ''!
 
@@ -275,23 +275,23 @@ BrocadeTableCellItem subclass: #LecturerMorph
 LecturerMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentMorph category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #AssignmentMorph category: #'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCellItem subclass: #AssignmentMorph
 	instanceVariableNames: 'model index collision enableGrabbing'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'AssignmentMorph class' category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentMorph class' category: #'BrocadeScheduler-StencilMorphic'!
 AssignmentMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilLabel category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #StencilLabel category: #'BrocadeScheduler-StencilMorphic'!
 NarrowLabelMorph subclass: #StencilLabel
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'StencilLabel class' category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilLabel class' category: #'BrocadeScheduler-StencilMorphic'!
 StencilLabel class
 	instanceVariableNames: ''!
 
@@ -335,13 +335,13 @@ BidiSystemWindow subclass: #SchoolBrowser
 SchoolBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilBrowser category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #StencilBrowser category: #'BrocadeScheduler-StencilMorphic'!
 BidiSystemWindow subclass: #StencilBrowser
 	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex stencilIndex theAssignment views'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'StencilBrowser class' category: 'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilBrowser class' category: #'BrocadeScheduler-StencilMorphic'!
 StencilBrowser class
 	instanceVariableNames: ''!
 
@@ -1046,66 +1046,6 @@ toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'room' attributeList: {'code' -> code asString . 'capacity' -> capacity asString . 'floor' -> floor asString } asDictionary ; endEmptyTag: 'room'.! !
 
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:31:52'!
-blockSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
-	
-	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: add: anIntegerHour.! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 2/28/2025 21:11:10'!
-blockedSlots
-	^blockedSlots ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:25:45'!
-isBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour :: ifFalse:[^true].
-	
-	^ blockedSlots at: anIntegerSemester :: at: anIntegerDay :: includes: anIntegerHour ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:56:52'!
-toggleBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	| hours |
-	
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
-	
-	hours := blockedSlots at: anIntegerSemester :: at: anIntegerDay.
-	
-	hours includes: anIntegerHour ::
-		ifTrue:[hours remove: anIntegerHour ]
-		ifFalse:[hours add: anIntegerHour ].
-		
-	^hours includes: anIntegerHour ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:32:00'!
-unblockSemester: anIntegerSemester  day: anIntegerDay hour: anHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anHour).
-	
-	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: remove: anHour.! !
-
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
 
@@ -1143,12 +1083,10 @@ blockedSlotsFromXML: anXMLElement
 				blockedSlots at: semesterOrdinal :: at: dayOrdinal :: add: hourOrdinal ] ] ].
 ! !
 
-!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2025 19:53:14'!
+!Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 4/10/2025 13:57:09'!
 detach
 
 	school ifNil:[^self].
-	
-	school detachLecturer: self.
 	
 	school := nil. ! !
 
@@ -1273,6 +1211,66 @@ rank
 rank: aString
 	rank := aString! !
 
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:31:52'!
+blockSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
+	
+	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: add: anIntegerHour.! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 2/28/2025 21:11:10'!
+blockedSlots
+	^blockedSlots ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:25:45'!
+isBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour :: ifFalse:[^true].
+	
+	^ blockedSlots at: anIntegerSemester :: at: anIntegerDay :: includes: anIntegerHour ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:56:52'!
+toggleBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	| hours |
+	
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
+	
+	hours := blockedSlots at: anIntegerSemester :: at: anIntegerDay.
+	
+	hours includes: anIntegerHour ::
+		ifTrue:[hours remove: anIntegerHour ]
+		ifFalse:[hours add: anIntegerHour ].
+		
+	^hours includes: anIntegerHour ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:32:00'!
+unblockSemester: anIntegerSemester  day: anIntegerDay hour: anHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anHour).
+	
+	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: remove: anHour.! !
+
 !Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:28'!
 addLecturer: aLecturer
 
@@ -1324,11 +1322,6 @@ removeClassroom: aClassroom
 !Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:32:35'!
 rooms
 	^rooms! !
-
-!Assignment methodsFor: 'testing' stamp: 'DF 3/30/2025 20:31:42'!
-isUnassigned
-
-	^  rooms isEmpty and: [lecturers isEmpty]! !
 
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
 before: anAssignment
@@ -1491,6 +1484,11 @@ toXML: anXMLWriter
 		self roomsXmlOut: anXMLWriter.
 	
 	anXMLWriter endTag:'assignment'.! !
+
+!Assignment methodsFor: 'testing' stamp: 'DF 3/30/2025 20:31:42'!
+isUnassigned
+
+	^  rooms isEmpty and: [lecturers isEmpty]! !
 
 !Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
 initialize
@@ -3534,6 +3532,25 @@ openTimeTable
 	
 	! !
 
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 4/10/2025 13:44:15'!
+removeLecturer
+
+	| aLecturer aCommand |
+	
+	selectedLecturerIndex <= 1 ifTrue:[^self].
+	
+	aLecturer := self lecturers at: selectedLecturerIndex - 1.
+	
+	aCommand := RemoveLecturerCommand new.
+	
+	aCommand school: aLecturer school.
+	
+	aCommand code: aLecturer code.
+
+	BrocadeCommandHistory instance do: aCommand.
+	
+	! !
+
 !SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/28/2025 22:36:39'!
 selectLecturer: anIntegerIndex
 
@@ -3590,14 +3607,14 @@ schoolSelectionAt: anIndex
 
 	^selectedSchools includes: anIndex.! !
 
-!SchoolBrowser methodsFor: 'schools' stamp: 'DF 1/16/2025 21:07:13'!
+!SchoolBrowser methodsFor: 'schools' stamp: 'DF 4/10/2025 14:07:23'!
 schoolSelectionAt: anIndex put: aBoolean
 
 	aBoolean 
 		ifTrue:[
 			selectedSchools add: anIndex ]
 		ifFalse:[
-			selectedSchools remove: anIndex ].
+			selectedSchools remove: anIndex ifAbsent:[]].
 		
 	self changed: #lecturersTable! !
 
@@ -3709,7 +3726,7 @@ buildMorphicWindow
 	
 	self changed: #lecturersTable.! !
 
-!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 2/28/2025 17:15:49'!
+!SchoolBrowser class methodsFor: 'as yet unclassified' stamp: 'DF 4/10/2025 14:05:22'!
 addLecturerDialog: model
 
 	| schools aCommand mold position aDialog |
@@ -3726,7 +3743,7 @@ addLecturerDialog: model
 		rightToLeft: true;
 		label: 'בית ספר';
 		on: #listIndex of: schools;
-		callback:[:value | aCommand school: schools selectedItem ]; 
+		callback:[:value | aCommand school:  (schools list at: value)  ]; 
 		customize: [:widget :input :example | 
 			input color: Color white ; borderWidth:1 ; borderColor: Color black.
 			] ;
@@ -4528,8 +4545,9 @@ quota: anInteger
 rank: aString
 	rank := aString! !
 
-!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:27:24'!
+!AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 4/10/2025 14:06:33'!
 school: aSchool
+	
 	school := aSchool! !
 
 !AddLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/3/2025 23:28:18'!
@@ -4547,14 +4565,14 @@ undo
 	
 	school college changed: #lecturersTable! !
 
-!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/6/2025 20:54:54'!
+!RemoveLecturerCommand methodsFor: 'as yet unclassified' stamp: 'DF 4/10/2025 13:47:37'!
 doIt
 
 	| aLecturer |
 	
 	aLecturer := school lecturerAt: code.
 
-	self assert: aLecturer assignment isEmpty.
+	self assert: aLecturer assignments isEmpty.
 	
 	super undo! !
 
