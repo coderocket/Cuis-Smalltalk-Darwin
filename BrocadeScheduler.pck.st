@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6895] on 10 April 2025 at 2:07:28 pm'!
+'From Cuis7.3 [latest update: #6895] on 22 April 2025 at 2:55:21 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 184!
+!provides: 'BrocadeScheduler' 1 185!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -3551,14 +3551,18 @@ removeLecturer
 	
 	! !
 
-!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 1/28/2025 22:36:39'!
+!SchoolBrowser methodsFor: 'lecturers' stamp: 'DF 4/22/2025 14:55:08'!
 selectLecturer: anIntegerIndex
 
 	| aLecturer |
-	
+		
 	selectedLecturerIndex := anIntegerIndex.
 	
-	selectedLecturerIndex <= 1 ifTrue:[^self].
+	selectedLecturerIndex <=1 
+		ifTrue:[
+			self setLabel: 'מרצים'.
+			^self
+		].
 	
 	aLecturer := 	self lecturers at: selectedLecturerIndex - 1.
 	
