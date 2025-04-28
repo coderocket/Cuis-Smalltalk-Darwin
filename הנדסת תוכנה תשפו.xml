@@ -245,6 +245,9 @@
 <module code="10216" description="סדנא בתכנות מונחה עצמים עם ++C" elective="true" latin="Object Oriented Programming Workshop with C++">
 <תרגול duration="1"/> 
 <הרצאה duration="2"/> </module>
+<module code="19101" description="מבוא לבינה מלאכותית קצר" elective="false" latin="Intro. to AI">
+<תרגול duration="1"/> 
+<הרצאה duration="2"/> </module>
 <module code="10121" description="אלגוריתם מתקדם וסיבוכיות" elective="false" latin="Advanced Algorithms &amp; Complexity">
 <הרצאה duration="3"/> 
 <תרגול duration="2"/> </module>
@@ -429,6 +432,7 @@
 <module-prereqs code="10216">
 <prereq code="10128"/> 
 <prereq code="10010"/> </module-prereqs>
+<module-prereqs code="19101"></module-prereqs>
 <module-prereqs code="10121"></module-prereqs>
 <module-prereqs code="10356"></module-prereqs>
 <module-prereqs code="10342">
@@ -621,11 +625,11 @@
 <lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
 <module code="10015"/> 
-<module code="19103"/> 
 <module code="10147"/> 
 <module code="10213"/> 
 <module code="10313"/> 
-<module code="10146"/> </modules><stencils>
+<module code="10146"/> 
+<module code="19101"/> </modules><stencils>
 <stencil description="10221">
 <assignment>
 <unit description="הרצאה" module="10015"/> <lecturers>
@@ -643,8 +647,14 @@
 <unit description="תרגול" module="10213"/> <lecturers>
 <lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
+<unit description="הרצאה" module="19101"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment>
 <unit description="הרצאה" module="10313"/> <lecturers>
 <lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment>
+<unit description="תרגול" module="19101"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10147"/> <lecturers>
 <lecturer code="121" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
@@ -657,14 +667,8 @@
 <unit description="הרצאה" module="10146"/> <lecturers>
 <lecturer code="100" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="19103"/> <lecturers>
-<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
-<assignment>
 <unit description="תרגול" module="10015"/> <lecturers>
-<lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
-<assignment>
-<unit description="הרצאה" module="19103"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
+<lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
 <stencil description="10222">
 <assignment>
 <unit description="הרצאה" module="10146"/> <lecturers>
@@ -678,6 +682,8 @@
 <assignment>
 <unit description="הרצאה" module="10015"/> <lecturers>
 <lecturer code="104" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment>
+<unit description="תרגול" module="19101"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10213"/> <lecturers>
 <lecturer code="114" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
@@ -697,13 +703,9 @@
 <unit description="הרצאה" module="10313"/> <lecturers>
 <lecturer code="115" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="19103"/> <lecturers>
-<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="10146"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="19103"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
-<assignment>
-<unit description="תרגול" module="10146"/> <lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
+<unit description="הרצאה" module="19101"/> <lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 3" ordinal="3">
 <semester description="סמסטר א" ordinal="1"><modules>
 <module code="10359"/> 
@@ -1790,9 +1792,11 @@
 <module code="10356"/> </modules><stencils>
 <stencil description="1053">
 <assignment>
-<unit description="תרגול" module="10356"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="10356"/> <lecturers>
+<lecturer code="507" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="10356"/> <lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester></year></track></tracks><themes>
+<unit description="הרצאה" module="10356"/> <lecturers>
+<lecturer code="507" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year></track></tracks><themes>
 <theme description="טכנולוגיות תוכנה ומידע">
 <module code="10207"/> 
 <module code="10227"/> 
@@ -2320,16 +2324,19 @@
 <unit description="תרגול" module="90911"/> <lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
 <semester description="סמסטר א" ordinal="1"><modules>
-<module code="19103"/> 
 <module code="10206"/> 
 <module code="10117"/> 
 <module code="90923"/> 
 <module code="90954"/> 
-<module code="10010"/> </modules><stencils>
+<module code="10010"/> 
+<module code="19101"/> </modules><stencils>
 <stencil description="1122">
 <assignment>
 <unit description="תרגול" module="10117"/> <lecturers>
 <lecturer code="122" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment>
+<unit description="הרצאה" module="19101"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="90954"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2339,12 +2346,6 @@
 <lecturer code="119" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="90954"/> <lecturers></lecturers><rooms></rooms></assignment>
-<assignment>
-<unit description="הרצאה" module="19103"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
-<assignment>
-<unit description="תרגול" module="19103"/> <lecturers>
-<lecturer code="512" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10117"/> <lecturers>
 <lecturer code="122" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
@@ -2356,14 +2357,17 @@
 <assignment>
 <unit description="תרגול" module="10206"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="90923"/> <lecturers></lecturers><rooms></rooms></assignment></stencil>
+<unit description="תרגול" module="90923"/> <lecturers></lecturers><rooms></rooms></assignment>
+<assignment>
+<unit description="תרגול" module="19101"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
 <stencil description="1121">
+<assignment>
+<unit description="תרגול" module="19101"/> <lecturers>
+<lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10117"/> <lecturers>
 <lecturer code="122" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
-<assignment>
-<unit description="הרצאה" module="19103"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10206"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2372,10 +2376,10 @@
 <unit description="הרצאה" module="10117"/> <lecturers>
 <lecturer code="122" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="10206"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="19101"/> <lecturers>
+<lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="19103"/> <lecturers>
-<lecturer code="512" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="10206"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10010"/> <lecturers>
 <lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
@@ -2397,23 +2401,23 @@
 <unit description="הרצאה" module="90954"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10117"/> <lecturers>
-<lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<lecturer code="502" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10206"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="19103"/> <lecturers>
-<lecturer code="512" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
-<assignment>
 <unit description="תרגול" module="90954"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="19103"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="19101"/> <lecturers>
+<lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10010"/> <lecturers>
 <lecturer code="500" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="10117"/> <lecturers>
+<unit description="הרצאה" module="19101"/> <lecturers>
 <lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment>
+<unit description="הרצאה" module="10117"/> <lecturers>
+<lecturer code="502" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10206"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2450,7 +2454,7 @@
 <unit description="הרצאה" module="10224"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10120"/> <lecturers>
-<lecturer code="502" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<lecturer code="515" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10359"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2484,7 +2488,7 @@
 <lecturer code="806" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10120"/> <lecturers>
-<lecturer code="502" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<lecturer code="515" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10303"/> <lecturers>
 <lecturer code="107" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil>
@@ -2500,7 +2504,7 @@
 <lecturer code="107" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10120"/> <lecturers>
-<lecturer code="502" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<lecturer code="515" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="מעבדה" module="10224"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2534,7 +2538,7 @@
 <unit description="הרצאה" module="10216"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10120"/> <lecturers>
-<lecturer code="502" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<lecturer code="515" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10342"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2650,8 +2654,7 @@
 <assignment>
 <unit description="הרצאה" module="10351"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="11402"/> <lecturers>
-<lecturer code="123" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="11402"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10359"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2716,8 +2719,7 @@
 <assignment>
 <unit description="הרצאה" module="10225"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="11402"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="11402"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="מעבדה" module="10243"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2857,8 +2859,7 @@
 <unit description="תרגול" module="10121"/> <lecturers>
 <lecturer code="501" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="11403"/> <lecturers>
-<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="11403"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="הרצאה" module="10219"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -2919,8 +2920,7 @@
 <unit description="הרצאה" module="10121"/> <lecturers>
 <lecturer code="108" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="11403"/> <lecturers>
-<lecturer code="123" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="11403"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10346"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
@@ -3124,8 +3124,15 @@
 <unit description="הרצאה" module="10117"/> <lecturers>
 <lecturer code="513" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
 <year description="שנה 2" ordinal="2">
-<semester description="סמסטר א" ordinal="1"><modules></modules><stencils>
-<stencil description="1121"></stencil></stencils></semester>
+<semester description="סמסטר א" ordinal="1"><modules>
+<module code="19101"/> </modules><stencils>
+<stencil description="1121">
+<assignment>
+<unit description="תרגול" module="19101"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
+<assignment>
+<unit description="הרצאה" module="19101"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
 <module code="10245"/> 
 <module code="10120"/> 
@@ -3143,7 +3150,8 @@
 <unit description="הרצאה" module="10245"/> <lecturers>
 <lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="10139"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="10139"/> <lecturers>
+<lecturer code="501" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10245"/> <lecturers>
 <lecturer code="117" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year>
@@ -3155,7 +3163,8 @@
 <assignment>
 <unit description="הרצאה" module="10351"/> <lecturers></lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="11402"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="11402"/> <lecturers>
+<lecturer code="123" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
 <unit description="תרגול" module="10351"/> <lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester>
 <semester description="סמסטר ב" ordinal="2"><modules>
@@ -3164,15 +3173,20 @@
 <module code="10240"/> </modules><stencils>
 <stencil description="1232">
 <assignment>
-<unit description="תרגול" module="10240"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="10240"/> <lecturers>
+<lecturer code="804" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="תרגול" module="10121"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="תרגול" module="10121"/> <lecturers>
+<lecturer code="108" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="10121"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="10121"/> <lecturers>
+<lecturer code="108" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="10240"/> <lecturers></lecturers><rooms></rooms></assignment>
+<unit description="הרצאה" module="10240"/> <lecturers>
+<lecturer code="109" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment>
 <assignment>
-<unit description="הרצאה" module="11403"/> <lecturers></lecturers><rooms></rooms></assignment></stencil></stencils></semester></year></track></tracks><themes></themes></program></programs><campuses></campuses><schools>
+<unit description="הרצאה" module="11403"/> <lecturers>
+<lecturer code="123" school="הנדסת תוכנה"/> </lecturers><rooms></rooms></assignment></stencil></stencils></semester></year></track></tracks><themes></themes></program></programs><campuses></campuses><schools>
 <school description="הנדסת תעשיה וניהול"><lecturers>
 <lecturer code="401" description="גליה קריב" quota="24" rank="סגל בכיר"><blocked-slots>
 <semester ordinal="1">
@@ -3594,6 +3608,28 @@
 <day ordinal="5"></day>
 <day ordinal="6"></day></semester></blocked-slots></lecturer>
 <lecturer code="103" description="דוד שטטר" quota="24" rank="סגל בכיר"><blocked-slots>
+<semester ordinal="1">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="2">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester>
+<semester ordinal="3">
+<day ordinal="1"></day>
+<day ordinal="2"></day>
+<day ordinal="3"></day>
+<day ordinal="4"></day>
+<day ordinal="5"></day>
+<day ordinal="6"></day></semester></blocked-slots></lecturer>
+<lecturer code="515" description="ראובן חוטובלי" quota="12" rank="מרצה מן החוץ"><blocked-slots>
 <semester ordinal="1">
 <day ordinal="1"></day>
 <day ordinal="2"></day>
