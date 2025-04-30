@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 30 April 2025 at 5:45:00 pm'!
+'From Cuis7.3 [latest update: #7041] on 30 April 2025 at 7:17:10 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 190!
+!provides: 'BrocadeScheduler' 1 191!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -4169,7 +4169,7 @@ years
 	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 18:02:04'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 4/30/2025 19:16:33'!
 buildAssignmentsTable
 
 	| assignmentsTable |
@@ -4192,7 +4192,7 @@ buildAssignmentsTable
 		3 -> (PluggableMorphFactory new formatter:[:aDay | aDay ]; morphClass: StencilLabel; yourself) .
 		4 -> (PluggableMorphFactory new formatter:[:aLecturer  | aLecturer ] ; morphClass: LecturerMorph ; factoryMessage: #new: ; yourself) .
 		5 -> (PluggableMorphFactory new formatter:[:aUnit | aUnit description ] ; yourself) .
-		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description asBidi writingDirection:#rightToLeft ] ; yourself) .
 		7 -> (PluggableMorphFactory new formatter:[:anAssignment | anAssignment ] ; morphClass: AssignmentMorph ; factoryMessage: #new: ; yourself)
 		} asDictionary.
 		
