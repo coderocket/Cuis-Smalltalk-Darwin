@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 30 April 2025 at 5:57:48 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 May 2025 at 6:04:50 pm'!
 'Description '!
-!provides: 'BrocadePlanner' 1 330!
+!provides: 'BrocadePlanner' 1 331!
 !requires: 'Bidi' 1 54 nil!
 !requires: 'Table' 1 66 nil!
 !requires: 'UndoRedo' 1 9 nil!
@@ -1102,6 +1102,11 @@ attachAcademicYear: anAcademicYear
 
 	academicYears add: anAcademicYear ! !
 
+!AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:03:44'!
+college
+
+	^program college! !
+
 !AcademicTrack methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:49:03'!
 description
 	^description! !
@@ -1338,6 +1343,11 @@ attachAcademicTrack: anAcademicTrack
 attachSemester: aSemester
 
 	semesters add: aSemester.! !
+
+!AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:03:32'!
+college
+
+	^track college! !
 
 !AcademicYear methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 14:48:29'!
 description
@@ -2154,6 +2164,11 @@ latin: aString
 !Semester methodsFor: 'accessing' stamp: 'DF 12/27/2024 17:00:11'!
 academicYear
 	^academicYear ! !
+
+!Semester methodsFor: 'accessing' stamp: 'DF 5/3/2025 18:03:12'!
+college
+
+	^academicYear college! !
 
 !Semester methodsFor: 'accessing' stamp: 'DF 12/27/2024 14:48:37'!
 description

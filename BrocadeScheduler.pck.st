@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7041] on 30 April 2025 at 7:17:10 pm'!
+'From Cuis7.3 [latest update: #7041] on 3 May 2025 at 6:34:26 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 191!
+!provides: 'BrocadeScheduler' 1 210!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
@@ -77,12 +77,22 @@ Lecturer class
 
 !classDefinition: #Assignment category: #'BrocadeScheduler-Model'!
 Object subclass: #Assignment
-	instanceVariableNames: 'rooms day hour unit stencil lecturers'
+	instanceVariableNames: 'rooms day hour unit stencil proxies lecturers'
 	classVariableNames: 'DayHebrewNames'
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-Model'!
 !classDefinition: 'Assignment class' category: #'BrocadeScheduler-Model'!
 Assignment class
+	instanceVariableNames: ''!
+
+!classDefinition: #AssignmentProxy category: #'BrocadeScheduler-Model'!
+Object subclass: #AssignmentProxy
+	instanceVariableNames: 'assignment stencil'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-Model'!
+!classDefinition: 'AssignmentProxy class' category: #'BrocadeScheduler-Model'!
+AssignmentProxy class
 	instanceVariableNames: ''!
 
 !classDefinition: #AssignmentRule category: #'BrocadeScheduler-Model'!
@@ -353,6 +363,46 @@ SpriteAtlas subclass: #BrocadeSpriteAtlas
 	category: 'BrocadeScheduler-SpriteAtlas'!
 !classDefinition: 'BrocadeSpriteAtlas class' category: #'BrocadeScheduler-SpriteAtlas'!
 BrocadeSpriteAtlas class
+	instanceVariableNames: ''!
+
+!classDefinition: #AddAssignmentCommand category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AddAssignmentCommand
+	instanceVariableNames: 'stencil module college assignment'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AddAssignmentCommand class' category: #'BrocadeScheduler-UndoRedo'!
+AddAssignmentCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #RemoveAssignmentCommand category: #'BrocadeScheduler-UndoRedo'!
+AddAssignmentCommand subclass: #RemoveAssignmentCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'RemoveAssignmentCommand class' category: #'BrocadeScheduler-UndoRedo'!
+RemoveAssignmentCommand class
+	instanceVariableNames: ''!
+
+!classDefinition: #AddAssignmentProxy category: #'BrocadeScheduler-UndoRedo'!
+UndoRedoCommand subclass: #AddAssignmentProxy
+	instanceVariableNames: 'stencil assignment proxy'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'AddAssignmentProxy class' category: #'BrocadeScheduler-UndoRedo'!
+AddAssignmentProxy class
+	instanceVariableNames: ''!
+
+!classDefinition: #RemoveAssignmentProxy category: #'BrocadeScheduler-UndoRedo'!
+AddAssignmentProxy subclass: #RemoveAssignmentProxy
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BrocadeScheduler-UndoRedo'!
+!classDefinition: 'RemoveAssignmentProxy class' category: #'BrocadeScheduler-UndoRedo'!
+RemoveAssignmentProxy class
 	instanceVariableNames: ''!
 
 !classDefinition: #AddCampusCommand category: #'BrocadeScheduler-UndoRedo'!
@@ -854,22 +904,12 @@ validHoursInDay: anInteger
 	
 	^ValidHours at: anInteger ! !
 
-!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 4/30/2025 16:51:13'!
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:48:16'!
 addMandatoryModule: aModule
 
 	super addMandatoryModule: aModule.
 	
-	stencils do:[:eachStencil |
-
-			aModule units do:[:eachUnit | 	| anAssignment |
-				
-				eachStencil assignments do:[:x | self assert: (x unit ~= eachUnit) ].
-
-				anAssignment := Assignment new.
-		
-				anAssignment unit: eachUnit.
-			
-				eachStencil addAssignment: anAssignment ] ].
+	stencils do:[:eachStencil | eachStencil createAssignmentsFor: aModule ].
 ! !
 
 !SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:23:34'!
@@ -956,6 +996,11 @@ removeStencil: aStencil
 	
 	self detachStencil: aStencil.! !
 
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:06:04'!
+stencilAt: aString
+
+	^ stencils detect:[:eachStencil| eachStencil description = aString] ifFound:[:aStencil | aStencil] ifNone:[nil]! !
+
 !SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:24:22'!
 stencils
 	^stencils! !
@@ -990,11 +1035,6 @@ detachAssignment: anAssignment
 initialize
 
 	assignments := Set new.! !
-
-!AcademicResource methodsFor: 'as yet unclassified' stamp: 'DF 3/31/2025 21:40:16'!
-removeInvalidAssignments
-
-	assignments := assignments reject:[:each | each stencil semester isNil ]! !
 
 !Classroom methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:20:48'!
 campus
@@ -1325,46 +1365,98 @@ removeClassroom: aClassroom
 rooms
 	^rooms! !
 
-!Assignment methodsFor: 'testing' stamp: 'DF 3/30/2025 20:31:42'!
-isUnassigned
-
-	^  rooms isEmpty and: [lecturers isEmpty]! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
+!Assignment methodsFor: 'testing' stamp: 'DF 1/12/2025 18:23:07'!
 before: anAssignment
 
 	^ unit module description < anAssignment unit module description 
 	or: [ unit module description = anAssignment unit module description 
 			and: [unit description <= anAssignment unit description ] ]! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:14:03'!
+!Assignment methodsFor: 'testing' stamp: 'DF 5/3/2025 18:10:13'!
+isProxy
+	^false! !
+
+!Assignment methodsFor: 'testing' stamp: 'DF 3/30/2025 20:31:42'!
+isUnassigned
+
+	^  rooms isEmpty and: [lecturers isEmpty]! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 1/11/2025 18:14:03'!
 day
 	^day! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:06'!
+!Assignment methodsFor: 'accessing' stamp: 'DF 1/11/2025 17:32:06'!
 day: anInteger
 	day := anInteger ! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 15:03:21'!
+!Assignment methodsFor: 'accessing' stamp: 'DF 1/26/2025 15:03:21'!
 dayHebrew
 
 	day ifNil:[^nil].
 	
 	^DayHebrewNames at: day! !
 
+!Assignment methodsFor: 'accessing' stamp: 'DF 1/11/2025 18:36:50'!
+hour
+	^hour! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 1/11/2025 17:32:16'!
+hour: anInteger
+	hour := anInteger
+	! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 1/26/2025 18:03:33'!
+interval
+
+	self assert: hour notNil.
+	
+	^hour to: hour + unit duration! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 12/27/2024 16:13:20'!
+stencil
+	^stencil! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 12/27/2024 16:11:44'!
+stencil: aStencil
+
+	self assert: stencil isNil.
+	
+	stencil := aStencil.! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 12/27/2024 16:47:12'!
+unit
+	^unit! !
+
+!Assignment methodsFor: 'accessing' stamp: 'DF 12/27/2024 16:11:06'!
+unit: anAcademicUnit
+	unit := anAcademicUnit ! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:18:37'!
+attachAssignmentProxy: anAssignmentProxy
+
+	proxies add: anAssignmentProxy ! !
+
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:04:10'!
+commandToRemoveSelf
+
+	| command |
+	
+	command := RemoveAssignmentCommand new.
+	
+	command college: self stencil college ; assignment: self; module: self unit module code; stencil: stencil.
+	
+	^command
+! !
+
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/9/2025 20:55:34'!
 detach
 
 	stencil := nil.! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 18:36:50'!
-hour
-	^hour! !
+!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:18:47'!
+detachAssignmentProxy: anAssignmentProxy
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/11/2025 17:32:16'!
-hour: anInteger
-	hour := anInteger
-	! !
+	proxies remove: anAssignmentProxy ! !
 
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/22/2025 20:27:31'!
 initialize
@@ -1373,45 +1465,19 @@ initialize
 	
 	rooms := Set new.! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:03:33'!
-interval
-
-	self assert: hour notNil.
-	
-	^hour to: hour + unit duration! !
-
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 4/6/2025 17:15:18'!
 invariant
 
 	lecturers do:[:each | self assert: (each assignments includes: self) ].! !
 
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:13:20'!
-stencil
-	^stencil! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:44'!
-stencil: aStencil
-
-	self assert: stencil isNil.
-	
-	stencil := aStencil.! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:47:12'!
-unit
-	^unit! !
-
-!Assignment methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 16:11:06'!
-unit: anAcademicUnit
-	unit := anAcademicUnit ! !
-
-!Assignment methodsFor: 'xml' stamp: 'DF 4/6/2025 17:14:39'!
+!Assignment methodsFor: 'xml' stamp: 'DF 5/3/2025 18:04:23'!
 fromXML: anXMLElement
 
 	| college module moduleCode |
 	
 	self assert: anXMLElement name = 'assignment'.
 
-	college := stencil semester academicYear academicTrack program college.
+	college := stencil college.
 	
 	day := anXMLElement attributeAt: 'day'.
 	
@@ -1498,6 +1564,136 @@ initialize
 	"self initialize"
 	
 	DayHebrewNames := { 'א' . 'ב' . 'ג' . 'ד' . 'ה' . 'ו' . 'שבת' asBidi }.! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:52:34'!
+assignment: anAssignment
+	assignment := anAssignment ! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:52:22'!
+before: anAssignment
+
+	^assignment before: anAssignment ! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:07:32'!
+commandToRemoveSelf
+
+	| command |
+	
+	command := RemoveAssignmentProxy new.
+	
+	command college: self stencil college ; proxy: self; stencil: stencil ; assignment: assignment.
+	
+	^command
+! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:52:49'!
+day
+	^assignment day! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:52:58'!
+dayHebrew
+	^assignment dayHebrew! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:47:28'!
+detach
+
+	stencil := nil.
+	
+	assignment detachAssignmentProxy: self.
+	
+	assignment := nil.! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:04:28'!
+fromXML: anXMLElement
+
+	| college hostingProgram hostingTrack hostingYear hostingSemester hostingStencil unit module |
+	
+	self assert: assignment isNil.
+	
+	self assert: anXMLElement name = 'assignment-proxy'.
+	
+	college := stencil college.
+	
+	hostingProgram := college programAt: ( anXMLElement attributeAt: 'program' ).
+	
+	hostingTrack := hostingProgram trackAt: ( anXMLElement attributeAt: 'track' ).
+	
+	hostingYear := hostingTrack academicYearAt:  ( anXMLElement attributeAt: 'year' ).
+
+	hostingSemester := hostingYear semesterAt: ( anXMLElement attributeAt: 'semester' ).
+
+	hostingStencil := hostingSemester stencilAt: ( anXMLElement attributeAt: 'stencil' ).
+	
+	module := anXMLElement attributeAt: 'module'.
+	
+	unit := anXMLElement attributeAt: 'unit'.
+	
+	assignment := hostingStencil assignments detect:[:eachAssignment | eachAssignment unit description = unit and: [eachAssignment unit module description = module ] ].
+		
+	assignment attachAssignmentProxy: self.
+	! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:53:10'!
+hour
+	^assignment hour! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:53:20'!
+interval
+	^assignment interval! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:53:37'!
+invariant
+	assignment invariant ! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:10:19'!
+isProxy
+	^true! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:53:48'!
+isUnassigned
+	^assignment isUnassigned ! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:53:58'!
+lecturers
+	^assignment lecturers! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:54:10'!
+rooms
+	^assignment rooms! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:54:18'!
+stencil
+	^stencil! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:51:34'!
+stencil: aStencil
+
+	self assert: stencil isNil.
+	
+	stencil := aStencil.! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:13:47'!
+toXML: anXMLWriter
+	
+	| attrs |
+	
+	attrs := Dictionary new.
+	
+	attrs 
+		at: 'unit' put: assignment unit description
+	;	at: 'module' put: assignment unit module description
+	;	at: 'stencil' put: assignment stencil description
+	;	at: 'semester' put: assignment stencil semester description
+	;	at: 'year' put: assignment stencil academicYear description
+	;	at: 'track' put: assignment stencil academicYear academicTrack description
+	; 	at: 'program' put: assignment stencil academicYear academicTrack program description.
+	
+	anXMLWriter startElement: 'assignment-proxy' attributeList: attrs ; endEmptyTag: 'assignment-proxy'.
+! !
+
+!AssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 15:54:31'!
+unit
+	^assignment unit! !
 
 !AssignmentRule methodsFor: 'as yet unclassified' stamp: 'DF 1/26/2025 18:15:10'!
 check: anObject
@@ -1846,6 +2042,47 @@ check
 	aResourceRule check: self.
 	
 	^aResourceRule violations.! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:02:50'!
+college
+
+	^semester college! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:33:33'!
+createAssignmentProxyFor: anAssignment
+
+	| anAssignmentProxy |
+
+	self assert: anAssignment stencil ~= self.
+	
+	self assert: anAssignment stencil semester description = self semester description.
+	
+	self assert: anAssignment stencil semester academicYear academicTrack description = self semester academicYear academicTrack description.
+	
+	self assignments do:[:eachAssignment | self assert: ((eachAssignment unit module ~= anAssignment unit module) or:[eachAssignment unit description ~= anAssignment unit description]) ].
+
+	anAssignmentProxy := AssignmentProxy new.
+		
+	anAssignmentProxy assignment: anAssignment.
+			
+	self addAssignment: anAssignmentProxy.
+	
+	^anAssignmentProxy 
+! !
+
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:47:51'!
+createAssignmentsFor: aModule
+
+	aModule units do:[:eachUnit | 	| anAssignment |
+				
+		self assignments do:[:x | self assert: (x unit ~= eachUnit) ].
+
+		anAssignment := Assignment new.
+		
+		anAssignment unit: eachUnit.
+			
+		self addAssignment: anAssignment ].
+! !
 
 !Stencil methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:34:25'!
 description
@@ -2425,11 +2662,17 @@ aboutToBeGrabbedBy: aHand
 
 	^owner aboutToGrabLecturer: self! !
 
-!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 4/4/2025 19:18:03'!
+!LecturerMorph methodsFor: 'dropping/grabbing' stamp: 'DF 5/3/2025 18:31:52'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
-	assignment ifNotNil:[self unassign].
 
+	assignment notNil and:[assignment isProxy] ::
+		ifTrue:[
+			self addAlarm:#delete after:0.
+			^lecturer school college changed: #assignmentsTable].
+			
+	assignment ifNotNil:[self unassign].
+	
 	newOwnerMorph isWorldMorph 
 		ifTrue:[
 			self addAlarm: #delete after: 0.
@@ -2452,6 +2695,11 @@ assign: anAssignment
 	
 	BrocadeCommandHistory instance do: aCommand. 	
 ! !
+
+!LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 4/4/2025 19:09:05'!
+assignment: anAssignment
+
+	assignment := anAssignment ! !
 
 !LecturerMorph methodsFor: 'as yet unclassified' stamp: 'DF 2/2/2025 17:42:06'!
 build
@@ -2554,11 +2802,6 @@ unassign
 
 ! !
 
-!LecturerMorph methodsFor: 'nil' stamp: 'DF 4/4/2025 19:09:05'!
-assignment: anAssignment
-
-	assignment := anAssignment ! !
-
 !LecturerMorph class methodsFor: 'as yet unclassified' stamp: 'DF 3/2/2025 21:10:09'!
 icon
 	^BrocadeSpriteAtlas instance spriteAt: 0 at: 5! !
@@ -2587,7 +2830,7 @@ assignDay: aDayInteger hour: anHourInteger
 	
 	BrocadeCommandHistory instance do: aCommand.! !
 
-!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/28/2025 22:17:01'!
+!AssignmentMorph methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:11:12'!
 build
 
 	| aLabelMorph |
@@ -2597,7 +2840,7 @@ build
 	model 
 		ifNotNil:[ 
 
-			aLabelMorph := NarrowLabelMorph contents: ('{1}' format:{model unit module code}).
+			aLabelMorph := NarrowLabelMorph contents: ('{1}{2}' format:{ model isProxy ifTrue:['*'] ifFalse:[''] . model unit module code}).
 	
 			self addMorph: aLabelMorph ].
 	
@@ -2741,11 +2984,15 @@ aboutToBeGrabbedBy: aHand
 	
 	^owner aboutToGrabAssignment: self! !
 
-!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 2/1/2025 21:50:34'!
+!AssignmentMorph methodsFor: 'dropping/grabbing' stamp: 'DF 5/3/2025 18:26:49'!
 justDroppedInto: newOwnerMorph event: anEvent 
 
 	self assert: index = 0.
 	
+	model isProxy 
+		ifTrue:[
+			^self addAlarm: #delete after: 0 ].
+		
 	newOwnerMorph isWorldMorph 
 		ifTrue:[
 			anEvent formerOwner isKindOf: WeeklyTimeTableCell
@@ -2757,7 +3004,16 @@ justDroppedInto: newOwnerMorph event: anEvent
 		:: ifTrue:[ 
 			self assignDay: 7 - newOwnerMorph column hour: newOwnerMorph row + 6]
 		ifFalse:[
-			self addAlarm: #delete after: 0.]! !
+			self addAlarm: #delete after: 0.].
+		
+	(newOwnerMorph isKindOf: AssignmentTableCell) and: [newOwnerMorph ~= anEvent formerOwner ] 
+		:: ifTrue:[ | stencil command |
+			stencil := newOwnerMorph assignmentInRow stencil.
+			command := AddAssignmentProxy new.
+			command stencil: stencil ; assignment: model.
+			BrocadeCommandHistory instance do: command.
+			self addAlarm: #delete after: 0. ]
+		! !
 
 !AssignmentMorph class methodsFor: 'as yet unclassified' stamp: 'DF 1/25/2025 22:25:33'!
 fromTuple: aTuple
@@ -4294,20 +4550,61 @@ selectView: anInteger
 
 	views select: anInteger! !
 
-!StencilBrowser methodsFor: 'menu' stamp: 'DF 4/30/2025 17:44:00'!
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 5/3/2025 17:07:58'!
 assignmentMenuSpec
 
-	| editModuleMessage |
+	| editModuleMessage removeAssignmentMessage addAssignmentMessage |
 	
 	editModuleMessage := theAssignment notNil :: ifTrue:[ #openEditModuleDialog  ] ifFalse: [nil].
+
+	addAssignmentMessage := stencilIndex notNil and: [stencilIndex >0 ] :: ifTrue:[ #openAddAssignmentDialog  ] ifFalse: [nil].
+
+	removeAssignmentMessage := theAssignment notNil :: ifTrue:[ #removeAssignmentFromStencil  ] ifFalse: [nil].
+
 	
 ^ {
 		{0 	.	'קורס'		.		false } .
 		{20	. 	('ערוך פרטי קורס ...' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. editModuleMessage 	} .
 		{30 . 	'-----' } .
-		{40	. 	('הסר שיבוץ' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. nil	} .
+		{40	. 	('הוסף שיבוץ' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. addAssignmentMessage	} .
+		{50 . 	'-----' } .
+		{60	. 	('הסר שיבוץ' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. removeAssignmentMessage	} .
 	}.
 	! !
+
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 5/3/2025 17:05:24'!
+openAddAssignmentDialog
+
+	| mold position aDialog stencil  anAddAssignmentCommand |
+
+	stencil := self stencil.
+	
+	stencil ifNil:[^self].
+	
+	anAddAssignmentCommand := AddAssignmentCommand new. 
+	
+	anAddAssignmentCommand stencil: stencil ; college: model.
+	
+	mold := BidiMold new.
+
+	mold rightToLeft: true.
+	
+	(mold integerField)
+		label: 'קוד הקורס' ;
+		on: #module of: anAddAssignmentCommand;
+		addCondition:[:input :value | stencil assignments allSatisfy:[:eachAssignment | eachAssignment unit module code ~= value ] ]
+		labeled: 'כבר קיים שיבוץ לקורס זה בתבנית';
+		beRequired.
+		
+	position := UISupervisor ui activeHand morphPosition.
+	 
+	aDialog := mold openDialog: 'הוסף שיבוץ'.
+	
+	aDialog morphPosition: position - (aDialog morphWidth@0).
+	
+	mold when: #edited send: #do: to: BrocadeCommandHistory instance with: anAddAssignmentCommand.
+	
+! !
 
 !StencilBrowser methodsFor: 'menu' stamp: 'DF 2/5/2025 21:26:06'!
 openAddStencilDialog
@@ -4346,6 +4643,25 @@ openEditModuleDialog
 
 	ModuleBrowser open: theAssignment unit module
 ! !
+
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 5/3/2025 18:00:49'!
+removeAssignmentFromStencil
+
+	| stencil command |
+
+	self assert: theAssignment notNil.
+		
+	stencilIndex = 0 ifTrue:[^self].
+
+	stencil := self stencils at: stencilIndex.
+	
+	command := theAssignment commandToRemoveSelf.
+	
+	BrocadeCommandHistory instance do: command.
+	
+	theAssignment := nil.
+		
+	model changed: #assignmentsTable! !
 
 !StencilBrowser methodsFor: 'menu' stamp: 'DF 3/31/2025 21:33:27'!
 removeStencilFromSemester
@@ -4394,6 +4710,126 @@ instance
 	].
 
 	^Instance! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:01:07'!
+assignment
+	^assignment! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:01:01'!
+assignment: anAssignment
+	assignment := anAssignment! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:31:37'!
+college: aCollege
+	college := aCollege! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:10:42'!
+doIt
+	
+	self assert: assignment isNil.
+	
+	assignment := stencil createAssignmentsFor: (college moduleAt: module).
+			
+	college changed: #assignmentsTable! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:53:01'!
+module
+	^module! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:52:57'!
+module: anInteger
+	module := anInteger! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:31:30'!
+stencil
+	^stencil! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:31:26'!
+stencil: aStencil
+	stencil := aStencil! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:52:07'!
+title
+	^'הוספת שיבוץ חדש לתבנית'! !
+
+!AddAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:20:37'!
+undo
+	
+	self assert: assignment notNil.
+	
+	stencil removeAssignment: assignment.
+	
+	assignment := nil.
+			
+	college changed: #assignmentsTable! !
+
+!RemoveAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:07:11'!
+doIt
+
+	super undo! !
+
+!RemoveAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 16:54:50'!
+title
+	^'הסרת שיבוץ מתבנית'! !
+
+!RemoveAssignmentCommand methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:07:26'!
+undo
+	super doIt! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:06:29'!
+assignment: anAssignment
+	assignment := anAssignment! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:06:41'!
+doIt
+
+	self assert: proxy isNil.
+
+	self assert: assignment notNil.
+	
+	proxy := stencil createAssignmentProxyFor: assignment.
+	
+	stencil college changed: #assignmentsTable! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:05:41'!
+proxy: anAssignmentProxy
+	proxy := anAssignmentProxy ! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:53:11'!
+stencil
+	^stencil! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:53:08'!
+stencil: aStencil
+	stencil := aStencil! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 17:53:34'!
+title
+	^'הוסף שיבוץ מתארח'! !
+
+!AddAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:04:38'!
+undo
+
+	self assert: proxy notNil.
+	
+	stencil removeAssignment: proxy.
+
+	proxy := nil.
+	
+	stencil college changed: #assignmentsTable! !
+
+!RemoveAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:08:20'!
+doIt
+	super undo! !
+
+!RemoveAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:08:07'!
+title
+	^'הסר שיבוץ מתארח'! !
+
+!RemoveAssignmentProxy methodsFor: 'as yet unclassified' stamp: 'DF 5/3/2025 18:08:55'!
+undo
+	
+	super doIt! !
 
 !AddCampusCommand methodsFor: 'as yet unclassified' stamp: 'DF 2/4/2025 18:18:42'!
 college: aCollege
