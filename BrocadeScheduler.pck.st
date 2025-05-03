@@ -1,11 +1,11 @@
-'From Cuis7.3 [latest update: #6895] on 22 April 2025 at 2:55:21 pm'!
+'From Cuis7.3 [latest update: #7041] on 30 April 2025 at 7:17:10 pm'!
 'Description '!
-!provides: 'BrocadeScheduler' 1 185!
+!provides: 'BrocadeScheduler' 1 191!
 !requires: 'BrocadePlanner' 1 57 nil!
 !requires: 'MenuBar' 1 6 nil!
 !requires: 'SpriteAtlas' 1 0 nil!
 SystemOrganization addCategory: #'BrocadeScheduler-Model'!
-SystemOrganization addCategory: #'BrocadeScheduler-StencilMorphic'!
+SystemOrganization addCategory: 'BrocadeScheduler-StencilMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-CampusMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-SchoolMorphic'!
 SystemOrganization addCategory: #'BrocadeScheduler-ResourceMorphic'!
@@ -185,13 +185,13 @@ Object subclass: #BlockedSlotTableCellFactory
 BlockedSlotTableCellFactory class
 	instanceVariableNames: ''!
 
-!classDefinition: #TextFieldSentence category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #TextFieldSentence category: 'BrocadeScheduler-StencilMorphic'!
 LayoutMorph subclass: #TextFieldSentence
 	instanceVariableNames: 'rightToLeft'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'TextFieldSentence class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'TextFieldSentence class' category: 'BrocadeScheduler-StencilMorphic'!
 TextFieldSentence class
 	instanceVariableNames: ''!
 
@@ -225,23 +225,23 @@ BrocadeTableCell subclass: #LecturerTableCell
 LecturerTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentTableCell category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #AssignmentTableCell category: 'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCell subclass: #AssignmentTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'AssignmentTableCell class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
 AssignmentTableCell class
 	instanceVariableNames: ''!
 
-!classDefinition: #WeeklyTimeTableCell category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #WeeklyTimeTableCell category: 'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCell subclass: #WeeklyTimeTableCell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'WeeklyTimeTableCell class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'WeeklyTimeTableCell class' category: 'BrocadeScheduler-StencilMorphic'!
 WeeklyTimeTableCell class
 	instanceVariableNames: ''!
 
@@ -275,23 +275,23 @@ BrocadeTableCellItem subclass: #LecturerMorph
 LecturerMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #AssignmentMorph category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #AssignmentMorph category: 'BrocadeScheduler-StencilMorphic'!
 BrocadeTableCellItem subclass: #AssignmentMorph
 	instanceVariableNames: 'model index collision enableGrabbing'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'AssignmentMorph class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'AssignmentMorph class' category: 'BrocadeScheduler-StencilMorphic'!
 AssignmentMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilLabel category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #StencilLabel category: 'BrocadeScheduler-StencilMorphic'!
 NarrowLabelMorph subclass: #StencilLabel
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'StencilLabel class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilLabel class' category: 'BrocadeScheduler-StencilMorphic'!
 StencilLabel class
 	instanceVariableNames: ''!
 
@@ -335,13 +335,13 @@ BidiSystemWindow subclass: #SchoolBrowser
 SchoolBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #StencilBrowser category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: #StencilBrowser category: 'BrocadeScheduler-StencilMorphic'!
 BidiSystemWindow subclass: #StencilBrowser
 	instanceVariableNames: 'programIndex trackIndex yearIndex semesterIndex stencilIndex theAssignment views'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BrocadeScheduler-StencilMorphic'!
-!classDefinition: 'StencilBrowser class' category: #'BrocadeScheduler-StencilMorphic'!
+!classDefinition: 'StencilBrowser class' category: 'BrocadeScheduler-StencilMorphic'!
 StencilBrowser class
 	instanceVariableNames: ''!
 
@@ -854,10 +854,10 @@ validHoursInDay: anInteger
 	
 	^ValidHours at: anInteger ! !
 
-!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:01'!
-addModule: aModule
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 4/30/2025 16:51:13'!
+addMandatoryModule: aModule
 
-	super addModule: aModule.
+	super addMandatoryModule: aModule.
 	
 	stencils do:[:eachStencil |
 
@@ -933,9 +933,11 @@ mayRemove: aModule
 		eachStencil assignments allSatisfy:[:eachAssignment | 
 			eachAssignment unit module ~= aModule or:[eachAssignment isUnassigned] ] ]! !
 
-!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 2/12/2025 17:26:27'!
+!SchedulingSemester methodsFor: 'as yet unclassified' stamp: 'DF 4/30/2025 16:31:16'!
 removeModule: aModule
 
+	self assert: ( (electiveModules includes: aModule) or: [mandatoryModules includes: aModule]).
+	
 	stencils do:[:eachStencil |
 
 			aModule units do:[:eachUnit | 					
@@ -1045,6 +1047,66 @@ invariant
 toXML: anXMLWriter
 	
 	anXMLWriter startElement: 'room' attributeList: {'code' -> code asString . 'capacity' -> capacity asString . 'floor' -> floor asString } asDictionary ; endEmptyTag: 'room'.! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:31:52'!
+blockSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
+	
+	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: add: anIntegerHour.! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 2/28/2025 21:11:10'!
+blockedSlots
+	^blockedSlots ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:25:45'!
+isBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour :: ifFalse:[^true].
+	
+	^ blockedSlots at: anIntegerSemester :: at: anIntegerDay :: includes: anIntegerHour ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:56:52'!
+toggleBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
+
+	| hours |
+	
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
+	
+	hours := blockedSlots at: anIntegerSemester :: at: anIntegerDay.
+	
+	hours includes: anIntegerHour ::
+		ifTrue:[hours remove: anIntegerHour ]
+		ifFalse:[hours add: anIntegerHour ].
+		
+	^hours includes: anIntegerHour ! !
+
+!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:32:00'!
+unblockSemester: anIntegerSemester  day: anIntegerDay hour: anHour
+
+	self assert: anIntegerSemester <= 3.
+	self assert: anIntegerSemester >= 1.
+	self assert: anIntegerDay <= 6.
+	self assert: anIntegerDay >= 1.
+	
+	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anHour).
+	
+	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: remove: anHour.! !
 
 !Lecturer methodsFor: 'as yet unclassified' stamp: 'DF 12/27/2024 15:43:47'!
 addAcademicUnit: anAcademicUnit
@@ -1211,66 +1273,6 @@ rank
 rank: aString
 	rank := aString! !
 
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:31:52'!
-blockSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
-	
-	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: add: anIntegerHour.! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 2/28/2025 21:11:10'!
-blockedSlots
-	^blockedSlots ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:25:45'!
-isBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour :: ifFalse:[^true].
-	
-	^ blockedSlots at: anIntegerSemester :: at: anIntegerDay :: includes: anIntegerHour ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 14:56:52'!
-toggleBlockedSemester: anIntegerSemester day: anIntegerDay hour: anIntegerHour
-
-	| hours |
-	
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anIntegerHour).
-	
-	hours := blockedSlots at: anIntegerSemester :: at: anIntegerDay.
-	
-	hours includes: anIntegerHour ::
-		ifTrue:[hours remove: anIntegerHour ]
-		ifFalse:[hours add: anIntegerHour ].
-		
-	^hours includes: anIntegerHour ! !
-
-!Lecturer methodsFor: 'blocking' stamp: 'DF 3/1/2025 13:32:00'!
-unblockSemester: anIntegerSemester  day: anIntegerDay hour: anHour
-
-	self assert: anIntegerSemester <= 3.
-	self assert: anIntegerSemester >= 1.
-	self assert: anIntegerDay <= 6.
-	self assert: anIntegerDay >= 1.
-	
-	self assert: (SchedulingCollege validHoursInDay: anIntegerDay :: includes: anHour).
-	
-	blockedSlots at: anIntegerSemester :: at: anIntegerDay :: remove: anHour.! !
-
 !Assignment methodsFor: 'lecturers' stamp: 'DF 1/11/2025 19:43:28'!
 addLecturer: aLecturer
 
@@ -1322,6 +1324,11 @@ removeClassroom: aClassroom
 !Assignment methodsFor: 'rooms' stamp: 'DF 1/22/2025 20:32:35'!
 rooms
 	^rooms! !
+
+!Assignment methodsFor: 'testing' stamp: 'DF 3/30/2025 20:31:42'!
+isUnassigned
+
+	^  rooms isEmpty and: [lecturers isEmpty]! !
 
 !Assignment methodsFor: 'as yet unclassified' stamp: 'DF 1/12/2025 18:23:07'!
 before: anAssignment
@@ -1484,11 +1491,6 @@ toXML: anXMLWriter
 		self roomsXmlOut: anXMLWriter.
 	
 	anXMLWriter endTag:'assignment'.! !
-
-!Assignment methodsFor: 'testing' stamp: 'DF 3/30/2025 20:31:42'!
-isUnassigned
-
-	^  rooms isEmpty and: [lecturers isEmpty]! !
 
 !Assignment class methodsFor: 'as yet unclassified' stamp: 'DF 1/24/2025 21:52:57'!
 initialize
@@ -1804,10 +1806,10 @@ addAssignment: anAssignment
 	
 	anAssignment stencil: self.! !
 
-!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 2/1/2025 18:18:36'!
+!Stencil methodsFor: 'as yet unclassified' stamp: 'DF 4/30/2025 15:42:25'!
 addNewStencil: aSemester
 
-	aSemester modules do:[:eachModule | 
+	aSemester mandatoryModules do:[:eachModule | 
 		
 			eachModule units do:[:eachUnit | | anAssignment |
 		
@@ -4167,7 +4169,7 @@ years
 	^tracks at: trackIndex ifAbsent:[tracks last] :: academicYears :: asOrderedCollection sort:[:x :y | x description <= y description ]
 ! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 2/1/2025 18:02:04'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 4/30/2025 19:16:33'!
 buildAssignmentsTable
 
 	| assignmentsTable |
@@ -4190,7 +4192,7 @@ buildAssignmentsTable
 		3 -> (PluggableMorphFactory new formatter:[:aDay | aDay ]; morphClass: StencilLabel; yourself) .
 		4 -> (PluggableMorphFactory new formatter:[:aLecturer  | aLecturer ] ; morphClass: LecturerMorph ; factoryMessage: #new: ; yourself) .
 		5 -> (PluggableMorphFactory new formatter:[:aUnit | aUnit description ] ; yourself) .
-		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description ] ; yourself) .
+		6 -> (PluggableMorphFactory new formatter:[:aModule | aModule description asBidi writingDirection:#rightToLeft ] ; yourself) .
 		7 -> (PluggableMorphFactory new formatter:[:anAssignment | anAssignment ] ; morphClass: AssignmentMorph ; factoryMessage: #new: ; yourself)
 		} asDictionary.
 		
@@ -4220,12 +4222,14 @@ buildMorphicWindow
 	self layoutMorph addMorph: (navigationPanel -1.0p | 0.2p </> ( (views -1.0p | 1.0p) | 0.8p)).
 	! !
 
-!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 1/22/2025 22:23:01'!
+!StencilBrowser methodsFor: 'GUI building' stamp: 'DF 4/30/2025 15:23:39'!
 buildNavigationPanel
 
 	| stencils semesters years tracks programs |
 	
-	stencils := BidiPluggableListMorph withModel: self listGetter: #stencilNames indexGetter: #stencilIndex indexSetter: #stencilIndex:.
+	stencils := BidiPluggableListMorph withModel: self listGetter: #stencilNames indexGetter: #stencilIndex indexSetter: #stencilIndex:. 
+	
+	stencils menuNshortcutsKey: #stencilMenuSpec.
 	
 	semesters := BidiPluggableListMorph withModel: self listGetter: #semesterNames indexGetter: #semesterIndex indexSetter: #semesterIndex:.
 	
@@ -4290,15 +4294,20 @@ selectView: anInteger
 
 	views select: anInteger! !
 
-!StencilBrowser methodsFor: 'menu' stamp: 'DF 2/1/2025 18:02:24'!
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 4/30/2025 17:44:00'!
 assignmentMenuSpec
 
-^ #(
-		#(0 		'תבנית'				false)
-		#(20	'הוסף תבנית ...' 		$g 	window 	openAddStencilDialog 	)
-		#(30	'-----' )
-		#(40	'הסר תבנית' 			$c 	window 	removeStencilFromSemester )
-	).! !
+	| editModuleMessage |
+	
+	editModuleMessage := theAssignment notNil :: ifTrue:[ #openEditModuleDialog  ] ifFalse: [nil].
+	
+^ {
+		{0 	.	'קורס'		.		false } .
+		{20	. 	('ערוך פרטי קורס ...' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. editModuleMessage 	} .
+		{30 . 	'-----' } .
+		{40	. 	('הסר שיבוץ' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. nil	} .
+	}.
+	! !
 
 !StencilBrowser methodsFor: 'menu' stamp: 'DF 2/5/2025 21:26:06'!
 openAddStencilDialog
@@ -4332,6 +4341,12 @@ openAddStencilDialog
 	
 ! !
 
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 4/30/2025 15:29:27'!
+openEditModuleDialog
+
+	ModuleBrowser open: theAssignment unit module
+! !
+
 !StencilBrowser methodsFor: 'menu' stamp: 'DF 3/31/2025 21:33:27'!
 removeStencilFromSemester
 
@@ -4352,6 +4367,21 @@ removeStencilFromSemester
 	stencilIndex := 0.
 	
 	model changed: #stencilNames ; changed: #assignmentsTable! !
+
+!StencilBrowser methodsFor: 'menu' stamp: 'DF 4/30/2025 15:26:05'!
+stencilMenuSpec
+
+	| removeStencilMessage |
+	
+	removeStencilMessage := stencilIndex notNil and: [stencilIndex >0 ] :: ifTrue:[ #removeStencilFromSemester  ] ifFalse: [nil].
+	
+^ {
+		{0 	.	'תבנית'		.		false } .
+		{20	. 	('הוסף תבנית ...' asBidi writingDirection:#rightToLeft)	.	$g .	#window 	. #openAddStencilDialog 	} .
+		{30	.	'-----' } .
+		{40	.	('הסר תבנית' asBidi writingDirection:#rightToLeft) . 			$c . 	#window .	 removeStencilMessage } .
+	}.
+! !
 
 !BrocadeSpriteAtlas class methodsFor: 'as yet unclassified' stamp: 'DF 3/9/2025 20:25:46'!
 instance
